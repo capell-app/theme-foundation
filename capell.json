@@ -33,7 +33,28 @@
         "admin": [],
         "frontend": []
     },
-    "contributes": [],
+    "contributes": [
+        {
+            "type": "console-command",
+            "class": "Capell\\FoundationTheme\\Manifest\\FoundationThemeConsoleCommandsContribution",
+            "commands": [
+                "capell:frontend-tailwind-assets",
+                "capell:make-theme",
+                "capell:theme-catalogue-report",
+                "capell:theme-foundation-demo",
+                "capell:theme-foundation-setup",
+                "capell:validate-themes"
+            ],
+            "commandClasses": [
+                "Capell\\FoundationTheme\\Console\\Commands\\GenerateTailwindAssetsCommand",
+                "Capell\\FoundationTheme\\Console\\Commands\\MakeThemeCommand",
+                "Capell\\FoundationTheme\\Console\\Commands\\ThemeCatalogueReportCommand",
+                "Capell\\FoundationTheme\\Console\\Commands\\DemoCommand",
+                "Capell\\FoundationTheme\\Console\\Commands\\SetupCommand",
+                "Capell\\FoundationTheme\\Console\\Commands\\ValidateThemesCommand"
+            ]
+        }
+    ],
     "database": {
         "migrations": false,
         "settings": true,
@@ -43,7 +64,11 @@
         "install": null,
         "setup": "capell:theme-foundation-setup",
         "demo": "capell:theme-foundation-demo",
-        "doctor": null
+        "doctor": null,
+        "tailwindAssets": "capell:frontend-tailwind-assets",
+        "catalogueReport": "capell:theme-catalogue-report",
+        "makeTheme": "capell:make-theme",
+        "validateThemes": "capell:validate-themes"
     },
     "actions": {
         "setup": "Capell\\FoundationTheme\\Actions\\SetupFoundationThemePackageAction",

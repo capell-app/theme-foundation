@@ -426,7 +426,10 @@
             "viewport": "desktop",
             "fullPage": true,
             "assertions": [
-                { "type": "visible", "selector": "#header nav" },
+                {
+                    "type": "visible",
+                    "selector": "#header nav"
+                },
                 {
                     "type": "no-horizontal-overflow",
                     "selector": "html",
@@ -437,7 +440,11 @@
                     "selector": "#header",
                     "tolerance": 1
                 }
-            ]
+            ],
+            "intentionalVariant": {
+                "of": "foundation-homepage",
+                "reason": "Both contracts intentionally use the same real homepage with Foundation header and footer."
+            }
         },
         {
             "id": "foundation-chrome-homepage-mobile",
@@ -460,7 +467,10 @@
             "viewport": "mobile",
             "fullPage": true,
             "assertions": [
-                { "type": "visible", "selector": "#header" },
+                {
+                    "type": "visible",
+                    "selector": "#header"
+                },
                 {
                     "type": "no-horizontal-overflow",
                     "selector": "html",
@@ -471,7 +481,11 @@
                     "selector": "#header",
                     "tolerance": 1
                 }
-            ]
+            ],
+            "intentionalVariant": {
+                "of": "foundation-homepage-mobile",
+                "reason": "Both mobile contracts intentionally use the same real homepage with Foundation header and footer."
+            }
         }
     ]
 }

@@ -52,8 +52,14 @@ it('registers only the shipped foundation theme service provider', function (): 
 
 it('declares its dynamic public route without deferred route contributions', function (): void {
     $manifest = themePackageManifest('theme-foundation');
+    $contributions = $manifest['contributes'] ?? null;
+    $commands = $manifest['commands'] ?? null;
 
-    expect(data_get($manifest, 'contributes'))->toBe([])
+    throw_unless(is_array($contributions), RuntimeException::class, 'Theme contributions must be an array.');
+    throw_unless(is_array($commands), RuntimeException::class, 'Theme commands must be an array.');
+
+    expect(collect($contributions)->where('type', 'console-command')->pluck('commands')->flatten()->all())
+        ->toEqualCanonicalizing(array_values(array_filter($commands, is_string(...))))
         ->and(data_get($manifest, 'security.publicSurface.routeNames'))->toBe([
             'capell-theme-foundation.dynamic-form-fragments.show',
         ])
