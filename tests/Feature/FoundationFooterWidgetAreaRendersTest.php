@@ -77,6 +77,13 @@ it('renders a stored footer-area widget through each footer seam on a real publi
     $themeMeta['header'] = false;
     $theme->forceFill(['meta' => $themeMeta])->save();
 
+    // The installer suppresses shared footer chrome when the demo owns a
+    // footer widget. This test supplies a footer-area widget to exercise the
+    // shared chrome seam, so remove that demo-only layout override as well.
+    $layoutMeta = is_array($layout->meta) ? $layout->meta : [];
+    unset($layoutMeta['footer']);
+    $layout->forceFill(['meta' => $layoutMeta])->save();
+
     CapellLayoutManager::clearContainerWidgets();
 
     $response = get($pageUrl->full_url);

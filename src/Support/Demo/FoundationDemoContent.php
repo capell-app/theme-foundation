@@ -62,7 +62,8 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
         }
 
         if (! $pageContentInserted) {
-            array_unshift($containerWidgets, $this->pageContentWidgetReference());
+            $contentPosition = ($sectionWidgets[0]['type'] ?? null) === 'navigation' ? 1 : 0;
+            array_splice($containerWidgets, $contentPosition, 0, [$this->pageContentWidgetReference()]);
         }
 
         $widgets = [['method' => 'pageContentWidget']];
@@ -115,8 +116,17 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
     {
         $sectionWidgets = [];
         $occurrences = [];
+        $sections = $definition->sections();
 
-        foreach ($definition->sections() as $section) {
+        if (is_array($navigation = $definition->renderData['navigation'] ?? null)) {
+            array_unshift($sections, ['type' => 'navigation', ...$navigation]);
+        }
+
+        if (is_array($footer = $definition->renderData['footer'] ?? null)) {
+            $sections[] = ['type' => 'footer', ...$footer];
+        }
+
+        foreach ($sections as $section) {
             $sectionType = $section['type'] ?? null;
 
             if (! is_string($sectionType)) {

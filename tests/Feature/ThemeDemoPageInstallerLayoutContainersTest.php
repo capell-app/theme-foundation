@@ -6,6 +6,7 @@ use Capell\Core\Enums\LayoutEnum;
 use Capell\Core\Models\Layout;
 use Capell\Core\Models\Page;
 use Capell\FoundationTheme\Data\ThemeDemoInstallData;
+use Capell\FoundationTheme\Support\Demo\FoundationDemoContent;
 use Capell\FoundationTheme\Support\Demo\ThemeDemoPageInstaller;
 use Capell\FoundationTheme\Tests\Fixtures\ThemeDemoPageInstallerContactFixtureProvider;
 use Capell\FoundationTheme\Tests\Fixtures\ThemeDemoPageInstallerEmptySearchFixtureProvider;
@@ -15,6 +16,35 @@ use Capell\FoundationTheme\Tests\Fixtures\ThemeDemoPageInstallerUnknownWidgetMet
 use Capell\LayoutBuilder\Actions\ResolveLayoutAreaContainersAction;
 use Capell\LayoutBuilder\Models\Widget;
 use Capell\LayoutBuilder\Support\LayoutAreas\LayoutAreaRegistry;
+
+it('installs Foundation brand navigation and footer around each page content', function (): void {
+    $provider = new FoundationDemoContent;
+    ThemeDemoPageInstaller::run(
+        data: new ThemeDemoInstallData(
+            siteNames: ['Foundation Chrome'],
+            languageCodes: ['en'],
+            baseUrl: 'https://foundation-chrome.test',
+        ),
+        themeKey: 'foundation',
+        themeName: 'Foundation',
+        contentProvider: $provider,
+    );
+
+    foreach ($provider->definitions('foundation', 'Foundation', 'https://foundation-chrome.test') as $definition) {
+        $page = Page::query()->where('name', $definition->name)->firstOrFail();
+        $layout = $page->layout;
+        throw_unless($layout instanceof Layout, RuntimeException::class, 'Expected a Foundation layout.');
+        $containers = ResolveLayoutAreaContainersAction::run($layout->containers, LayoutAreaRegistry::MAIN);
+        $widgets = data_get($containers, 'main.widgets');
+        throw_unless(is_array($widgets), RuntimeException::class, 'Expected Foundation main widgets.');
+        $keys = array_column($widgets, 'widget_key');
+
+        expect($layout->meta)->toHaveKey('header', false)->toHaveKey('footer', false)
+            ->and($keys[0] ?? null)->toBe('foundation-navigation-' . $definition->surface . '-1')
+            ->and(end($keys))->toBe('foundation-footer-' . $definition->surface . '-1')
+            ->and($keys)->toContain('page-content');
+    }
+});
 
 it('seeds layout builder containers and widgets from a demo page definition', function (): void {
     $themeKey = 'layout-containers-demo';
