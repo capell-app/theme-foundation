@@ -407,6 +407,7 @@ This theme has no schema impact. It relies on core Capell site, page, locale, an
 
 - [Package docs](docs/README.md)
 - [Overview](docs/overview.md)
+- [Worked extension examples](docs/extension-contracts.md)
 - Configuration files: [`config/capell-theme-foundation.php`](config/capell-theme-foundation.php).
 - [Troubleshooting](#troubleshooting)
 - [Screenshot contract](docs/screenshots.json)
