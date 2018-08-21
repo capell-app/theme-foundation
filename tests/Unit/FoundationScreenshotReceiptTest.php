@@ -29,10 +29,10 @@ it('binds the runner receipt to every Foundation chrome artifact', function (): 
 
     $receipts = collect($provenance['receipts'])->keyBy('id');
     $expected = [
-        'foundation-chrome-homepage' => 'packages/theme-foundation/docs/screenshots/foundation-chrome-homepage.png',
-        'foundation-chrome-homepage-dark' => 'packages/theme-foundation/docs/screenshots/foundation-chrome-homepage-dark.png',
-        'foundation-chrome-homepage-mobile' => 'packages/theme-foundation/docs/screenshots/foundation-chrome-homepage-mobile.png',
-        'foundation-chrome-homepage-mobile-dark' => 'packages/theme-foundation/docs/screenshots/foundation-chrome-homepage-mobile-dark.png',
+        'foundation-chrome-homepage' => 'packages/theme-foundation/docs/screenshots/foundation-chrome-homepage.webp',
+        'foundation-chrome-homepage-dark' => 'packages/theme-foundation/docs/screenshots/foundation-chrome-homepage-dark.webp',
+        'foundation-chrome-homepage-mobile' => 'packages/theme-foundation/docs/screenshots/foundation-chrome-homepage-mobile.webp',
+        'foundation-chrome-homepage-mobile-dark' => 'packages/theme-foundation/docs/screenshots/foundation-chrome-homepage-mobile-dark.webp',
     ];
 
     expect($receipts->keys()->sort()->values()->all())->toBe(collect(array_keys($expected))->sort()->values()->all());

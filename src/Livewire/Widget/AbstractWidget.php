@@ -177,9 +177,10 @@ abstract class AbstractWidget extends Component
         return $asBool ? (bool) $result : $result;
     }
 
+    /** @return view-string */
     protected function getComponent(): string
     {
-        return FoundationThemeViewName::canonical(
+        return FoundationThemeViewName::resolve(
             $this->widget()->getViewFile() ?? static::$defaultView,
         );
     }

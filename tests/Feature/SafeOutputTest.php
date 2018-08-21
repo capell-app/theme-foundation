@@ -21,7 +21,7 @@ test('default theme escapes site titles and plain footer text', function (): voi
     expect($siteInfo)->not->toContain('{!! $site->translation->title !!}');
     expect($relatedSites)->not->toContain('{!! $relatedSite->translation->title !!}');
     expect($relatedSites)->not->toContain('{!! $description !!}');
-    expect($footer)->not->toContain('{!!' . PHP_EOL . '                Lang::get($footerCopy');
+    expect($footer)->not->toMatch('/\{!!\s*Lang::get\s*\(\s*\$footerCopy/');
 });
 
 test('content component sanitizes cms html before rendering', function (): void {

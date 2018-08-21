@@ -15,11 +15,11 @@
             <p class="mb-3 text-xs font-semibold tracking-[0.16em] text-[var(--theme-primary)] uppercase">
                 {{ __('capell-theme-foundation::generic.contact') }}
             </p>
-        <h2
+            <h2
                 class="text-4xl leading-tight font-[var(--theme-heading-font)] font-semibold text-slate-950 sm:text-5xl"
             >
                 {{ $section->heading ?? __('capell-theme-foundation::generic.contact') }}
-        </h2>
+            </h2>
             @if (! empty($section->summary))
                 <p class="mt-4 max-w-2xl text-base leading-7 text-slate-600">{{ $section->summary }}</p>
             @endif

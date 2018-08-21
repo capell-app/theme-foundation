@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Capell\FoundationTheme\Support\View;
 
+use InvalidArgumentException;
+
 final class FoundationThemeViewName
 {
     public static function canonical(string $view): string
@@ -12,6 +14,18 @@ final class FoundationThemeViewName
             if (str_starts_with($view, $legacyPrefix)) {
                 return $canonicalPrefix . substr($view, strlen($legacyPrefix));
             }
+        }
+
+        return $view;
+    }
+
+    /** @return view-string */
+    public static function resolve(string $view): string
+    {
+        $view = self::canonical($view);
+
+        if (! view()->exists($view)) {
+            throw new InvalidArgumentException("View [{$view}] not found.");
         }
 
         return $view;

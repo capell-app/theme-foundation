@@ -28,7 +28,7 @@ test('theme screenshot files are unique across theme packages', function (): voi
 
             $filename = $fileInfo->getFilename();
 
-            if (! str_ends_with($filename, '.png') || str_ends_with($filename, '.failed.png')) {
+            if (! in_array($fileInfo->getExtension(), ['png', 'webp'], true) || str_ends_with($filename, '.failed.png')) {
                 continue;
             }
 
@@ -45,6 +45,8 @@ test('theme screenshot files are unique across theme packages', function (): voi
             );
         }
     }
+
+    expect($filesByHash)->not->toBeEmpty();
 
     $duplicateGroups = [];
 

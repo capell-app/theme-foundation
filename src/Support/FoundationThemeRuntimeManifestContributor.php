@@ -6,6 +6,7 @@ namespace Capell\FoundationTheme\Support;
 
 use Capell\Core\Contracts\Pageable;
 use Capell\Core\Models\Layout;
+use Capell\Core\Models\Media;
 use Capell\Core\Models\Site;
 use Capell\Frontend\Contracts\FrontendContextReader;
 use Capell\Frontend\Contracts\FrontendRuntimeManifestContributor;
@@ -24,10 +25,14 @@ final class FoundationThemeRuntimeManifestContributor implements FrontendRuntime
                 'image.translations.language',
                 'logo.translations.language',
                 'logoInverted.translations.language',
-                'media.translations.language',
+                'media',
                 'siteDomain',
                 'translation',
             ]);
+
+            $site->getMedia('*')
+                ->filter(static fn ($media): bool => $media instanceof Media)
+                ->loadMissing('translations.language');
         }
 
         if ($page instanceof Pageable && $page instanceof Model) {

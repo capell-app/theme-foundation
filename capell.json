@@ -136,37 +136,37 @@
                 "caption": "Foundation Theme extension preview"
             },
             {
-                "path": "docs/screenshots/foundation-chrome-homepage.png",
+                "path": "docs/screenshots/foundation-chrome-homepage.webp",
                 "alt": "Foundation Theme homepage rendered as a Capell public page.",
                 "caption": "Foundation homepage public theme surface"
             },
             {
-                "path": "docs/screenshots/foundation-directory.png",
+                "path": "docs/screenshots/foundation-directory.webp",
                 "alt": "Foundation Theme directory listing with card grid and filtering rhythm.",
                 "caption": "Foundation directory listing public theme surface"
             },
             {
-                "path": "docs/screenshots/foundation-detail.png",
+                "path": "docs/screenshots/foundation-detail.webp",
                 "alt": "Foundation Theme detail article with hero, content, and related links.",
                 "caption": "Foundation detail article public theme surface"
             },
             {
-                "path": "docs/screenshots/foundation-contact.png",
+                "path": "docs/screenshots/foundation-contact.webp",
                 "alt": "Foundation Theme contact page with form fields and supporting content.",
                 "caption": "Foundation contact page public theme surface"
             },
             {
-                "path": "docs/screenshots/foundation-empty.png",
+                "path": "docs/screenshots/foundation-empty.webp",
                 "alt": "Foundation Theme empty state with recovery actions.",
                 "caption": "Foundation empty state public theme surface"
             },
             {
-                "path": "docs/screenshots/foundation-not-found.png",
+                "path": "docs/screenshots/foundation-not-found.webp",
                 "alt": "Foundation Theme not-found page with navigation recovery actions.",
                 "caption": "Foundation page not found public theme surface"
             },
             {
-                "path": "docs/screenshots/foundation-cta.png",
+                "path": "docs/screenshots/foundation-cta.webp",
                 "alt": "Foundation Theme call-to-action page section.",
                 "caption": "Foundation call to action public theme surface"
             }

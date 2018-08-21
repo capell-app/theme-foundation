@@ -80,6 +80,10 @@ it('renders real layout-builder widget content in the main landmark for a layout
 
     $html = $response->getContent();
 
+    if ($html === false) {
+        throw new RuntimeException('Expected the response to contain HTML.');
+    }
+
     expect($html)->toBeString();
 
     if ($html === '') {

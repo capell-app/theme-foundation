@@ -135,16 +135,16 @@ it('declares committed marketplace screenshots', function (): void {
         ->values();
 
     expect($paths)->toHaveCount(8)
-        ->and($paths->filter(fn (string $path): bool => str_starts_with($path, 'docs/screenshots/') && str_ends_with($path, '.png')))->toHaveCount(7)
+        ->and($paths->filter(fn (string $path): bool => str_starts_with($path, 'docs/screenshots/') && str_ends_with($path, '.webp')))->toHaveCount(7)
         ->and($paths->filter(fn (string $path): bool => str_starts_with($path, 'docs/assets/marketplace/') && str_ends_with($path, '.svg')))->toHaveCount(0)
         ->and($paths)->toContain(
-            'docs/screenshots/foundation-chrome-homepage.png',
-            'docs/screenshots/foundation-directory.png',
-            'docs/screenshots/foundation-detail.png',
-            'docs/screenshots/foundation-contact.png',
-            'docs/screenshots/foundation-empty.png',
-            'docs/screenshots/foundation-not-found.png',
-            'docs/screenshots/foundation-cta.png',
+            'docs/screenshots/foundation-chrome-homepage.webp',
+            'docs/screenshots/foundation-directory.webp',
+            'docs/screenshots/foundation-detail.webp',
+            'docs/screenshots/foundation-contact.webp',
+            'docs/screenshots/foundation-empty.webp',
+            'docs/screenshots/foundation-not-found.webp',
+            'docs/screenshots/foundation-cta.webp',
         );
 
     foreach ($paths as $path) {
@@ -235,13 +235,13 @@ it('declares separate runner-only Foundation chrome proof at desktop and mobile 
     foreach ([
         'foundation-chrome-homepage' => [
             'viewport' => 'desktop',
-            'light' => 'packages/theme-foundation/docs/screenshots/foundation-chrome-homepage.png',
-            'dark' => 'packages/theme-foundation/docs/screenshots/foundation-chrome-homepage-dark.png',
+            'light' => 'packages/theme-foundation/docs/screenshots/foundation-chrome-homepage.webp',
+            'dark' => 'packages/theme-foundation/docs/screenshots/foundation-chrome-homepage-dark.webp',
         ],
         'foundation-chrome-homepage-mobile' => [
             'viewport' => 'mobile',
-            'light' => 'packages/theme-foundation/docs/screenshots/foundation-chrome-homepage-mobile.png',
-            'dark' => 'packages/theme-foundation/docs/screenshots/foundation-chrome-homepage-mobile-dark.png',
+            'light' => 'packages/theme-foundation/docs/screenshots/foundation-chrome-homepage-mobile.webp',
+            'dark' => 'packages/theme-foundation/docs/screenshots/foundation-chrome-homepage-mobile-dark.webp',
         ],
     ] as $id => $contract) {
         $entry = $entries->get($id);

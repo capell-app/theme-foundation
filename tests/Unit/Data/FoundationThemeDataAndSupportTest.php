@@ -94,3 +94,11 @@ it('defines foundation theme metadata and canonical view names', function (): vo
         ->and(FoundationThemeViewName::canonical('components.actions.buttons'))->toBe('capell-theme-foundation::components.actions.buttons')
         ->and(FoundationThemeViewName::canonical('custom-package::view'))->toBe('custom-package::view');
 });
+
+it('resolves a registered legacy view alias and rejects a missing widget view', function (): void {
+    expect(FoundationThemeViewName::resolve('components.widget.default'))
+        ->toBe('capell-theme-foundation::components.widget.default');
+
+    expect(fn (): string => FoundationThemeViewName::resolve('custom-package::missing-widget'))
+        ->toThrow(InvalidArgumentException::class, 'View [custom-package::missing-widget] not found.');
+});

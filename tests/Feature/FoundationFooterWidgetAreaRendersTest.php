@@ -91,6 +91,10 @@ it('renders a stored footer-area widget through each footer seam on a real publi
     $response->assertOk();
 
     $html = $response->getContent();
+
+    if ($html === false) {
+        throw new RuntimeException('Expected the response to contain HTML.');
+    }
     $footerContainerOffset = strpos($html, 'id="layout-container-footer"');
 
     // Themes may emit `<footer>` page furniture inside content (folio spreads do),

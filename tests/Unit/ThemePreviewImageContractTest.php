@@ -15,15 +15,15 @@ it('ships a publishable homepage preview for every declared theme image', functi
     foreach ($providerFiles as $providerFile) {
         $source = file_get_contents($providerFile);
 
-        if (! is_string($source) || ! preg_match("/previewImage:\s*'\/vendor\/capell\/themes\/([^']+\.png)'/", $source, $matches)) {
+        if (! is_string($source) || ! preg_match("/previewImage:\s*'\/vendor\/capell\/themes\/([^']+\.webp)'/", $source, $matches)) {
             continue;
         }
 
         $themeKey = pathinfo($matches[1], PATHINFO_FILENAME);
-        $previewSource = $packagesRoot . '/theme-' . $themeKey . '/docs/screenshots/' . $themeKey . '-homepage.png';
+        $previewSource = $packagesRoot . '/theme-' . $themeKey . '/docs/screenshots/' . $themeKey . '-homepage.webp';
 
         expect(is_file($previewSource))->toBeTrue(
-            "Theme [{$themeKey}] declares a PNG preview but does not ship its homepage capture.",
+            "Theme [{$themeKey}] declares a WebP preview but does not ship its homepage capture.",
         );
     }
 });
@@ -36,11 +36,11 @@ it('registers the fleet preview images for vendor publishing', function (): void
 
     expect($publishPaths)->not->toBeEmpty()
         ->and($publishPaths)->toHaveKey(
-            dirname(__DIR__, 3) . '/theme-foundation/docs/screenshots/foundation-homepage.png',
+            dirname(__DIR__, 3) . '/theme-foundation/docs/screenshots/foundation-homepage.webp',
         );
 
     foreach ($publishPaths as $source => $destination) {
         expect(is_file($source))->toBeTrue()
-            ->and($destination)->toEndWith('.png');
+            ->and($destination)->toEndWith('.webp');
     }
 });

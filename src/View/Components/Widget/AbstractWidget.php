@@ -66,7 +66,7 @@ abstract class AbstractWidget extends Component
 
         $data['component_item'] = $this->getComponentItem();
 
-        return resolve(Factory::class)->make(FoundationThemeViewName::canonical($this->getViewFile()), $data);
+        return resolve(Factory::class)->make(FoundationThemeViewName::resolve($this->getViewFile()), $data);
     }
 
     protected function getComponentItem(): ?string

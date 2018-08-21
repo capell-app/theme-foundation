@@ -33,9 +33,9 @@ Evidence: [`src/Providers/FoundationThemeServiceProvider.php`](src/Providers/Fou
 
 Screenshot contract: `docs/screenshots.json`.
 
-![Foundation Directory](docs/screenshots/foundation-directory.png)
+![Foundation Directory](docs/screenshots/foundation-directory.webp)
 
-![Foundation Detail Article](docs/screenshots/foundation-detail.png)
+![Foundation Detail Article](docs/screenshots/foundation-detail.webp)
 
 Desktop, tablet, and mobile variants remain defined in the screenshot contract; this list groups them by workflow.
 

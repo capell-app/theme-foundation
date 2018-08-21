@@ -139,7 +139,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
             name: 'Foundation',
             description: 'Clean starter theme for structured Capell sites, content previews, and shared child-theme defaults.',
             package: self::$packageName,
-            previewImage: '/vendor/capell/themes/foundation.png',
+            previewImage: '/vendor/capell/themes/foundation.webp',
             tags: ['Foundation', 'Structured', 'Default'],
             bestFit: ['Starter sites', 'Documentation', 'General publishing'],
             includedSections: ['navigation', 'hero', 'features', 'proof', 'content-listing', 'search', 'pagination', 'form', 'contact-split', 'cta', 'footer'],
@@ -148,7 +148,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
                     key: 'default',
                     name: 'Foundation',
                     description: 'Balanced neutral defaults with clear hierarchy and quiet content surfaces.',
-                    previewImage: '/vendor/capell/themes/foundation.png',
+                    previewImage: '/vendor/capell/themes/foundation.webp',
                     values: [
                         'primaryColor' => '#087765',
                         'accentColor' => '#0e91b2',
@@ -733,13 +733,13 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
             }
 
             $themeKey = substr($packageName, strlen('theme-'));
-            $source = $packageDirectory . '/docs/screenshots/' . $themeKey . '-homepage.png';
+            $source = $packageDirectory . '/docs/screenshots/' . $themeKey . '-homepage.webp';
 
             if (! is_file($source)) {
                 continue;
             }
 
-            $previewImages[$source] = public_path('vendor/capell/themes/' . $themeKey . '.png');
+            $previewImages[$source] = public_path('vendor/capell/themes/' . $themeKey . '.webp');
         }
 
         if ($previewImages !== []) {

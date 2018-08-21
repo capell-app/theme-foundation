@@ -92,7 +92,7 @@ function createCommercialReadinessFixture(Filesystem $filesystem): array
     $screenshotEntries = array_map(
         static fn (string $surface): array => [
             'id' => 'fixture-' . $surface,
-            'screenshotPath' => 'packages/theme-fixture/docs/screenshots/fixture-' . $surface . '.png',
+            'screenshotPath' => 'packages/theme-fixture/docs/screenshots/fixture-' . $surface . '.webp',
             'required' => true,
         ],
         ['homepage', 'directory', 'detail', 'contact', 'empty', 'not-found', 'cta'],
