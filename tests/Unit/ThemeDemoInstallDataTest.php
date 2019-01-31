@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Capell\FoundationTheme\Data\ThemeDemoInstallData;
 use Capell\FoundationTheme\Support\Demo\ThemeDemoMedia;
+use Capell\ThemePaperdesk\Support\Demo\PaperdeskDemoContent;
 
 it('normalizes theme demo install data', function (): void {
     $data = new ThemeDemoInstallData(
@@ -42,7 +43,7 @@ it('resolves every first-party non-foundation theme to a deliberate media pool',
         'agency', 'awards', 'blog', 'brutalist', 'business', 'catalogue',
         'curated', 'directory', 'editorial', 'events', 'knowledge',
         'liquid-glass', 'magazine', 'minimalist', 'onepage',
-        'platform', 'portfolio', 'saas', 'showreel', 'submissions', 'bistro',
+        'platform', 'portfolio', 'saas', 'showreel', 'submissions', 'bistro', 'paperdesk',
     ];
 
     foreach ($themeKeys as $themeKey) {
@@ -82,4 +83,55 @@ it('keeps local service proof media relevant to plumbing and electrical work', f
         ->toHaveCount(3)
         ->and($businessMedia['proof'][0])->toContain('photo-1676210133055-eab6ef033ce3')
         ->and($businessMedia['proof'][1])->toContain('photo-1566417110090-6b15a06ec800');
+});
+
+it('keeps Paperdesk reference photographs separate from the default office pool', function (): void {
+    $media = ThemeDemoMedia::groupedForTheme('paperdesk');
+    $defaultUrls = ThemeDemoMedia::forTheme('default');
+
+    expect($media['listing'])->toHaveCount(3);
+    expect($media['detail'])->toHaveCount(5);
+
+    foreach ($media as $urls) {
+        expect($urls)->not->toBeEmpty();
+
+        foreach ($urls as $url) {
+            expect($url)->toStartWith('https://images.unsplash.com/photo-');
+            expect($defaultUrls)->not->toContain($url);
+        }
+    }
+});
+
+it('describes the selected Paperdesk photographs without claiming they show its commissions', function (): void {
+    $media = ThemeDemoMedia::groupedForTheme('paperdesk');
+    $content = new PaperdeskDemoContent;
+    $homepage = $content->sections('homepage', $media);
+    $detail = $content->sections('detail', $media);
+    $subjects = [
+        ['photo-1532153389802-6e84e367ed5e', 'alphabet specimen'],
+        ['photo-1530951517437-1b43a7349b10', 'book pages'],
+        ['photo-1595123336219-5eedd543bc4a', 'book bindings'],
+        ['photo-1565893181327-cd3a5d5752b5', 'postcard'],
+        ['photo-1574935905666-e5754382b0b5', 'bookbinding press'],
+    ];
+
+    expect($homepage[0]['mediaAlt'])->toContain('reference photograph', 'bookbinding press');
+    $detailItems = $detail[0]['items'];
+    $deskItems = $homepage[1]['items'];
+    $this->assertIsArray($detailItems);
+    $this->assertIsArray($deskItems);
+    expect($detailItems)->toHaveCount(5);
+
+    foreach ($subjects as $index => [$photo, $subject]) {
+        $item = $detailItems[$index];
+        $this->assertIsArray($item);
+        expect($item['imageUrl'])->toContain($photo);
+        expect($item['imageAlt'])->toContain('Reference photograph', $subject);
+    }
+
+    foreach (array_slice($deskItems, 0, 3) as $item) {
+        $this->assertIsArray($item);
+        expect($item['imageAlt'])->toContain('Reference photograph');
+        expect($item['summary'])->toContain('Fictional', 'not');
+    }
 });

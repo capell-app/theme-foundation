@@ -43,6 +43,7 @@ use Capell\FoundationTheme\Contracts\OptionalExtensionAvailability;
 use Capell\FoundationTheme\Contracts\ResultsListingResolver;
 use Capell\FoundationTheme\Data\AuthMenuInputData;
 use Capell\FoundationTheme\Data\AuthMenuRenderData;
+use Capell\FoundationTheme\Data\FoundationPreparedPageData;
 use Capell\FoundationTheme\Enums\FoundationSectionWidgetComponentEnum;
 use Capell\FoundationTheme\Enums\FoundationThemeAssetEnum;
 use Capell\FoundationTheme\Filament\AuthMenuWidget;
@@ -89,6 +90,7 @@ use Capell\FoundationTheme\View\Components\Widget\Page\Siblings as PageSiblingsC
 use Capell\FoundationTheme\View\Components\Widget\Slot as SlotComponent;
 use Capell\Frontend\Contracts\AssetsRegistryInterface;
 use Capell\Frontend\Contracts\FrontendComponentRegistryInterface;
+use Capell\Frontend\Contracts\FrontendContextReader;
 use Capell\Frontend\Contracts\FrontendResourceContributor;
 use Capell\Frontend\Contracts\FrontendRuntimeManifestContributor;
 use Capell\Frontend\Data\Assets\FrontendPackageDependencyData;
@@ -374,6 +376,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
             $this->preparePageRuntimeData($event);
             $this->prepareFooterRuntimeData($event);
+            FoundationPreparedPageData::fromContext($event->context)?->transferTo(resolve(FrontendContextReader::class));
         });
 
         Event::listen(FrontendRenderPreparing::class, function (FrontendRenderPreparing $event): void {
@@ -401,7 +404,8 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
             setFrontendData: fn (string $key, mixed $value) => $event->context->setFrontendData($key, $value),
         );
 
-        if ($event->context->getFrontendData('foundation.page.ancestors') === null) {
+        $frontendData = $event->context->getFrontendData();
+        if (! is_array($frontendData) || ! array_key_exists('foundation.page.ancestors', $frontendData)) {
             $event->context->setFrontendData(
                 'foundation.page.ancestors',
                 PageLoader::getPageAncestors($page, $language, $site),
@@ -450,7 +454,8 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
             return;
         }
 
-        if ($event->context->getFrontendData('foundation.page.ancestors') === null) {
+        $frontendData = $event->context->getFrontendData();
+        if (! is_array($frontendData) || ! array_key_exists('foundation.page.ancestors', $frontendData)) {
             $event->context->setFrontendData(
                 'foundation.page.ancestors',
                 PageLoader::getPageAncestors($page, $language, $site),

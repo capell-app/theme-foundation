@@ -262,11 +262,11 @@ test('public livewire widgets resolve the scoped layout widget clone', function 
 
         protected function mountWidget(): void
         {
-            $this->assetIds = $this->widget()->assets
+            $this->assetIds = array_values($this->widget()->assets
                 ->pluck('asset_id')
                 ->map(fn (mixed $assetId): int => (int) $assetId)
                 ->values()
-                ->all();
+                ->all());
         }
     };
 

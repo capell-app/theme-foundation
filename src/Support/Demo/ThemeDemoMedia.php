@@ -122,6 +122,32 @@ final class ThemeDemoMedia
                     'https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=1400&q=80',
                 ],
             ],
+            'paperdesk' => [
+                'hero' => [
+                    'https://images.unsplash.com/photo-1574935905666-e5754382b0b5?auto=format&fit=crop&w=1800&q=80',
+                ],
+                'listing' => [
+                    'https://images.unsplash.com/photo-1532153389802-6e84e367ed5e?auto=format&fit=crop&w=1200&q=80',
+                    'https://images.unsplash.com/photo-1595123336219-5eedd543bc4a?auto=format&fit=crop&w=1200&q=80',
+                    'https://images.unsplash.com/photo-1565893181327-cd3a5d5752b5?auto=format&fit=crop&w=1200&q=80',
+                ],
+                'detail' => [
+                    'https://images.unsplash.com/photo-1532153389802-6e84e367ed5e?auto=format&fit=crop&w=1400&q=80',
+                    'https://images.unsplash.com/photo-1530951517437-1b43a7349b10?auto=format&fit=crop&w=1400&q=80',
+                    'https://images.unsplash.com/photo-1595123336219-5eedd543bc4a?auto=format&fit=crop&w=1400&q=80',
+                    'https://images.unsplash.com/photo-1565893181327-cd3a5d5752b5?auto=format&fit=crop&w=1400&q=80',
+                    'https://images.unsplash.com/photo-1574935905666-e5754382b0b5?auto=format&fit=crop&w=1400&q=80',
+                ],
+                'proof' => [
+                    'https://images.unsplash.com/photo-1530951517437-1b43a7349b10?auto=format&fit=crop&w=1200&q=80',
+                ],
+                'contact' => [
+                    'https://images.unsplash.com/photo-1565893181327-cd3a5d5752b5?auto=format&fit=crop&w=1200&q=80',
+                ],
+                'cta' => [
+                    'https://images.unsplash.com/photo-1532153389802-6e84e367ed5e?auto=format&fit=crop&w=1400&q=80',
+                ],
+            ],
             'agency' => [
                 'hero' => [
                     'https://images.unsplash.com/photo-1556761175-4b46a572b786?auto=format&fit=crop&w=1800&q=80',
