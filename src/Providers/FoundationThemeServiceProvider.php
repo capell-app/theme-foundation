@@ -1,0 +1,552 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Capell\FoundationTheme\Providers;
+
+use Capell\Admin\Data\Extensions\ExtensionManagementSurfaceData;
+use Capell\Admin\Facades\CapellAdmin;
+use Capell\Core\Actions\RegisterBlazeOptimizedViewsAction;
+use Capell\Core\Data\VendorAssetData;
+use Capell\Core\Enums\FrontendRuntime;
+use Capell\Core\Enums\PackageTypeEnum;
+use Capell\Core\Events\PackageInstalled;
+use Capell\Core\Events\PackageUninstalled;
+use Capell\Core\Facades\CapellCore;
+use Capell\Core\Models\Theme;
+use Capell\Core\Support\Assets\VendorAssetConditionRegistry;
+use Capell\Core\Support\Packages\AbstractPackageServiceProvider;
+use Capell\Core\Support\Themes\ThemeChromeRegistry;
+use Capell\Core\ThemeStudio\Data\ThemeDefinitionData;
+use Capell\Core\ThemeStudio\Data\ThemePresetData;
+use Capell\Core\ThemeStudio\Rendering\BladeThemeRenderer;
+use Capell\Core\ThemeStudio\Rendering\ViewSectionRenderer;
+use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
+use Capell\FoundationTheme\Actions\ResolveFoundationThemeTokensAction;
+use Capell\FoundationTheme\Console\Commands\DemoCommand;
+use Capell\FoundationTheme\Console\Commands\SetupCommand;
+use Capell\FoundationTheme\Enums\FoundationThemeAssetEnum;
+use Capell\FoundationTheme\Filament\Extenders\FoundationLayoutContainerSchemaExtender;
+use Capell\FoundationTheme\Filament\Settings\FoundationThemeSettingsSchema;
+use Capell\FoundationTheme\Listeners\RunTailwindAssetsOnPackageChange;
+use Capell\FoundationTheme\Livewire\Assets\Table\PageAssets;
+use Capell\FoundationTheme\Livewire\Widget\Pages;
+use Capell\FoundationTheme\Settings\FoundationThemeSettings;
+use Capell\FoundationTheme\Support\Assets\FoundationThemeAssetContributor;
+use Capell\FoundationTheme\Support\Blade\BladeDirectives;
+use Capell\FoundationTheme\Support\FoundationThemeRuntimeManifestContributor;
+use Capell\FoundationTheme\Support\Interceptors\Themes\FoundationThemeInterceptor;
+use Capell\FoundationTheme\Support\Media\CapellUrlGenerator;
+use Capell\FoundationTheme\View\Components\Actions as ActionsComponent;
+use Capell\FoundationTheme\View\Components\App\Body as AppBodyComponent;
+use Capell\FoundationTheme\View\Components\Footer\Index as FooterIndexComponent;
+use Capell\FoundationTheme\View\Components\Layout\Index as LayoutIndexComponent;
+use Capell\FoundationTheme\View\Components\Layout\Main as LayoutMainComponent;
+use Capell\FoundationTheme\View\Components\Media\Svg;
+use Capell\FoundationTheme\View\Components\Widget\Page\Breadcrumbs as PageBreadcrumbsComponent;
+use Capell\FoundationTheme\View\Components\Widget\Page\Children as PageChildrenComponent;
+use Capell\FoundationTheme\View\Components\Widget\Page\Content as PageContentComponent;
+use Capell\FoundationTheme\View\Components\Widget\Page\Latest as PageLatestComponent;
+use Capell\FoundationTheme\View\Components\Widget\Page\Siblings as PageSiblingsComponent;
+use Capell\FoundationTheme\View\Components\Widget\Slot as SlotComponent;
+use Capell\Frontend\Contracts\AssetsRegistryInterface;
+use Capell\Frontend\Contracts\FrontendAssetContributor;
+use Capell\Frontend\Contracts\FrontendComponentRegistryInterface;
+use Capell\Frontend\Contracts\FrontendRuntimeManifestContributor;
+use Capell\Frontend\Data\FrontendAssetContextData;
+use Capell\Frontend\Data\FrontendAssetData;
+use Capell\Frontend\Events\FrontendContextResolved;
+use Capell\LayoutBuilder\Contracts\Extenders\LayoutContainerSchemaExtender;
+use Capell\LayoutBuilder\Enums\FrontendComponentKeyEnum;
+use Capell\LayoutBuilder\Support\LayoutAreas\LayoutAreaRegistry;
+use Illuminate\Contracts\View\Factory as ViewFactory;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Event;
+use Livewire\Livewire;
+use Override;
+use Spatie\LaravelPackageTools\Package;
+
+final class FoundationThemeServiceProvider extends AbstractPackageServiceProvider
+{
+    public const string THEME_KEY = 'default';
+
+    public static string $name = 'capell-theme-foundation';
+
+    public static string $packageName = 'capell-app/theme-foundation';
+
+    public static PackageTypeEnum $type = PackageTypeEnum::Theme;
+
+    public static function definition(): ThemeDefinitionData
+    {
+        return new ThemeDefinitionData(
+            key: self::THEME_KEY,
+            name: 'Foundation',
+            description: 'Clean starter theme for structured Capell sites, content previews, and shared child-theme defaults.',
+            package: self::$packageName,
+            previewImage: '/vendor/capell-theme-foundation/preview.jpg',
+            tags: ['Foundation', 'Structured', 'Default'],
+            bestFit: ['Starter sites', 'Documentation', 'General publishing'],
+            includedSections: ['navigation', 'hero', 'features', 'proof', 'content-listing', 'cta', 'footer'],
+            presets: [
+                new ThemePresetData(
+                    key: 'default',
+                    name: 'Foundation',
+                    description: 'Balanced neutral defaults with clear hierarchy and quiet content surfaces.',
+                    previewImage: '/vendor/capell-theme-foundation/preview.jpg',
+                    values: [
+                        'primaryColor' => '#315f8f',
+                        'accentColor' => '#7c5f3f',
+                        'neutralColor' => '#1f2937',
+                        'surfaceColor' => '#faf9f7',
+                        'foregroundColor' => '#111827',
+                        'headingFont' => 'inter',
+                        'bodyFont' => 'inter',
+                        'spacing' => 'balanced',
+                        'cardStyle' => 'subtle',
+                        'layoutPresentation' => 'structured',
+                        'motionIntensity' => 'subtle',
+                        'mediaTreatment' => 'natural',
+                        'radius' => 'md',
+                        'headingScale' => 'balanced',
+                        'cardDensity' => 'comfortable',
+                    ],
+                ),
+            ],
+            assets: ['css' => 'vendor/capell-theme-foundation/theme-foundation.css'],
+            runtime: FrontendRuntime::Blade,
+        );
+    }
+
+    public function configurePackage(Package $package): void
+    {
+        $package
+            ->name(self::$name)
+            ->hasConfigFile()
+            ->hasTranslations()
+            ->hasCommands([
+                DemoCommand::class,
+                SetupCommand::class,
+            ]);
+    }
+
+    public function packageBooted(): void
+    {
+        $this->registerBladeDirectives();
+        $this->registerBladeComponents();
+        $this->registerLayoutBuilderRendering();
+        $this->registerMediaBladeComponents();
+        $this->registerBlazeComponents();
+        $this->registerPublishCommands();
+        $this->registerFrontendRuntimeManifestContributors();
+
+        if (! $this->isPackageInstalled()) {
+            return;
+        }
+
+        $this->registerAssets();
+        $this->registerTailwindEventListeners();
+        $this->registerVendorAssetConditions();
+        $this->registerVendorCssJsAssets();
+        $this->registerMediaUrlGenerator();
+        $this->registerModelInterceptors();
+        $this->registerSettingsSchemas();
+        $this->registerPublicRuntimeData();
+        $this->registerLayoutAreas();
+        $this->registerLayoutContainerSchemaExtenders();
+        $this->registerThemeChromeComponents();
+        $this->registerThemeStudioDefinition();
+    }
+
+    public function packageRegistered(): void
+    {
+        $this->app->scoped(FoundationThemeAssetContributor::class);
+
+        $this->registerVendorNpmDependencies();
+    }
+
+    #[Override]
+    protected function isPackageInstalled(): bool
+    {
+        return CapellCore::isPackageInstalled(self::$packageName);
+    }
+
+    private function registerAssets(): void
+    {
+        $this->app->tag(FoundationThemeAssetContributor::class, FrontendAssetContributor::TAG);
+
+        if (! $this->app->bound(AssetsRegistryInterface::class)) {
+            return;
+        }
+
+        $registry = resolve(AssetsRegistryInterface::class);
+
+        foreach (FoundationThemeAssetEnum::cases() as $asset) {
+            $registry->registerAsset(
+                $asset->getAsset(),
+                new FrontendAssetData(component: $asset->getComponent()),
+            );
+        }
+    }
+
+    private function registerBladeDirectives(): void
+    {
+        BladeDirectives::register();
+    }
+
+    private function registerBlazeComponents(): void
+    {
+        if (config('capell-theme-foundation.blaze.enabled', false) !== true) {
+            return;
+        }
+
+        if ($this->app->environment('testing')) {
+            return;
+        }
+
+        RegisterBlazeOptimizedViewsAction::run(__DIR__ . '/../../resources/views/components');
+    }
+
+    private function registerTailwindEventListeners(): void
+    {
+        Event::listen(PackageInstalled::class, [RunTailwindAssetsOnPackageChange::class, 'handleInstalled']);
+        Event::listen(PackageUninstalled::class, [RunTailwindAssetsOnPackageChange::class, 'handleUninstalled']);
+    }
+
+    private function registerMediaUrlGenerator(): void
+    {
+        config(['media-library.url_generator' => CapellUrlGenerator::class]);
+    }
+
+    private function registerFrontendRuntimeManifestContributors(): void
+    {
+        if (! interface_exists(FrontendRuntimeManifestContributor::class)) {
+            return;
+        }
+
+        $this->app->tag([FoundationThemeRuntimeManifestContributor::class], FrontendRuntimeManifestContributor::TAG);
+    }
+
+    private function registerMediaBladeComponents(): void
+    {
+        Blade::component('capell::media.svg', Svg::class);
+    }
+
+    private function registerBladeComponents(): void
+    {
+        resolve(ViewFactory::class)->prependNamespace('capell', __DIR__ . '/../../resources/views');
+
+        Blade::anonymousComponentPath(__DIR__ . '/../../resources/views/components', 'capell');
+        Blade::component(AppBodyComponent::class, 'capell::app.body');
+        Blade::component(FooterIndexComponent::class, 'capell::footer.index');
+        Blade::component(LayoutIndexComponent::class, 'capell::layout.index');
+        Blade::component(LayoutMainComponent::class, 'capell::layout.main');
+    }
+
+    private function registerSettingsSchemas(): void
+    {
+        $this->surface()->settingsClass('theme_foundation', FoundationThemeSettings::class);
+        $this->surface()->settingsSchema('theme_foundation', FoundationThemeSettingsSchema::class);
+        CapellAdmin::registerExtensionManagementSurface(ExtensionManagementSurfaceData::settings(
+            packageName: self::$packageName,
+            label: 'capell-theme-foundation::generic.theme_foundation',
+            settingsGroup: 'theme_foundation',
+            icon: 'heroicon-o-swatch',
+        ));
+    }
+
+    private function registerPublicRuntimeData(): void
+    {
+        Event::listen(FrontendContextResolved::class, function (FrontendContextResolved $event): void {
+            if ($event->context->getFrontendData('foundation.theme.tokens') !== null) {
+                return;
+            }
+
+            $event->context->setFrontendData('foundation.theme.tokens', ResolveFoundationThemeTokensAction::run(
+                theme: $event->context->theme(),
+                site: $event->context->site(),
+            ));
+        });
+    }
+
+    private function registerThemeChromeComponents(): void
+    {
+        $register = function (ThemeChromeRegistry $registry): void {
+            $registry->registerHeader('capell::header.index', __('capell-admin::form.foundation_header'));
+            $registry->registerFooter('capell::footer', __('capell-admin::form.foundation_footer'));
+        };
+
+        $this->app->afterResolving(ThemeChromeRegistry::class, $register);
+
+        if ($this->app->resolved(ThemeChromeRegistry::class)) {
+            $register($this->app->make(ThemeChromeRegistry::class));
+        }
+    }
+
+    private function registerThemeStudioDefinition(): void
+    {
+        $register = function (ThemeRegistry $registry): void {
+            $sectionRenderers = $this->themeStudioSectionRenderers();
+
+            $registry->register(
+                definition: self::definition(),
+                themeRenderer: new BladeThemeRenderer(
+                    themeKey: self::THEME_KEY,
+                    layoutView: 'capell-theme-foundation::theme.page',
+                    sectionRenderers: $sectionRenderers,
+                ),
+                sectionRenderers: array_values($sectionRenderers),
+            );
+        };
+
+        $this->app->afterResolving(ThemeRegistry::class, $register);
+
+        if ($this->app->resolved(ThemeRegistry::class)) {
+            $register($this->app->make(ThemeRegistry::class));
+        }
+    }
+
+    /**
+     * @return array<string, ViewSectionRenderer>
+     */
+    private function themeStudioSectionRenderers(): array
+    {
+        return [
+            'navigation' => new ViewSectionRenderer(self::THEME_KEY, 'navigation', 'capell-theme-foundation::theme.sections.navigation', failLoudly: true),
+            'hero' => new ViewSectionRenderer(self::THEME_KEY, 'hero', 'capell-theme-foundation::theme.sections.hero', failLoudly: true),
+            'features' => new ViewSectionRenderer(self::THEME_KEY, 'features', 'capell-theme-foundation::theme.sections.features', failLoudly: true),
+            'proof' => new ViewSectionRenderer(self::THEME_KEY, 'proof', 'capell-theme-foundation::theme.sections.proof', failLoudly: true),
+            'content-listing' => new ViewSectionRenderer(self::THEME_KEY, 'content-listing', 'capell-theme-foundation::theme.sections.content-listing', failLoudly: true),
+            'cta' => new ViewSectionRenderer(self::THEME_KEY, 'cta', 'capell-theme-foundation::theme.sections.cta', failLoudly: true),
+            'footer' => new ViewSectionRenderer(self::THEME_KEY, 'footer', 'capell-theme-foundation::theme.sections.footer', failLoudly: true),
+        ];
+    }
+
+    private function registerLayoutAreas(): void
+    {
+        $register = function (LayoutAreaRegistry $registry): void {
+            $registry->register('header', __('capell-layout-builder::generic.header_area'));
+        };
+
+        $this->app->afterResolving(LayoutAreaRegistry::class, $register);
+
+        if ($this->app->resolved(LayoutAreaRegistry::class)) {
+            $register($this->app->make(LayoutAreaRegistry::class));
+        }
+    }
+
+    private function registerLayoutContainerSchemaExtenders(): void
+    {
+        if (! interface_exists(LayoutContainerSchemaExtender::class)) {
+            return;
+        }
+
+        $alreadyTagged = collect($this->app->tagged(LayoutContainerSchemaExtender::TAG))
+            ->contains(fn (object $extender): bool => $extender instanceof FoundationLayoutContainerSchemaExtender);
+
+        if ($alreadyTagged) {
+            return;
+        }
+
+        $this->app->singleton(FoundationLayoutContainerSchemaExtender::class);
+        $this->app->tag(FoundationLayoutContainerSchemaExtender::class, LayoutContainerSchemaExtender::TAG);
+    }
+
+    private function registerModelInterceptors(): void
+    {
+        CapellCore::registerModelInterceptor(Theme::class, interceptorClass: FoundationThemeInterceptor::class);
+    }
+
+    private function registerVendorNpmDependencies(): void
+    {
+        $npmDependencies = config('capell-theme-foundation.npm_dependencies', []);
+
+        if (! is_array($npmDependencies)) {
+            return;
+        }
+
+        foreach ($npmDependencies as $package => $version) {
+            if (! is_string($package)) {
+                continue;
+            }
+
+            if ($package === '') {
+                continue;
+            }
+
+            if (! is_string($version)) {
+                continue;
+            }
+
+            if ($version === '') {
+                continue;
+            }
+
+            CapellCore::registerVendorAsset(
+                VendorAssetData::npmDependency($package, $version, self::$packageName),
+            );
+        }
+    }
+
+    private function registerVendorCssJsAssets(): void
+    {
+        CapellCore::registerVendorAsset(
+            VendorAssetData::buildAsset(
+                path: 'vendor/capell-theme-foundation',
+                file: 'resources/js/capell-frontend.js',
+                packageName: self::$packageName,
+                condition: 'theme-foundation-runtime',
+            ),
+        );
+
+        CapellCore::registerVendorAsset(
+            VendorAssetData::tailwindImport('resources/css/theme-foundation.css', self::$packageName),
+        );
+
+        CapellCore::registerVendorAsset(
+            VendorAssetData::tailwindSource('resources/views/**/*.blade.php', self::$packageName),
+        );
+
+        CapellCore::registerVendorAsset(
+            VendorAssetData::tailwindImport('resources/css/widgets/foundation-widgets.css', self::$packageName),
+        );
+
+        CapellCore::registerVendorAsset(
+            VendorAssetData::tailwindImport('tippy.js/dist/tippy.css', self::$packageName),
+        );
+
+        CapellCore::registerVendorAsset(
+            VendorAssetData::tailwindImport('swiper/css', self::$packageName),
+        );
+
+        CapellCore::registerVendorAsset(
+            VendorAssetData::tailwindImport('swiper/css/autoplay', self::$packageName),
+        );
+
+        CapellCore::registerVendorAsset(
+            VendorAssetData::tailwindImport('swiper/css/pagination', self::$packageName),
+        );
+
+        CapellCore::registerVendorAsset(
+            VendorAssetData::tailwindImport('swiper/css/navigation', self::$packageName),
+        );
+    }
+
+    private function registerVendorAssetConditions(): void
+    {
+        resolve(VendorAssetConditionRegistry::class)->register(
+            'theme-foundation-runtime',
+            fn (FrontendAssetContextData $context): bool => $context->runtime->usesIslands
+                || $context->runtime->usesLivewire
+                || ($context->runtime->modules['theme-foundation-runtime'] ?? false),
+        );
+    }
+
+    private function registerPublishCommands(): void
+    {
+        $this->publishes([
+            __DIR__ . '/../../publishes/build' => public_path('vendor/capell-theme-foundation'),
+        ], 'capell-theme-foundation-assets');
+    }
+
+    private function registerLayoutBuilderRendering(): void
+    {
+        resolve(ViewFactory::class)->addNamespace(
+            'capell-theme-foundation',
+            __DIR__ . '/../../resources/views',
+        );
+
+        resolve(ViewFactory::class)->addNamespace(
+            'capell',
+            __DIR__ . '/../../resources/views',
+        );
+
+        Blade::anonymousComponentPath(__DIR__ . '/../../resources/views/components', 'capell');
+        Blade::anonymousComponentPath(__DIR__ . '/../../resources/views/components', 'capell-theme-foundation');
+        Blade::componentNamespace('Capell\\FoundationTheme\\View\\Components', 'capell');
+        Blade::componentNamespace('Capell\\FoundationTheme\\View\\Components', 'capell-theme-foundation');
+        Blade::component(PageBreadcrumbsComponent::class, 'capell::widget.page.breadcrumbs');
+        Blade::component(ActionsComponent::class, 'capell::actions');
+        Blade::component(ActionsComponent::class, 'capell-theme-foundation::actions');
+        Blade::component(PageContentComponent::class, 'capell-widget-page-content');
+        Blade::component(PageContentComponent::class, 'capell::widget.page.content');
+        Blade::component(SlotComponent::class, 'capell::widget.slot');
+        Blade::component('capell-theme-foundation::components.widget.wrapper', 'capell-layout-builder::widget.wrapper');
+        Blade::component(PageChildrenComponent::class, 'capell::widget.page.children');
+        Blade::component(PageLatestComponent::class, 'capell::widget.page.latest');
+        Blade::component(PageSiblingsComponent::class, 'capell::widget.page.siblings');
+
+        $registerLivewireComponents = function (): void {
+            Livewire::component('capell::widget.pages', Pages::class);
+            Livewire::component('capell-theme-foundation::widget.pages', Pages::class);
+            Livewire::component('capell-theme-foundation::assets.table.page-assets', PageAssets::class);
+
+            if (! method_exists(Livewire::getFacadeRoot(), 'addNamespace')) {
+                return;
+            }
+
+            Livewire::addNamespace(
+                namespace: 'capell',
+                classNamespace: 'Capell\\FoundationTheme\\Livewire',
+                viewPath: __DIR__ . '/../../resources/views/livewire',
+                classPath: __DIR__ . '/../Livewire',
+                classViewPath: __DIR__ . '/../../resources/views/livewire',
+            );
+
+            Livewire::addNamespace(
+                namespace: 'capell-theme-foundation',
+                classNamespace: 'Capell\\FoundationTheme\\Livewire',
+                viewPath: __DIR__ . '/../../resources/views/livewire',
+                classPath: __DIR__ . '/../Livewire',
+                classViewPath: __DIR__ . '/../../resources/views/livewire',
+            );
+
+        };
+
+        if ($this->app->isBooted()) {
+            $registerLivewireComponents();
+        } else {
+            $this->app->booted($registerLivewireComponents);
+        }
+
+        $this->callAfterResolving(FrontendComponentRegistryInterface::class, function (FrontendComponentRegistryInterface $registry): void {
+            $registry
+                ->register(
+                    key: FrontendComponentKeyEnum::SectionWidget->value,
+                    component: 'capell::section.widget',
+                    props: [
+                        'asset',
+                        'class',
+                        'color',
+                        'icon',
+                        'image',
+                        'linkText',
+                        'loop',
+                        'meta',
+                        'size',
+                        'summary',
+                        'tags',
+                        'title',
+                        'url',
+                    ],
+                )
+                ->register(
+                    key: FrontendComponentKeyEnum::SectionTeamMember->value,
+                    component: 'capell::section.team-member',
+                    props: [
+                        'asset',
+                        'class',
+                        'color',
+                        'icon',
+                        'image',
+                        'linkText',
+                        'loop',
+                        'meta',
+                        'size',
+                        'summary',
+                        'title',
+                        'url',
+                    ],
+                );
+        });
+    }
+}
