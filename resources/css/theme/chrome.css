@@ -1,0 +1,213 @@
+/*
+ * Shared vertical-theme chrome (top navigation + footer).
+ *
+ * Consumed by every stub theme via a single `@import` of
+ * `../../../theme-foundation/resources/css/theme/chrome.css` from its own
+ * `resources/css/theme-<key>.css`. Pure CSS (no Tailwind utilities) so it
+ * compiles into each theme's standalone bundle; all colour/shape/typography
+ * comes from the brand `--theme-*` custom properties set on `.site-theme-shell`,
+ * so each theme keeps its own identity.
+ */
+
+/* ---------- Navigation ---------- */
+.theme-chrome-nav {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    border-bottom: 1px solid
+        color-mix(in srgb, var(--theme-neutral, #1e1b2e) 14%, transparent);
+    background: color-mix(
+        in srgb,
+        var(--theme-surface, #ffffff) 92%,
+        transparent
+    );
+    backdrop-filter: blur(8px);
+}
+
+.theme-chrome-nav__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    max-width: 72rem;
+    margin-inline: auto;
+    padding: 0.85rem 1.5rem;
+}
+
+.theme-chrome-nav__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--theme-foreground, #1e1b2e);
+}
+
+.theme-chrome-nav__links {
+    display: none;
+    align-items: center;
+    gap: 1.25rem;
+    font-size: 0.9rem;
+}
+
+.theme-chrome-nav__link {
+    color: color-mix(
+        in srgb,
+        var(--theme-foreground, #1e1b2e) 78%,
+        transparent
+    );
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.theme-chrome-nav__link:hover {
+    color: var(--theme-primary, #7c3aed);
+}
+
+.theme-chrome-nav__cta {
+    display: none;
+    align-items: center;
+    border-radius: 999px;
+    padding: 0.55rem 1.1rem;
+    background: var(--theme-primary, #7c3aed);
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.15s ease;
+}
+
+.theme-chrome-nav__cta:hover {
+    opacity: 0.9;
+}
+
+/* Mobile menu (details/summary, no JS) */
+.theme-chrome-nav__mobile {
+    position: relative;
+}
+
+.theme-chrome-nav__mobile-toggle {
+    cursor: pointer;
+    list-style: none;
+    border: 1px solid
+        color-mix(in srgb, var(--theme-neutral, #1e1b2e) 25%, transparent);
+    border-radius: var(--theme-radius, 0.5rem);
+    padding: 0.45rem 0.8rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--theme-foreground, #1e1b2e);
+}
+
+.theme-chrome-nav__mobile-toggle::-webkit-details-marker {
+    display: none;
+}
+
+.theme-chrome-nav__mobile-panel {
+    position: absolute;
+    inset-inline-end: 0;
+    z-index: 30;
+    margin-top: 0.75rem;
+    display: grid;
+    gap: 0.75rem;
+    min-width: 12rem;
+    border: 1px solid
+        color-mix(in srgb, var(--theme-neutral, #1e1b2e) 18%, transparent);
+    border-radius: var(--theme-radius, 0.5rem);
+    background: var(--theme-surface, #ffffff);
+    padding: 1rem;
+    font-size: 0.9rem;
+    box-shadow: 0 18px 40px -20px rgba(0, 0, 0, 0.45);
+}
+
+/* Tablet / desktop: inline links + CTA, hide mobile toggle */
+@media (min-width: 768px) {
+    .theme-chrome-nav__links {
+        display: flex;
+    }
+
+    .theme-chrome-nav__cta {
+        display: inline-flex;
+    }
+
+    .theme-chrome-nav__mobile {
+        display: none;
+    }
+}
+
+/* ---------- Footer ---------- */
+.theme-chrome-footer {
+    margin-top: auto;
+    background: color-mix(in srgb, var(--theme-neutral, #1e1b2e) 92%, #000000);
+    color: #f8fafc;
+}
+
+.theme-chrome-footer__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.theme-chrome-footer__inner {
+    display: grid;
+    gap: 2rem;
+    max-width: 72rem;
+    margin-inline: auto;
+    padding: 2.75rem 1.5rem;
+}
+
+.theme-chrome-footer__brand-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.theme-chrome-footer__summary {
+    margin-top: 0.75rem;
+    max-width: 24rem;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: color-mix(in srgb, #f8fafc 70%, transparent);
+}
+
+.theme-chrome-footer__columns {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+}
+
+.theme-chrome-footer__heading {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #f8fafc;
+}
+
+.theme-chrome-footer__links {
+    margin-top: 0.75rem;
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.theme-chrome-footer__link {
+    color: color-mix(in srgb, #f8fafc 70%, transparent);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.theme-chrome-footer__link:hover {
+    color: #ffffff;
+}
+
+@media (min-width: 768px) {
+    .theme-chrome-footer__inner {
+        grid-template-columns: 1.2fr 2fr;
+        padding-block: 3.25rem;
+    }
+}
