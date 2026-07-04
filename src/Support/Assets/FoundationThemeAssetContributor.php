@@ -23,6 +23,12 @@ final class FoundationThemeAssetContributor implements FrontendAssetContributor
             );
         }
 
+        $themeCssRequirement = $this->themeCssRequirement($context);
+
+        if ($themeCssRequirement !== null) {
+            $requirements[] = $themeCssRequirement;
+        }
+
         if ($this->shouldLoadRuntimeJavaScript($context)) {
             $requirements[] = new FrontendAssetRequirementData(
                 handle: 'theme-foundation:runtime',
@@ -62,5 +68,30 @@ final class FoundationThemeAssetContributor implements FrontendAssetContributor
         return $context->runtime->usesIslands
             || $context->runtime->usesLivewire
             || ($context->runtime->modules['theme-foundation-runtime'] ?? false);
+    }
+
+    /**
+     * When capell-theme-foundation.tailwind.split_theme_css is enabled, emit
+     * the active theme's own compiled bundle as an additional requirement —
+     * every request context carries its own $context->theme, so multi-site
+     * installs resolve the right per-theme file with no extra wiring.
+     */
+    private function themeCssRequirement(FrontendAssetContextData $context): ?FrontendAssetRequirementData
+    {
+        $themeKey = $context->theme?->key;
+
+        if (! is_string($themeKey) || $themeKey === '' || ! config('capell-theme-foundation.tailwind.split_theme_css', false)) {
+            return null;
+        }
+
+        $directory = config('capell-theme-foundation.tailwind.theme_css_output_directory', 'resources/css/capell/themes');
+        $directory = is_string($directory) && $directory !== '' ? $directory : 'resources/css/capell/themes';
+
+        return new FrontendAssetRequirementData(
+            handle: 'theme-css:' . $themeKey,
+            kind: FrontendAssetRequirementData::KIND_CSS,
+            source: rtrim($directory, '/') . '/' . $themeKey . '.css',
+            buildPath: $this->frontendCssBuildPath($context),
+        );
     }
 }

@@ -21,9 +21,11 @@ use Capell\Frontend\Support\Loader\SiteLoader;
 use Capell\Frontend\Support\Render\RenderHookRegistry;
 use Capell\Navigation\Actions\BuildNavigationRenderModelAction;
 use Capell\Navigation\Data\NavigationRenderContextData;
+use Capell\Navigation\Data\NavigationRenderData;
 use Capell\Navigation\Enums\NavigationHandle;
 use Capell\Navigation\Models\Navigation;
 use Capell\Navigation\Support\Loader\NavigationLoader;
+use Capell\Navigation\Support\NavigationFrontendRuntimeManifestContributor;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -151,6 +153,14 @@ final class Index extends Component
 
     private function menuItems(string $key, Site $site, Language $language): mixed
     {
+        $preparedRenderModel = Frontend::getFrontendData(
+            NavigationFrontendRuntimeManifestContributor::renderModelKey($key),
+        );
+
+        if ($preparedRenderModel instanceof NavigationRenderData) {
+            return $preparedRenderModel->items;
+        }
+
         $menu = NavigationLoader::getNavigation($key, $site, $language);
 
         $page = Frontend::page();

@@ -155,7 +155,16 @@
         </div>
     </div>
 
-    <x-capell::footer.related-sites :$relatedSites />
+    @if ($relatedSites->isNotEmpty())
+        <div
+            @class([
+                '@container px-8 pb-8 lg:pb-10',
+                $containerWidth->getContainerClass(),
+            ])
+        >
+            <x-capell::footer.related-sites :$relatedSites />
+        </div>
+    @endif
 
     @if ($subFooterMenuItems?->isNotEmpty() || $footerCopy || count($siteLanguages) > 1)
         <div class="bg-[var(--bg-color-footer-muted)]">

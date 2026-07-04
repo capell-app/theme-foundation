@@ -106,6 +106,9 @@ it('owns the default body content and layout component files', function (): void
     expect(file_exists(dirname(__DIR__, 2) . '/resources/views/components/app/body.blade.php'))->toBeTrue()
         ->and(file_exists(dirname(__DIR__, 2) . '/resources/views/components/content.blade.php'))->toBeTrue()
         ->and(file_exists(dirname(__DIR__, 2) . '/resources/views/components/layout/index.blade.php'))->toBeTrue()
+        ->and($layout)->toContain('$layoutMeta = is_array($layout?->meta ?? null) ? $layout->meta : []')
+        ->and($layout)->toContain("\$header ??= array_key_exists('header', \$layoutMeta) ? \$layoutMeta['header'] : null")
+        ->and($layout)->toContain("\$footer ??= array_key_exists('footer', \$layoutMeta) ? \$layoutMeta['footer'] : null")
         ->and($layout)->toContain('<x-capell::header.index />')
         ->and($layout)->toContain("\$theme['meta']['footer_file'] ?? 'capell::footer'");
 });
@@ -149,6 +152,10 @@ it('does not rebuild tailwind assets for runtime theme color changes', function 
 it('renders the shared theme page with a matching skip link target and main landmark', function (): void {
     $page = file_get_contents(dirname(__DIR__, 2) . '/resources/views/theme/page.blade.php');
 
+    // Wave 7 landmark restructure: the token-carrying wrapper is the
+    // outermost element, and <main> demotes inside it as a sibling of the
+    // chrome (nav/footer) — see ThemeLandmarkStructureTest for the DOM-level
+    // guard that nav/footer never nest inside <main>.
     expect($page)->toContain('href="#main-content"')
         ->and($page)->toContain('<main')
         ->and($page)->toContain('id="main-content"')
@@ -156,7 +163,8 @@ it('renders the shared theme page with a matching skip link target and main land
         ->and($page)->toContain('role="status"')
         ->and($page)->toContain('aria-live="polite"')
         ->and($page)->toContain('aria-atomic="true"')
-        ->and($page)->not->toContain('<div' . PHP_EOL . '    style="{{ collect($brand->tokens())');
+        ->and($page)->toContain('style="{{ collect($brand->tokens())')
+        ->and($page)->toContain('class="site-theme-shell');
 });
 
 it('documents the stable child theme override surface', function (): void {

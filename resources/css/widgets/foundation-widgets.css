@@ -541,7 +541,7 @@
     .capell-kitchen-sink-reference :where(th, td) {
         border-bottom: 1px solid rgb(226 232 240);
         padding: 0.75rem;
-        text-align: left;
+        text-align: start;
     }
 
     .capell-kitchen-sink-reference :where(pre) {
@@ -623,7 +623,7 @@
 
     @media (max-width: 700px) {
         .widget[class*='widget-kitchen-sink-'].widget-pages .widget-content {
-            text-align: left;
+            text-align: start;
         }
 
         .capell-kitchen-sink-reference article,

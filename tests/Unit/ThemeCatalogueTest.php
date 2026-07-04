@@ -26,7 +26,27 @@ function themeCatalogueJson(string $path): array
 
     throw_unless(is_array($decoded), RuntimeException::class, 'Expected a JSON object at ' . $path . '.');
 
-    return $decoded;
+    return array_filter($decoded, static fn (mixed $value): bool => true);
+}
+
+/**
+ * @return array<int, array<string, mixed>>
+ */
+function themeCatalogueThemeEntries(): array
+{
+    $themes = themeCatalogue()['themes'] ?? [];
+
+    throw_unless(is_array($themes), RuntimeException::class, 'Expected catalogue themes array.');
+
+    $entries = [];
+
+    foreach ($themes as $theme) {
+        throw_unless(is_array($theme), RuntimeException::class, 'Each catalogue theme must be an object.');
+
+        $entries[] = $theme;
+    }
+
+    return $entries;
 }
 
 /**
@@ -79,7 +99,10 @@ it('declares a versioned catalogue envelope', function (): void {
 it('lists every shipped theme package exactly once', function (): void {
     $catalogue = themeCatalogue();
 
-    $catalogueKeys = collect($catalogue['themes'])
+    $themes = $catalogue['themes'] ?? [];
+    throw_unless(is_array($themes), RuntimeException::class, 'Expected catalogue themes array.');
+
+    $catalogueKeys = collect($themes)
         ->map(fn (mixed $theme): mixed => is_array($theme) ? ($theme['themeKey'] ?? null) : null)
         ->filter(fn (mixed $key): bool => is_string($key))
         ->values();
@@ -107,37 +130,31 @@ it('declares the required classification fields for every theme', function (): v
     $allowedTiers = ['foundation', 'free', 'premium', 'experimental', 'candidate-for-merge'];
     $allowedOverlap = ['low', 'medium', 'high'];
 
-    foreach ($catalogue['themes'] as $theme) {
-        throw_unless(is_array($theme), RuntimeException::class, 'Each catalogue theme must be an object.');
-
+    foreach (themeCatalogueThemeEntries() as $theme) {
         $label = is_string($theme['themeKey'] ?? null) ? $theme['themeKey'] : '(unknown theme)';
 
-        expect($theme['themeKey'] ?? null, "themeKey for {$label}")->toBeString()
-            ->and($theme['package'] ?? null, "package for {$label}")->toBeString()
-            ->and($theme['displayName'] ?? null, "displayName for {$label}")->toBeString()
-            ->and($theme['tier'] ?? null, "tier for {$label}")->toBeIn($allowedTiers)
-            ->and($theme['family'] ?? null, "family for {$label}")->toBeString()
-            ->and($theme['family'] ?? '', "family for {$label}")->not->toBe('')
-            ->and($theme['lane'] ?? null, "lane for {$label}")->toBeString()
-            ->and($theme['lane'] ?? '', "lane for {$label}")->not->toBe('')
-            ->and($theme['overlapRisk'] ?? null, "overlapRisk for {$label}")->toBeIn($allowedOverlap)
-            ->and($theme['customisationSurfaces'] ?? null, "customisationSurfaces for {$label}")->toBeArray()
-            ->and($theme['customisationSurfaces'] ?? [], "customisationSurfaces for {$label}")->not->toBeEmpty();
+        expect($theme['themeKey'] ?? null)->toBeString("themeKey for {$label}")
+            ->and($theme['package'] ?? null)->toBeString("package for {$label}")
+            ->and($theme['displayName'] ?? null)->toBeString("displayName for {$label}")
+            ->and($theme['tier'] ?? null)->toBeIn($allowedTiers, "tier for {$label}")
+            ->and($theme['family'] ?? null)->toBeString("family for {$label}")
+            ->and($theme['family'] ?? '')->not->toBe('', "family for {$label}")
+            ->and($theme['lane'] ?? null)->toBeString("lane for {$label}")
+            ->and($theme['lane'] ?? '')->not->toBe('', "lane for {$label}")
+            ->and($theme['overlapRisk'] ?? null)->toBeIn($allowedOverlap, "overlapRisk for {$label}")
+            ->and($theme['customisationSurfaces'] ?? null)->toBeArray("customisationSurfaces for {$label}")
+            ->and($theme['customisationSurfaces'] ?? [])->not->toBeEmpty("customisationSurfaces for {$label}");
     }
 });
 
 it('records the customisation surfaces the differentiation contract depends on', function (): void {
-    $catalogue = themeCatalogue();
-
-    foreach ($catalogue['themes'] as $theme) {
-        throw_unless(is_array($theme), RuntimeException::class, 'Each catalogue theme must be an object.');
-
+    foreach (themeCatalogueThemeEntries() as $theme) {
         $surfaces = $theme['customisationSurfaces'] ?? [];
         $label = is_string($theme['themeKey'] ?? null) ? $theme['themeKey'] : '(unknown theme)';
 
         throw_unless(is_array($surfaces), RuntimeException::class, "customisationSurfaces for {$label} must be an object.");
 
-        expect($surfaces, "customisationSurfaces keys for {$label}")
-            ->toHaveKeys(['header', 'footer', 'themeStudioTokens']);
+        expect($surfaces)
+            ->toHaveKeys(['header', 'footer', 'themeStudioTokens'], "customisationSurfaces keys for {$label}");
     }
 });

@@ -207,3 +207,67 @@ it('loads the runtime from the foundation theme published build', function (): v
             && $requirement->buildPath === 'vendor/capell-theme-foundation',
     ))->toBeTrue();
 });
+
+it('omits the per-theme css requirement when the split flag is off', function (): void {
+    config(['capell-theme-foundation.tailwind.split_theme_css' => false]);
+
+    $theme = Theme::factory()->make(['key' => 'motion-archive']);
+
+    $requirements = resolve(FoundationThemeAssetContributor::class)->requirements(new FrontendAssetContextData(
+        page: null,
+        site: null,
+        language: null,
+        layout: null,
+        theme: $theme,
+        runtime: FrontendRuntimeManifestData::forRenderingStrategy(RenderingStrategyEnum::BladeOnly),
+    ));
+
+    expect(collect($requirements)->pluck('handle')->all())->not->toContain('theme-css:motion-archive');
+});
+
+it('emits the active theme own compiled bundle when the split flag is on', function (): void {
+    config([
+        'capell-theme-foundation.tailwind.split_theme_css' => true,
+        'capell-theme-foundation.tailwind.theme_css_output_directory' => 'resources/css/capell/themes',
+    ]);
+
+    $theme = Theme::factory()->make(['key' => 'motion-archive']);
+
+    $requirements = resolve(FoundationThemeAssetContributor::class)->requirements(new FrontendAssetContextData(
+        page: null,
+        site: null,
+        language: null,
+        layout: null,
+        theme: $theme,
+        runtime: FrontendRuntimeManifestData::forRenderingStrategy(RenderingStrategyEnum::BladeOnly),
+    ));
+
+    $requirement = collect($requirements)->first(
+        fn (FrontendAssetRequirementData $requirement): bool => $requirement->handle === 'theme-css:motion-archive',
+    );
+
+    expect($requirement)->toBeInstanceOf(FrontendAssetRequirementData::class);
+
+    /** @var FrontendAssetRequirementData $requirement */
+    expect($requirement->kind)->toBe(FrontendAssetRequirementData::KIND_CSS)
+        ->and($requirement->source)->toBe('resources/css/capell/themes/motion-archive.css');
+});
+
+it('never emits a per-theme css requirement without an active theme', function (): void {
+    config(['capell-theme-foundation.tailwind.split_theme_css' => true]);
+
+    $requirements = resolve(FoundationThemeAssetContributor::class)->requirements(new FrontendAssetContextData(
+        page: null,
+        site: null,
+        language: null,
+        layout: null,
+        theme: null,
+        runtime: FrontendRuntimeManifestData::forRenderingStrategy(RenderingStrategyEnum::BladeOnly),
+    ));
+
+    $themeCssHandles = collect($requirements)
+        ->pluck('handle')
+        ->filter(fn (mixed $handle): bool => is_string($handle) && str_starts_with($handle, 'theme-css:'));
+
+    expect($themeCssHandles)->toBeEmpty();
+});

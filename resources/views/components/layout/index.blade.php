@@ -17,6 +17,9 @@
     $page ??= Frontend::page();
     $layout ??= Frontend::layout();
     $site ??= Frontend::site();
+    $layoutMeta = is_array($layout?->meta ?? null) ? $layout->meta : [];
+    $header ??= array_key_exists('header', $layoutMeta) ? $layoutMeta['header'] : null;
+    $footer ??= array_key_exists('footer', $layoutMeta) ? $layoutMeta['footer'] : null;
     $isSystemPageLayout ??= data_get($layout->admin ?? [], 'system_page_layout') === true;
     $siteRelations = $site instanceof Site ? $site->getRelations() : [];
     $pageRelations = $page instanceof Model ? $page->getRelations() : [];

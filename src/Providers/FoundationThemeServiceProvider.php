@@ -8,29 +8,35 @@ use Capell\Admin\Data\Extensions\ExtensionManagementSurfaceData;
 use Capell\Admin\Facades\CapellAdmin;
 use Capell\Core\Actions\RegisterBlazeOptimizedViewsAction;
 use Capell\Core\Data\VendorAssetData;
+use Capell\Core\Enums\BlueprintGroupEnum;
 use Capell\Core\Enums\FrontendRuntime;
 use Capell\Core\Enums\PackageTypeEnum;
+use Capell\Core\Enums\PageOrderEnum;
 use Capell\Core\Events\PackageInstalled;
 use Capell\Core\Events\PackageUninstalled;
 use Capell\Core\Facades\CapellCore;
+use Capell\Core\Models\Language;
+use Capell\Core\Models\Page;
+use Capell\Core\Models\Site;
 use Capell\Core\Models\Theme;
 use Capell\Core\Support\Assets\VendorAssetConditionRegistry;
 use Capell\Core\Support\Packages\AbstractPackageServiceProvider;
 use Capell\Core\Support\Themes\ThemeChromeRegistry;
 use Capell\Core\ThemeStudio\Data\ThemeDefinitionData;
 use Capell\Core\ThemeStudio\Data\ThemePresetData;
-use Capell\Core\ThemeStudio\Rendering\BladeThemeRenderer;
 use Capell\Core\ThemeStudio\Rendering\ViewSectionRenderer;
 use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
 use Capell\FoundationTheme\Actions\ResolveFoundationThemeTokensAction;
 use Capell\FoundationTheme\Console\Commands\DemoCommand;
 use Capell\FoundationTheme\Console\Commands\SetupCommand;
+use Capell\FoundationTheme\Console\Commands\ThemeCatalogueReportCommand;
 use Capell\FoundationTheme\Enums\FoundationThemeAssetEnum;
 use Capell\FoundationTheme\Filament\Extenders\FoundationLayoutContainerSchemaExtender;
 use Capell\FoundationTheme\Filament\Settings\FoundationThemeSettingsSchema;
 use Capell\FoundationTheme\Listeners\RunTailwindAssetsOnPackageChange;
 use Capell\FoundationTheme\Livewire\Assets\Table\PageAssets;
 use Capell\FoundationTheme\Livewire\Widget\Pages;
+use Capell\FoundationTheme\Rendering\ChromeSplitBladeThemeRenderer;
 use Capell\FoundationTheme\Settings\FoundationThemeSettings;
 use Capell\FoundationTheme\Support\Assets\FoundationThemeAssetContributor;
 use Capell\FoundationTheme\Support\Blade\BladeDirectives;
@@ -56,6 +62,9 @@ use Capell\Frontend\Contracts\FrontendRuntimeManifestContributor;
 use Capell\Frontend\Data\FrontendAssetContextData;
 use Capell\Frontend\Data\FrontendAssetData;
 use Capell\Frontend\Events\FrontendContextResolved;
+use Capell\Frontend\Events\FrontendRenderPreparing;
+use Capell\Frontend\Support\Loader\PageLoader;
+use Capell\Frontend\Support\Loader\SiteLoader;
 use Capell\LayoutBuilder\Contracts\Extenders\LayoutContainerSchemaExtender;
 use Capell\LayoutBuilder\Enums\FrontendComponentKeyEnum;
 use Capell\LayoutBuilder\Support\LayoutAreas\LayoutAreaRegistry;
@@ -126,6 +135,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
             ->hasCommands([
                 DemoCommand::class,
                 SetupCommand::class,
+                ThemeCatalogueReportCommand::class,
             ]);
     }
 
@@ -257,15 +267,163 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
     private function registerPublicRuntimeData(): void
     {
         Event::listen(FrontendContextResolved::class, function (FrontendContextResolved $event): void {
-            if ($event->context->getFrontendData('foundation.theme.tokens') !== null) {
-                return;
+            if ($event->context->getFrontendData('foundation.theme.tokens') === null) {
+                $event->context->setFrontendData('foundation.theme.tokens', ResolveFoundationThemeTokensAction::run(
+                    theme: $event->context->theme(),
+                    site: $event->context->site(),
+                ));
             }
 
-            $event->context->setFrontendData('foundation.theme.tokens', ResolveFoundationThemeTokensAction::run(
-                theme: $event->context->theme(),
-                site: $event->context->site(),
-            ));
+            $this->preparePageRuntimeData($event);
+            $this->prepareFooterRuntimeData($event);
         });
+
+        Event::listen(FrontendRenderPreparing::class, function (FrontendRenderPreparing $event): void {
+            $this->preparePageRenderData($event);
+            $this->prepareFooterRenderData($event);
+        });
+    }
+
+    private function preparePageRenderData(FrontendRenderPreparing $event): void
+    {
+        $site = $event->renderContext->site;
+        $language = $event->renderContext->language;
+        $page = $event->renderContext->page;
+
+        if (! $site instanceof Site || ! $language instanceof Language || ! $page instanceof Page) {
+            return;
+        }
+
+        if ($event->context->getFrontendData('foundation.page.ancestors') === null) {
+            $event->context->setFrontendData(
+                'foundation.page.ancestors',
+                PageLoader::getPageAncestors($page, $language, $site),
+            );
+        }
+
+        $frontendData = $event->context->getFrontendData();
+
+        if (is_array($frontendData) && array_key_exists('foundation.page.home', $frontendData)) {
+            return;
+        }
+
+        $event->context->setFrontendData(
+            'foundation.page.home',
+            PageLoader::getSiteHomePage($site, $language),
+        );
+    }
+
+    private function prepareFooterRenderData(FrontendRenderPreparing $event): void
+    {
+        $site = $event->renderContext->site;
+        $language = $event->renderContext->language;
+        $page = $event->renderContext->page;
+        $theme = $event->renderContext->theme;
+
+        if (! $site instanceof Site || ! $language instanceof Language || ! $page instanceof Page || ! $theme instanceof Theme) {
+            return;
+        }
+
+        $this->prepareFooterData(
+            getFrontendData: fn (string $key): mixed => $event->context->getFrontendData($key),
+            setFrontendData: fn (string $key, mixed $value) => $event->context->setFrontendData($key, $value),
+            site: $site,
+            language: $language,
+            page: $page,
+        );
+    }
+
+    private function preparePageRuntimeData(FrontendContextResolved $event): void
+    {
+        $site = $event->context->site();
+        $language = $event->context->language();
+        $page = $event->context->page();
+
+        if (! $site instanceof Site || ! $language instanceof Language || ! $page instanceof Page) {
+            return;
+        }
+
+        if ($event->context->getFrontendData('foundation.page.ancestors') === null) {
+            $event->context->setFrontendData(
+                'foundation.page.ancestors',
+                PageLoader::getPageAncestors($page, $language, $site),
+            );
+        }
+
+        $frontendData = $event->context->getFrontendData();
+
+        if (is_array($frontendData) && array_key_exists('foundation.page.home', $frontendData)) {
+            return;
+        }
+
+        $event->context->setFrontendData(
+            'foundation.page.home',
+            PageLoader::getSiteHomePage($site, $language),
+        );
+    }
+
+    private function prepareFooterRuntimeData(FrontendContextResolved $event): void
+    {
+        $site = $event->context->site();
+        $language = $event->context->language();
+        $page = $event->context->page();
+        $theme = $event->context->theme();
+
+        if (! $site instanceof Site || ! $language instanceof Language || ! $page instanceof Page || ! $theme instanceof Theme) {
+            return;
+        }
+
+        $this->prepareFooterData(
+            getFrontendData: fn (string $key): mixed => $event->context->getFrontendData($key),
+            setFrontendData: fn (string $key, mixed $value) => $event->context->setFrontendData($key, $value),
+            site: $site,
+            language: $language,
+            page: $page,
+        );
+    }
+
+    private function prepareFooterData(callable $getFrontendData, callable $setFrontendData, Site $site, Language $language, Page $page): void
+    {
+        if ($getFrontendData('foundation.footer.site_languages') !== null) {
+            return;
+        }
+
+        $setFrontendData(
+            'foundation.footer.contact_page',
+            Page::getFirstPageByTypeForSite('contact', $site, $language),
+        );
+        $setFrontendData(
+            'foundation.footer.site_languages',
+            SiteLoader::pageLanguages($site, $language, $page),
+        );
+        $setFrontendData(
+            'foundation.footer.latest_pages',
+            PageLoader::getPages(
+                language: $language,
+                site: $site,
+                limit: 4,
+                ordering: PageOrderEnum::Latest,
+                pageGroup: BlueprintGroupEnum::Default,
+            ),
+        );
+        $setFrontendData(
+            'foundation.footer.related_sites',
+            SiteLoader::related($site, $language)
+                ->map(function (Site $relatedSite): array {
+                    $relations = $relatedSite->getRelations();
+                    $siteDomain = $relations['siteDomain'] ?? null;
+                    $translation = $relations['translation'] ?? null;
+
+                    return [
+                        'description' => data_get($translation, 'meta.description'),
+                        'primaryColor' => $relatedSite->getThemeColor('primary'),
+                        'title' => data_get($translation, 'title'),
+                        'url' => data_get($siteDomain, 'full_url'),
+                    ];
+                })
+                ->filter(fn (array $relatedSite): bool => is_string($relatedSite['url']) && $relatedSite['url'] !== '')
+                ->values(),
+        );
     }
 
     private function registerThemeChromeComponents(): void
@@ -289,7 +447,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
             $registry->register(
                 definition: self::definition(),
-                themeRenderer: new BladeThemeRenderer(
+                themeRenderer: new ChromeSplitBladeThemeRenderer(
                     themeKey: self::THEME_KEY,
                     layoutView: 'capell-theme-foundation::theme.page',
                     sectionRenderers: $sectionRenderers,
@@ -325,6 +483,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
     {
         $register = function (LayoutAreaRegistry $registry): void {
             $registry->register('header', __('capell-layout-builder::generic.header_area'));
+            $registry->register('footer', __('capell-layout-builder::generic.footer_area'));
         };
 
         $this->app->afterResolving(LayoutAreaRegistry::class, $register);
