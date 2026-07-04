@@ -32,7 +32,6 @@ const THEMES_MIGRATED_TO_LANDMARK_SPLIT = [
     'premium-portfolio-collection',
     // Wave 7.3 completion: the remaining fleet, migrated in one sweep. Every
     // theme now renders <nav>/<footer> as siblings of <main>.
-    'character-portfolio-index',
     'creative-culture-editorial',
     'dark-product-system',
     'dense-news-analysis',
