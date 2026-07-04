@@ -43,7 +43,6 @@
     color: var(--theme-foreground, #1e1b2e);
 }
 
-
 .theme-chrome-nav__links {
     display: none;
     align-items: center;
