@@ -21,8 +21,9 @@ $theme = Frontend::theme();
     name="{{ $name }}"
     :attributes="$attributes->class(['capell-languages', 'inline-flex'])"
     :label="__('capell-frontend::generic.languages')"
-    :dark-mode="$darkMode"
+    :dark-mode="false"
     :placement="$align === 'right' ? 'top-end' : 'top-start'"
+    dropdown-class="z-50 min-w-56 overflow-hidden border border-gray-200/80 shadow-lg shadow-slate-900/10 focus:outline-hidden"
 >
     <x-slot:trigger
         @class([
@@ -43,6 +44,12 @@ $theme = Frontend::theme();
             @svg('heroicon-m-chevron-down', 'inline h-4 w-4')
         </span>
     </x-slot>
+
+    <div
+        class="border-b border-gray-200 px-4 py-3 text-xs font-semibold tracking-wide text-gray-500"
+    >
+        {{ __('capell-theme-foundation::generic.change_language') }}
+    </div>
 
     @foreach ($languages as $siteLanguage)
         @continue($siteLanguage['id'] === $language->id)

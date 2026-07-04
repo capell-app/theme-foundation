@@ -5,8 +5,7 @@
     {{ __('capell-theme-foundation::generic.skip_to_content') }}
 </a>
 
-<main
-    id="main-content"
+<div
     style="{{ collect($brand->tokens())->map(fn (mixed $value, string $token): string => $token . ':' . $value)->implode(';') }}"
     class="site-theme-shell flex min-h-screen flex-col bg-[var(--theme-surface)] font-[var(--theme-body-font)] text-[var(--theme-foreground)] antialiased"
 >
@@ -18,5 +17,11 @@
         aria-atomic="true"
     ></div>
 
-    {!! $content !!}
-</main>
+    @if (isset($chromeHeader) || isset($chromeFooter))
+        {!! $chromeHeader ?? '' !!}
+        <main id="main-content">{!! $mainContent ?? $content !!}</main>
+        {!! $chromeFooter ?? '' !!}
+    @else
+        <main id="main-content">{!! $content !!}</main>
+    @endif
+</div>

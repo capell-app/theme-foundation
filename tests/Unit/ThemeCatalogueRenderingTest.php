@@ -34,10 +34,15 @@ function themeCatalogueEntries(): array
 
     throw_unless(is_array($decoded) && isset($decoded['themes']) && is_array($decoded['themes']), RuntimeException::class, 'docs/themes.json must contain a themes array.');
 
-    return array_values(array_filter(
-        $decoded['themes'],
-        static fn (mixed $theme): bool => is_array($theme),
-    ));
+    $themes = [];
+
+    foreach ($decoded['themes'] as $theme) {
+        if (is_array($theme)) {
+            $themes[] = $theme;
+        }
+    }
+
+    return $themes;
 }
 
 /**
@@ -85,6 +90,20 @@ function themeSectionRenderers(string $packageDirectory): array
         $renderers[$match[1]] = $match[2];
     }
 
+    // VariantViewSectionRenderer uses named arguments; its `baseView` is the
+    // section's default/registered view, mirroring `ViewSectionRenderer`'s
+    // positional `view` argument above.
+    preg_match_all(
+        "/new VariantViewSectionRenderer\\(\\s*.*?sectionKey:\\s*'([^']+)'.*?baseView:\\s*'([^']+)'/s",
+        $source,
+        $variantMatches,
+        PREG_SET_ORDER,
+    );
+
+    foreach ($variantMatches as $match) {
+        $renderers[$match[1]] = $match[2];
+    }
+
     return $renderers;
 }
 
@@ -126,7 +145,10 @@ function themePublicBlade(string $packageDirectory): string
 
 it('resolves every registered section renderer to a Blade view that exists', function (): void {
     foreach (themeCatalogueEntries() as $theme) {
-        $packageDirectory = themePackageDirectory((string) $theme['package']);
+        $package = $theme['package'] ?? null;
+        throw_unless(is_string($package), RuntimeException::class, 'Theme catalogue package must be a string.');
+
+        $packageDirectory = themePackageDirectory($package);
         $renderers = themeSectionRenderers($packageDirectory);
 
         expect($renderers)->not->toBeEmpty("{$packageDirectory} should register section renderers.");
@@ -147,7 +169,10 @@ it('keeps the catalogue custom/standard split in sync with each child theme prov
             continue;
         }
 
-        $packageDirectory = themePackageDirectory((string) $theme['package']);
+        $package = $theme['package'] ?? null;
+        throw_unless(is_string($package), RuntimeException::class, 'Theme catalogue package must be a string.');
+
+        $packageDirectory = themePackageDirectory($package);
         $ownNamespace = 'capell-' . $packageDirectory . '::';
         $foundationNamespace = 'capell-theme-foundation::';
 
@@ -201,7 +226,10 @@ it('keeps every theme public Blade free of authoring and database markers', func
             continue;
         }
 
-        $packageDirectory = themePackageDirectory((string) $theme['package']);
+        $package = $theme['package'] ?? null;
+        throw_unless(is_string($package), RuntimeException::class, 'Theme catalogue package must be a string.');
+
+        $packageDirectory = themePackageDirectory($package);
         $publicBlade = themePublicBlade($packageDirectory);
 
         foreach ($forbidden as $marker) {

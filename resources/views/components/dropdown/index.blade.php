@@ -27,11 +27,17 @@
 
     $dropdownName = $name !== '' ? $name : 'dropdown';
 
-    $floatDropdownData = "{\n        toggle: function (event) {\n            \$refs['{$dropdownName}_dropdown'].toggle(event)\n        },\n\n        open: function (event) {\n            \$refs['{$dropdownName}_dropdown'].open(event)\n        },\n\n        close: function (event) {\n            \$refs['{$dropdownName}_dropdown'].close(event)\n        },\n    }";
+    $floatDropdownData = '{}';
 
     $inlineDropdownData = "{\n        isOpen: false,\n        toggle: function () {\n            if (this.isOpen) {\n                return this.close()\n            }\n\n            \$refs['{$dropdownName}_toggle'].focus()\n\n            this.isOpen = true\n        },\n\n        open: function () {\n            this.isOpen = true\n        },\n\n        close: function (focusAfter) {\n            if (! this.isOpen) return\n\n            this.isOpen = false\n\n            focusAfter && focusAfter.focus()\n        },\n    }";
 
     $dropdownData = $useFloat ? $floatDropdownData : $inlineDropdownData;
+    $floatingDropdownRef = preg_match('/^[A-Za-z_$][A-Za-z0-9_$]*$/', $dropdownName) === 1
+        ? "\$refs.{$dropdownName}_dropdown"
+        : "\$refs['{$dropdownName}_dropdown']";
+    $resolvedTriggerClick = $useFloat && $triggerClick === 'toggle($event)'
+        ? "{$floatingDropdownRef}.toggle(\$event)"
+        : $triggerClick;
 
     $containerAttributes = $attributes->except('class')->merge(['class' => $containerClass]);
 
@@ -40,6 +46,7 @@
         $rounded,
         $shadow,
         'hidden' => $useFloat,
+        'absolute' => $useFloat,
         "divide-gray-100 {$background} text-gray-900" => ! $darkMode,
         'divide-gray-800 border-gray-800/80 bg-gray-950/95 text-gray-100' => $darkMode,
     ]);
@@ -58,9 +65,9 @@
             @endif
             x-ref="{{ $dropdownName }}_toggle"
             @if ($stopTriggerClickPropagation)
-                x-on:click.stop="{{ $triggerClick }}"
+                x-on:click.stop="{{ $resolvedTriggerClick }}"
             @else
-                x-on:click="{{ $triggerClick }}"
+                x-on:click="{{ $resolvedTriggerClick }}"
             @endif
             @if (! $useFloat)
                 :aria-expanded="isOpen"
@@ -139,9 +146,9 @@
             @endif
             x-ref="{{ $dropdownName }}_toggle"
             @if ($stopTriggerClickPropagation)
-                x-on:click.stop="{{ $triggerClick }}"
+                x-on:click.stop="{{ $resolvedTriggerClick }}"
             @else
-                x-on:click="{{ $triggerClick }}"
+                x-on:click="{{ $resolvedTriggerClick }}"
             @endif
             @if (! $useFloat)
                 :aria-expanded="isOpen"

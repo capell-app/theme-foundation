@@ -48,7 +48,12 @@ class TailwindAssetsGenerator
     }
 
     /**
-     * Generate the frontend Tailwind asset file.
+     * Generate the frontend Tailwind asset file(s).
+     *
+     * When capell-theme-foundation.tailwind.split_theme_css is enabled, each
+     * theme-css:<key> conditioned import compiles into its own file under
+     * theme_css_output_directory instead of the shared bundle above — flag
+     * off produces byte-identical output to before this option existed.
      *
      * @return array<string>
      */
@@ -58,7 +63,13 @@ class TailwindAssetsGenerator
 
         $this->generateFile($baseTargetPath);
 
-        return [$baseTargetPath];
+        $paths = [$baseTargetPath];
+
+        if ($this->shouldSplitThemeCss()) {
+            $paths = [...$paths, ...$this->generateThemeCssFiles($baseTargetPath)];
+        }
+
+        return $paths;
     }
 
     private function generateFile(string $targetPath): void
@@ -73,6 +84,94 @@ class TailwindAssetsGenerator
         if ($this->shouldValidateSources()) {
             $this->validateSources($registry, $targetPath);
         }
+    }
+
+    /**
+     * @return array<string>
+     */
+    private function generateThemeCssFiles(string $baseTargetPath): array
+    {
+        $paths = [];
+
+        foreach ($this->themeCssImportsByKey($baseTargetPath) as $themeKey => $imports) {
+            $targetPath = $this->themeCssTargetPath($themeKey, $baseTargetPath);
+
+            $registry = new TailwindAssetsRegistry;
+
+            foreach ($imports as $import) {
+                $registry->registerImport($import, 'theme-css:' . $themeKey);
+            }
+
+            $this->files->ensureDirectoryExists(dirname($targetPath));
+            $this->files->put($targetPath, $this->renderCss($registry));
+
+            $paths[] = $targetPath;
+        }
+
+        return $paths;
+    }
+
+    /**
+     * @return array<string, array<int, string>>
+     */
+    private function themeCssImportsByKey(string $baseTargetPath): array
+    {
+        $grouped = [];
+
+        $this->installedVendorAssetsForType(VendorAssetEnum::TailwindImport)
+            ->each(function (VendorAssetData $asset) use ($baseTargetPath, &$grouped): void {
+                $themeKey = $this->themeCssConditionKey($asset);
+
+                if ($themeKey === null) {
+                    return;
+                }
+
+                $import = trim($asset->value);
+
+                if ($import === '') {
+                    return;
+                }
+
+                $themeTargetPath = $this->themeCssTargetPath($themeKey, $baseTargetPath);
+
+                $resolved = $this->isNodeModuleImport($import, $asset)
+                    ? $import
+                    : (Path::isAbsolute($import) ? $import : $this->resolveAssetPath($asset, $import));
+
+                $grouped[$themeKey][] = $this->isNodeModuleImport($import, $asset)
+                    ? $resolved
+                    : $this->relativePath($resolved, $themeTargetPath);
+            });
+
+        return $grouped;
+    }
+
+    private function themeCssConditionKey(VendorAssetData $asset): ?string
+    {
+        $condition = $asset->condition();
+
+        if (! is_string($condition) || ! str_starts_with($condition, 'theme-css:')) {
+            return null;
+        }
+
+        $key = substr($condition, strlen('theme-css:'));
+
+        return $key !== '' ? $key : null;
+    }
+
+    private function themeCssTargetPath(string $themeKey, string $baseTargetPath): string
+    {
+        $directory = config('capell-theme-foundation.tailwind.theme_css_output_directory', 'resources/css/capell/themes');
+        $directory = is_string($directory) && $directory !== '' ? $directory : 'resources/css/capell/themes';
+
+        $resolved = Path::isAbsolute($directory) ? $directory : $this->resolveAppRelativePath($directory);
+
+        return $this->normalizeTargetPath(rtrim($resolved, '/') . '/' . $themeKey . '.css');
+    }
+
+    private function shouldSplitThemeCss(): bool
+    {
+        return (bool) config('capell-theme-foundation.tailwind.split_theme_css', false);
     }
 
     private function collectWithTarget(string $targetPath): TailwindAssetsRegistry
@@ -120,6 +219,10 @@ class TailwindAssetsGenerator
     {
         $this->installedVendorAssetsForType(VendorAssetEnum::TailwindImport)
             ->each(function (VendorAssetData $asset) use ($registry, $targetPath): void {
+                if ($this->shouldSplitThemeCss() && $this->themeCssConditionKey($asset) !== null) {
+                    return;
+                }
+
                 $import = trim($asset->value);
 
                 if ($import === '') {

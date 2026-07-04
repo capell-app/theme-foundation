@@ -5,6 +5,7 @@ declare(strict_types=1);
 return [
     'contact' => 'Contact',
     'content' => 'Content',
+    'change_language' => 'Change language',
     'empty_content_sections' => 'No content sections configured.',
     'empty_faqs' => 'No FAQs configured.',
     'empty_features' => 'No features configured.',

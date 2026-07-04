@@ -28,9 +28,11 @@ class Breadcrumbs extends AbstractWidget
         $site = Frontend::site();
         $language = Frontend::language();
 
+        $frontendData = Frontend::getFrontendData();
+        $hasPreparedAncestors = is_array($frontendData) && array_key_exists('foundation.page.ancestors', $frontendData);
         $preparedAncestors = Frontend::getFrontendData('foundation.page.ancestors');
 
-        if ($preparedAncestors instanceof Collection) {
+        if ($hasPreparedAncestors) {
             $ancestors = $preparedAncestors;
         } elseif (Frontend::getFrontendData('blog.article.render_data') !== null) {
             return '';
@@ -46,7 +48,6 @@ class Breadcrumbs extends AbstractWidget
             : '';
 
         $showCurrentPage = $page instanceof Page && ($page->url_params === null || Frontend::params() === []);
-        $frontendData = Frontend::getFrontendData();
         $hasPreparedHome = is_array($frontendData) && array_key_exists('foundation.page.home', $frontendData);
         $preparedHome = Frontend::getFrontendData('foundation.page.home');
         $home = $hasPreparedHome
@@ -59,7 +60,7 @@ class Breadcrumbs extends AbstractWidget
         $showParent = $this->metaBoolean($meta, 'show_parent', true);
         $showCurrentPage = $showCurrentPage && $this->metaBoolean($meta, 'show_current_page', true);
         $minimumItems = max(1, $this->metaInteger($meta, 'minimum_items', 1));
-        $ancestors = $this->visibleAncestors($ancestors, $showParent);
+        $ancestors = $this->visibleAncestors($ancestors instanceof Collection ? $ancestors : null, $showParent);
         $homeLabel = $showHome ? $homeTranslation?->label : null;
         $homeUrl = $showHome ? $siteDomain?->url : null;
         $visibleItemCount = ($homeUrl !== null && $homeLabel !== null ? 1 : 0)
@@ -86,7 +87,9 @@ class Breadcrumbs extends AbstractWidget
      */
     private function translationVariables(?Page $page, ?Site $site): array
     {
-        return (new Collection(GetPageVariablesAction::run($page, $site)))
+        $variables = GetPageVariablesAction::run($page, $site);
+
+        return (new Collection(is_array($variables) ? $variables : []))
             ->filter(fn (mixed $value): bool => is_scalar($value) || $value instanceof Stringable)
             ->map(fn (mixed $value): string => (string) $value)
             ->all();

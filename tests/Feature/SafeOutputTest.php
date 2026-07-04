@@ -422,6 +422,7 @@ test('reviewed foundation chrome avoids accessibility regressions', function ():
     $socialLinks = file_get_contents($themePath . '/resources/views/components/footer/social-links.blade.php');
     $relatedSites = file_get_contents($themePath . '/resources/views/components/footer/related-sites.blade.php');
     $languages = file_get_contents($themePath . '/resources/views/components/languages.blade.php');
+    $dropdown = file_get_contents($themePath . '/resources/views/components/dropdown/index.blade.php');
 
     expect($footer)->not->toContain('href="javascript:void(0)"')
         ->and($footer)->toContain('type="button"')
@@ -429,8 +430,16 @@ test('reviewed foundation chrome avoids accessibility regressions', function ():
         ->and($socialLinks)->toContain('rel="nofollow noopener"')
         ->and($relatedSites)->not->toContain('role="menu"')
         ->and($relatedSites)->not->toContain('role="menuitem"')
+        ->and($relatedSites)->toContain('border-[var(--border-color-footer)]')
+        ->and($footer)->toContain('footer.related-sites')
+        ->and($footer)->toContain('$containerWidth->getContainerClass()')
         ->and($languages)->not->toContain('role="menuitem"')
-        ->and($languages)->toContain('alt=""');
+        ->and($languages)->toContain("__('capell-theme-foundation::generic.change_language')")
+        ->and($languages)->toContain(':dark-mode="false"')
+        ->and($languages)->toContain('alt=""')
+        ->and($dropdown)->toContain('x-float')
+        ->and($dropdown)->toContain('$floatingDropdownRef')
+        ->and($dropdown)->toContain('.toggle(\$event)');
 });
 
 test('public blade style tokens use css color safety resolver', function (): void {

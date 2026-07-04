@@ -93,12 +93,16 @@ it('attaches object-form navigation and footer chrome to every base demo surface
         // resolve into a branded nav + footer; a list form or absent key collapses to the
         // barren defaultNavigation()/defaultFooter() fallback.
         $navigation = $definition->renderData['navigation'] ?? null;
+        throw_unless(is_array($navigation), RuntimeException::class, "{$surface} navigation missing.");
+
         expect($navigation)->toBeArray("{$surface} navigation missing")
             ->and(array_is_list($navigation))->toBeFalse("{$surface} navigation must be object form")
             ->and($navigation['brandName'] ?? null)->toBe($brandName)
             ->and($navigation['items'] ?? null)->toBeArray();
 
         $footer = $definition->renderData['footer'] ?? null;
+        throw_unless(is_array($footer), RuntimeException::class, "{$surface} footer missing.");
+
         expect($footer)->toBeArray("{$surface} footer missing")
             ->and(array_is_list($footer))->toBeFalse("{$surface} footer must be object form")
             ->and($footer['brandName'] ?? null)->toBe($brandName)
