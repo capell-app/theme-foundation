@@ -11,7 +11,7 @@ declare(strict_types=1);
  * named allowlist for declarations that are deliberately direction-fixed
  * rather than text-flow-relative:
  *
- * - motion-archive's and dense-news-analysis's CSS-triangle "play" glyphs
+ * - reel-room's and ink-press's CSS-triangle "play" glyphs
  *   (border-left forming the wedge, plus the margin-left nudge that
  *   centres it) point right regardless of page direction, matching the
  *   universal native <video>/YouTube play-icon convention — flipping them
@@ -31,7 +31,7 @@ it('keeps theme CSS free of new physical inline-axis properties (RTL logical-pro
     $physicalPattern = '/(?<!-)\b(margin|padding|border)-(left|right)\b\s*:|(?<!-)\btext-align\s*:\s*(left|right)\b|^\s*(left|right)\s*:/m';
 
     $allowlist = [
-        // theme-motion-archive & theme-dense-news-analysis: CSS-triangle
+        // theme-reel-room & theme-ink-press: CSS-triangle
         // play glyphs — direction-fixed by icon convention, not text flow.
         'border-left: 0.85rem solid var(--mva-ink);',
         'margin-left: 0.25rem;',

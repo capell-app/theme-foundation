@@ -37,7 +37,6 @@ return [
     'pricing_savings_badge' => 'Save 17%',
     'proof' => 'Proof',
     'scroll_to_top' => 'Scroll to top',
-    'skip_to_content' => 'Skip to content',
     'spotlight' => 'Spotlight',
     'sub_footer_navigation' => 'Footer utility navigation',
     'view_preview' => 'View preview',

@@ -2,12 +2,19 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/../../../../tests/Packages/Support/ThemeLayoutNativeSupport.php';
+
 /*
  * Phase 3 differentiation guard. Premium themes must not be colour-swaps of one
  * another, so no two theme packages may ship a byte-identical primary
- * stylesheet. This test caught the magazine trio (dense-news-analysis,
- * design-led-magazine, global-culture-magazine) shipping the same CSS and
+ * stylesheet. This test caught the magazine trio (ink-press,
+ * art-paper, far-field) shipping the same CSS and
  * prevents that class of regression from returning.
+ *
+ * Phase C: a theme converted to render through x-capell::layout +
+ * layout-builder (see themesConvertedToLayoutBuilder()) no longer ships a
+ * theme-<key>.css stylesheet under this glob, so its absence is acceptable
+ * for converted themes only — see themePrimaryStylesheets() below.
  */
 
 /**
