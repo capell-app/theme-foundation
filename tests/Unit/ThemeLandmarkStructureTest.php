@@ -11,6 +11,8 @@ use Capell\Core\ThemeStudio\Data\NavigationData;
 use Capell\Core\ThemeStudio\Data\ThemePageData;
 use Capell\FoundationTheme\Rendering\ChromeSplitBladeThemeRenderer;
 
+require_once __DIR__ . '/../../../../tests/Packages/Support/ThemeLayoutNativeSupport.php';
+
 /*
  * Wave 7 landmark-restructure ratchet: every theme migrated to
  * ChromeSplitBladeThemeRenderer must render <nav>/<footer> as siblings of
@@ -26,29 +28,39 @@ use Capell\FoundationTheme\Rendering\ChromeSplitBladeThemeRenderer;
  * one-way ratchet — a theme can never quietly leave the list once verified.
  */
 
+/*
+ * Phase C conversion ratchet: once a theme is converted to render through
+ * x-capell::layout + layout-builder instead of its own section pipeline, it
+ * no longer ships a page.blade.php with chromeHeader/mainContent/chromeFooter
+ * for this test to inspect — its landmark structure (nav/main/footer as
+ * siblings) comes from x-capell::layout itself. Entries may leave the
+ * landmark-split assertion below ONLY by appearing in themesConvertedToLayoutBuilder()
+ * (see tests/Packages/Support/ThemeLayoutNativeSupport.php, the single source
+ * of truth for this list). It starts empty: no theme has converted yet.
+ */
+
 const THEMES_MIGRATED_TO_LANDMARK_SPLIT = [
     'default', // Foundation — the first migration per Wave 7.3's stated order.
-    'case-study-platform', // The contract-tested pair, migrated next per Wave 7.3.
-    'premium-portfolio-collection',
+    'open-studio', // The contract-tested pair, migrated next per Wave 7.3.
+    'front-row',
     // Wave 7.3 completion: the remaining fleet, migrated in one sweep. Every
     // theme now renders <nav>/<footer> as siblings of <main>.
-    'creative-culture-editorial',
-    'dark-product-system',
-    'dense-news-analysis',
-    'design-led-magazine',
-    'editorial-serif',
-    'experimental-directory',
-    'filter-gallery',
-    'global-culture-magazine',
-    'landing-gallery',
+    'night-shift',
+    'ink-press',
+    'art-paper',
+    'quiet-type',
+    'wild-card',
+    'far-field',
+    'field-guide',
+    'launch-pad',
     'liquid-glass',
-    'minimal-curation-feed',
-    'motion-archive',
-    'one-page-showcase',
-    'portfolio-directory',
-    'quiet-web-gallery',
-    'raw-index',
-    'scoreboard-showcase',
+    'first-light',
+    'reel-room',
+    'one-take',
+    'deep-bench',
+    'soft-focus',
+    'off-grid',
+    'gold-rush',
 ];
 
 /**
@@ -148,6 +160,15 @@ it('still exposes the legacy concatenated content for unmigrated layouts', funct
 });
 
 it('places nav/footer chrome outside <main> in every migrated theme layout', function (string $themeKey): void {
+    if (in_array($themeKey, themesConvertedToLayoutBuilder(), true)) {
+        // Converted themes render through x-capell::layout, which owns the
+        // landmark structure itself; there is no theme page.blade.php left
+        // to inspect for chromeHeader/mainContent/chromeFooter.
+        expect(true)->toBeTrue();
+
+        return;
+    }
+
     $bladePath = landmarkMigratedThemeBladePath($themeKey);
 
     expect(file_exists($bladePath))->toBeTrue(

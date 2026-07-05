@@ -9,6 +9,11 @@ declare(strict_types=1);
  * Blade view on disk, named `<section>--<variant>.blade.php` beside the base
  * `<section>.blade.php`, so a declared variant can never silently 404 into
  * the renderer's fallback markup.
+ *
+ * Phase C: a theme converted to render through x-capell::layout +
+ * layout-builder has no sections/ directory and declares no sectionVariants,
+ * so it is naturally skipped by the `! is_array($sectionVariants)` guard
+ * below — no explicit exemption is needed for it.
  */
 
 require_once __DIR__ . '/../../../../tests/Packages/Support/ThemeManifestContracts.php';

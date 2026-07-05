@@ -1,4 +1,4 @@
-@props([
+@props ([
     'containerClass' => null,
     'footer' => null,
     'header' => null,
@@ -12,6 +12,7 @@
     use Capell\Core\Models\Site;
     use Capell\Frontend\Facades\Frontend;
     use Illuminate\Database\Eloquent\Model;
+    use Livewire\Blaze\Blaze;
 
     $theme ??= Frontend::theme();
     $page ??= Frontend::page();
@@ -45,7 +46,7 @@
         {{ $attributes->merge(['style' => 'min-height: 100vh; background: #faf8ff; color: #131b2e;']) }}
     >
         <main id="main">
-            @include('capell-theme-foundation::components.demo.contact-page', [
+            @include ('capell-theme-foundation::components.demo.contact-page', [
                 'page' => $page,
                 'site' => $site,
             ])
@@ -87,7 +88,7 @@
                 "
             >
                 @if ($siteLogoBladeView)
-                    @include($siteLogoBladeView, ['class' => 'h-10 w-auto'])
+                    @include ($siteLogoBladeView, ['class' => 'h-10 w-auto'])
                 @elseif ($siteLogo)
                     <x-capell::logo :media="$siteLogo" />
                 @else
@@ -99,7 +100,7 @@
                 :content="$pageTranslation?->content ?? ''"
                 :content-type="$pageType?->content_structure ?? $htmlContentStructure"
                 :title="$pageTranslation?->title ?? ''"
-                class="mx-auto max-w-2xl text-slate-700 [&_h1]:text-slate-950"
+                class="[&_h1]:text-slate-950 mx-auto max-w-2xl text-slate-700"
                 heading-tag="h1"
                 heading-size="h1"
                 text-align="center"
@@ -131,6 +132,25 @@
             @endif
         @endif
 
+        {{--
+            Blaze's static component-tag optimization compiles the sibling
+            tags in this view (header, content, logo) into inlined function
+            calls sharing Blaze's own output-buffering bookkeeping. When
+            `<x-capell::layout.main>` — a class-backed component that renders
+            layout-builder's dynamic, render-hook-driven main content — is
+            invoked immediately after those Blaze-compiled calls in the same
+            buffer scope, Laravel's native component stack (`$__env`) desyncs
+            and `capell::layout.main` silently renders empty output instead
+            of the page's real widgets. Disabling Blaze around this one
+            invocation mirrors the same defence
+            `capell-layout-builder::components.layout.widget` and
+            `Capell\LayoutBuilder\Support\RenderHooks\RegisterMainContentLayoutHook`
+            already use around their own dynamic, hook-driven renders.
+        --}}
+        @php
+            $wasBlazeEnabledForMain = Blaze::isEnabled();
+            Blaze::disable();
+        @endphp
         <x-capell::layout.main
             :$layout
             :$page
@@ -141,6 +161,11 @@
             :main-class="$mainClass"
             :main-container-class="$mainContainerClass"
         />
+        @php
+            if ($wasBlazeEnabledForMain) {
+                Blaze::enable();
+            }
+        @endphp
 
         @if ($footer)
             {{ $footer }}

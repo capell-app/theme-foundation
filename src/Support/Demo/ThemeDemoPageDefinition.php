@@ -11,6 +11,8 @@ final class ThemeDemoPageDefinition
 {
     /**
      * @param  array<string, mixed>  $renderData
+     * @param  array<string, array<string, mixed>>|null  $containers  Layout container payload, same JSON shape as `Layout::containers`. When present, the installer writes this onto the resolved `Layout` model instead of storing `render_data['sections']`.
+     * @param  list<array{method: string, args?: array<array-key, mixed>}>|null  $widgets  Widget blueprints consumed via `Capell\LayoutBuilder\Support\Creator\WidgetCreator` before `$containers` is applied, so any `widget_key` referenced by `$containers` already exists. The optional `args` key is spread positionally into the named `WidgetCreator` method call — added so a single method can be reused to create multiple distinctly-keyed widget instances (e.g. one bespoke widget per demo surface) instead of requiring one no-arg `WidgetCreator` method per instance.
      */
     public function __construct(
         public readonly string $surface,
@@ -21,7 +23,14 @@ final class ThemeDemoPageDefinition
         public readonly array $renderData,
         public readonly PageTypeEnum $type = PageTypeEnum::Default,
         public readonly LayoutEnum $layout = LayoutEnum::Default,
+        public readonly ?array $containers = null,
+        public readonly ?array $widgets = null,
     ) {}
+
+    public function hasContainers(): bool
+    {
+        return is_array($this->containers) && $this->containers !== [];
+    }
 
     /**
      * The ordered section payloads this surface seeds, each normalised to a

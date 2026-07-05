@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/../../../../tests/Packages/Support/ThemeLayoutNativeSupport.php';
+
 /*
  * Phase 5 render/safety guarantees that tie the catalogue (docs/themes.json)
  * to the shipped Blade. For every theme it proves:
@@ -14,6 +16,13 @@ declare(strict_types=1);
  *
  * These are static source/filesystem checks — no application boot required —
  * so they run fast and deterministically in the theme-foundation suite.
+ *
+ * Phase C: a theme converted to render through x-capell::layout +
+ * layout-builder (see themesConvertedToLayoutBuilder()) registers no
+ * ViewSectionRenderer/VariantViewSectionRenderer at all, so
+ * themeSectionRenderers() legitimately returns an empty array for it — the
+ * "must register section renderers" and custom/standard split assertions
+ * below are skipped for converted themes only.
  */
 
 function themeCatalogueRoot(): string
@@ -46,8 +55,8 @@ function themeCatalogueEntries(): array
 }
 
 /**
- * Package directory ("theme-editorial-serif") for a catalogue package name
- * ("capell-app/theme-editorial-serif").
+ * Package directory ("theme-quiet-type") for a catalogue package name
+ * ("capell-app/theme-quiet-type").
  */
 function themePackageDirectory(string $packageName): string
 {
@@ -148,6 +157,12 @@ it('resolves every registered section renderer to a Blade view that exists', fun
         $package = $theme['package'] ?? null;
         throw_unless(is_string($package), RuntimeException::class, 'Theme catalogue package must be a string.');
 
+        $themeKey = $theme['themeKey'] ?? null;
+
+        if (is_string($themeKey) && in_array($themeKey, themesConvertedToLayoutBuilder(), true)) {
+            continue;
+        }
+
         $packageDirectory = themePackageDirectory($package);
         $renderers = themeSectionRenderers($packageDirectory);
 
@@ -166,6 +181,12 @@ it('keeps the catalogue custom/standard split in sync with each child theme prov
     foreach (themeCatalogueEntries() as $theme) {
         // Foundation is the base theme; its own views are validated elsewhere.
         if (($theme['extends'] ?? null) === null) {
+            continue;
+        }
+
+        $themeKey = $theme['themeKey'] ?? null;
+
+        if (is_string($themeKey) && in_array($themeKey, themesConvertedToLayoutBuilder(), true)) {
             continue;
         }
 

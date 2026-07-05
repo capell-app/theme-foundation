@@ -19,10 +19,13 @@ use Capell\Core\Support\Creator\BlueprintCreator;
 use Capell\Core\Support\Creator\PageCreator;
 use Capell\FoundationTheme\Contracts\ProvidesThemeDemoContent;
 use Capell\FoundationTheme\Data\ThemeDemoInstallData;
+use Capell\LayoutBuilder\Support\Creator\WidgetCreator;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 use Lorisleiva\Actions\Concerns\AsObject;
+use RuntimeException;
 
 /**
  * @method static int run(ThemeDemoInstallData $data, string $themeKey, string $themeName, ?ProvidesThemeDemoContent $contentProvider = null)
@@ -202,6 +205,10 @@ final class ThemeDemoPageInstaller
         foreach ($definitions as $index => $definition) {
             $this->updateExistingPageLayout($site, $definition);
 
+            $renderData = $definition->hasContainers()
+                ? $this->renderDataWithoutSections($definition->renderData)
+                : $definition->renderData;
+
             /** @var Page $page */
             $page = $creator->createPage([
                 'name' => $definition->name,
@@ -212,12 +219,16 @@ final class ThemeDemoPageInstaller
                     'theme_demo' => [
                         'theme_key' => $themeKey,
                         'surface' => $definition->surface,
-                        'render_data' => $definition->renderData,
+                        'render_data' => $renderData,
                     ],
                     'robots' => ['noindex' => $definition->surface === 'not-found'],
                 ],
                 'translations' => $this->translations($languages, $definition),
             ], $site, $languages);
+
+            if ($definition->hasContainers()) {
+                $this->installLayoutContainers($page, $definition, $force);
+            }
 
             if ($force || $page->order === null) {
                 $page->forceFill(['order' => $index + 1])->save();
@@ -225,6 +236,17 @@ final class ThemeDemoPageInstaller
 
             SetupPageUrlsAction::run($page);
         }
+    }
+
+    /**
+     * @param  array<string, mixed>  $renderData
+     * @return array<string, mixed>
+     */
+    private function renderDataWithoutSections(array $renderData): array
+    {
+        unset($renderData['sections']);
+
+        return $renderData;
     }
 
     private function updateExistingPageLayout(Site $site, ThemeDemoPageDefinition $definition): void
@@ -239,6 +261,79 @@ final class ThemeDemoPageInstaller
             ->where('site_id', $site->getKey())
             ->where('name', $definition->name)
             ->update(['layout_id' => $layout->getKey()]);
+    }
+
+    /**
+     * Creates the widgets a definition's `containers` reference, then writes
+     * those containers onto the resolved `Layout` model — mirroring the
+     * don't-clobber-unless-`--force` convention used by
+     * InstallFoundationThemeLayoutDefaultsAction: an existing layout that
+     * already carries containers is left alone unless `$force` is set.
+     *
+     * A missing `Layout` model on `$page` is treated as a broken install
+     * rather than a legitimate skip: `PageCreator::createPage()` always
+     * resolves (and creates, if needed) a `layout_id`, so reaching this
+     * method without a loaded `Layout` relation means something upstream
+     * failed silently. By this point `render_data['sections']` has already
+     * been stripped in favour of `$definition->containers`, so silently
+     * returning here would leave the page half-seeded with no diagnostic.
+     */
+    private function installLayoutContainers(Page $page, ThemeDemoPageDefinition $definition, bool $force): void
+    {
+        $layout = $page->layout;
+
+        if (! $layout instanceof Layout) {
+            throw new RuntimeException(sprintf(
+                'Demo page [%s] has no resolvable layout; PageCreator::createPage() always resolves a layout_id (creating the Layout row if needed), so a missing Layout model here indicates a broken install rather than an expected skip.',
+                $definition->name,
+            ));
+        }
+
+        $existingContainers = $layout->containers;
+        $hadContainers = is_array($existingContainers) && $existingContainers !== [];
+
+        if ($hadContainers && ! $force) {
+            return;
+        }
+
+        $this->createDefinitionWidgets($definition);
+
+        $layout->update([
+            'containers' => $definition->containers,
+        ]);
+    }
+
+    private function createDefinitionWidgets(ThemeDemoPageDefinition $definition): void
+    {
+        $blueprints = $definition->widgets ?? [];
+
+        if ($blueprints === []) {
+            return;
+        }
+
+        $widgetCreator = resolve(WidgetCreator::class);
+
+        foreach ($blueprints as $blueprint) {
+            $method = $blueprint['method'] ?? null;
+
+            if (! is_string($method) || $method === '' || ! method_exists($widgetCreator, $method)) {
+                throw new InvalidArgumentException(sprintf(
+                    'WidgetCreator has no method [%s] for demo widget blueprint.',
+                    is_string($method) ? $method : get_debug_type($method),
+                ));
+            }
+
+            $args = $blueprint['args'] ?? [];
+
+            if (! is_array($args)) {
+                throw new InvalidArgumentException(sprintf(
+                    'Demo widget blueprint [%s] args must be an array.',
+                    $method,
+                ));
+            }
+
+            $widgetCreator->{$method}(...$args);
+        }
     }
 
     /**
@@ -626,7 +721,7 @@ final class ThemeDemoPageInstaller
             'automotive-dealer' => $this->premiumSurfaces(['inventory', 'Inventory', 'Show vehicle listings, specs, finance cues, and enquiry actions.', ['inventory-grid', 'finance-options', 'test-drive-panel']], ['vehicle-detail', 'Vehicle Detail', 'Present a vehicle story with highlights, condition, specs, and CTA.', ['vehicle-detail', 'part-exchange', 'proof']], ['finance', 'Finance', 'Explain finance options, part exchange, and buying confidence.', ['finance-options', 'features', 'cta']]),
             'property-developer' => $this->premiumSurfaces(['developments', 'Developments', 'Show development cards, availability, local proof, and launch status.', ['development-grid', 'availability-table', 'location-guide']], ['floorplans', 'Floorplans', 'Present home types, layouts, specifications, and availability CTAs.', ['floorplans', 'development-grid', 'proof']], ['location', 'Location', 'Sell the neighbourhood, travel links, amenities, and lifestyle proof.', ['location-guide', 'viewing-panel', 'cta']]),
             'recruitment-jobs' => $this->premiumSurfaces(['jobs', 'Jobs', 'Show roles, sectors, filters, salary context, and apply CTAs.', ['job-board', 'sector-specialisms', 'application-panel']], ['employers', 'Employers', 'Present hiring services, process, proof, and consultation routes.', ['employer-services', 'sector-specialisms', 'proof']], ['candidate-advice', 'Candidate Advice', 'Publish advice, interview guides, and sector insights.', ['candidate-advice', 'content-listing', 'cta']]),
-            'editorial-serif' => $this->premiumSurfaces(['essays', 'Essays', 'Show long-form editorial pages, issue framing, and reading pathways.', ['essay-index', 'author-profiles', 'editorial-statement']], ['archive', 'Archive', 'Present an archive, categories, series, and contributor proof.', ['issue-archive', 'essay-index', 'proof']], ['about', 'About the Publication', 'Introduce editorial principles, contributors, and subscription actions.', ['editorial-statement', 'subscription-panel', 'cta']]),
+            'quiet-type' => $this->premiumSurfaces(['essays', 'Essays', 'Show long-form editorial pages, issue framing, and reading pathways.', ['essay-index', 'author-profiles', 'editorial-statement']], ['archive', 'Archive', 'Present an archive, categories, series, and contributor proof.', ['issue-archive', 'essay-index', 'proof']], ['about', 'About the Publication', 'Introduce editorial principles, contributors, and subscription actions.', ['editorial-statement', 'subscription-panel', 'cta']]),
         ];
     }
 
@@ -1325,18 +1420,18 @@ HTML;
                 'ctaHeading' => 'Launch with Recruitment & Jobs',
                 'ctaSummary' => 'Use this theme when the public site needs a focused recruitment & jobs presentation.',
             ],
-            'editorial-serif' => [
-                'summary' => 'Editorial Serif demo content for Quarter Press.',
-                'heroHeading' => 'Launch a polished Editorial Serif site',
-                'heroSummary' => 'Editorial Serif gives Capell sites a focused frontend theme with portable content, safe public output, and theme-specific visual tokens.',
-                'featuresHeading' => 'Editorial Serif sections',
-                'featuresSummary' => 'Portable demo content using the Editorial Serif theme profile.',
+            'quiet-type' => [
+                'summary' => 'Quiet Type demo content for Quarter Press.',
+                'heroHeading' => 'Launch a polished Quiet Type site',
+                'heroSummary' => 'Quiet Type gives Capell sites a focused frontend theme with portable content, safe public output, and theme-specific visual tokens.',
+                'featuresHeading' => 'Quiet Type sections',
+                'featuresSummary' => 'Portable demo content using the Quiet Type theme profile.',
                 'features' => [
-                    ['title' => 'navigation', 'summary' => 'Theme-specific section for Editorial Serif.', 'type' => 'Section'],
-                    ['title' => 'hero', 'summary' => 'Theme-specific section for Editorial Serif.', 'type' => 'Section'],
-                    ['title' => 'features', 'summary' => 'Theme-specific section for Editorial Serif.', 'type' => 'Section'],
+                    ['title' => 'navigation', 'summary' => 'Theme-specific section for Quiet Type.', 'type' => 'Section'],
+                    ['title' => 'hero', 'summary' => 'Theme-specific section for Quiet Type.', 'type' => 'Section'],
+                    ['title' => 'features', 'summary' => 'Theme-specific section for Quiet Type.', 'type' => 'Section'],
                 ],
-                'ctaHeading' => 'Launch with Editorial Serif',
+                'ctaHeading' => 'Launch with Quiet Type',
                 'ctaSummary' => 'Use this theme when the public site needs a focused editorial serif presentation.',
             ],
         ];

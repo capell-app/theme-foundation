@@ -2,7 +2,16 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/../../../../tests/Packages/Support/ThemeLayoutNativeSupport.php';
+
 /*
+ * Phase C: a theme converted to render through x-capell::layout +
+ * layout-builder (see themesConvertedToLayoutBuilder()) no longer ships a
+ * theme-<key>.css stylesheet under this glob, so themeIsolationStylesheets()
+ * below simply has nothing to check for it — its absence is acceptable for
+ * converted themes only, and every currently-shipped stylesheet is still
+ * checked exactly as strictly as before.
+ *
  * Guards the CSS-isolation contract that keeps themes from styling each other.
  *
  * All theme stylesheets compile into a single frontend bundle, so a theme must
