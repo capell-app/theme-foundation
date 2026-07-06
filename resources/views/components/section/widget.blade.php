@@ -1,4 +1,4 @@
-@props([
+@props ([
     'asset' => null,
     'class' => null,
     'color' => null,

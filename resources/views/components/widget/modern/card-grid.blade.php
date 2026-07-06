@@ -1,4 +1,4 @@
-@props([
+@props ([
     'assetRenderDataItems',
     'assets',
     'columns' => (int) ($widget->getMeta('columns', 3)),
@@ -66,7 +66,7 @@
                             @if ($icon !== '')
                                 <span class="ap-card__icon">
                                     @if (str_starts_with($icon, 'heroicon-'))
-                                        @svg($icon, 'h-5 w-5')
+                                        @svg ($icon, 'h-5 w-5')
                                     @else
                                         {{ $icon }}
                                     @endif
@@ -95,7 +95,7 @@
                                     <span>
                                         {{ $assetRenderData->meta['link_text'] }}
                                     </span>
-                                    @svg('heroicon-o-arrow-right', 'h-4 w-4')
+                                    @svg ('heroicon-o-arrow-right', 'h-4 w-4')
                                 </a>
                             @endif
                         </article>

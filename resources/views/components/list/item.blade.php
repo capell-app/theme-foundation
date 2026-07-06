@@ -7,7 +7,7 @@ use Capell\Navigation\Data\NavigationItemData;
  */
 ?>
 
-@props([
+@props ([
     'item',
     'active' => $item->active,
 ])
@@ -21,7 +21,7 @@ use Capell\Navigation\Data\NavigationItemData;
 >
     <a
         href="{{ $item->data['url'] ?? '' }}"
-        @class([
+        @class ([
             'inline-block py-1',
             'hover:text-primary focus:text-primary' => ! $active,
             'text-primary font-semibold' => $active,

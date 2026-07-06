@@ -1,4 +1,4 @@
-@props([
+@props ([
     'assetRenderDataItems',
     'layout' => $widget->getMeta('layout', 'grid'),
     'container',
@@ -44,7 +44,7 @@
             @endif
 
             <div
-                @class([
+                @class ([
                     'ap-feature-list' => $layout === 'vertical',
                     'ap-feature-grid ' . $responsiveGrid => $layout !== 'vertical',
                 ])
@@ -56,7 +56,7 @@
                     @endphp
 
                     <article
-                        @class([
+                        @class ([
                             'ap-feature-item layout-builder-card',
                             $responsiveItem => $layout !== 'vertical',
                         ])
@@ -64,7 +64,7 @@
                         @if ($icon !== '')
                             <span class="ap-feature-item__icon">
                                 @if (str_starts_with($icon, 'heroicon-'))
-                                    @svg($icon, 'h-5 w-5')
+                                    @svg ($icon, 'h-5 w-5')
                                 @else
                                     {{ $icon }}
                                 @endif

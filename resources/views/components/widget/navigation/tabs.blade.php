@@ -1,4 +1,4 @@
-@props([
+@props ([
     'container' => '',
     'containerKey',
     'containerWidth' => null,
@@ -22,7 +22,7 @@
                 <li class="tab-item -mb-px">
                     <a
                         href="{{ $item->data['url'] }}"
-                        @class([
+                        @class ([
                             'hover:bg-primary inline-block rounded-t border-b-2 border-transparent px-4 py-3 hover:text-white',
                             'border-b-primary' => $item->active,
                         ])

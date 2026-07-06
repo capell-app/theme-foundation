@@ -1,4 +1,4 @@
-@props([
+@props ([
     'item' => [],
     'itemClass',
 ])
@@ -17,7 +17,7 @@
     <a
         href="{{ $item->data['url'] ?? '' }}"
         @if ($usesWireNavigate) @wireNavigate @endif
-        @class([
+        @class ([
             $itemClass,
             'color-header hover:text-primary focus:text-primary' => ! $item->active,
             'active text-primary' => $item->active,
@@ -26,7 +26,7 @@
         @if (!empty($item->data['target'])) target="{{ $item->data['target'] }}" @endif
     >
         <span
-            @class([
+            @class ([
                 'lg:order-2',
                 'lg:sr-only' => ! empty($item->data['hide_label']),
             ])

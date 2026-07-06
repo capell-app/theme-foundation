@@ -6,7 +6,7 @@ $page = Frontend::page();
 $site = Frontend::site();
 ?>
 
-@props([
+@props ([
     'color' => '',
     'tag' => 'div',
     'size' => null,

@@ -5,7 +5,7 @@ $theme = Frontend::theme();
 
 ?>
 
-@props([
+@props ([
     'align' => $widget->getMeta('align'),
     'headingSize' => $widget->getMeta('heading_size', 'h2'),
     'colorScheme' => $widget->getMeta('color_scheme'),
@@ -37,7 +37,7 @@ $theme = Frontend::theme();
     :$widget
 >
     <div
-        @class([
+        @class ([
             '@container flex-1',
             'my-auto py-4' => $widget->image,
         ])
@@ -69,7 +69,7 @@ $theme = Frontend::theme();
 
     @if ($widget->image)
         <div
-            @class([
+            @class ([
                 match ($style) {
                     'row' => 'flex-1 lg:max-w-[40%]',
                     default => null,

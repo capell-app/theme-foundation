@@ -1,4 +1,4 @@
-@props([
+@props ([
     'color',
     'column',
     'assetRenderData',
@@ -14,7 +14,7 @@
 @endphp
 
 <div
-    @class([
+    @class ([
         'capell-asset-feature-item',
         'widget-features-item flex items-start gap-x-4 pt-1',
         'lg:flex-row-reverse lg:text-right' => (int) $column === 1 && $widget->image,

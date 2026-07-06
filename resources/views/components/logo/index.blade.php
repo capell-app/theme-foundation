@@ -7,7 +7,7 @@ $site = Frontend::site();
 /** @var Media $media */
 ?>
 
-@props([
+@props ([
     'media',
 ])
 

@@ -1,4 +1,4 @@
-@props([
+@props ([
     'bodyClass' => null,
     'language',
     'layout',
@@ -15,7 +15,7 @@
 @endphp
 
 <body
-    @class([
+    @class ([
         'site-app-body',
         'layout-' . $layout->key,
         $layout->getMeta('body_class'),
