@@ -24,6 +24,11 @@ use Illuminate\Console\Command;
  * this package's own `hasCommands()`), or directly via `scripts/validate-themes.php`
  * for the composer `manifest:check` chain, since `definition()` has no
  * framework or database dependency.
+ *
+ * Wave 0.7 sharpened the `docs/screenshots.json` check from a raw entry count
+ * to gating on all 7 `ProvidesThemeDemoContent` surface names (homepage,
+ * directory, detail, contact, empty, not-found, cta) — this table now
+ * surfaces which of those a theme is missing by name, not just an entry count.
  */
 class ValidateThemesCommand extends Command
 {

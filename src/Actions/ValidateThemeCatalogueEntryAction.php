@@ -34,7 +34,26 @@ final class ValidateThemeCatalogueEntryAction
 {
     use AsObject;
 
-    private const int REQUIRED_SCREENSHOT_ENTRY_COUNT = 5;
+    /**
+     * The `ProvidesThemeDemoContent` contract's 7 canonical surface names
+     * (see `ThemeDemoPageDefinition::$surface`). Wave 0.7's interior-page
+     * audit found 17 of 19 themes capture screenshots under ad hoc names
+     * (`landing`, `listing`, `search`, ...) instead of these, and none of
+     * those 17 have `empty`, `not-found`, or `cta` captured at all — a raw
+     * entry count can't catch that, so manifest completeness must gate on
+     * every surface name being present.
+     *
+     * @var list<string>
+     */
+    private const array REQUIRED_DEMO_SURFACES = [
+        'homepage',
+        'directory',
+        'detail',
+        'contact',
+        'empty',
+        'not-found',
+        'cta',
+    ];
 
     /**
      * @var list<string>
@@ -232,16 +251,48 @@ final class ValidateThemeCatalogueEntryAction
         $screenshots = $this->readJsonObject($screenshotsPath);
         $entries = is_array($screenshots['entries'] ?? null) ? $screenshots['entries'] : [];
 
-        if (count($entries) < self::REQUIRED_SCREENSHOT_ENTRY_COUNT) {
-            return [sprintf(
-                '%s: docs/screenshots.json has %d entries, fewer than the required %d.',
-                $themeKey,
-                count($entries),
-                self::REQUIRED_SCREENSHOT_ENTRY_COUNT,
-            )];
+        $missingSurfaces = array_values(array_diff(self::REQUIRED_DEMO_SURFACES, $this->capturedDemoSurfaces($entries)));
+
+        if ($missingSurfaces === []) {
+            return [];
         }
 
-        return [];
+        return [sprintf(
+            '%s: docs/screenshots.json is missing captures for the DemoContent surface(s): %s.',
+            $themeKey,
+            implode(', ', $missingSurfaces),
+        )];
+    }
+
+    /**
+     * Matches each entry's `id` against the contract's surface names, e.g.
+     * `liquid-glass-not-found-mobile` covers `not-found` once its
+     * `-tablet`/`-mobile` viewport suffix is stripped. Ad hoc names such as
+     * `art-paper-contact-form` deliberately do not match `contact` — the
+     * whole point of this check is to gate on the contract's exact names.
+     *
+     * @param  array<mixed>  $entries
+     * @return list<string>
+     */
+    private function capturedDemoSurfaces(array $entries): array
+    {
+        $covered = [];
+
+        foreach ($entries as $entry) {
+            if (! is_array($entry) || ! is_string($entry['id'] ?? null)) {
+                continue;
+            }
+
+            $baseId = (string) preg_replace('/-(?:desktop|tablet|mobile)$/', '', $entry['id']);
+
+            foreach (self::REQUIRED_DEMO_SURFACES as $surface) {
+                if (str_ends_with($baseId, '-' . $surface)) {
+                    $covered[$surface] = $surface;
+                }
+            }
+        }
+
+        return array_values($covered);
     }
 
     /**
