@@ -1,0 +1,307 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Capell\FoundationTheme\Actions;
+
+use Capell\Core\ThemeStudio\Data\ThemeDefinitionData;
+use Capell\FoundationTheme\Data\ThemeValidationResultData;
+use Lorisleiva\Actions\Concerns\AsObject;
+use RuntimeException;
+
+/**
+ * Wave 1.4 — checks three-way agreement for a single theme package: its
+ * `capell.json` manifest, its `docs/themes.json` catalogue entry, and its
+ * registered `ThemeDefinitionData` (obtained by calling the theme's own
+ * service provider `definition(): ThemeDefinitionData` static method — the
+ * exact class named in the manifest's `providers.runtime[0]`). Also checks
+ * `docs/screenshots.json` manifest completeness and that the catalogue's
+ * classification fields are populated.
+ *
+ * This extracts the cross-check logic that previously lived only inline in
+ * `ThemeCatalogueTest` and `ThemePackageManifestTest`, so `capell:validate-themes`
+ * and those two Pest suites share one source of truth.
+ *
+ * Deliberately requires nothing but Composer autoloading — `definition()` is
+ * a static method with no framework or database dependency, so this action
+ * (and therefore `capell:validate-themes`) runs from a plain
+ * `vendor/autoload.php`-only script, exactly like `scripts/audit-manifest-v3.php`,
+ * with no Testbench/Laravel boot required.
+ *
+ * @method static ThemeValidationResultData run(string $packageDirectory, string $packagesRoot)
+ */
+final class ValidateThemeCatalogueEntryAction
+{
+    use AsObject;
+
+    private const int REQUIRED_SCREENSHOT_ENTRY_COUNT = 5;
+
+    /**
+     * @var list<string>
+     */
+    private const array REQUIRED_CLASSIFICATION_FIELDS = [
+        'audience',
+        'lane',
+        'overlapRisk',
+        'priorityPhase',
+        'visualDifferentiators',
+        'notes',
+    ];
+
+    public function handle(string $packageDirectory, string $packagesRoot): ThemeValidationResultData
+    {
+        $manifestPath = $packagesRoot . '/' . $packageDirectory . '/capell.json';
+        $manifest = $this->readJsonObject($manifestPath);
+
+        $themeKey = is_string($manifest['themeKey'] ?? null) ? $manifest['themeKey'] : $packageDirectory;
+
+        $violations = [
+            ...$this->manifestViolations($manifest, $themeKey),
+            ...$this->catalogueViolations($packagesRoot, $manifest, $themeKey),
+            ...$this->definitionViolations($manifest, $themeKey),
+            ...$this->screenshotManifestViolations($packagesRoot, $packageDirectory, $themeKey),
+        ];
+
+        return new ThemeValidationResultData(
+            themeKey: $themeKey,
+            violations: $violations,
+        );
+    }
+
+    /**
+     * @param  array<string, mixed>  $manifest
+     * @return list<string>
+     */
+    private function manifestViolations(array $manifest, string $themeKey): array
+    {
+        $violations = [];
+
+        if (! is_string($manifest['themeKey'] ?? null) || $manifest['themeKey'] === '') {
+            $violations[] = "{$themeKey}: capell.json is missing a themeKey.";
+        }
+
+        if (! array_key_exists('extends', $manifest)) {
+            $violations[] = "{$themeKey}: capell.json is missing an extends key.";
+        }
+
+        if (! is_array($manifest['product'] ?? null) || ! is_string($manifest['product']['tier'] ?? null)) {
+            $violations[] = "{$themeKey}: capell.json is missing product.tier.";
+        }
+
+        return $violations;
+    }
+
+    /**
+     * @param  array<string, mixed>  $manifest
+     * @return list<string>
+     */
+    private function catalogueViolations(string $packagesRoot, array $manifest, string $themeKey): array
+    {
+        $cataloguePath = dirname($packagesRoot) . '/docs/themes.json';
+        $catalogue = $this->readJsonObject($cataloguePath);
+
+        $entries = is_array($catalogue['themes'] ?? null) ? $catalogue['themes'] : [];
+
+        $catalogueEntry = null;
+
+        foreach ($entries as $entry) {
+            if (is_array($entry) && ($entry['themeKey'] ?? null) === $themeKey) {
+                $catalogueEntry = $entry;
+
+                break;
+            }
+        }
+
+        if ($catalogueEntry === null) {
+            return ["{$themeKey}: no docs/themes.json entry found for this theme."];
+        }
+
+        $violations = [];
+
+        if (($catalogueEntry['package'] ?? null) !== ($manifest['name'] ?? null)) {
+            $violations[] = "{$themeKey}: docs/themes.json package ({$this->describe($catalogueEntry['package'] ?? null)}) does not match capell.json name ({$this->describe($manifest['name'] ?? null)}).";
+        }
+
+        $manifestExtends = $manifest['extends'] ?? null;
+        $catalogueExtends = $catalogueEntry['extends'] ?? null;
+
+        if ($manifestExtends !== $catalogueExtends) {
+            $violations[] = "{$themeKey}: docs/themes.json extends ({$this->describe($catalogueExtends)}) does not match capell.json extends ({$this->describe($manifestExtends)}).";
+        }
+
+        $manifestTier = is_array($manifest['product'] ?? null) ? ($manifest['product']['tier'] ?? null) : null;
+        $catalogueTier = $catalogueEntry['tier'] ?? null;
+
+        // docs/themes.json `tier` is a catalogue/governance classification
+        // (`foundation|free|premium|experimental|candidate-for-merge`, see
+        // ThemeCatalogueTest's $allowedTiers) while capell.json `product.tier`
+        // is a commercial billing tier (`free|premium`) — two different
+        // taxonomies that happen to share the word "tier". They only need to
+        // agree for the `free`/`premium` catalogue tiers; `foundation` (the
+        // single root theme every other theme extends) legitimately pairs
+        // with either commercial tier and is not a disagreement.
+        if ($manifestTier !== null && $catalogueTier !== null && $catalogueTier !== 'foundation' && $manifestTier !== $catalogueTier) {
+            $violations[] = "{$themeKey}: docs/themes.json tier ({$this->describe($catalogueTier)}) does not match capell.json product.tier ({$this->describe($manifestTier)}).";
+        }
+
+        foreach (self::REQUIRED_CLASSIFICATION_FIELDS as $field) {
+            if (! $this->hasNonEmptyValue($catalogueEntry, $field)) {
+                $violations[] = "{$themeKey}: docs/themes.json is missing a populated \"{$field}\" classification field.";
+            }
+        }
+
+        return $violations;
+    }
+
+    /**
+     * @param  array<string, mixed>  $manifest
+     * @return list<string>
+     */
+    private function definitionViolations(array $manifest, string $themeKey): array
+    {
+        $providerClass = $this->providerClass($manifest);
+
+        if ($providerClass === null) {
+            return ["{$themeKey}: capell.json providers.runtime[0] is missing or not a string."];
+        }
+
+        if (! class_exists($providerClass)) {
+            return ["{$themeKey}: service provider class {$providerClass} does not exist or is not autoloadable."];
+        }
+
+        if (! method_exists($providerClass, 'definition')) {
+            return ["{$themeKey}: {$providerClass} does not declare a static definition() method."];
+        }
+
+        $definition = $providerClass::definition();
+
+        if (! $definition instanceof ThemeDefinitionData) {
+            return ["{$themeKey}: {$providerClass}::definition() did not return a ThemeDefinitionData instance."];
+        }
+
+        $violations = [];
+
+        if ($definition->key !== $themeKey) {
+            $violations[] = "{$themeKey}: ThemeDefinitionData key ({$definition->key}) does not match themeKey.";
+        }
+
+        if ($definition->package !== ($manifest['name'] ?? null)) {
+            $violations[] = "{$themeKey}: ThemeDefinitionData package ({$definition->package}) does not match capell.json name ({$this->describe($manifest['name'] ?? null)}).";
+        }
+
+        $manifestExtends = $manifest['extends'] ?? null;
+
+        if ($definition->extends !== $manifestExtends) {
+            $violations[] = "{$themeKey}: ThemeDefinitionData extends ({$this->describe($definition->extends)}) does not match capell.json extends ({$this->describe($manifestExtends)}).";
+        }
+
+        return $violations;
+    }
+
+    /**
+     * @param  array<string, mixed>  $manifest
+     */
+    private function providerClass(array $manifest): ?string
+    {
+        $providers = $manifest['providers'] ?? null;
+
+        if (! is_array($providers)) {
+            return null;
+        }
+
+        $runtimeProviders = $providers['runtime'] ?? null;
+
+        if (! is_array($runtimeProviders) || ! is_string($runtimeProviders[0] ?? null)) {
+            return null;
+        }
+
+        return $runtimeProviders[0];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function screenshotManifestViolations(string $packagesRoot, string $packageDirectory, string $themeKey): array
+    {
+        $screenshotsPath = $packagesRoot . '/' . $packageDirectory . '/docs/screenshots.json';
+
+        if (! is_file($screenshotsPath)) {
+            return ["{$themeKey}: docs/screenshots.json is missing."];
+        }
+
+        $screenshots = $this->readJsonObject($screenshotsPath);
+        $entries = is_array($screenshots['entries'] ?? null) ? $screenshots['entries'] : [];
+
+        if (count($entries) < self::REQUIRED_SCREENSHOT_ENTRY_COUNT) {
+            return [sprintf(
+                '%s: docs/screenshots.json has %d entries, fewer than the required %d.',
+                $themeKey,
+                count($entries),
+                self::REQUIRED_SCREENSHOT_ENTRY_COUNT,
+            )];
+        }
+
+        return [];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function readJsonObject(string $path): array
+    {
+        if (! is_file($path)) {
+            throw new RuntimeException('Expected JSON file at ' . $path . '.');
+        }
+
+        $decoded = json_decode((string) file_get_contents($path), true, flags: JSON_THROW_ON_ERROR);
+
+        if (! is_array($decoded)) {
+            throw new RuntimeException('Expected a JSON object at ' . $path . '.');
+        }
+
+        $object = [];
+
+        foreach ($decoded as $key => $value) {
+            if (is_string($key)) {
+                $object[$key] = $value;
+            }
+        }
+
+        return $object;
+    }
+
+    /**
+     * @param  array<string, mixed>  $entry
+     */
+    private function hasNonEmptyValue(array $entry, string $field): bool
+    {
+        if (! array_key_exists($field, $entry)) {
+            return false;
+        }
+
+        $value = $entry[$field];
+
+        if (is_string($value)) {
+            return trim($value) !== '';
+        }
+
+        if (is_array($value)) {
+            return $value !== [];
+        }
+
+        return $value !== null;
+    }
+
+    private function describe(mixed $value): string
+    {
+        if ($value === null) {
+            return 'null';
+        }
+
+        if (is_string($value)) {
+            return $value;
+        }
+
+        return (string) json_encode($value);
+    }
+}

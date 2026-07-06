@@ -237,13 +237,14 @@ it('declares foundation settings schema and settings migrations', function (): v
         ->and($performanceComponents)->toHaveCount(2)
         ->and($performanceComponents[0])->toBeInstanceOf(Checkbox::class)
         ->and($performanceComponents[1])->toBeInstanceOf(Checkbox::class)
-        ->and($designTokenComponents)->toHaveCount(17)
+        ->and($designTokenComponents)->toHaveCount(18)
         ->and($designTokenComponents[0])->toBeInstanceOf(ColorPicker::class)
         ->and($designTokenComponents[12])->toBeInstanceOf(ColorPicker::class)
         ->and($designTokenComponents[13])->toBeInstanceOf(Select::class)
         ->and($designTokenComponents[14])->toBeInstanceOf(Select::class)
         ->and($designTokenComponents[15])->toBeInstanceOf(Select::class)
         ->and($designTokenComponents[16])->toBeInstanceOf(Select::class)
+        ->and($designTokenComponents[17])->toBeInstanceOf(Select::class)
         ->and($darkDesignTokenComponents)->toHaveCount(13)
         ->and($darkDesignTokenComponents[0])->toBeInstanceOf(ColorPicker::class)
         ->and($darkDesignTokenComponents[12])->toBeInstanceOf(ColorPicker::class)
@@ -256,6 +257,7 @@ it('declares foundation settings schema and settings migrations', function (): v
             '2026_05_23_180101_add_theme_foundation_image_tokens',
             '2026_06_07_000001_add_theme_foundation_dark_design_tokens',
             '2026_06_07_000002_add_theme_foundation_typography_tokens',
+            '2026_07_05_000001_add_theme_foundation_motion_tokens',
         ])
         ->and($provider->migrations())->toBe([
             '2026_05_10_190850_01_create_theme_foundation_settings',
@@ -266,6 +268,7 @@ it('declares foundation settings schema and settings migrations', function (): v
             '2026_05_23_180101_add_theme_foundation_image_tokens',
             '2026_06_07_000001_add_theme_foundation_dark_design_tokens',
             '2026_06_07_000002_add_theme_foundation_typography_tokens',
+            '2026_07_05_000001_add_theme_foundation_motion_tokens',
         ])
         ->and(FoundationThemeSettings::group())->toBe('theme_foundation')
         ->and(FoundationThemeSettings::schema())->toBe(FoundationThemeSettingsSchema::class)

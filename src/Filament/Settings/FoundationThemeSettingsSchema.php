@@ -120,6 +120,17 @@ class FoundationThemeSettingsSchema implements HasSchema
                                 ->default('balanced')
                                 ->in(array_keys(FoundationThemeSettings::HEADING_SCALE_OPTIONS))
                                 ->required(),
+                            Select::make('motion_intensity')
+                                ->label(self::translate('capell-theme-foundation::form.motion_intensity'))
+                                ->options([
+                                    'none' => self::translate('capell-theme-foundation::form.motion_intensity_options.none'),
+                                    'minimal' => self::translate('capell-theme-foundation::form.motion_intensity_options.minimal'),
+                                    'subtle' => self::translate('capell-theme-foundation::form.motion_intensity_options.subtle'),
+                                    'energetic' => self::translate('capell-theme-foundation::form.motion_intensity_options.energetic'),
+                                ])
+                                ->default('subtle')
+                                ->in(array_keys(FoundationThemeSettings::MOTION_INTENSITY_OPTIONS))
+                                ->required(),
                         ]),
                 ]),
             Section::make(self::translate('capell-theme-foundation::form.dark_design_tokens'))

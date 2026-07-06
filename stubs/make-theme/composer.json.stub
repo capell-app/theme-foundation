@@ -1,0 +1,55 @@
+{
+    "name": "{{ composerPackageName }}",
+    "description": "{{ displayName }} is a first-party Capell theme in the {{ family }} family.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.4",
+        "capell-app/core": "^4.0 || 4.x-dev",
+        "capell-app/theme-foundation": "^4.0 || 4.x-dev",
+        "capell-app/frontend": "^4.0 || 4.x-dev",
+        "capell-app/layout-builder": "^4.0 || 4.x-dev"
+    },
+    "require-dev": {
+        "pestphp/pest": "^3.0|^4.0",
+        "phpunit/phpunit": "^10.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "{{ rootNamespaceJson }}\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "{{ rootNamespaceJson }}\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "{{ rootNamespaceJson }}\\{{ studlyName }}ThemeServiceProvider"
+            ]
+        },
+        "branch-alias": {
+            "dev-main": "4.x-dev"
+        }
+    },
+    "homepage": "https://github.com/capell-app/{{ packageDirectoryName }}",
+    "keywords": [
+        "capell",
+        "cms",
+        "laravel",
+        "theme"
+    ],
+    "authors": [
+        {
+            "name": "Capell Team",
+            "email": "team@capell.app",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "source": "https://github.com/capell-app/capell-packages",
+        "docs": "https://docs.capell.app/packages/{{ packageDirectoryName }}"
+    }
+}

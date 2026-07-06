@@ -43,6 +43,43 @@ class FoundationThemeSettings extends Settings implements SettingsContract
         ],
     ];
 
+    /**
+     * Wave 2.3 motion-tier mapping (programme §0.6): each `motionIntensity`
+     * Theme Studio value resolves to a coherent set of CSS custom-property
+     * values consumed by `tokens.blade.php`. "none" keeps a static, composed
+     * feel (depth/scale variance) rather than simply disabling transitions;
+     * `prefers-reduced-motion: reduce` overrides every tier back to "none"
+     * regardless of the configured token.
+     *
+     * @var array<string, array{duration: string, ease: string, stagger: string, distance: string}>
+     */
+    public const array MOTION_INTENSITY_OPTIONS = [
+        'none' => [
+            'duration' => '0.001ms',
+            'ease' => 'linear',
+            'stagger' => '0ms',
+            'distance' => '0px',
+        ],
+        'minimal' => [
+            'duration' => '350ms',
+            'ease' => 'ease-out',
+            'stagger' => '40ms',
+            'distance' => '0px',
+        ],
+        'subtle' => [
+            'duration' => '500ms',
+            'ease' => 'cubic-bezier(0.22, 1, 0.36, 1)',
+            'stagger' => '60ms',
+            'distance' => '20px',
+        ],
+        'energetic' => [
+            'duration' => '320ms',
+            'ease' => 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+            'stagger' => '80ms',
+            'distance' => '45px',
+        ],
+    ];
+
     public bool $enable_lazy_loading = true;
 
     public bool $minify_assets = true;
@@ -107,6 +144,8 @@ class FoundationThemeSettings extends Settings implements SettingsContract
 
     public string $heading_scale = 'balanced';
 
+    public string $motion_intensity = 'subtle';
+
     public static function group(): string
     {
         return 'theme_foundation';
@@ -138,6 +177,15 @@ class FoundationThemeSettings extends Settings implements SettingsContract
             ?? self::HEADING_SCALE_OPTIONS['balanced'];
     }
 
+    /**
+     * @return array{duration: string, ease: string, stagger: string, distance: string}
+     */
+    public static function motionIntensityCssValuesFor(?string $motionIntensity): array
+    {
+        return self::MOTION_INTENSITY_OPTIONS[$motionIntensity ?? 'subtle']
+            ?? self::MOTION_INTENSITY_OPTIONS['subtle'];
+    }
+
     public function sectionSpacingCssValue(): string
     {
         return self::sectionSpacingCssValueFor($this->section_spacing);
@@ -154,5 +202,20 @@ class FoundationThemeSettings extends Settings implements SettingsContract
     public function headingScaleCssValues(): array
     {
         return self::headingScaleCssValuesFor($this->heading_scale);
+    }
+
+    /**
+     * @return array{duration: string, ease: string, stagger: string, distance: string}
+     */
+    public function motionIntensityCssValues(): array
+    {
+        return self::motionIntensityCssValuesFor($this->motion_intensity);
+    }
+
+    public function motionIntensityKey(): string
+    {
+        return array_key_exists($this->motion_intensity, self::MOTION_INTENSITY_OPTIONS)
+            ? $this->motion_intensity
+            : 'subtle';
     }
 }

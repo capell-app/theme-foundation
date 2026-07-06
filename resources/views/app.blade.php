@@ -1,9 +1,16 @@
 @php
+    use Capell\FoundationTheme\Actions\ResolveFoundationThemeTokensAction;
+    use Capell\FoundationTheme\Data\FoundationThemeTokensData;
     use Capell\Frontend\Enums\RenderHookLocation;
     use Capell\Frontend\Facades\Frontend;
     use Capell\Frontend\Support\Render\RenderHookRegistry;
     use Capell\Frontend\Support\Security\JsonLdScriptSanitizer;
     use Illuminate\Support\Facades\Route;
+
+    $preparedThemeTokens = Frontend::getFrontendData('foundation.theme.tokens');
+    $themeTokens = $preparedThemeTokens instanceof FoundationThemeTokensData
+        ? $preparedThemeTokens
+        : ResolveFoundationThemeTokensAction::run(resolveSettings: false);
 
     $site = Frontend::site();
     $siteMeta = $site?->meta ?? [];
@@ -28,6 +35,7 @@
     class="h-full"
     lang="{{ str_replace('_', '-', (string) $languageCode) }}"
     dir="{{ $textDirection }}"
+    data-motion-intensity="{{ $themeTokens->motionIntensity }}"
 >
     <x-capell::app.head
         :livewire-enabled="$usesLivewire"
@@ -36,7 +44,7 @@
     />
 
     <body
-        @class([
+        @class ([
             'site-app-body',
             'layout-' . $layout->key,
             $layout->getMeta('body_class'),
@@ -52,9 +60,9 @@
             <x-capell::page-data />
         @endif
 
-        @stack('scripts')
+        @stack ('scripts')
 
-        @yield('scripts')
+        @yield ('scripts')
 
         @if ($usesLivewire)
             @livewireScripts

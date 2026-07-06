@@ -1,3 +1,56 @@
+/**
+ * carousel.js — v1.0.0
+ *
+ * Shared Foundation JS module suite (Wave 2.6). Wraps Swiper to read its
+ * configuration entirely from `data-carousel-*` attributes on `.swiper`
+ * nodes, so themes opt in by rendering the markup — nothing here scans the
+ * whole document except the bootstrap call at the bottom of this file, which
+ * only touches `.swiper` nodes.
+ *
+ * Public data-attribute contract (all optional, all on the `.swiper` node
+ * unless noted):
+ * - `data-carousel-align` / `data-align`: `"center"` (default) or any other
+ *   value disables centered slides.
+ * - `data-carousel-autoplay` / `data-auto`: boolean, enables autoplay.
+ * - `data-carousel-autoplay-delay` / `data-delay`: integer ms, default 5000.
+ * - `data-carousel-disable-on-interaction`: boolean, default true.
+ * - `data-carousel-breakpoints` / `data-breakpoint`: JSON Swiper breakpoints
+ *   object.
+ * - `data-carousel-breakpoints-base`: `"window"` (default) or `"container"`.
+ * - `data-carousel-id`: stable id; generated if absent (used to scope
+ *   `data-carousel-controls="<id>"` lookups).
+ * - `data-carousel-effect`: `"slide"` (default) or `"fade"`; `data-fade`
+ *   boolean is a shorthand for `"fade"`.
+ * - `data-carousel-drag` / `data-drag`, `data-carousel-touch` /
+ *   `data-carousel-swipe`: booleans controlling pointer interaction; default
+ *   is enabled unless the fade effect is active.
+ * - `data-carousel-wheel` / `data-wheel`: boolean, enables mousewheel control.
+ * - `data-carousel-pagination`, `data-carousel-navigation`: booleans,
+ *   force-enable/disable controls even when a `.swiper-controls` node exists.
+ * - `data-carousel-initial-slide`: integer index.
+ * - `data-carousel-loop`, `data-carousel-rewind`: booleans.
+ * - `data-carousel-rows`: integer, enables the Grid module.
+ * - `data-carousel-pause-on-hover`: boolean, default true.
+ * - `data-carousel-speed`: integer ms transition duration, default 300.
+ * - `data-carousel-watch-overflow`: boolean, default true.
+ *
+ * Controls markup: a sibling/ancestor `.swiper-controls` node (or one
+ * matched by `[data-carousel-controls="<carouselId>"]`) may contain
+ * `.swiper-pagination` and `.swiper-button-prev` / `.swiper-button-next`.
+ *
+ * Custom events dispatched/consumed on the `.swiper` node:
+ * `enable-carousel`, `disable-carousel` (both consumed, e.g. dispatched by
+ * lightbox.js while a lightbox is open, to pause the underlying carousel).
+ *
+ * Visibility: an `IntersectionObserver` disables autoplay while the
+ * carousel is scrolled out of view and re-enables it when visible again.
+ *
+ * Lifecycle: `initCarousels(root)` bootstraps every `.swiper` under `root`
+ * (defaults to `document`) once on load and again after
+ * `livewire:navigated`. `destroyCarousel(node)` tears down a single
+ * instance; `initCarousel(node)` re-initialises it from scratch.
+ */
+
 import { Swiper } from 'swiper'
 import {
     Navigation,

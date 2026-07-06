@@ -37,6 +37,14 @@ final class ResolveFoundationThemeTokensAction
             ? $settings->headingScaleCssValues()
             : FoundationThemeSettings::headingScaleCssValuesFor(null);
 
+        $motionIntensityKey = $settings instanceof FoundationThemeSettings
+            ? $settings->motionIntensityKey()
+            : 'subtle';
+
+        $motion = $settings instanceof FoundationThemeSettings
+            ? $settings->motionIntensityCssValues()
+            : FoundationThemeSettings::motionIntensityCssValuesFor(null);
+
         return new FoundationThemeTokensData(
             paletteColors: $this->paletteColors($theme)->values()->all(),
             brandColor: $this->safeColor($brandColorMeta, '#111827'),
@@ -82,6 +90,11 @@ final class ResolveFoundationThemeTokensAction
             headingSizeH2: $headingScale['h2'],
             headingSizeH3: $headingScale['h3'],
             headingLineHeight: $headingScale['lineHeight'],
+            motionIntensity: $motionIntensityKey,
+            motionDuration: $motion['duration'],
+            motionEase: $motion['ease'],
+            motionStagger: $motion['stagger'],
+            motionDistance: $motion['distance'],
         );
     }
 

@@ -6,6 +6,7 @@ namespace Capell\FoundationTheme\Actions;
 
 use Capell\FoundationTheme\Data\ThemeDemoInstallData;
 use Capell\FoundationTheme\Providers\FoundationThemeServiceProvider;
+use Capell\FoundationTheme\Support\Demo\FoundationDemoContent;
 use Capell\FoundationTheme\Support\Demo\ThemeDemoPageInstaller;
 use Lorisleiva\Actions\Concerns\AsAction;
 
@@ -22,6 +23,7 @@ final class InstallFoundationThemeDemoAction
             data: $data,
             themeKey: FoundationThemeServiceProvider::THEME_KEY,
             themeName: 'Foundation',
+            contentProvider: new FoundationDemoContent,
         );
     }
 }

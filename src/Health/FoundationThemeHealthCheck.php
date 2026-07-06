@@ -11,12 +11,17 @@ use Capell\Core\Enums\VendorAssetEnum;
 use Capell\Core\Facades\CapellCore;
 use Capell\Core\Support\Settings\SettingsSchemaRegistry;
 use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
+use Capell\FoundationTheme\Console\Commands\ValidateThemesCommand;
 use Capell\FoundationTheme\Filament\Settings\FoundationThemeSettingsSchema;
 use Capell\FoundationTheme\Providers\FoundationThemeServiceProvider;
 use Capell\FoundationTheme\Settings\FoundationThemeSettings;
 use Capell\FoundationTheme\Support\Assets\FoundationThemeAssetContributor;
+use FilesystemIterator;
 use Illuminate\Support\Collection;
 use JsonException;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use SplFileInfo;
 
 final class FoundationThemeHealthCheck implements ChecksExtensionHealth
 {
@@ -119,6 +124,9 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
             $check->assetPipelineCheck(),
             $check->configAndTokensCheck(),
             $check->providerRegistrationsCheck(),
+            $check->fleetCatalogueCoverageCheck(),
+            $check->fleetDemoContentCoverageCheck(),
+            $check->fleetScreenshotFreshnessCheck(),
         ]);
     }
 
@@ -238,6 +246,172 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
                 ? null
                 : 'Boot FoundationThemeServiceProvider with the package installed so runtime services and registries are populated.',
         );
+    }
+
+    /**
+     * Wave 2.8 — flags theme packages with no matching `docs/themes.json`
+     * catalogue entry. The catalogue is the fleet's canonical list, so a
+     * theme package present under `packages/theme-*` but absent from it is
+     * a shipped-but-uncatalogued theme.
+     */
+    public function fleetCatalogueCoverageCheck(): DoctorCheckResultData
+    {
+        $issues = $this->themesMissingCatalogueEntries();
+
+        return new DoctorCheckResultData(
+            label: 'Fleet theme catalogue coverage',
+            passed: $issues === [],
+            message: $issues === []
+                ? 'Every discovered theme package has a matching docs/themes.json catalogue entry.'
+                : 'Themes missing a catalogue entry: ' . implode(', ', $issues) . '.',
+            remediation: $issues === []
+                ? null
+                : 'Add a docs/themes.json entry for each listed theme package before it ships.',
+        );
+    }
+
+    /**
+     * Wave 2.8 — flags theme packages with no discoverable
+     * `ProvidesThemeDemoContent` implementation under their own `src/`
+     * directory, meaning the theme cannot pass the Wave 3 demo-content
+     * contract.
+     */
+    public function fleetDemoContentCoverageCheck(): DoctorCheckResultData
+    {
+        $issues = $this->themesMissingDemoContent();
+
+        return new DoctorCheckResultData(
+            label: 'Fleet demo content coverage',
+            passed: $issues === [],
+            message: $issues === []
+                ? 'Every discovered theme package registers a ProvidesThemeDemoContent implementation.'
+                : 'Themes missing DemoContent: ' . implode(', ', $issues) . '.',
+            remediation: $issues === []
+                ? null
+                : 'Implement Capell\\FoundationTheme\\Contracts\\ProvidesThemeDemoContent for each listed theme.',
+        );
+    }
+
+    /**
+     * Wave 2.8 — flags theme packages with no `docs/screenshots.json`
+     * manifest, or one whose `entries` list is empty, meaning the theme has
+     * no fresh screenshot evidence for the marketplace.
+     */
+    public function fleetScreenshotFreshnessCheck(): DoctorCheckResultData
+    {
+        $issues = $this->themesMissingScreenshots();
+
+        return new DoctorCheckResultData(
+            label: 'Fleet screenshot freshness',
+            passed: $issues === [],
+            message: $issues === []
+                ? 'Every discovered theme package has a docs/screenshots.json manifest with at least one entry.'
+                : 'Themes missing/stale screenshots: ' . implode(', ', $issues) . '.',
+            remediation: $issues === []
+                ? null
+                : 'Capture and commit docs/screenshots.json entries for each listed theme before it ships.',
+        );
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function themesMissingCatalogueEntries(): array
+    {
+        $packagesRoot = $this->packagesRoot();
+
+        if ($packagesRoot === null) {
+            return [];
+        }
+
+        $catalogueThemeKeys = $this->catalogueThemeKeys($packagesRoot);
+
+        $missing = [];
+
+        foreach ($this->themePackageDirectories($packagesRoot) as $packageDirectory) {
+            $manifest = $this->readJsonFile($packagesRoot . '/' . $packageDirectory . '/capell.json');
+            $themeKey = is_string($manifest['themeKey'] ?? null) ? $manifest['themeKey'] : $packageDirectory;
+
+            if (! in_array($themeKey, $catalogueThemeKeys, true)) {
+                $missing[] = $packageDirectory;
+            }
+        }
+
+        return array_values($missing);
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function themesMissingDemoContent(): array
+    {
+        $packagesRoot = $this->packagesRoot();
+
+        if ($packagesRoot === null) {
+            return [];
+        }
+
+        $missing = [];
+
+        foreach ($this->themePackageDirectories($packagesRoot) as $packageDirectory) {
+            // theme-foundation itself deliberately renders demo content via
+            // the shared generic skeleton (ThemeDemoPageInstaller), not the
+            // ProvidesThemeDemoContent contract, which exists precisely for
+            // child themes that need bespoke, vertical-authentic content
+            // instead of that skeleton — so it is not "missing" here.
+            if ($packageDirectory === 'theme-foundation') {
+                continue;
+            }
+
+            $sourceFiles = $this->phpFilesRecursively($packagesRoot . '/' . $packageDirectory . '/src');
+
+            $implementsDemoContent = collect($sourceFiles)->contains(
+                static function (string $filePath): bool {
+                    $contents = file_get_contents($filePath) ?: '';
+
+                    return str_contains($contents, 'ProvidesThemeDemoContent');
+                },
+            );
+
+            if (! $implementsDemoContent) {
+                $missing[] = $packageDirectory;
+            }
+        }
+
+        return array_values($missing);
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function themesMissingScreenshots(): array
+    {
+        $packagesRoot = $this->packagesRoot();
+
+        if ($packagesRoot === null) {
+            return [];
+        }
+
+        $missing = [];
+
+        foreach ($this->themePackageDirectories($packagesRoot) as $packageDirectory) {
+            $screenshotManifestPath = $packagesRoot . '/' . $packageDirectory . '/docs/screenshots.json';
+
+            if (! is_file($screenshotManifestPath)) {
+                $missing[] = $packageDirectory;
+
+                continue;
+            }
+
+            $manifest = $this->readJsonFile($screenshotManifestPath);
+            $entries = $manifest['entries'] ?? null;
+
+            if (! is_array($entries) || $entries === []) {
+                $missing[] = $packageDirectory;
+            }
+        }
+
+        return array_values($missing);
     }
 
     public function isThemeStudioDefinitionRegistered(): bool
@@ -528,6 +702,120 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
         }
 
         return $issues;
+    }
+
+    /**
+     * Locates the `packages/` monorepo root from this package's own root, so
+     * the fleet-wide Wave 2.8 checks can walk sibling `theme-*` packages.
+     * Mirrors {@see ValidateThemesCommand::packagesRoot()}.
+     */
+    private function packagesRoot(): ?string
+    {
+        $candidate = dirname($this->packageRoot);
+
+        if (is_dir($candidate) && glob($candidate . '/theme-*') !== []) {
+            return $candidate;
+        }
+
+        if (function_exists('base_path')) {
+            $fallback = base_path('packages');
+
+            if (is_dir($fallback)) {
+                return $fallback;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function themePackageDirectories(string $packagesRoot): array
+    {
+        $manifestPaths = glob($packagesRoot . '/theme-*/capell.json') ?: [];
+        sort($manifestPaths);
+
+        $directories = [];
+
+        foreach ($manifestPaths as $manifestPath) {
+            $manifest = $this->readJsonFile($manifestPath);
+
+            if (($manifest['kind'] ?? null) !== 'theme') {
+                continue;
+            }
+
+            $directories[] = basename(dirname($manifestPath));
+        }
+
+        return $directories;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function catalogueThemeKeys(string $packagesRoot): array
+    {
+        $cataloguePath = dirname($packagesRoot) . '/docs/themes.json';
+        $catalogue = $this->readJsonFile($cataloguePath);
+        $themes = $catalogue['themes'] ?? [];
+
+        if (! is_array($themes)) {
+            return [];
+        }
+
+        return array_values(array_filter(array_map(
+            static fn (mixed $theme): ?string => is_array($theme) && is_string($theme['themeKey'] ?? null) ? $theme['themeKey'] : null,
+            $themes,
+        )));
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function phpFilesRecursively(string $directory): array
+    {
+        if (! is_dir($directory)) {
+            return [];
+        }
+
+        $files = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($directory, FilesystemIterator::SKIP_DOTS),
+        );
+
+        $phpFiles = [];
+
+        foreach ($files as $file) {
+            if ($file instanceof SplFileInfo && $file->getExtension() === 'php') {
+                $phpFiles[] = $file->getPathname();
+            }
+        }
+
+        return $phpFiles;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function readJsonFile(string $path): array
+    {
+        if (! is_file($path)) {
+            return [];
+        }
+
+        try {
+            $contents = file_get_contents($path);
+
+            if ($contents === false) {
+                return [];
+            }
+
+            $decoded = json_decode($contents, true, flags: JSON_THROW_ON_ERROR);
+        } catch (JsonException) {
+            return [];
+        }
+
+        return is_array($decoded) ? $decoded : [];
     }
 
     /**

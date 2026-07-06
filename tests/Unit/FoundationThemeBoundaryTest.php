@@ -177,7 +177,7 @@ it('documents the stable child theme override surface', function (): void {
         expect($document)
             ->toContain('Child Theme Override Contract')
             ->toContain("extends: 'default'")
-            ->toContain('`navigation`, `hero`, `features`, `proof`, `content-listing`, `cta`, `footer`')
+            ->toContain('`navigation`, `hero`, `features`, `proof`, `content-listing`, `search`, `pagination`, `form`, `cta`, `footer`')
             ->toContain('`capell::theme.page`')
             ->toContain('`capell::layout.area`')
             ->toContain('`capell::media.svg`')
@@ -190,7 +190,7 @@ it('documents the stable child theme override surface', function (): void {
     }
 
     expect($provider)
-        ->toContain("includedSections: ['navigation', 'hero', 'features', 'proof', 'content-listing', 'cta', 'footer']")
+        ->toContain("includedSections: ['navigation', 'hero', 'features', 'proof', 'content-listing', 'search', 'pagination', 'form', 'cta', 'footer']")
         ->toContain("->register('header'");
 
     expect($tokens)

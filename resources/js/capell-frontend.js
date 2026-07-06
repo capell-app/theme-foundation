@@ -3,6 +3,15 @@ import Tooltip from '@ryangjchandler/alpine-tooltip'
 
 import './utilities/lightbox'
 import './widgets/widget/carousel'
+import './widgets/widget/faq-search'
+import './widgets/widget/form-hints'
+import './widgets/widget/pricing-spectrum'
+import './widgets/widget/tabs'
+import './widgets/widget/count-up'
+import './widgets/widget/scroll-spy'
+import './widgets/widget/compare-slider'
+import './widgets/widget/accordion-toggle'
+import './widgets/widget/hover-video-poster'
 
 const inactiveFaqTabClasses = [
     'border',

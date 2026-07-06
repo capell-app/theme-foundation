@@ -1,3 +1,33 @@
+/**
+ * lightbox.js — v1.0.0
+ *
+ * Shared Foundation JS module suite (Wave 2.6). Delegates the lightbox
+ * dialog itself to an Alpine component (`x-data="lightbox"`, registered
+ * here as `Alpine.data('lightbox', ...)`); this file only wires up trigger
+ * discovery, keyboard activation, and carousel pause/resume coordination.
+ *
+ * Public data-attribute contract (all on elements matching `.lightbox`):
+ * - `data-lightbox` (required): the media URL to open.
+ * - `data-group`: gallery group name; Previous/Next cycle within the same
+ *   group. Defaults to `"default"`.
+ * - `data-type`: media type passed through to the Alpine component (e.g.
+ *   `"image"` or `"video"`); the Alpine template decides how to render it.
+ * - `data-title`: caption text; falls back to the element's `alt` attribute.
+ *
+ * Activation: click or Enter/Space on any `.lightbox` element (event
+ * delegation on `document`, so elements can be added/removed freely).
+ * Opening a lightbox dispatches a `disable-carousel` event at every
+ * `.swiper` node so background carousels stop autoplaying underneath the
+ * dialog; closing dispatches `enable-carousel` to resume them. Focus is
+ * restored to the triggering element on close.
+ *
+ * The Alpine component (`lightbox`) exposes `load(group, index)`,
+ * `close()`, `loadPrevious()`, `loadNext()`, a `lightbox(event)` handler for
+ * the `window` `"lightbox"` CustomEvent this file dispatches, and `total()`
+ * for pager UI. Requires Alpine to already be present on `window` before
+ * `livewire:init` fires.
+ */
+
 /* global Alpine */
 ;(function () {
     const querySelector = '.lightbox'

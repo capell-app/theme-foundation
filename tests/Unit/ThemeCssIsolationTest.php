@@ -86,11 +86,15 @@ it('does not style the shared Foundation base shell class', function (): void {
  * container queries, empty states) and again after Waves 6.5/11.5 added
  * cross-document View Transitions, forced-colors focus survival, and
  * prefers-contrast steps to every theme — all "states/motion" signature CSS
- * the policy expects to be bespoke. It exists to catch runaway growth from
- * here, not to relitigate that intentional work.
+ * the policy expects to be bespoke. Recalibrated again for the 2026-H2 Wave
+ * 4a–4c/5–7 level-up programme: each theme's Part 2 headline mechanic and
+ * 4–6 signature widgets are, by definition, bespoke per-theme CSS (tokens,
+ * deterministic layout seeds, scroll-driven reveals, :has()-based sync
+ * states) — exactly what this policy is meant to make room for, not the
+ * runaway growth it exists to catch.
  */
 it('keeps each theme stylesheet under the per-theme CSS line budget', function (): void {
-    $budget = 1500;
+    $budget = 1800;
 
     foreach (themeIsolationStylesheets() as $packageDirectory => $contents) {
         $lineCount = substr_count($contents, "\n") + 1;

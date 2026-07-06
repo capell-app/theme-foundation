@@ -41,7 +41,7 @@ it('reports a compatible capell api version', function (): void {
 it('runs real diagnostics returning check results', function (): void {
     $results = FoundationThemeHealthCheck::runDiagnostics();
 
-    expect($results)->toHaveCount(7)
+    expect($results)->toHaveCount(10)
         ->and($results->every(static fn (mixed $result): bool => $result instanceof DoctorCheckResultData))->toBeTrue()
         ->and($results->pluck('label')->all())->toBe([
             'Foundation Theme package installation',
@@ -51,6 +51,9 @@ it('runs real diagnostics returning check results', function (): void {
             'Foundation Theme asset pipeline',
             'Foundation Theme config and tokens',
             'Foundation Theme provider registrations',
+            'Fleet theme catalogue coverage',
+            'Fleet demo content coverage',
+            'Fleet screenshot freshness',
         ]);
 });
 
@@ -133,6 +136,119 @@ it('fails the config and token check when required config is absent', function (
         ->and($check->configAndTokenIssues())->toContain('asset_build_tool config is missing.')
         ->and($check->configAndTokenIssues())->toContain('Tailwind output_css config is missing.');
 });
+
+it('passes the fleet catalogue coverage check against the real monorepo', function (): void {
+    $check = new FoundationThemeHealthCheck;
+
+    expect($check->themesMissingCatalogueEntries())->toBe([])
+        ->and($check->fleetCatalogueCoverageCheck()->passed)->toBeTrue();
+});
+
+it('fails the fleet catalogue coverage check when a theme package has no catalogue entry', function (): void {
+    $fleetRoot = foundationThemeTemporaryFleetRoot('catalogue-missing');
+
+    mkdir($fleetRoot . '/theme-uncatalogued/src', 0o775, true);
+    file_put_contents($fleetRoot . '/theme-uncatalogued/capell.json', json_encode([
+        'kind' => 'theme',
+        'themeKey' => 'uncatalogued',
+    ]));
+    file_put_contents(dirname($fleetRoot) . '/docs/themes.json', json_encode(['themes' => []]));
+
+    $check = new FoundationThemeHealthCheck($fleetRoot . '/theme-foundation');
+
+    expect($check->themesMissingCatalogueEntries())->toContain('theme-uncatalogued')
+        ->and($check->fleetCatalogueCoverageCheck()->passed)->toBeFalse();
+
+    foundationThemeDeleteDirectory(dirname($fleetRoot));
+});
+
+it('passes the fleet demo content coverage check against the real monorepo', function (): void {
+    $check = new FoundationThemeHealthCheck;
+
+    expect($check->themesMissingDemoContent())->toBe([])
+        ->and($check->fleetDemoContentCoverageCheck()->passed)->toBeTrue();
+});
+
+it('fails the fleet demo content coverage check when a theme has no ProvidesThemeDemoContent implementation', function (): void {
+    $fleetRoot = foundationThemeTemporaryFleetRoot('demo-content-missing');
+
+    mkdir($fleetRoot . '/theme-bare/src', 0o775, true);
+    file_put_contents($fleetRoot . '/theme-bare/capell.json', json_encode([
+        'kind' => 'theme',
+        'themeKey' => 'bare',
+    ]));
+    file_put_contents($fleetRoot . '/theme-bare/src/Placeholder.php', "<?php\n\ndeclare(strict_types=1);\n\nfinal class Placeholder {}\n");
+
+    $check = new FoundationThemeHealthCheck($fleetRoot . '/theme-foundation');
+
+    expect($check->themesMissingDemoContent())->toContain('theme-bare')
+        ->and($check->fleetDemoContentCoverageCheck()->passed)->toBeFalse();
+
+    foundationThemeDeleteDirectory(dirname($fleetRoot));
+});
+
+it('passes the fleet screenshot freshness check against the real monorepo', function (): void {
+    $check = new FoundationThemeHealthCheck;
+
+    expect($check->themesMissingScreenshots())->toBe([])
+        ->and($check->fleetScreenshotFreshnessCheck()->passed)->toBeTrue();
+});
+
+it('fails the fleet screenshot freshness check when a theme has no screenshots manifest', function (): void {
+    $fleetRoot = foundationThemeTemporaryFleetRoot('screenshots-missing');
+
+    mkdir($fleetRoot . '/theme-unshot/src', 0o775, true);
+    file_put_contents($fleetRoot . '/theme-unshot/capell.json', json_encode([
+        'kind' => 'theme',
+        'themeKey' => 'unshot',
+    ]));
+
+    $check = new FoundationThemeHealthCheck($fleetRoot . '/theme-foundation');
+
+    expect($check->themesMissingScreenshots())->toContain('theme-unshot')
+        ->and($check->fleetScreenshotFreshnessCheck()->passed)->toBeFalse();
+
+    foundationThemeDeleteDirectory(dirname($fleetRoot));
+});
+
+it('fails the fleet screenshot freshness check when the manifest entries list is empty', function (): void {
+    $fleetRoot = foundationThemeTemporaryFleetRoot('screenshots-empty');
+
+    mkdir($fleetRoot . '/theme-unshot/docs', 0o775, true);
+    file_put_contents($fleetRoot . '/theme-unshot/capell.json', json_encode([
+        'kind' => 'theme',
+        'themeKey' => 'unshot',
+    ]));
+    file_put_contents($fleetRoot . '/theme-unshot/docs/screenshots.json', json_encode(['entries' => []]));
+
+    $check = new FoundationThemeHealthCheck($fleetRoot . '/theme-foundation');
+
+    expect($check->themesMissingScreenshots())->toContain('theme-unshot');
+
+    foundationThemeDeleteDirectory(dirname($fleetRoot));
+});
+
+function foundationThemeTemporaryFleetRoot(string $name): string
+{
+    $fleetContainer = sys_get_temp_dir() . '/capell-theme-foundation-fleet-' . $name;
+    foundationThemeDeleteDirectory($fleetContainer);
+
+    $packagesDirectory = $fleetContainer . '/packages';
+    mkdir($packagesDirectory . '/theme-foundation', 0o775, true);
+    file_put_contents($packagesDirectory . '/theme-foundation/capell.json', json_encode([
+        'kind' => 'theme',
+        'themeKey' => 'default',
+    ]));
+
+    mkdir($fleetContainer . '/docs', 0o775, true);
+    file_put_contents($fleetContainer . '/docs/themes.json', json_encode([
+        'themes' => [
+            ['themeKey' => 'default'],
+        ],
+    ]));
+
+    return $packagesDirectory;
+}
 
 function foundationThemeRegisterInstalledHealthSurfaces(): void
 {

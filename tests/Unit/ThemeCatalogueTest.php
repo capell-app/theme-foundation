@@ -11,6 +11,8 @@ declare(strict_types=1);
  * fields the differentiation programme relies on.
  */
 
+use Capell\FoundationTheme\Actions\ValidateThemeCatalogueEntryAction;
+
 /**
  * @return array<string, mixed>
  */
@@ -156,5 +158,37 @@ it('records the customisation surfaces the differentiation contract depends on',
 
         expect($surfaces)
             ->toHaveKeys(['header', 'footer', 'themeStudioTokens'], "customisationSurfaces keys for {$label}");
+    }
+});
+
+it('agrees with capell.json, ThemeDefinitionData, and docs/screenshots.json for every shipped theme', function (): void {
+    // Wave 1.4 — ValidateThemeCatalogueEntryAction is the extracted,
+    // single-source-of-truth version of the capell.json <-> docs/themes.json
+    // <-> ThemeDefinitionData <-> docs/screenshots.json cross-check that this
+    // file and ThemePackageManifestTest previously duplicated inline. Also
+    // exercised directly by `capell:validate-themes` and
+    // `scripts/validate-themes.php`.
+    $packagesDirectory = dirname(__DIR__, 3);
+
+    foreach (shippedThemeKeys() as $themeKey) {
+        $manifestPaths = glob($packagesDirectory . '/theme-*/capell.json') ?: [];
+
+        $packageDirectory = null;
+
+        foreach ($manifestPaths as $manifestPath) {
+            $manifest = themeCatalogueJson($manifestPath);
+
+            if (($manifest['themeKey'] ?? null) === $themeKey) {
+                $packageDirectory = basename(dirname($manifestPath));
+
+                break;
+            }
+        }
+
+        throw_unless(is_string($packageDirectory), RuntimeException::class, "Could not resolve package directory for themeKey {$themeKey}.");
+
+        $result = ValidateThemeCatalogueEntryAction::run($packageDirectory, $packagesDirectory);
+
+        expect($result->violations)->toBe([], "Theme \"{$themeKey}\" failed ValidateThemeCatalogueEntryAction: " . implode(' ', $result->violations));
     }
 });

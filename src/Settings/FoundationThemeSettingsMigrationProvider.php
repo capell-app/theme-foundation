@@ -19,6 +19,7 @@ class FoundationThemeSettingsMigrationProvider implements SettingsMigrationProvi
             '2026_05_23_180101_add_theme_foundation_image_tokens',
             '2026_06_07_000001_add_theme_foundation_dark_design_tokens',
             '2026_06_07_000002_add_theme_foundation_typography_tokens',
+            '2026_07_05_000001_add_theme_foundation_motion_tokens',
         ];
     }
 

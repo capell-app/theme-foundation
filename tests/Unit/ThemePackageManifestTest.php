@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Capell\Core\ThemeStudio\Rendering\BladeThemeRenderer;
 use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
+use Capell\FoundationTheme\Actions\ValidateThemeCatalogueEntryAction;
 use Capell\FoundationTheme\Providers\FoundationThemeServiceProvider;
 
 it('declares foundation as the default theme package', function (): void {
@@ -210,6 +211,20 @@ dataset('standalone theme packages', function (): array {
 
     return $packages;
 });
+
+it('agrees with docs/themes.json and ThemeDefinitionData for each standalone theme package', function (string $packageDirectory, string $composerName, string $themeKey): void {
+    // Wave 1.4 — delegates the capell.json <-> docs/themes.json <->
+    // ThemeDefinitionData <-> docs/screenshots.json cross-check to the
+    // extracted ValidateThemeCatalogueEntryAction, the same Action
+    // `capell:validate-themes` and `scripts/validate-themes.php` use, so this
+    // suite and the command stay in lock-step from one source of truth.
+    $packagesDirectory = dirname(__DIR__, 3);
+
+    $result = ValidateThemeCatalogueEntryAction::run($packageDirectory, $packagesDirectory);
+
+    expect($result->themeKey)->toBe($themeKey)
+        ->and($result->violations)->toBe([], "Theme package \"{$composerName}\" failed ValidateThemeCatalogueEntryAction: " . implode(' ', $result->violations));
+})->with('standalone theme packages');
 
 /**
  * @return array<string, mixed>
