@@ -28,8 +28,8 @@ afterEach(function (): void {
 
 it('generates a complete theme scaffold with correct manifest, namespace, and provider wiring', function (): void {
     $request = new ThemeScaffoldRequestData(
-        themeSlug: 'call-out',
-        displayName: 'Call Out',
+        themeSlug: 'business',
+        displayName: 'Business',
         tier: 'premium',
         family: 'service-business',
         basePackagesPath: $this->scaffoldBasePath,
@@ -43,7 +43,7 @@ it('generates a complete theme scaffold with correct manifest, namespace, and pr
         expect($writtenFile)->toBeFile();
     }
 
-    $packageDirectory = $this->scaffoldBasePath . '/theme-call-out';
+    $packageDirectory = $this->scaffoldBasePath . '/theme-business';
 
     $manifest = json_decode(
         (string) file_get_contents($packageDirectory . '/capell.json'),
@@ -51,12 +51,12 @@ it('generates a complete theme scaffold with correct manifest, namespace, and pr
         flags: JSON_THROW_ON_ERROR,
     );
 
-    expect($manifest['themeKey'])->toBe('call-out')
+    expect($manifest['themeKey'])->toBe('business')
         ->and($manifest['extends'])->toBe('default')
         ->and($manifest['kind'])->toBe('theme')
-        ->and($manifest['name'])->toBe('capell-app/theme-call-out')
+        ->and($manifest['name'])->toBe('capell-app/theme-business')
         ->and($manifest['product']['tier'])->toBe('premium')
-        ->and($manifest['providers']['runtime'])->toContain('Capell\\ThemeStudio\\CallOut\\CallOutThemeServiceProvider');
+        ->and($manifest['providers']['runtime'])->toContain('Capell\\ThemeStudio\\Business\\BusinessThemeServiceProvider');
 
     $composerJson = json_decode(
         (string) file_get_contents($packageDirectory . '/composer.json'),
@@ -64,22 +64,22 @@ it('generates a complete theme scaffold with correct manifest, namespace, and pr
         flags: JSON_THROW_ON_ERROR,
     );
 
-    expect($composerJson['name'])->toBe('capell-app/theme-call-out')
-        ->and($composerJson['autoload']['psr-4'])->toHaveKey('Capell\\ThemeStudio\\CallOut\\');
+    expect($composerJson['name'])->toBe('capell-app/theme-business')
+        ->and($composerJson['autoload']['psr-4'])->toHaveKey('Capell\\ThemeStudio\\Business\\');
 
     $serviceProviderContents = (string) file_get_contents(
-        $packageDirectory . '/src/CallOutThemeServiceProvider.php',
+        $packageDirectory . '/src/BusinessThemeServiceProvider.php',
     );
 
     expect($serviceProviderContents)
         ->toContain('declare(strict_types=1);')
-        ->toContain('namespace Capell\\ThemeStudio\\CallOut;')
+        ->toContain('namespace Capell\\ThemeStudio\\Business;')
         ->toContain('use Capell\\FoundationTheme\\Support\\Providers\\RegistersLayoutNativeThemeDefaults;')
-        ->toContain('final class CallOutThemeServiceProvider extends ServiceProvider')
-        ->toContain("THEME_KEY = 'call-out';");
+        ->toContain('final class BusinessThemeServiceProvider extends ServiceProvider')
+        ->toContain("THEME_KEY = 'business';");
 
     $demoContentContents = (string) file_get_contents(
-        $packageDirectory . '/src/Support/Demo/CallOutDemoContent.php',
+        $packageDirectory . '/src/Support/Demo/BusinessDemoContent.php',
     );
 
     expect($demoContentContents)
@@ -93,7 +93,7 @@ it('generates a complete theme scaffold with correct manifest, namespace, and pr
         ->toContain("'cta'");
 
     $installActionContents = (string) file_get_contents(
-        $packageDirectory . '/src/Actions/InstallCallOutThemeDemoAction.php',
+        $packageDirectory . '/src/Actions/InstallBusinessThemeDemoAction.php',
     );
 
     expect($installActionContents)
@@ -101,10 +101,10 @@ it('generates a complete theme scaffold with correct manifest, namespace, and pr
         ->toContain('public function handle(ThemeDemoInstallData $data): int');
 
     $demoCommandContents = (string) file_get_contents(
-        $packageDirectory . '/src/Console/Commands/CallOutDemoCommand.php',
+        $packageDirectory . '/src/Console/Commands/BusinessDemoCommand.php',
     );
 
-    expect($demoCommandContents)->toContain("'capell:theme-call-out-demo");
+    expect($demoCommandContents)->toContain("'capell:theme-business-demo");
 
     $screenshotsManifest = json_decode(
         (string) file_get_contents($packageDirectory . '/docs/screenshots.json'),
@@ -115,13 +115,13 @@ it('generates a complete theme scaffold with correct manifest, namespace, and pr
     $screenshotSurfaceIds = array_column($screenshotsManifest['entries'], 'id');
 
     expect($screenshotSurfaceIds)->toContain(
-        'call-out-homepage',
-        'call-out-directory',
-        'call-out-detail',
-        'call-out-contact',
-        'call-out-empty',
-        'call-out-not-found',
-        'call-out-cta',
+        'business-homepage',
+        'business-directory',
+        'business-detail',
+        'business-contact',
+        'business-empty',
+        'business-not-found',
+        'business-cta',
     );
 
     expect($packageDirectory . '/tests/Pest.php')->toBeFile()
@@ -150,8 +150,8 @@ it('rejects an invalid theme slug before writing anything', function (): void {
 
 it('rejects an unknown tier', function (): void {
     expect(fn (): ThemeScaffoldRequestData => new ThemeScaffoldRequestData(
-        themeSlug: 'call-out',
-        displayName: 'Call Out',
+        themeSlug: 'business',
+        displayName: 'Business',
         tier: 'enterprise',
         family: 'service-business',
         basePackagesPath: $this->scaffoldBasePath,
@@ -160,8 +160,8 @@ it('rejects an unknown tier', function (): void {
 
 it('scaffolds a free-tier theme into its own package directory without touching siblings', function (): void {
     $firstRequest = new ThemeScaffoldRequestData(
-        themeSlug: 'reading-room',
-        displayName: 'Reading Room',
+        themeSlug: 'docs',
+        displayName: 'Docs',
         tier: 'free',
         family: 'docs-knowledge',
         basePackagesPath: $this->scaffoldBasePath,
@@ -170,13 +170,13 @@ it('scaffolds a free-tier theme into its own package directory without touching 
     GenerateThemeScaffoldAction::run($firstRequest);
 
     $manifest = json_decode(
-        (string) file_get_contents($this->scaffoldBasePath . '/theme-reading-room/capell.json'),
+        (string) file_get_contents($this->scaffoldBasePath . '/theme-docs/capell.json'),
         true,
         flags: JSON_THROW_ON_ERROR,
     );
 
     expect($manifest['product']['tier'])->toBe('free')
-        ->and($manifest['themeKey'])->toBe('reading-room');
+        ->and($manifest['themeKey'])->toBe('docs');
 
-    expect($this->scaffoldBasePath . '/theme-call-out')->not->toBeDirectory();
+    expect($this->scaffoldBasePath . '/theme-business')->not->toBeDirectory();
 });

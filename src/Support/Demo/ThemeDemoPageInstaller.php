@@ -721,7 +721,7 @@ final class ThemeDemoPageInstaller
             'automotive-dealer' => $this->premiumSurfaces(['inventory', 'Inventory', 'Show vehicle listings, specs, finance cues, and enquiry actions.', ['inventory-grid', 'finance-options', 'test-drive-panel']], ['vehicle-detail', 'Vehicle Detail', 'Present a vehicle story with highlights, condition, specs, and CTA.', ['vehicle-detail', 'part-exchange', 'proof']], ['finance', 'Finance', 'Explain finance options, part exchange, and buying confidence.', ['finance-options', 'features', 'cta']]),
             'property-developer' => $this->premiumSurfaces(['developments', 'Developments', 'Show development cards, availability, local proof, and launch status.', ['development-grid', 'availability-table', 'location-guide']], ['floorplans', 'Floorplans', 'Present home types, layouts, specifications, and availability CTAs.', ['floorplans', 'development-grid', 'proof']], ['location', 'Location', 'Sell the neighbourhood, travel links, amenities, and lifestyle proof.', ['location-guide', 'viewing-panel', 'cta']]),
             'recruitment-jobs' => $this->premiumSurfaces(['jobs', 'Jobs', 'Show roles, sectors, filters, salary context, and apply CTAs.', ['job-board', 'sector-specialisms', 'application-panel']], ['employers', 'Employers', 'Present hiring services, process, proof, and consultation routes.', ['employer-services', 'sector-specialisms', 'proof']], ['candidate-advice', 'Candidate Advice', 'Publish advice, interview guides, and sector insights.', ['candidate-advice', 'content-listing', 'cta']]),
-            'quiet-type' => $this->premiumSurfaces(['essays', 'Essays', 'Show long-form editorial pages, issue framing, and reading pathways.', ['essay-index', 'author-profiles', 'editorial-statement']], ['archive', 'Archive', 'Present an archive, categories, series, and contributor proof.', ['issue-archive', 'essay-index', 'proof']], ['about', 'About the Publication', 'Introduce editorial principles, contributors, and subscription actions.', ['editorial-statement', 'subscription-panel', 'cta']]),
+            'blog' => $this->premiumSurfaces(['essays', 'Essays', 'Show long-form editorial pages, issue framing, and reading pathways.', ['essay-index', 'author-profiles', 'editorial-statement']], ['archive', 'Archive', 'Present an archive, categories, series, and contributor proof.', ['issue-archive', 'essay-index', 'proof']], ['about', 'About the Publication', 'Introduce editorial principles, contributors, and subscription actions.', ['editorial-statement', 'subscription-panel', 'cta']]),
         ];
     }
 
@@ -1420,18 +1420,18 @@ HTML;
                 'ctaHeading' => 'Launch with Recruitment & Jobs',
                 'ctaSummary' => 'Use this theme when the public site needs a focused recruitment & jobs presentation.',
             ],
-            'quiet-type' => [
-                'summary' => 'Quiet Type demo content for Quarter Press.',
-                'heroHeading' => 'Launch a polished Quiet Type site',
-                'heroSummary' => 'Quiet Type gives Capell sites a focused frontend theme with portable content, safe public output, and theme-specific visual tokens.',
-                'featuresHeading' => 'Quiet Type sections',
-                'featuresSummary' => 'Portable demo content using the Quiet Type theme profile.',
+            'blog' => [
+                'summary' => 'Blog demo content for Quarter Press.',
+                'heroHeading' => 'Launch a polished Blog site',
+                'heroSummary' => 'Blog gives Capell sites a focused frontend theme with portable content, safe public output, and theme-specific visual tokens.',
+                'featuresHeading' => 'Blog sections',
+                'featuresSummary' => 'Portable demo content using the Blog theme profile.',
                 'features' => [
-                    ['title' => 'navigation', 'summary' => 'Theme-specific section for Quiet Type.', 'type' => 'Section'],
-                    ['title' => 'hero', 'summary' => 'Theme-specific section for Quiet Type.', 'type' => 'Section'],
-                    ['title' => 'features', 'summary' => 'Theme-specific section for Quiet Type.', 'type' => 'Section'],
+                    ['title' => 'navigation', 'summary' => 'Theme-specific section for Blog.', 'type' => 'Section'],
+                    ['title' => 'hero', 'summary' => 'Theme-specific section for Blog.', 'type' => 'Section'],
+                    ['title' => 'features', 'summary' => 'Theme-specific section for Blog.', 'type' => 'Section'],
                 ],
-                'ctaHeading' => 'Launch with Quiet Type',
+                'ctaHeading' => 'Launch with Blog',
                 'ctaSummary' => 'Use this theme when the public site needs a focused editorial serif presentation.',
             ],
         ];

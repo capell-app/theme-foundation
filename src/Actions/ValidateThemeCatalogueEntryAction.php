@@ -268,7 +268,7 @@ final class ValidateThemeCatalogueEntryAction
      * Matches each entry's `id` against the contract's surface names, e.g.
      * `liquid-glass-not-found-mobile` covers `not-found` once its
      * `-tablet`/`-mobile` viewport suffix is stripped. Ad hoc names such as
-     * `art-paper-contact-form` deliberately do not match `contact` — the
+     * `photography-contact-form` deliberately do not match `contact` — the
      * whole point of this check is to gate on the contract's exact names.
      *
      * @param  array<mixed>  $entries

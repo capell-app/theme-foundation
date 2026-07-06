@@ -9,7 +9,7 @@ use Lorisleiva\Actions\Concerns\AsObject;
 use RuntimeException;
 
 /**
- * Generates a full `night-shift`-shaped theme package scaffold from the stub
+ * Generates a full `platform`-shaped theme package scaffold from the stub
  * templates under `packages/theme-foundation/stubs/make-theme/`, driven by a
  * {@see ThemeScaffoldRequestData} request. Rendering is plain string
  * placeholder replacement (`strtr()`), not Blade compilation — stub files use

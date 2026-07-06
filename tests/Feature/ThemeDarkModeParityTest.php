@@ -23,7 +23,7 @@ function darkModeParityFoundationDefaultDarkSurfaceColor(): string
  *
  * Every `packages/theme-*` preset declares a `surfaceColor`/`foregroundColor`
  * pair in its ThemeDefinitionData (see `*ThemeServiceProvider::definition()`).
- * Some presets are already dark (e.g. theme-night-shift's default preset),
+ * Some presets are already dark (e.g. theme-platform's default preset),
  * but every preset with a *light* surface colour renders through Foundation's
  * shared `.dark:root` token set (`tokens.blade.php`,
  * `ResolveFoundationThemeTokensAction`, `FoundationThemeSettings`'s
@@ -222,7 +222,7 @@ const DARK_MODE_PARITY_FROZEN_HEX_VIOLATIONS = [
     '/theme-foundation/resources/views/components/layout/index.blade.php',
     '/theme-foundation/resources/views/components/layout/main.blade.php',
     '/theme-foundation/resources/views/theme/sections/content-listing.blade.php',
-    '/theme-field-guide/resources/views/sections/hero.blade.php',
+    '/theme-catalogue/resources/views/sections/hero.blade.php',
 ];
 
 it('keeps the theme fleet free of new hardcoded hex colours in Blade markup', function (): void {

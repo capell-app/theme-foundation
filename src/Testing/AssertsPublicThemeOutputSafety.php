@@ -16,7 +16,7 @@ namespace Capell\FoundationTheme\Testing;
  *
  * - The "classic" pattern (most themes): two checks — metadata across all
  *   Blade views, and a DB-query check across the same set.
- * - The "layout-native" pattern (theme-night-shift, theme-liquid-glass):
+ * - The "layout-native" pattern (theme-platform, theme-liquid-glass):
  *   three checks — metadata across all views (optionally including
  *   translation files and an inline-`<script>` ban), and a DB-query check
  *   scoped only to `resources/views/sections/*.blade.php`, the legacy inert
@@ -216,7 +216,7 @@ trait AssertsPublicThemeOutputSafety
      * conditionals must not appear inside `@php ... @endphp` blocks.
      *
      * `$additionalWhitelistedStaticCallPrefixes` exists solely for
-     * theme-foundation and the layout-native themes (night-shift,
+     * theme-foundation and the layout-native themes (platform,
      * liquid-glass), whose live-pipeline chrome views (`app.blade.php`,
      * `header/index.blade.php`, `footer.blade.php`, `components/*.blade.php`)
      * legitimately call `Frontend::`, `Route::`, and

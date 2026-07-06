@@ -22,10 +22,10 @@ pest()->extend(PackagesTestCase::class)->group('theme-foundation')->in(__DIR__);
 function themeCatalogueViolationsExcludingKnownScreenshotSurfaceGap(string $themeKey, array $violations): array
 {
     $themesPendingScreenshotSurfaceCapture = [
-        'default', 'art-paper', 'deep-bench', 'far-field', 'field-guide',
-        'first-light', 'front-row', 'gold-rush', 'ink-press', 'launch-pad',
-        'main-stage', 'night-shift', 'off-grid', 'one-take', 'open-studio',
-        'reel-room', 'soft-focus', 'wild-card',
+        'default', 'photography', 'directory', 'magazine', 'catalogue',
+        'curated', 'agency', 'awards', 'editorial', 'saas',
+        'events', 'platform', 'brutalist', 'onepage', 'portfolio',
+        'showreel', 'minimalist', 'submissions',
     ];
 
     if (! in_array($themeKey, $themesPendingScreenshotSurfaceCapture, true)) {

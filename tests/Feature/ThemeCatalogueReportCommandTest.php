@@ -13,7 +13,7 @@ it('renders a per-theme craft scoreboard for the fleet', function (): void {
     $this->artisan('capell:theme-catalogue-report')
         ->expectsOutputToContain('Theme catalogue report')
         ->expectsOutputToContain('View-transition')
-        ->expectsOutputToContain('open-studio')
+        ->expectsOutputToContain('portfolio')
         ->expectsOutputToContain('Catalogue validation')
         ->assertExitCode(0);
 });

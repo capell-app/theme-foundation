@@ -7,7 +7,7 @@
     applies a per-theme duotone/tone-map skin over any wrapped media (an
     `<img>`, `<picture>`, or `art-directed-picture`) via CSS `filter` plus a
     `mix-blend-mode` tint overlay — the systematised version of the
-    grayscale/duotone treatments themes like art-paper and off-grid already
+    grayscale/duotone treatments themes like photography and brutalist already
     hand-roll (Wave 0.5 screenshot audit). Exists so themes sharing the
     `ThemeDemoMedia` stock photo pool can read as visually distinct without
     each needing bespoke photography or bespoke CSS.

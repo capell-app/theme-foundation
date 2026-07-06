@@ -45,7 +45,7 @@ final class ThemeScaffoldRequestData extends Data
         $normalizedThemeSlug = strtolower(trim($themeSlug));
 
         if ($normalizedThemeSlug === '' || preg_match('/^[a-z][a-z0-9]*(-[a-z0-9]+)*$/', $normalizedThemeSlug) !== 1) {
-            throw new InvalidArgumentException('Theme slug must be lowercase kebab-case, e.g. "call-out".');
+            throw new InvalidArgumentException('Theme slug must be lowercase kebab-case, e.g. "business".');
         }
 
         $normalizedDisplayName = trim($displayName);
@@ -101,7 +101,7 @@ final class ThemeScaffoldRequestData extends Data
 
     /**
      * PascalCase class-name fragment derived from the kebab-case slug, e.g.
-     * `call-out` -> `CallOut`.
+     * `business` -> `Business`.
      */
     public function studlyName(): string
     {
@@ -117,7 +117,7 @@ final class ThemeScaffoldRequestData extends Data
     /**
      * Root PHP namespace for the generated package, mirroring the
      * `Capell\ThemeStudio\{StudlyName}` convention used by existing
-     * layout-native theme packages (e.g. `Capell\ThemeStudio\NightShift`).
+     * layout-native theme packages (e.g. `Capell\ThemeStudio\Platform`).
      */
     public function rootNamespace(): string
     {

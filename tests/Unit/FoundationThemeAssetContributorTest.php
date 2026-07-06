@@ -211,7 +211,7 @@ it('loads the runtime from the foundation theme published build', function (): v
 it('omits the per-theme css requirement when the split flag is off', function (): void {
     config(['capell-theme-foundation.tailwind.split_theme_css' => false]);
 
-    $theme = Theme::factory()->make(['key' => 'reel-room']);
+    $theme = Theme::factory()->make(['key' => 'showreel']);
 
     $requirements = resolve(FoundationThemeAssetContributor::class)->requirements(new FrontendAssetContextData(
         page: null,
@@ -222,7 +222,7 @@ it('omits the per-theme css requirement when the split flag is off', function ()
         runtime: FrontendRuntimeManifestData::forRenderingStrategy(RenderingStrategyEnum::BladeOnly),
     ));
 
-    expect(collect($requirements)->pluck('handle')->all())->not->toContain('theme-css:reel-room');
+    expect(collect($requirements)->pluck('handle')->all())->not->toContain('theme-css:showreel');
 });
 
 it('emits the active theme own compiled bundle when the split flag is on', function (): void {
@@ -231,7 +231,7 @@ it('emits the active theme own compiled bundle when the split flag is on', funct
         'capell-theme-foundation.tailwind.theme_css_output_directory' => 'resources/css/capell/themes',
     ]);
 
-    $theme = Theme::factory()->make(['key' => 'reel-room']);
+    $theme = Theme::factory()->make(['key' => 'showreel']);
 
     $requirements = resolve(FoundationThemeAssetContributor::class)->requirements(new FrontendAssetContextData(
         page: null,
@@ -243,14 +243,14 @@ it('emits the active theme own compiled bundle when the split flag is on', funct
     ));
 
     $requirement = collect($requirements)->first(
-        fn (FrontendAssetRequirementData $requirement): bool => $requirement->handle === 'theme-css:reel-room',
+        fn (FrontendAssetRequirementData $requirement): bool => $requirement->handle === 'theme-css:showreel',
     );
 
     expect($requirement)->toBeInstanceOf(FrontendAssetRequirementData::class);
 
     /** @var FrontendAssetRequirementData $requirement */
     expect($requirement->kind)->toBe(FrontendAssetRequirementData::KIND_CSS)
-        ->and($requirement->source)->toBe('resources/css/capell/themes/reel-room.css');
+        ->and($requirement->source)->toBe('resources/css/capell/themes/showreel.css');
 });
 
 it('never emits a per-theme css requirement without an active theme', function (): void {

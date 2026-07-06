@@ -10,7 +10,7 @@ use Illuminate\Console\Command;
 use InvalidArgumentException;
 
 /**
- * `capell:make-theme` — scaffolds a new, night-shift-shaped, layout-native
+ * `capell:make-theme` — scaffolds a new, platform-shaped, layout-native
  * theme package. Thin orchestration only: collects input (prompting for
  * anything not passed as an option), delegates generation to
  * {@see GenerateThemeScaffoldAction}, and prints a summary of what was
@@ -19,8 +19,8 @@ use InvalidArgumentException;
 final class MakeThemeCommand extends Command
 {
     protected $signature = 'capell:make-theme
-        {slug? : Kebab-case theme slug, e.g. "call-out"}
-        {--name= : Display name shown in the marketplace, e.g. "Call Out"}
+        {slug? : Kebab-case theme slug, e.g. "business"}
+        {--name= : Display name shown in the marketplace, e.g. "Business"}
         {--tier= : Commercial tier: free or premium}
         {--family= : Catalogue family/lane, e.g. "service-business"}
         {--path= : Base packages directory to scaffold into (defaults to the monorepo packages/ directory)}';
@@ -78,7 +78,7 @@ final class MakeThemeCommand extends Command
             return $argument;
         }
 
-        $answer = $this->ask('Theme slug (kebab-case, e.g. "call-out")');
+        $answer = $this->ask('Theme slug (kebab-case, e.g. "business")');
 
         return is_string($answer) ? $answer : '';
     }
