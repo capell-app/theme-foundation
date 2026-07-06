@@ -101,7 +101,10 @@ uses(AssertsPublicThemeOutputSafety::class);
  * team-on-the-road-cards, each with an inline `variant`-key branch rather
  * than a sidecar view, since layout-native themes have no
  * `VariantViewSectionRenderer` seam) added a new entry at 10, moving the
- * sum to 651.
+ * sum to 651. A follow-up fix completing wild-card's missing
+ * time-capsule-browser signature widget (base view + `--cabinet` sidecar
+ * variant, matching the mechanic already shipped on reel-room, off-grid,
+ * and gold-rush) raised its count from 31 to 35, moving the sum to 655.
  */
 final class ThemePhpBlockBaselineCounts
 {
@@ -130,12 +133,12 @@ final class ThemePhpBlockBaselineCounts
         'reading-room' => 13,
         'reel-room' => 31,
         'soft-focus' => 25,
-        'wild-card' => 31,
+        'wild-card' => 35,
     ];
 }
 
-it('confirms the frozen baseline snapshot sums to the programme-verified total of 651', function (): void {
-    expect(array_sum(ThemePhpBlockBaselineCounts::FROZEN_BASELINE_COUNTS))->toBe(651);
+it('confirms the frozen baseline snapshot sums to the programme-verified total of 655', function (): void {
+    expect(array_sum(ThemePhpBlockBaselineCounts::FROZEN_BASELINE_COUNTS))->toBe(655);
 });
 
 it('keeps each theme package within its frozen @php block baseline', function (): void {
