@@ -1,4 +1,4 @@
-@props([
+@props ([
     'background' => 'bg-white/95',
     'containerClass' => 'relative',
     'containerTag' => 'div',
@@ -97,8 +97,8 @@
                     x-bind:class="isOpen ? '{{ $panelVisibleClass }}' : '{{ $panelHiddenClass }}'"
                 @endif
                 @if (! $useFloat)
-                    x-bind:aria-hidden="(! isOpen).toString()"
-                    x-bind:inert="! isOpen"
+                    x-bind:aria-hidden="(!isOpen).toString()"
+                    x-bind:inert="!isOpen"
                 @endif
                 {{ $panelAttributes }}
                 :id="$id('{{ $dropdownName }}-dropdown-button')"
@@ -124,8 +124,8 @@
                     x-bind:class="isOpen ? '{{ $panelVisibleClass }}' : '{{ $panelHiddenClass }}'"
                 @endif
                 @if (! $useFloat)
-                    x-bind:aria-hidden="(! isOpen).toString()"
-                    x-bind:inert="! isOpen"
+                    x-bind:aria-hidden="(!isOpen).toString()"
+                    x-bind:inert="!isOpen"
                 @endif
                 {{ $panelAttributes }}
                 :id="$id('{{ $dropdownName }}-dropdown-button')"
@@ -178,8 +178,8 @@
                     x-bind:class="isOpen ? '{{ $panelVisibleClass }}' : '{{ $panelHiddenClass }}'"
                 @endif
                 @if (! $useFloat)
-                    x-bind:aria-hidden="(! isOpen).toString()"
-                    x-bind:inert="! isOpen"
+                    x-bind:aria-hidden="(!isOpen).toString()"
+                    x-bind:inert="!isOpen"
                 @endif
                 {{ $panelAttributes }}
                 :id="$id('{{ $dropdownName }}-dropdown-button')"
@@ -205,8 +205,8 @@
                     x-bind:class="isOpen ? '{{ $panelVisibleClass }}' : '{{ $panelHiddenClass }}'"
                 @endif
                 @if (! $useFloat)
-                    x-bind:aria-hidden="(! isOpen).toString()"
-                    x-bind:inert="! isOpen"
+                    x-bind:aria-hidden="(!isOpen).toString()"
+                    x-bind:inert="!isOpen"
                 @endif
                 {{ $panelAttributes }}
                 :id="$id('{{ $dropdownName }}-dropdown-button')"

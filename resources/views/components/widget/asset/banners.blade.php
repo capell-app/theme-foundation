@@ -6,7 +6,7 @@
     $theme = Frontend::theme();
 @endphp
 
-@props([
+@props ([
     'containerKey',
     'containerIndex',
     'backgroundOverlay' => (bool) $widget->getMeta('background_overlay'),
@@ -52,7 +52,7 @@
                     @endphp
 
                     <div
-                        @class([
+                        @class ([
                             'swiper-slide widget-banner-item relative flex min-h-[20rem] w-full shrink-0 basis-full items-center justify-center',
                             'bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-50' => ! $hasImage,
                             'swiper-slide-active' => $loop->first,
@@ -85,7 +85,7 @@
                             >
                                 @if ($bannerItem->title)
                                     <h4
-                                        @class([
+                                        @class ([
                                             'font-heading text-2xl font-bold md:text-4xl',
                                             'text-white' => $hasImage,
                                             'text-gray-900 dark:text-gray-50' => ! $hasImage,
@@ -106,7 +106,7 @@
 
                                 @if ($bannerItem->content)
                                     <div
-                                        @class([
+                                        @class ([
                                             'max-w-2xl text-lg md:text-2xl',
                                             'text-white' => $hasImage,
                                             'text-gray-700 dark:text-gray-200' => ! $hasImage,

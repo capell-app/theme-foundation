@@ -1,7 +1,5 @@
 <footer class="theme-footer mt-auto bg-slate-950 text-white">
-    <h2 class="sr-only">
-        {{ __('capell-theme-foundation::generic.footer') }}
-    </h2>
+    <h2 class="sr-only">{{ __('capell-theme-foundation::generic.footer') }}</h2>
     <div
         class="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-[1.2fr_2fr]"
     >

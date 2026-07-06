@@ -1,4 +1,4 @@
-@props([
+@props ([
     'count' => null,
     'size' => 'md',
     'url' => null,
@@ -17,10 +17,8 @@
     ];
 @endphp
 
-@capellBuffer($content)
-    <span class="capell-badge truncate">
-        {{ $slot }}
-    </span>
+@capellBuffer ($content)
+    <span class="capell-badge truncate"> {{ $slot }} </span>
     @if ($count)
         <span
             class="group-hover:bg-primary group-focus:bg-primary dark:group-hover:bg-primary-600 dark:group-focus:bg-primary-600 rounded-full bg-gray-300 px-2 py-0.5 text-xs font-light text-gray-600 group-hover:text-white group-focus:text-white dark:bg-gray-700 dark:text-gray-300 dark:group-hover:text-white dark:group-focus:text-white"
@@ -41,13 +39,11 @@
 @if ($url)
     <a
         href="{{ $url }}"
-        @class($classes)
+        @class ($classes)
         @wireNavigate
     >
         {{ $content() }}
     </a>
 @else
-    <span @class($classes)>
-        {{ $content() }}
-    </span>
+    <span @class ($classes)> {{ $content() }} </span>
 @endif

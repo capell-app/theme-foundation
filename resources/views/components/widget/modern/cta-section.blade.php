@@ -1,4 +1,4 @@
-@props([
+@props ([
     'title' => $widget->translation?->title,
     'content' => $widget->translation?->content,
     'primaryButtonText' => $widget->getMeta('primary_button_text'),
@@ -43,7 +43,7 @@
                                 class="ap-showcase-button ap-showcase-button--primary ap-cta-primary-btn"
                             >
                                 <span>{{ $primaryButtonText }}</span>
-                                @svg('heroicon-o-arrow-right', 'h-4 w-4')
+                                @svg ('heroicon-o-arrow-right', 'h-4 w-4')
                             </a>
                         @endif
 
@@ -53,7 +53,7 @@
                                 class="ap-showcase-button ap-showcase-button--secondary ap-cta-secondary-btn"
                             >
                                 <span>{{ $secondaryButtonText }}</span>
-                                @svg('heroicon-o-code-bracket-square', 'h-4 w-4')
+                                @svg ('heroicon-o-code-bracket-square', 'h-4 w-4')
                             </a>
                         @endif
                     </div>
@@ -66,29 +66,23 @@
             >
                 <div class="ap-showcase-cta__proof-row">
                     <span class="ap-showcase-cta__proof-mark">
-                        @svg('heroicon-o-check', 'h-4 w-4')
+                        @svg ('heroicon-o-check', 'h-4 w-4')
                     </span>
-                    <p class="ap-showcase-cta__proof-text">
-                        Homepage content is widget, media, and layout driven.
-                    </p>
+                    <p class="ap-showcase-cta__proof-text">Homepage content is widget, media, and layout driven.</p>
                 </div>
 
                 <div class="ap-showcase-cta__proof-row">
                     <span class="ap-showcase-cta__proof-mark">
-                        @svg('heroicon-o-check', 'h-4 w-4')
+                        @svg ('heroicon-o-check', 'h-4 w-4')
                     </span>
-                    <p class="ap-showcase-cta__proof-text">
-                        Runtime assets are package-owned and doctor verified.
-                    </p>
+                    <p class="ap-showcase-cta__proof-text">Runtime assets are package-owned and doctor verified.</p>
                 </div>
 
                 <div class="ap-showcase-cta__proof-row">
                     <span class="ap-showcase-cta__proof-mark">
-                        @svg('heroicon-o-check', 'h-4 w-4')
+                        @svg ('heroicon-o-check', 'h-4 w-4')
                     </span>
-                    <p class="ap-showcase-cta__proof-text">
-                        Built for Laravel, Filament, and serious CMS teams.
-                    </p>
+                    <p class="ap-showcase-cta__proof-text">Built for Laravel, Filament, and serious CMS teams.</p>
                 </div>
             </div>
         </div>

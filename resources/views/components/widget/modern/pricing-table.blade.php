@@ -1,4 +1,4 @@
-@props([
+@props ([
     'assetRenderDataItems',
     'currency' => $widget->getMeta('currency', '$'),
     'billingOptions' => $widget->getMeta('billing_options', 'monthly'),

@@ -15,7 +15,11 @@
         aria-modal="true"
         aria-label="{{ __('capell-frontend::generic.image_gallery') }}"
         tabindex="-1"
-        @click="if($event.target == $el){ close() }"
+        @click="
+            if ($event.target == $el) {
+                close()
+            }
+        "
     >
         <div
             class="relative mx-auto min-h-[10vh] max-w-[95%] min-w-[50%] rounded bg-white p-1 md:max-w-[85%] md:p-3"
@@ -26,7 +30,7 @@
                 type="button"
                 @click="close()"
             >
-                @svg('heroicon-s-x-mark', 'h-6 w-6 stroke-current')
+                @svg ('heroicon-s-x-mark', 'h-6 w-6 stroke-current')
             </button>
 
             <div
@@ -89,7 +93,7 @@
                         aria-label="{{ __('capell-frontend::generic.previous') }}"
                         @click.prevent="loadPrevious"
                     >
-                        @svg('heroicon-o-chevron-left', 'h-10 w-10 stroke-current')
+                        @svg ('heroicon-o-chevron-left', 'h-10 w-10 stroke-current')
                     </button>
                     <span
                         class="grow text-center text-sm leading-tight tracking-wide text-gray-800"
@@ -101,7 +105,7 @@
                         aria-label="{{ __('capell-frontend::generic.next') }}"
                         @click.prevent="loadNext"
                     >
-                        @svg('heroicon-o-chevron-right', 'h-10 w-10 stroke-current')
+                        @svg ('heroicon-o-chevron-right', 'h-10 w-10 stroke-current')
                     </button>
                 </div>
             </div>

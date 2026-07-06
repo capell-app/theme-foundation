@@ -1,4 +1,4 @@
-@props([
+@props ([
     'results' => '',
     'resultsFoundText' => __('capell-frontend::messages.results_found'),
 ])

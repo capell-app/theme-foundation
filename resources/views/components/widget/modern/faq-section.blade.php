@@ -1,4 +1,4 @@
-@props([
+@props ([
     'assetRenderDataItems',
     'container',
     'containerKey',
@@ -84,9 +84,7 @@
                     <summary
                         class="flex cursor-pointer items-center justify-between p-5 text-base font-semibold text-gray-900 select-none"
                     >
-                        <span>
-                            {{ $assetRenderData->title }}
-                        </span>
+                        <span> {{ $assetRenderData->title }} </span>
                         <span
                             class="ml-4 flex-shrink-0 text-xl text-stone-500 transition-transform group-open:rotate-45"
                         >

@@ -53,9 +53,7 @@
                 :data-group="$action['group'] ?? 'action-videos'"
             >
                 @if ($action['hide_label'] ?? false)
-                    <span class="sr-only">
-                        {{ $action['label'] }}
-                    </span>
+                    <span class="sr-only"> {{ $action['label'] }} </span>
                 @else
                     {{ $action['label'] }}
                 @endif
@@ -75,9 +73,7 @@
             :class="'action-item max-w-full whitespace-normal' . ' ' . ($actionItemClass ?? '')"
         >
             @if ($action['hide_label'] ?? false)
-                <span class="sr-only">
-                    {{ $action['label'] }}
-                </span>
+                <span class="sr-only"> {{ $action['label'] }} </span>
             @else
                 {{ $action['label'] }}
             @endif

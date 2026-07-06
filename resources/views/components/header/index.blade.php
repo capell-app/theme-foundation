@@ -25,7 +25,7 @@
     $resolveHeaderColor = static fn (mixed $value, string $fallback): string => ResolveSafeCssColorTokenAction::run($value, $fallback);
 @endphp
 
-@props([
+@props ([
     'menuItemClass' => 'capell-product-nav-item nav-item font-heading group cursor-pointer',
 ])
 
@@ -103,10 +103,12 @@
 @endif
 
 <header
-    @if ($usesAlpine) x-data="window.capellSiteHeader({
+    @if ($usesAlpine)
+        x-data="window.capellSiteHeader({
                 scrollUp: {{ $theme->scroll_up_header ? 'true' : 'false' }},
-            })" @endif
-    @class([
+            })"
+    @endif
+    @class ([
         'site-header',
         'capell-product-header transition-padding top-0 right-0 left-0 z-50 flex min-h-[var(--header-height)] w-full text-[var(--color-header)] transition-transform duration-300 ease-in-out lg:h-auto',
         'border-b border-[var(--border-header)]' => $headerBorderColor,
@@ -120,18 +122,19 @@
     @if ($usesAlpine)
         x-bind:class="{
             'h-screen': isNavigationOverlayOpen,
-            '-translate-y-full': scrollUp && isHidden && ! isNavigationOverlayOpen,
+            '-translate-y-full':
+                scrollUp && isHidden && !isNavigationOverlayOpen,
         }"
     @endif
 >
     <div
-        @class([
+        @class ([
             'capell-product-header__inner relative w-full max-lg:px-0',
             $containerWidth->getContainerClass(),
         ])
     >
         <div
-            @class([
+            @class ([
                 'capell-product-header__brand relative',
             ])
         >

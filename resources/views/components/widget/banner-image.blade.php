@@ -1,4 +1,4 @@
-@props([
+@props ([
     'backgroundColor' => $widget->getMeta('background_color'),
     'container',
     'containerKey',
@@ -41,7 +41,7 @@
 >
     @if ($backgroundImage)
         <div
-            @class([
+            @class ([
                 'w-full',
                 'md:w-1/2' => $hasContent,
                 'md:absolute' => $hasContent,
@@ -63,7 +63,7 @@
 
     @if ($hasContent)
         <div
-            @class([
+            @class ([
                 'container',
                 'z-10',
                 'absolute inset-0 flex items-end' => $backgroundImage,
@@ -77,7 +77,7 @@
             ])
         >
             <div
-                @class([
+                @class ([
                     'w-full',
                     'md:w-1/2' => $backgroundImage,
                     'md:pl-10' => $backgroundImage && $reverseOrder,
@@ -85,7 +85,7 @@
                 ])
             >
                 <div
-                    @class([
+                    @class ([
                         'rounded p-6' => $backgroundImage && $hasContent,
                         'bg-white/90 shadow-sm backdrop-blur' => $backgroundImage && $hasContent,
                     ])
