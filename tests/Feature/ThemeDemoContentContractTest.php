@@ -46,17 +46,17 @@ const FLEET_DEMO_CONTRACT_EXCLUSIONS = [
 /**
  * The demo content provider FQCN for a theme slug.
  *
- * Every vertical theme follows the `Capell\ThemeStudio\<Studio>\Support\Demo\<Studio>DemoContent`
+ * Every vertical theme follows the `Capell\Theme<Studio>\Support\Demo\<Studio>DemoContent`
  * naming convention. Foundation is a documented exception: it predates that
  * convention and keeps its own namespace (`Capell\FoundationTheme`, not
- * `Capell\ThemeStudio\Foundation`), so its provider lives at
+ * `Capell\ThemeFoundation`), so its provider lives at
  * `Capell\FoundationTheme\Support\Demo\FoundationDemoContent` instead.
  */
 function fleetDemoContentProviderClass(string $slug, string $studio): string
 {
     return $slug === 'foundation'
         ? 'Capell\\FoundationTheme\\Support\\Demo\\FoundationDemoContent'
-        : "Capell\\ThemeStudio\\{$studio}\\Support\\Demo\\{$studio}DemoContent";
+        : "Capell\\Theme{$studio}\\Support\\Demo\\{$studio}DemoContent";
 }
 
 dataset('fleet_themes_for_demo_contract', function (): array {

@@ -116,11 +116,11 @@ final class ThemeScaffoldRequestData extends Data
 
     /**
      * Root PHP namespace for the generated package, mirroring the
-     * `Capell\ThemeStudio\{StudlyName}` convention used by existing
-     * layout-native theme packages (e.g. `Capell\ThemeStudio\Platform`).
+     * `Capell\Theme{StudlyName}` convention used by existing
+     * layout-native theme packages (e.g. `Capell\ThemePlatform`).
      */
     public function rootNamespace(): string
     {
-        return 'Capell\\ThemeStudio\\' . $this->studlyName();
+        return 'Capell\\Theme' . $this->studlyName();
     }
 }

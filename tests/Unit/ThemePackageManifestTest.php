@@ -7,6 +7,8 @@ use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
 use Capell\FoundationTheme\Actions\ValidateThemeCatalogueEntryAction;
 use Capell\FoundationTheme\Providers\FoundationThemeServiceProvider;
 
+require_once __DIR__ . '/../Support/ThemeCatalogueScreenshotSurfaceGap.php';
+
 it('declares foundation as the default theme package', function (): void {
     $manifest = themePackageManifest('theme-foundation');
     $composer = themePackageComposer('theme-foundation');

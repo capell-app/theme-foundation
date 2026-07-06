@@ -56,7 +56,7 @@ it('generates a complete theme scaffold with correct manifest, namespace, and pr
         ->and($manifest['kind'])->toBe('theme')
         ->and($manifest['name'])->toBe('capell-app/theme-business')
         ->and($manifest['product']['tier'])->toBe('premium')
-        ->and($manifest['providers']['runtime'])->toContain('Capell\\ThemeStudio\\Business\\BusinessThemeServiceProvider');
+        ->and($manifest['providers']['runtime'])->toContain('Capell\\ThemeBusiness\\BusinessThemeServiceProvider');
 
     $composerJson = json_decode(
         (string) file_get_contents($packageDirectory . '/composer.json'),
@@ -65,7 +65,7 @@ it('generates a complete theme scaffold with correct manifest, namespace, and pr
     );
 
     expect($composerJson['name'])->toBe('capell-app/theme-business')
-        ->and($composerJson['autoload']['psr-4'])->toHaveKey('Capell\\ThemeStudio\\Business\\');
+        ->and($composerJson['autoload']['psr-4'])->toHaveKey('Capell\\ThemeBusiness\\');
 
     $serviceProviderContents = (string) file_get_contents(
         $packageDirectory . '/src/BusinessThemeServiceProvider.php',
@@ -73,7 +73,7 @@ it('generates a complete theme scaffold with correct manifest, namespace, and pr
 
     expect($serviceProviderContents)
         ->toContain('declare(strict_types=1);')
-        ->toContain('namespace Capell\\ThemeStudio\\Business;')
+        ->toContain('namespace Capell\\ThemeBusiness;')
         ->toContain('use Capell\\FoundationTheme\\Support\\Providers\\RegistersLayoutNativeThemeDefaults;')
         ->toContain('final class BusinessThemeServiceProvider extends ServiceProvider')
         ->toContain("THEME_KEY = 'business';");

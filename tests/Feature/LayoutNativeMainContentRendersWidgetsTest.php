@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Capell\Core\Facades\CapellCore;
 use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
-use Capell\ThemeStudio\LiquidGlass\LiquidGlassThemeServiceProvider;
+use Capell\ThemeLiquidGlass\LiquidGlassThemeServiceProvider;
 
 use function Pest\Laravel\get;
 

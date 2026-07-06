@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 use Capell\FoundationTheme\Actions\ValidateThemeCatalogueEntryAction;
 
+require_once __DIR__ . '/../Support/ThemeCatalogueScreenshotSurfaceGap.php';
+
 /**
  * @return array<string, mixed>
  */
