@@ -133,3 +133,26 @@ it('renders timestamp-metadata-block without throwing', function (): void {
         ->toContain('datetime="2026-07-03T09:00:00+00:00"')
         ->toContain('3 July 2026');
 });
+
+it('renders photo-treatment-filter without throwing', function (): void {
+    $html = Blade::render(
+        '<x-capell-theme-foundation::display.photo-treatment-filter aspect-ratio="4/3"><img src="/images/mountain.jpg" alt="A mountain at dusk" /></x-capell-theme-foundation::display.photo-treatment-filter>',
+    );
+
+    expect($html)
+        ->toContain('aspect-ratio: 4/3')
+        ->toContain('filter: var(--foundation-photo-filter, none)')
+        ->toContain('mix-blend-mode: var(--foundation-photo-tint-blend, normal)')
+        ->toContain('/images/mountain.jpg');
+});
+
+it('is an inert no-op by default with all token fallbacks unset', function (): void {
+    $html = Blade::render(
+        '<x-capell-theme-foundation::display.photo-treatment-filter><img src="/images/mountain.jpg" alt="" /></x-capell-theme-foundation::display.photo-treatment-filter>',
+    );
+
+    expect($html)
+        ->toContain('var(--foundation-photo-filter, none)')
+        ->toContain('var(--foundation-photo-tint, transparent)')
+        ->toContain('var(--foundation-photo-tint-opacity, 0)');
+});
