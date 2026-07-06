@@ -167,6 +167,20 @@
             }
         @endphp
 
+        {{--
+            Same Blaze static-tag desync as `<x-capell::layout.main>` above:
+            re-enabling Blaze immediately before the footer leaves it
+            rendering in the same corrupted `$__env` buffer scope
+            `<x-capell::layout.main>`'s own comment describes, so the footer
+            (including its plain, literal `<x-capell::footer.index />` tag
+            path -- this isn't specific to `<x-dynamic-component>`) silently
+            renders empty. Disabling Blaze around the footer too, the same
+            way it's disabled around `layout.main`, fixes it.
+        --}}
+        @php
+            $wasBlazeEnabledForFooter = Blaze::isEnabled();
+            Blaze::disable();
+        @endphp
         @if ($footer)
             {{ $footer }}
         @elseif ($footer !== false && (! isset($theme['meta']['footer']) || $theme['meta']['footer'] !== false))
@@ -178,5 +192,10 @@
                 />
             @endif
         @endif
+        @php
+            if ($wasBlazeEnabledForFooter) {
+                Blaze::enable();
+            }
+        @endphp
     </div>
 @endif
