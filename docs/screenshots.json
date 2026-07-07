@@ -20,7 +20,7 @@
             "package": "theme-foundation",
             "scenario": "frontend-page",
             "waitFor": ".theme-foundation",
-            "colorSchemes": ["light", "dark"],
+            "colorSchemes": ["light"],
             "viewport": "desktop",
             "fullPage": true
         },
@@ -39,7 +39,7 @@
             "package": "theme-foundation",
             "scenario": "frontend-page",
             "waitFor": ".theme-foundation",
-            "colorSchemes": ["light", "dark"],
+            "colorSchemes": ["light"],
             "viewport": "tablet",
             "fullPage": true
         },
@@ -58,7 +58,7 @@
             "package": "theme-foundation",
             "scenario": "frontend-page",
             "waitFor": ".theme-foundation",
-            "colorSchemes": ["light", "dark"],
+            "colorSchemes": ["light"],
             "viewport": "mobile",
             "fullPage": true
         },
@@ -77,7 +77,7 @@
             "package": "theme-foundation",
             "scenario": "frontend-page",
             "waitFor": ".theme-foundation",
-            "colorSchemes": ["light", "dark"],
+            "colorSchemes": ["light"],
             "viewport": "desktop",
             "fullPage": true
         },
@@ -96,7 +96,7 @@
             "package": "theme-foundation",
             "scenario": "frontend-page",
             "waitFor": ".theme-foundation",
-            "colorSchemes": ["light", "dark"],
+            "colorSchemes": ["light"],
             "viewport": "tablet",
             "fullPage": true
         },
@@ -115,7 +115,7 @@
             "package": "theme-foundation",
             "scenario": "frontend-page",
             "waitFor": ".theme-foundation",
-            "colorSchemes": ["light", "dark"],
+            "colorSchemes": ["light"],
             "viewport": "mobile",
             "fullPage": true
         },
@@ -134,7 +134,7 @@
             "package": "theme-foundation",
             "scenario": "frontend-page",
             "waitFor": ".theme-foundation",
-            "colorSchemes": ["light", "dark"],
+            "colorSchemes": ["light"],
             "viewport": "desktop",
             "fullPage": true
         },
@@ -153,7 +153,7 @@
             "package": "theme-foundation",
             "scenario": "frontend-page",
             "waitFor": ".theme-foundation",
-            "colorSchemes": ["light", "dark"],
+            "colorSchemes": ["light"],
             "viewport": "tablet",
             "fullPage": true
         },
@@ -172,7 +172,7 @@
             "package": "theme-foundation",
             "scenario": "frontend-page",
             "waitFor": ".theme-foundation",
-            "colorSchemes": ["light", "dark"],
+            "colorSchemes": ["light"],
             "viewport": "mobile",
             "fullPage": true
         },
@@ -190,8 +190,8 @@
             "useCase": "A buyer reviews the Foundation contact surface before selecting theme-foundation.",
             "package": "theme-foundation",
             "scenario": "frontend-page",
-            "waitFor": ".theme-foundation",
-            "colorSchemes": ["light", "dark"],
+            "waitFor": ".theme-demo-contact-page",
+            "colorSchemes": ["light"],
             "viewport": "desktop",
             "fullPage": true
         },
@@ -209,8 +209,8 @@
             "useCase": "A buyer reviews the Foundation contact surface before selecting theme-foundation.",
             "package": "theme-foundation",
             "scenario": "frontend-page",
-            "waitFor": ".theme-foundation",
-            "colorSchemes": ["light", "dark"],
+            "waitFor": ".theme-demo-contact-page",
+            "colorSchemes": ["light"],
             "viewport": "tablet",
             "fullPage": true
         },
@@ -228,8 +228,8 @@
             "useCase": "A buyer reviews the Foundation contact surface before selecting theme-foundation.",
             "package": "theme-foundation",
             "scenario": "frontend-page",
-            "waitFor": ".theme-foundation",
-            "colorSchemes": ["light", "dark"],
+            "waitFor": ".theme-demo-contact-page",
+            "colorSchemes": ["light"],
             "viewport": "mobile",
             "fullPage": true
         },
@@ -248,7 +248,7 @@
             "package": "theme-foundation",
             "scenario": "frontend-page",
             "waitFor": ".theme-foundation",
-            "colorSchemes": ["light", "dark"],
+            "colorSchemes": ["light"],
             "viewport": "desktop",
             "fullPage": true
         },
@@ -267,7 +267,7 @@
             "package": "theme-foundation",
             "scenario": "frontend-page",
             "waitFor": ".theme-foundation",
-            "colorSchemes": ["light", "dark"],
+            "colorSchemes": ["light"],
             "viewport": "tablet",
             "fullPage": true
         },
@@ -286,7 +286,7 @@
             "package": "theme-foundation",
             "scenario": "frontend-page",
             "waitFor": ".theme-foundation",
-            "colorSchemes": ["light", "dark"],
+            "colorSchemes": ["light"],
             "viewport": "mobile",
             "fullPage": true
         },
@@ -305,7 +305,7 @@
             "package": "theme-foundation",
             "scenario": "frontend-page",
             "waitFor": ".theme-foundation",
-            "colorSchemes": ["light", "dark"],
+            "colorSchemes": ["light"],
             "viewport": "desktop",
             "fullPage": true
         },
@@ -324,7 +324,7 @@
             "package": "theme-foundation",
             "scenario": "frontend-page",
             "waitFor": ".theme-foundation",
-            "colorSchemes": ["light", "dark"],
+            "colorSchemes": ["light"],
             "viewport": "tablet",
             "fullPage": true
         },
@@ -343,7 +343,7 @@
             "package": "theme-foundation",
             "scenario": "frontend-page",
             "waitFor": ".theme-foundation",
-            "colorSchemes": ["light", "dark"],
+            "colorSchemes": ["light"],
             "viewport": "mobile",
             "fullPage": true
         },
@@ -362,7 +362,7 @@
             "package": "theme-foundation",
             "scenario": "frontend-page",
             "waitFor": ".theme-foundation",
-            "colorSchemes": ["light", "dark"],
+            "colorSchemes": ["light"],
             "viewport": "desktop",
             "fullPage": true
         },
@@ -381,7 +381,7 @@
             "package": "theme-foundation",
             "scenario": "frontend-page",
             "waitFor": ".theme-foundation",
-            "colorSchemes": ["light", "dark"],
+            "colorSchemes": ["light"],
             "viewport": "tablet",
             "fullPage": true
         },
@@ -400,7 +400,7 @@
             "package": "theme-foundation",
             "scenario": "frontend-page",
             "waitFor": ".theme-foundation",
-            "colorSchemes": ["light", "dark"],
+            "colorSchemes": ["light"],
             "viewport": "mobile",
             "fullPage": true
         }
