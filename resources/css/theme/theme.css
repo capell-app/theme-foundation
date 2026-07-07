@@ -1130,6 +1130,13 @@
         }
     }
 
+    @media (min-width: 901px) and (max-width: 1199px) {
+        .ap-card-grid,
+        .ap-gallery-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
     @media (max-width: 900px) {
         .ap-card-grid,
         .ap-feature-grid,

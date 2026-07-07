@@ -1,5 +1,7 @@
 @php
     $searchResults = is_array($section->results ?? null) ? $section->results : [];
+    $query = trim((string) ($section->query ?? ''));
+    $resultCount = count($searchResults);
 @endphp
 
 <section
@@ -52,6 +54,16 @@
             </button>
         </form>
 
+        @if ($query !== '' || $searchResults !== [])
+            <p class="mt-5 text-sm font-medium text-slate-600">
+                @if ($query !== '')
+                    {{ __('capell-theme-foundation::generic.search_results_for_query', ['count' => $resultCount, 'query' => $query]) }}
+                @else
+                    {{ __('capell-theme-foundation::generic.search_results_for_query', ['count' => $resultCount, 'query' => __('capell-theme-foundation::generic.search')]) }}
+                @endif
+            </p>
+        @endif
+
         @if ($searchResults !== [])
             <ul class="mt-8 divide-y divide-slate-200/80">
                 @foreach ($searchResults as $result)
@@ -76,6 +88,17 @@
                     </li>
                 @endforeach
             </ul>
+        @else
+            <div
+                class="mt-8 rounded-[var(--theme-radius-value)] border border-dashed border-slate-300 bg-white/70 p-6"
+            >
+                <p class="text-base font-semibold text-slate-950">
+                    {{ $section->emptyTitle ?? __('capell-theme-foundation::generic.search_empty_title') }}
+                </p>
+                <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+                    {{ $section->emptyBody ?? __('capell-theme-foundation::generic.search_empty_body') }}
+                </p>
+            </div>
         @endif
     </div>
 </section>

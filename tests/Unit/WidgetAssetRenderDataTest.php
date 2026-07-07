@@ -79,8 +79,9 @@ it('builds page content render data from loaded relations only', function (): vo
     $page = Page::factory()->make();
     $translation = new Translation;
     $translation->setRawAttributes([
-        'title' => 'Loaded page title',
+        'title' => 'Loaded page title - Browser suffix',
         'content' => '<p>Loaded page content.</p>',
+        'meta' => json_encode(['hero_title' => 'Loaded page title'], JSON_THROW_ON_ERROR),
     ]);
 
     $page->setRelation('translation', $translation);

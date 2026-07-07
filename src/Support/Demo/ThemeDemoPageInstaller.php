@@ -203,17 +203,20 @@ final class ThemeDemoPageInstaller
         $creator = resolve(PageCreator::class);
 
         foreach ($definitions as $index => $definition) {
-            $this->updateExistingPageLayout($site, $definition);
+            $layout = $definition->hasContainers()
+                ? $this->ensureDefinitionLayout($site, $themeKey, $definition)
+                : null;
 
-            $renderData = $definition->hasContainers()
-                ? $this->renderDataWithoutSections($definition->renderData)
-                : $definition->renderData;
+            $this->updateExistingPageLayout($site, $definition, $layout);
+
+            $renderData = $this->renderDataForDefinition($definition);
 
             /** @var Page $page */
             $page = $creator->createPage([
                 'name' => $definition->name,
                 'type_key' => $definition->type,
                 'layout_key' => $definition->layout,
+                'layout_id' => $layout?->getKey(),
                 'visible_from' => now()->subDay()->format('Y-m-d'),
                 'meta' => [
                     'theme_demo' => [
@@ -227,7 +230,7 @@ final class ThemeDemoPageInstaller
             ], $site, $languages);
 
             if ($definition->hasContainers()) {
-                $this->installLayoutContainers($page, $definition, $force);
+                $this->installLayoutContainers($page, $definition);
             }
 
             if ($force || $page->order === null) {
@@ -249,9 +252,138 @@ final class ThemeDemoPageInstaller
         return $renderData;
     }
 
-    private function updateExistingPageLayout(Site $site, ThemeDemoPageDefinition $definition): void
+    /**
+     * @return array<string, mixed>
+     */
+    private function renderDataForDefinition(ThemeDemoPageDefinition $definition): array
     {
-        $layout = Layout::query()->firstWhere('key', $definition->layout->value);
+        $renderData = $definition->hasContainers()
+            ? $this->renderDataWithoutSections($definition->renderData)
+            : $definition->renderData;
+
+        if ($definition->surface === 'contact' && ! is_array(data_get($renderData, 'form'))) {
+            $renderData['form'] = $this->contactFormData();
+        }
+
+        if ($definition->surface === 'empty') {
+            $renderData = $this->renderDataWithSearchRecoverySection($renderData);
+        }
+
+        return $renderData;
+    }
+
+    /**
+     * @param  array<string, mixed>  $renderData
+     * @return array<string, mixed>
+     */
+    private function renderDataWithSearchRecoverySection(array $renderData): array
+    {
+        $sections = $renderData['sections'] ?? null;
+
+        if (! is_array($sections)) {
+            return $renderData;
+        }
+
+        foreach ($sections as $section) {
+            if (is_array($section) && ($section['type'] ?? null) === 'search') {
+                return $renderData;
+            }
+        }
+
+        $searchSection = [
+            'type' => 'search',
+            'heading' => 'Try another search',
+            'summary' => 'Search again, clear the filter, or use the suggested paths below to continue browsing.',
+            'action' => '/search',
+            'query' => 'no matching results',
+            'placeholder' => 'Search the archive',
+            'results' => [],
+        ];
+
+        $insertAt = 1;
+
+        foreach ($sections as $index => $section) {
+            if (is_array($section) && ($section['type'] ?? null) === 'hero') {
+                $insertAt = $index + 1;
+
+                break;
+            }
+        }
+
+        array_splice($sections, $insertAt, 0, [$searchSection]);
+        $renderData['sections'] = $sections;
+
+        return $renderData;
+    }
+
+    private function heroTitle(ThemeDemoPageDefinition $definition): string
+    {
+        $legacyHeroHeading = data_get($definition->renderData, 'hero.heading');
+
+        if (is_string($legacyHeroHeading) && $legacyHeroHeading !== '') {
+            return $legacyHeroHeading;
+        }
+
+        foreach ($definition->sections() as $section) {
+            if (($section['type'] ?? null) !== 'hero') {
+                continue;
+            }
+
+            $heading = $section['heading'] ?? null;
+
+            if (is_string($heading) && $heading !== '') {
+                return $heading;
+            }
+        }
+
+        return $definition->title;
+    }
+
+    private function ensureDefinitionLayout(Site $site, string $themeKey, ThemeDemoPageDefinition $definition): Layout
+    {
+        $key = $this->definitionLayoutKey($site, $themeKey, $definition);
+        $baseLayout = Layout::query()->firstWhere('key', $definition->layout->value);
+
+        /** @var Layout $layout */
+        $layout = Layout::query()->updateOrCreate(
+            ['key' => $key],
+            [
+                'name' => sprintf('%s - %s', $definition->title, Str::headline($definition->surface)),
+                'site_id' => $site->getKey(),
+                'theme_id' => $site->theme_id,
+                'group' => $baseLayout?->group ?? $definition->layout->value,
+                'meta' => [
+                    ...(is_array($baseLayout?->meta) ? $baseLayout->meta : []),
+                    'theme_demo' => [
+                        'theme_key' => $themeKey,
+                        'surface' => $definition->surface,
+                        'base_layout' => $definition->layout->value,
+                    ],
+                ],
+                'admin' => is_array($baseLayout?->admin) ? $baseLayout->admin : [],
+                'order' => $baseLayout?->order ?? 100,
+                'default' => false,
+                'status' => true,
+            ],
+        );
+
+        return $layout;
+    }
+
+    private function definitionLayoutKey(Site $site, string $themeKey, ThemeDemoPageDefinition $definition): string
+    {
+        return Str::slug(sprintf(
+            'theme-demo-%s-%s-%s-%s',
+            $themeKey,
+            $site->getKey(),
+            $definition->layout->value,
+            $definition->surface,
+        ));
+    }
+
+    private function updateExistingPageLayout(Site $site, ThemeDemoPageDefinition $definition, ?Layout $layout = null): void
+    {
+        $layout ??= Layout::query()->firstWhere('key', $definition->layout->value);
 
         if (! $layout instanceof Layout) {
             return;
@@ -265,10 +397,7 @@ final class ThemeDemoPageInstaller
 
     /**
      * Creates the widgets a definition's `containers` reference, then writes
-     * those containers onto the resolved `Layout` model — mirroring the
-     * don't-clobber-unless-`--force` convention used by
-     * InstallFoundationThemeLayoutDefaultsAction: an existing layout that
-     * already carries containers is left alone unless `$force` is set.
+     * those containers onto the resolved page-specific demo `Layout` model.
      *
      * A missing `Layout` model on `$page` is treated as a broken install
      * rather than a legitimate skip: `PageCreator::createPage()` always
@@ -278,7 +407,7 @@ final class ThemeDemoPageInstaller
      * been stripped in favour of `$definition->containers`, so silently
      * returning here would leave the page half-seeded with no diagnostic.
      */
-    private function installLayoutContainers(Page $page, ThemeDemoPageDefinition $definition, bool $force): void
+    private function installLayoutContainers(Page $page, ThemeDemoPageDefinition $definition): void
     {
         $layout = $page->layout;
 
@@ -287,13 +416,6 @@ final class ThemeDemoPageInstaller
                 'Demo page [%s] has no resolvable layout; PageCreator::createPage() always resolves a layout_id (creating the Layout row if needed), so a missing Layout model here indicates a broken install rather than an expected skip.',
                 $definition->name,
             ));
-        }
-
-        $existingContainers = $layout->containers;
-        $hadContainers = is_array($existingContainers) && $existingContainers !== [];
-
-        if ($hadContainers && ! $force) {
-            return;
         }
 
         $this->createDefinitionWidgets($definition);
@@ -347,12 +469,12 @@ final class ThemeDemoPageInstaller
         foreach ($languages as $language) {
             $translations[(string) $language->code] = [
                 'title' => $definition->title,
-                'content' => $definition->content,
+                'content' => $this->contentWithoutDuplicateHeroHeading($definition),
                 'summary' => $definition->renderData['summary'] ?? null,
                 'meta' => [
                     'description' => $definition->renderData['summary'] ?? null,
                     'hero' => $definition->renderData['hero']['summary'] ?? null,
-                    'hero_title' => $definition->renderData['hero']['heading'] ?? $definition->title,
+                    'hero_title' => $this->heroTitle($definition),
                     'label' => $definition->title,
                     'link_text' => $definition->renderData['link_text'] ?? 'View preview',
                     'slug' => $definition->slug,
@@ -362,6 +484,35 @@ final class ThemeDemoPageInstaller
         }
 
         return $translations;
+    }
+
+    private function contentWithoutDuplicateHeroHeading(ThemeDemoPageDefinition $definition): string
+    {
+        $content = ltrim($definition->content);
+        $heroTitle = $this->heroTitle($definition);
+
+        if ($content === '' || $heroTitle === '') {
+            return $definition->content;
+        }
+
+        $contentWithoutHeading = preg_replace_callback(
+            '/^<h[1-3][^>]*>.*?<\\/h[1-3]>\\s*/is',
+            fn (array $matches): string => $this->normaliseHeadingText($matches[0]) === $this->normaliseHeadingText($heroTitle)
+                ? ''
+                : $matches[0],
+            $content,
+            1,
+        );
+
+        return is_string($contentWithoutHeading) ? $contentWithoutHeading : $definition->content;
+    }
+
+    private function normaliseHeadingText(string $text): string
+    {
+        $plainText = html_entity_decode(strip_tags($text), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $plainText = preg_replace('/\\s+/u', ' ', $plainText);
+
+        return Str::lower(trim(is_string($plainText) ? $plainText : ''));
     }
 
     /**

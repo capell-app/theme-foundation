@@ -10,6 +10,14 @@
     'decimals' => 0,
 ])
 
+@php
+    $decimalPlaces = max(0, (int) $decimals);
+    $numericValue = is_numeric($value) ? (float) $value : null;
+    $displayValue = $numericValue === null
+        ? (string) $value
+        : number_format($numericValue, $decimalPlaces);
+@endphp
+
 {{--
     Shared Foundation display primitive (Wave 2.7): renders a stat number
     plus label and wires the `data-count-up*` attribute contract expected
@@ -32,7 +40,7 @@
         @if ($prefix !== '') data-count-up-prefix="{{ $prefix }}" @endif
         @if ($suffix !== '') data-count-up-suffix="{{ $suffix }}" @endif
         data-count-up-decimals="{{ $decimals }}"
-        >0</span
+        >{{ $prefix }}{{ $displayValue }}{{ $suffix }}</span
     >
 
     <span

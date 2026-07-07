@@ -100,7 +100,8 @@ it('renders count-up-stat without throwing', function (): void {
     expect($html)
         ->toContain('data-count-up="4200"')
         ->toContain('Happy customers')
-        ->toContain('data-count-up-suffix="+"');
+        ->toContain('data-count-up-suffix="+"')
+        ->toContain('>4,200+</span>');
 });
 
 it('renders byline-with-metadata without throwing', function (): void {

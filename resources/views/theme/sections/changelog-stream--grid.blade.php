@@ -30,7 +30,7 @@
         </div>
 
         @if (count($entries) > 0)
-            <div class="grid gap-4 md:grid-cols-3">
+            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 @foreach ($entries as $entry)
                     <article
                         class="changelog-stream-entry rounded-[var(--theme-radius-value)] border border-slate-200 bg-white p-5"

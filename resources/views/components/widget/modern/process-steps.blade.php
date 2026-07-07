@@ -45,7 +45,9 @@
                     class="md:widget absolute top-12 right-0 left-0 hidden h-px bg-stone-200"
                 ></div>
 
-                <div class="{{ $responsiveGrid }} md:grid-cols-4 md:gap-6">
+                <div
+                    class="{{ $responsiveGrid }} md:grid-cols-2 md:gap-6 lg:grid-cols-4"
+                >
                     @forelse ($assetRenderDataItems as $assetRenderDataItem)
                         @php
                             $assetRenderData = $assetRenderDataItem['renderData'];

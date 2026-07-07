@@ -80,3 +80,22 @@ it('renders every declared cta variant view without error', function (string $vi
     'card' => ['capell-theme-foundation::theme.sections.cta--card'],
     'inline' => ['capell-theme-foundation::theme.sections.cta--inline'],
 ]);
+
+it('renders the search section with query status and an empty state', function (): void {
+    $section = (object) [
+        'heading' => 'Try another search',
+        'summary' => 'Use broader terms.',
+        'action' => '/search',
+        'query' => 'missing page',
+        'placeholder' => 'Search the archive',
+        'results' => [],
+    ];
+
+    $html = view('capell-theme-foundation::theme.sections.search', ['section' => $section])->render();
+
+    expect($html)
+        ->toContain('Try another search')
+        ->toContain('0 results for &quot;missing page&quot;')
+        ->toContain('No matching results')
+        ->toContain('Search the archive');
+});

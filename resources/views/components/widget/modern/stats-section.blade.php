@@ -43,7 +43,7 @@
             @class ([
                 'mx-auto',
                 'grid max-w-md grid-cols-1 gap-6' => $layout === 'vertical',
-                'max-w-5xl ' . $responsiveGrid . ' md:grid-cols-4' => $layout !== 'vertical',
+                'max-w-5xl ' . $responsiveGrid . ' md:grid-cols-2 lg:grid-cols-4' => $layout !== 'vertical',
             ])
         >
             @forelse ($assetRenderDataItems as $assetRenderDataItem)
