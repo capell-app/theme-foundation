@@ -1,4 +1,4 @@
-@props([
+@props ([
     'assetRenderDataItems',
     'layout' => $widget->getMeta('layout', 'horizontal'),
     'container',
@@ -45,7 +45,9 @@
                     class="md:widget absolute top-12 right-0 left-0 hidden h-px bg-stone-200"
                 ></div>
 
-                <div class="{{ $responsiveGrid }} md:grid-cols-4 md:gap-6">
+                <div
+                    class="{{ $responsiveGrid }} md:grid-cols-2 md:gap-6 lg:grid-cols-4"
+                >
                     @forelse ($assetRenderDataItems as $assetRenderDataItem)
                         @php
                             $assetRenderData = $assetRenderDataItem['renderData'];
@@ -60,7 +62,7 @@
                                     class="flex h-24 w-24 items-center justify-center rounded-full border-2 border-stone-200 bg-white text-blue-700 shadow-sm"
                                 >
                                     @if (str_starts_with($icon, 'heroicon-'))
-                                        @svg($icon, 'h-8 w-8')
+                                        @svg ($icon, 'h-8 w-8')
                                     @else
                                         <span class="text-4xl">
                                             {{ $icon }}
@@ -110,7 +112,7 @@
                             class="relative flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full border-2 border-stone-200 bg-white text-blue-700 shadow-sm"
                         >
                             @if (str_starts_with($icon, 'heroicon-'))
-                                @svg($icon, 'h-6 w-6')
+                                @svg ($icon, 'h-6 w-6')
                             @else
                                 <span class="text-2xl">{{ $icon }}</span>
                             @endif

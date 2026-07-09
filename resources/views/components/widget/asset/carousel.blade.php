@@ -5,7 +5,7 @@
     $theme = Frontend::theme();
 @endphp
 
-@props([
+@props ([
     'assetRenderDataItems',
     'assets',
     'carouselAlign' => $widget->getMeta('carousel_align', 'center'),
@@ -125,7 +125,7 @@
                 "spaceBetween": 0
             }
         }'
-            @class(['relative py-10', 'swiper' => $total > 1])
+            @class (['relative py-10', 'swiper' => $total > 1])
             style="--swiper-navigation-sides-offset: 0"
         >
             <div class="swiper-wrapper w-full">
@@ -159,7 +159,7 @@
                 @endphp
                 {{-- format-ignore-end --}}
                     <div
-                        @class([
+                        @class ([
                             'swiper-slide widget-media-item group relative h-64 overflow-hidden text-center text-white',
                             'rounded-lg' => $rounded,
                         ])
@@ -204,7 +204,7 @@
                     @if ($carouselArrows)
                         <button
                             aria-label="{{ __('capell-frontend::generic.previous') }}"
-                            @class([
+                            @class ([
                                 'swiper-button-prev rounded-r-md',
                                 $carouselButtonClass,
                             ])
@@ -212,7 +212,7 @@
                         ></button>
                         <button
                             aria-label="{{ __('capell-frontend::generic.next') }}"
-                            @class([
+                            @class ([
                                 'swiper-button-next rounded-l-md',
                                 $carouselButtonClass,
                             ])

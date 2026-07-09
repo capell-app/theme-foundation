@@ -14,6 +14,14 @@ declare(strict_types=1);
  * layout-builder has no sections/ directory and declares no sectionVariants,
  * so it is naturally skipped by the `! is_array($sectionVariants)` guard
  * below — no explicit exemption is needed for it.
+ *
+ * Wave 2.2: theme-foundation itself is the one theme whose section views
+ * predate the `resources/views/sections/` convention used by every child
+ * theme — its own base/variant Blade lives under
+ * `resources/views/theme/sections/` instead (see
+ * FoundationThemeServiceProvider::themeStudioSectionRenderers()). The path
+ * candidates below check both locations so this single generic test covers
+ * Foundation's own declared variants as well as every child theme's.
  */
 
 require_once __DIR__ . '/../../../../tests/Packages/Support/ThemeManifestContracts.php';
@@ -75,15 +83,19 @@ it('resolves every declared section variant to a real Blade view file', function
                 }
 
                 $checked++;
-                $viewPath = $entry['directory'] . "/resources/views/sections/{$section}--{$variant}.blade.php";
+                $candidatePaths = [
+                    $entry['directory'] . "/resources/views/sections/{$section}--{$variant}.blade.php",
+                    $entry['directory'] . "/resources/views/theme/sections/{$section}--{$variant}.blade.php",
+                ];
+                $resolvedViewExists = collect($candidatePaths)->contains(static fn (string $candidatePath): bool => is_file($candidatePath));
 
-                expect(is_file($viewPath))
+                expect($resolvedViewExists)
                     ->toBeTrue(sprintf(
-                        'Theme [%s] declares variant [%s] for section [%s] but %s does not exist.',
+                        'Theme [%s] declares variant [%s] for section [%s] but none of [%s] exist.',
                         $themeKey,
                         $variant,
                         $section,
-                        $viewPath,
+                        implode(', ', $candidatePaths),
                     ));
             }
         }

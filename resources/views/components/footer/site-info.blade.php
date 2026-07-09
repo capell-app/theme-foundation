@@ -1,4 +1,4 @@
-@props([
+@props ([
     'site',
     'contactPage' => null,
 ])
@@ -13,9 +13,7 @@
     $tagline = data_get($siteTranslation, 'meta.tagline');
 @endphp
 
-<div
-    {{ $attributes->merge(['class' => 'footer-site-info space-y-4']) }}
->
+<div {{ $attributes->merge(['class' => 'footer-site-info space-y-4']) }}>
     <a
         href="{{ $site->siteDomain->url }}"
         class="text-brand hover:text-primary focus:text-primary mb-3 inline-block"

@@ -1,4 +1,4 @@
-@props([
+@props ([
     'assetRenderDataItems',
     'columns' => $widget->getMeta('columns', 2),
     'displayMode' => $widget->getMeta('display_mode', 'grid'),
@@ -90,7 +90,7 @@
                                                 class="flex h-11 w-11 items-center justify-center rounded-lg bg-blue-50 text-blue-700"
                                             >
                                                 @if (str_starts_with((string) $icon, 'heroicon-'))
-                                                    @svg($icon, 'h-5 w-5')
+                                                    @svg ($icon, 'h-5 w-5')
                                                 @else
                                                     <span class="text-3xl">
                                                         {{ $icon }}
@@ -189,7 +189,7 @@
                                     class="flex h-11 w-11 items-center justify-center rounded-lg bg-blue-50 text-blue-700"
                                 >
                                     @if (str_starts_with((string) $icon, 'heroicon-'))
-                                        @svg($icon, 'h-5 w-5')
+                                        @svg ($icon, 'h-5 w-5')
                                     @else
                                         <span class="text-3xl">
                                             {{ $icon }}

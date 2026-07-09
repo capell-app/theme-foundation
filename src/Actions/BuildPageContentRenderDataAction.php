@@ -25,6 +25,7 @@ final class BuildPageContentRenderDataAction
         $image = $page instanceof Model ? $this->loadedRelation($page, 'image') : null;
         $content = data_get($translation, 'content');
         $title = data_get($translation, 'title');
+        $displayTitle = data_get($translation, 'meta.hero_title');
         $contentStructure = data_get($type, 'content_structure');
         $contentStructure = $contentStructure instanceof ContentStructure
             ? $contentStructure
@@ -36,7 +37,9 @@ final class BuildPageContentRenderDataAction
             contentStructure: $contentStructure,
             hasContent: in_array('content', $pageContents, true) && is_string($content) && $content !== '',
             hasTitle: in_array('title', $pageContents, true) && $showPageTitle,
-            title: is_string($title) ? $title : null,
+            title: is_string($displayTitle) && $displayTitle !== ''
+                ? $displayTitle
+                : (is_string($title) ? $title : null),
         );
     }
 

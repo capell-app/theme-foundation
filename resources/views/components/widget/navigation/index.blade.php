@@ -5,7 +5,7 @@
     $themeSecondaryContainers = data_get($theme, 'secondary_containers', []);
 @endphp
 
-@props([
+@props ([
     'columns' => $container['meta']['override_columns'] ?? $widget->getMeta('columns', 3),
     'container',
     'containerKey',

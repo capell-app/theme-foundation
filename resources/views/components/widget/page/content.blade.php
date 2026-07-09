@@ -4,7 +4,7 @@
     use Capell\FoundationTheme\Actions\BuildPageContentRenderDataAction;
 @endphp
 
-@props([
+@props ([
     'container',
     'containerKey',
     'containerWidth' => null,

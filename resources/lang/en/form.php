@@ -45,6 +45,13 @@ return [
         'soft' => 'Soft',
         'subtle' => 'Subtle',
     ],
+    'motion_intensity' => 'Motion intensity',
+    'motion_intensity_options' => [
+        'energetic' => 'Energetic',
+        'minimal' => 'Minimal',
+        'none' => 'None',
+        'subtle' => 'Subtle',
+    ],
     'muted_background_color' => 'Muted background colour',
     'page_background_color' => 'Page background colour',
     'performance' => 'Performance',

@@ -1,4 +1,4 @@
-@props([
+@props ([
     'asset',
     'class' => null,
     'color' => null,
@@ -63,14 +63,10 @@
     @endif
 
     @if ($position)
-        <p class="text-primary mt-1 text-sm font-medium">
-            {{ $position }}
-        </p>
+        <p class="text-primary mt-1 text-sm font-medium">{{ $position }}</p>
     @endif
 
     @if ($bio)
-        <p class="mt-3 text-sm leading-6 text-gray-600">
-            {{ $bio }}
-        </p>
+        <p class="mt-3 text-sm leading-6 text-gray-600">{{ $bio }}</p>
     @endif
 </article>

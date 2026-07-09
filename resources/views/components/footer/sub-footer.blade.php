@@ -4,7 +4,7 @@
     $containerWidth = GetLayoutContainerWidthAction::run();
 @endphp
 
-@props([
+@props ([
     'items' => [],
     'siteLanguages',
 ])
@@ -13,7 +13,7 @@
     class="capell-footer-sub-footer"
 >
     <div
-        @class([
+        @class ([
             'sm:grid-col-2 grid flex-wrap items-center gap-x-4 gap-y-4 py-4 md:flex lg:grid lg:grid-cols-3 lg:py-5 xl:grid-cols-5',
             $containerWidth->getContainerClass(),
         ])
@@ -27,7 +27,7 @@
                 <a
                     href="{{ $item->data['url'] ?? '' }}"
                     @wireNavigate
-                    @class([
+                    @class ([
                         'nav-item hover:text-primary flex text-sm font-medium text-[var(--color-footer-link)]',
                         "before:content-['|'] before:px-2 before:opacity-40 before:text-[var(--color-footer-muted)]" => ! $loop->first,
                         'active' => $item->active,
@@ -41,7 +41,7 @@
                     @endif
 
                     <span
-                        @class([
+                        @class ([
                             'lg:sr-only' => ! empty($item->data['hide_label']),
                         ])
                     >

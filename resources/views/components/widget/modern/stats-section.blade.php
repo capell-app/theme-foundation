@@ -1,4 +1,4 @@
-@props([
+@props ([
     'assetRenderDataItems',
     'layout' => $widget->getMeta('layout', 'horizontal'),
     'container',
@@ -40,10 +40,10 @@
         @endif
 
         <div
-            @class([
+            @class ([
                 'mx-auto',
                 'grid max-w-md grid-cols-1 gap-6' => $layout === 'vertical',
-                'max-w-5xl ' . $responsiveGrid . ' md:grid-cols-4' => $layout !== 'vertical',
+                'max-w-5xl ' . $responsiveGrid . ' md:grid-cols-2 lg:grid-cols-4' => $layout !== 'vertical',
             ])
         >
             @forelse ($assetRenderDataItems as $assetRenderDataItem)
@@ -60,7 +60,7 @@
                             class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-50 text-blue-700"
                         >
                             @if (str_starts_with($icon, 'heroicon-'))
-                                @svg($icon, 'h-6 w-6')
+                                @svg ($icon, 'h-6 w-6')
                             @else
                                 <span class="text-3xl">{{ $icon }}</span>
                             @endif

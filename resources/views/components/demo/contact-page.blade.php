@@ -1,4 +1,4 @@
-@props([
+@props ([
     'page',
     'site',
 ])
@@ -254,20 +254,11 @@
             <div class="theme-demo-contact-intro">
                 <p class="theme-demo-contact-eyebrow">Contact</p>
                 <h2>Start the right conversation</h2>
-                <p class="theme-demo-contact-lede">
-                    Tell us what you are planning, fixing, moving, or partnering
-                    on. One contact page routes project scoping, technical
-                    support, migrations, and partnerships to the right Capell
-                    team.
-                </p>
+                <p class="theme-demo-contact-lede">Tell us what you are planning, fixing, moving, or partnering on. One contact page routes project scoping, technical support, migrations, and partnerships to the right Capell team.</p>
 
                 <div class="theme-demo-contact-details">
                     <h3>Capell Studio, London</h3>
-                    <p>
-                        Remote-first delivery with UK timezone handover. Send an
-                        enquiry and the contact form routes it into the right
-                        follow-up path.
-                    </p>
+                    <p>Remote-first delivery with UK timezone handover. Send an enquiry and the contact form routes it into the right follow-up path.</p>
                 </div>
 
                 <div class="theme-demo-contact-routing">
@@ -292,10 +283,7 @@
                 <div class="theme-demo-contact-form-header">
                     <p class="theme-demo-contact-eyebrow">Contact form</p>
                     <h3>Send an enquiry</h3>
-                    <p>
-                        Share the context once. We will route it to the right
-                        delivery, support, migration, or partnership lead.
-                    </p>
+                    <p>Share the context once. We will route it to the right delivery, support, migration, or partnership lead.</p>
                 </div>
 
                 @foreach ([['theme-demo-contact-name', 'name', 'text', 'Name', 'name'], ['theme-demo-contact-email', 'email', 'email', 'Work email', 'email'], ['theme-demo-contact-company', 'company', 'text', 'Company', 'organization']] as [$id, $name, $type, $label, $autocomplete])

@@ -6,7 +6,7 @@ $runtimeManifest = Frontend::getFrontendData('runtimeManifest');
 
 ?>
 
-@props([
+@props ([
     'buttonIcon' => '',
     'class' => '',
     'color' => 'default',
@@ -27,7 +27,7 @@ $runtimeManifest = Frontend::getFrontendData('runtimeManifest');
 @endphp
 
 @if (! $buttonIcon && $icon)
-    @capellBuffer($buttonIcon)
+    @capellBuffer ($buttonIcon)
         <x-dynamic-component
             :component="$icon"
             @class([

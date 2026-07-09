@@ -1,4 +1,4 @@
-@props([
+@props ([
     'title' => $widget->translation?->title,
     'content' => $widget->translation?->content,
     'primaryButtonText' => $widget->getMeta('primary_button_text'),
@@ -93,7 +93,7 @@
                                 class="ap-hero__button ap-hero__button--primary ap-cta-primary"
                             >
                                 <span>{{ $primaryButtonText }}</span>
-                                @svg('heroicon-o-arrow-right', 'h-4 w-4')
+                                @svg ('heroicon-o-arrow-right', 'h-4 w-4')
                             </a>
                         @endif
 
@@ -103,7 +103,7 @@
                                 class="ap-hero__button ap-hero__button--secondary ap-cta-secondary"
                             >
                                 <span>{{ $secondaryButtonText }}</span>
-                                @svg('heroicon-o-code-bracket', 'h-4 w-4')
+                                @svg ('heroicon-o-code-bracket', 'h-4 w-4')
                             </a>
                         @endif
                     </div>
@@ -138,7 +138,7 @@
                             <div class="ap-hero__rail">
                                 <span class="ap-hero__rail-icon">
                                     @if (str_starts_with((string) $icon, 'heroicon-'))
-                                        @svg($icon, 'h-5 w-5')
+                                        @svg ($icon, 'h-5 w-5')
                                     @else
                                         <span>{{ $icon }}</span>
                                     @endif
@@ -152,7 +152,7 @@
                                     </span>
                                 </span>
                                 <span
-                                    @class([
+                                    @class ([
                                         'ap-hero__rail-status',
                                         'ap-hero__rail-status--blue' => $isBlue,
                                         'ap-hero__rail-status--green' => ! $isBlue,
@@ -164,7 +164,7 @@
                         @empty
                             <div class="ap-hero__rail">
                                 <span class="ap-hero__rail-icon">
-                                    @svg('heroicon-o-circle-stack', 'h-5 w-5')
+                                    @svg ('heroicon-o-circle-stack', 'h-5 w-5')
                                 </span>
                                 <span>
                                     <span class="ap-hero__rail-title">

@@ -27,11 +27,7 @@
             var(--color-footer),
             var(--bg-color-footer) 28%
         );
-        --color-footer-link: color-mix(
-            in srgb,
-            var(--color-footer),
-            #020617 8%
-        );
+        --color-footer-link: color-mix(in srgb, var(--color-footer), #020617 8%);
         --bg-color-footer: {{ $resolveFooterColor('footer_background_color', '#f1f5f9') }};
         --bg-color-footer-panel: color-mix(
             in srgb,
@@ -58,11 +54,7 @@
             var(--color-footer),
             var(--bg-color-footer) 24%
         );
-        --color-footer-link: color-mix(
-            in srgb,
-            var(--color-footer),
-            #ffffff 6%
-        );
+        --color-footer-link: color-mix(in srgb, var(--color-footer), #ffffff 6%);
         --bg-color-footer: {{ $resolveFooterColor('footer_dark_background_color', '#111827') }};
         --bg-color-footer-panel: color-mix(
             in srgb,
@@ -93,17 +85,17 @@
         })
     "
 >
-    @svg('heroicon-o-chevron-up', 'h-6 w-6', ['aria-hidden' => 'true'])
+    @svg ('heroicon-o-chevron-up', 'h-6 w-6', ['aria-hidden' => 'true'])
 </button>
 <footer
     id="footer"
-    @class([
+    @class ([
         'z-0 bg-[var(--bg-color-footer)] text-sm text-[var(--color-footer)]',
         'border-t border-[var(--border-color-footer)]' => $footerDividerColor,
     ])
 >
     <div
-        @class([
+        @class ([
             '@container flex-wrap px-8',
             'py-6 lg:py-7' => $footerSpacing === 'compact',
             'py-8 lg:py-10' => $footerSpacing === 'default' && ! $hasFooterPrimaryContent,
@@ -114,7 +106,7 @@
         ])
     >
         <div
-            @class([
+            @class ([
                 'px-0 py-0',
                 'flex justify-center' => ! $hasFooterPrimaryContent,
                 'grid gap-x-8 gap-y-8 xl:flex xl:flex-row xl:gap-x-10 @2xl:grid-cols-2 @4xl:grid-cols-3' => $hasFooterPrimaryContent,
@@ -157,7 +149,7 @@
 
     @if ($relatedSites->isNotEmpty())
         <div
-            @class([
+            @class ([
                 '@container px-8 pb-8 lg:pb-10',
                 $containerWidth->getContainerClass(),
             ])
@@ -184,4 +176,4 @@
     @endif
 </footer>
 
-@include('capell::partials.svg-sprite')
+@include ('capell::partials.svg-sprite')

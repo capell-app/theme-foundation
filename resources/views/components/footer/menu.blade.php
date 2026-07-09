@@ -1,4 +1,4 @@
-@props([
+@props ([
     'items' => null,
     'headingClass' => '',
     'menuItemClass' => 'focus:text-primary hover:text-primary text-sm leading-tight font-medium break-all text-[var(--color-footer-link)] xl:text-base',
@@ -36,7 +36,7 @@
             <ul class="flex flex-col gap-y-4">
                 @foreach ($chunk as $id => $item)
                     <li
-                        @class([
+                        @class ([
                             'nav-item',
                             'active' => $item->active,
                         ])
@@ -57,7 +57,7 @@
                                         <a
                                             href="{{ $child->data['url'] ?? '' }}"
                                             @wireNavigate
-                                            @class([
+                                            @class ([
                                                 $menuSubItemClass,
                                                 'active' => $child->active,
                                             ])

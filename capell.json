@@ -126,54 +126,39 @@
                 "caption": "Foundation Theme extension preview"
             },
             {
-                "path": "docs/screenshots/theme-foundation-settings-screen.png",
-                "alt": "Foundation Theme settings screen in light mode.",
-                "caption": "Foundation Theme settings screen"
+                "path": "docs/screenshots/foundation-homepage.png",
+                "alt": "Foundation Theme homepage rendered as a Capell public page.",
+                "caption": "Foundation homepage public theme surface"
             },
             {
-                "path": "docs/screenshots/theme-foundation-settings-screen-dark.png",
-                "alt": "Foundation Theme settings screen in dark mode.",
-                "caption": "Foundation Theme settings screen, dark mode"
+                "path": "docs/screenshots/foundation-directory.png",
+                "alt": "Foundation Theme directory listing with card grid and filtering rhythm.",
+                "caption": "Foundation directory listing public theme surface"
             },
             {
-                "path": "docs/screenshots/foundation-homepage-layout.png",
-                "alt": "Foundation Theme homepage layout rendered as a Capell public page",
-                "caption": "Homepage layout"
+                "path": "docs/screenshots/foundation-detail.png",
+                "alt": "Foundation Theme detail article with hero, content, and related links.",
+                "caption": "Foundation detail article public theme surface"
             },
             {
-                "path": "docs/screenshots/foundation-standard-page-layout.png",
-                "alt": "Foundation Theme standard content page with breadcrumbs and related links",
-                "caption": "Standard content page"
+                "path": "docs/screenshots/foundation-contact.png",
+                "alt": "Foundation Theme contact page with form fields and supporting content.",
+                "caption": "Foundation contact page public theme surface"
             },
             {
-                "path": "docs/screenshots/foundation-blog-article-layout.png",
-                "alt": "Foundation Theme blog article layout with article hero and related posts",
-                "caption": "Blog article layout"
+                "path": "docs/screenshots/foundation-empty.png",
+                "alt": "Foundation Theme empty state with recovery actions.",
+                "caption": "Foundation empty state public theme surface"
             },
             {
-                "path": "docs/screenshots/foundation-listing-layout.png",
-                "alt": "Foundation Theme listing layout with card grid, filters, and pagination rhythm",
-                "caption": "Listing page layout"
+                "path": "docs/screenshots/foundation-not-found.png",
+                "alt": "Foundation Theme not-found page with navigation recovery actions.",
+                "caption": "Foundation page not found public theme surface"
             },
             {
-                "path": "docs/screenshots/foundation-contact-form-layout.png",
-                "alt": "Foundation Theme contact form layout with fields, consent, and confirmation path",
-                "caption": "Contact form layout"
-            },
-            {
-                "path": "docs/screenshots/foundation-search-results-layout.png",
-                "alt": "Foundation Theme search results layout with query, excerpts, and metadata",
-                "caption": "Search results layout"
-            },
-            {
-                "path": "docs/screenshots/foundation-events-layout.png",
-                "alt": "Foundation Theme events listing layout with featured event and date cards",
-                "caption": "Events listing layout"
-            },
-            {
-                "path": "docs/screenshots/foundation-membership-gate-layout.png",
-                "alt": "Foundation Theme access-gated page layout with teaser and sign-in prompt",
-                "caption": "Access-gated page layout"
+                "path": "docs/screenshots/foundation-cta.png",
+                "alt": "Foundation Theme call-to-action page section.",
+                "caption": "Foundation call to action public theme surface"
             }
         ],
         "categories": ["admin", "foundation", "frontend"]

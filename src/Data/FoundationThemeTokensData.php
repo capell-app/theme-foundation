@@ -48,5 +48,10 @@ final readonly class FoundationThemeTokensData
         public string $headingSizeH2,
         public string $headingSizeH3,
         public string $headingLineHeight,
+        public string $motionIntensity,
+        public string $motionDuration,
+        public string $motionEase,
+        public string $motionStagger,
+        public string $motionDistance,
     ) {}
 }

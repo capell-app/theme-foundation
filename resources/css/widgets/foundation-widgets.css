@@ -31,6 +31,37 @@
         left: 30px;
     }
 
+    /*
+     * Wave 4c: pricing-value-spectrum range-slider thumb/track styling.
+     * The discrete-tier radio fallback (`:has(:checked)` in the Blade view)
+     * needs no CSS of its own beyond Tailwind's `has-[:checked]` utilities,
+     * so this block only styles the slider input itself.
+     */
+    .pricing-spectrum-slider {
+        accent-color: var(--theme-primary, #315f8f);
+        block-size: 0.5rem;
+        cursor: pointer;
+    }
+
+    .pricing-spectrum-tier-radio {
+        accent-color: var(--theme-primary, #315f8f);
+    }
+
+    /* Wave 4c: faq-search-discovery match highlight. */
+    .faq-search-item mark,
+    .faq-search-item [data-faq-search-question-text] mark,
+    .faq-search-item [data-faq-search-answer-text] mark {
+        background-color: rgb(252 211 77 / 55%);
+        border-radius: 0.15rem;
+        color: inherit;
+        padding-inline: 0.1rem;
+    }
+
+    .faq-search-category-tab[data-active='true'] {
+        background-color: #0f172a;
+        color: #ffffff;
+    }
+
     .widget[class*='widget-kitchen-sink-'] {
         --kitchen-sink-ink: #0f172a;
         --kitchen-sink-muted: #475569;

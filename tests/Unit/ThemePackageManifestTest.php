@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 use Capell\Core\ThemeStudio\Rendering\BladeThemeRenderer;
 use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
+use Capell\FoundationTheme\Actions\ValidateThemeCatalogueEntryAction;
 use Capell\FoundationTheme\Providers\FoundationThemeServiceProvider;
+
+require_once __DIR__ . '/../Support/ThemeCatalogueScreenshotSurfaceGap.php';
 
 it('declares foundation as the default theme package', function (): void {
     $manifest = themePackageManifest('theme-foundation');
@@ -101,20 +104,17 @@ it('declares committed marketplace screenshots', function (): void {
         })
         ->values();
 
-    expect($paths)->toHaveCount(11)
-        ->and($paths->filter(fn (string $path): bool => str_starts_with($path, 'docs/screenshots/') && str_ends_with($path, '.png')))->toHaveCount(10)
+    expect($paths)->toHaveCount(8)
+        ->and($paths->filter(fn (string $path): bool => str_starts_with($path, 'docs/screenshots/') && str_ends_with($path, '.png')))->toHaveCount(7)
         ->and($paths->filter(fn (string $path): bool => str_starts_with($path, 'docs/assets/marketplace/') && str_ends_with($path, '.svg')))->toHaveCount(0)
         ->and($paths)->toContain(
-            'docs/screenshots/theme-foundation-settings-screen.png',
-            'docs/screenshots/theme-foundation-settings-screen-dark.png',
-            'docs/screenshots/foundation-homepage-layout.png',
-            'docs/screenshots/foundation-standard-page-layout.png',
-            'docs/screenshots/foundation-blog-article-layout.png',
-            'docs/screenshots/foundation-listing-layout.png',
-            'docs/screenshots/foundation-contact-form-layout.png',
-            'docs/screenshots/foundation-search-results-layout.png',
-            'docs/screenshots/foundation-events-layout.png',
-            'docs/screenshots/foundation-membership-gate-layout.png',
+            'docs/screenshots/foundation-homepage.png',
+            'docs/screenshots/foundation-directory.png',
+            'docs/screenshots/foundation-detail.png',
+            'docs/screenshots/foundation-contact.png',
+            'docs/screenshots/foundation-empty.png',
+            'docs/screenshots/foundation-not-found.png',
+            'docs/screenshots/foundation-cta.png',
         );
 
     foreach ($paths as $path) {
@@ -122,40 +122,37 @@ it('declares committed marketplace screenshots', function (): void {
     }
 });
 
-it('declares generated Tailwind output review as a command report capture', function (): void {
+it('declares the standard light-only screenshot matrix', function (): void {
     $screenshots = foundationThemeScreenshotsContract();
-    $entry = collect(foundationThemeManifestList($screenshots, 'entries'))
-        ->firstWhere('id', 'generated-tailwind-asset-output-review');
+    $entries = collect(foundationThemeManifestList($screenshots, 'entries'));
+    $surfaces = [
+        'homepage',
+        'directory',
+        'detail',
+        'contact',
+        'empty',
+        'not-found',
+        'cta',
+    ];
+    $viewports = ['desktop', 'tablet', 'mobile'];
 
-    throw_unless(is_array($entry), RuntimeException::class, 'Generated Tailwind output review screenshot entry must exist.');
+    $expectedIds = collect($surfaces)
+        ->flatMap(fn (string $surface): array => collect($viewports)
+            ->map(fn (string $viewport): string => $viewport === 'desktop'
+                ? "foundation-{$surface}"
+                : "foundation-{$surface}-{$viewport}")
+            ->all())
+        ->values();
 
-    expect($entry)
-        ->toMatchArray([
-            'surface' => 'developer',
-            'targetType' => 'console-command',
-            'target' => 'capell:frontend-tailwind-assets --report',
-            'reportPath' => 'packages/theme-foundation/docs/reports/generated-tailwind-asset-output-review.md',
-            'screenshotPath' => 'packages/theme-foundation/docs/screenshots/generated-tailwind-asset-output-review.png',
-            'darkScreenshotPath' => 'packages/theme-foundation/docs/screenshots/generated-tailwind-asset-output-review-dark.png',
-        ]);
+    expect($entries)->toHaveCount(21)
+        ->and($entries->pluck('id')->sort()->values()->all())->toBe($expectedIds->sort()->values()->all())
+        ->and($entries->pluck('colorSchemes')->unique()->values()->all())->toBe([['light']])
+        ->and($entries->filter(fn (array $entry): bool => str_contains((string) $entry['id'], 'contact'))->pluck('waitFor')->unique()->values()->all())
+        ->toBe(['.theme-demo-contact-page']);
 
-    $packageRoot = dirname(__DIR__, 2);
-    $reportPath = $packageRoot . '/docs/reports/generated-tailwind-asset-output-review.md';
-
-    expect($entry['notes'])
-        ->toContain('not the generic settings screen')
-        ->and(is_file($reportPath))->toBeTrue()
-        ->and(is_file($packageRoot . '/docs/screenshots/generated-tailwind-asset-output-review.png'))->toBeTrue()
-        ->and(is_file($packageRoot . '/docs/screenshots/generated-tailwind-asset-output-review-dark.png'))->toBeTrue();
-
-    $report = file_get_contents($reportPath) ?: '';
-
-    expect($report)
-        ->toContain('capell:frontend-tailwind-assets --report')
-        ->toContain('imports')
-        ->toContain('plugins')
-        ->toContain('sources')
-        ->toContain('theme_colors');
+    foreach ($entries as $entry) {
+        expect(is_file(dirname(__DIR__, 2) . '/' . str_replace('packages/theme-foundation/', '', (string) $entry['screenshotPath'])))->toBeTrue();
+    }
 });
 
 it('declares standalone theme packages as frontend themes', function (string $packageDirectory, string $composerName, string $themeKey): void {
@@ -210,6 +207,21 @@ dataset('standalone theme packages', function (): array {
 
     return $packages;
 });
+
+it('agrees with docs/themes.json and ThemeDefinitionData for each standalone theme package', function (string $packageDirectory, string $composerName, string $themeKey): void {
+    // Wave 1.4 — delegates the capell.json <-> docs/themes.json <->
+    // ThemeDefinitionData <-> docs/screenshots.json cross-check to the
+    // extracted ValidateThemeCatalogueEntryAction, the same Action
+    // `capell:validate-themes` and `scripts/validate-themes.php` use, so this
+    // suite and the command stay in lock-step from one source of truth.
+    $packagesDirectory = dirname(__DIR__, 3);
+
+    $result = ValidateThemeCatalogueEntryAction::run($packageDirectory, $packagesDirectory);
+    $violations = themeCatalogueViolationsExcludingKnownScreenshotSurfaceGap($themeKey, $result->violations);
+
+    expect($result->themeKey)->toBe($themeKey)
+        ->and($violations)->toBe([], "Theme package \"{$composerName}\" failed ValidateThemeCatalogueEntryAction: " . implode(' ', $violations));
+})->with('standalone theme packages');
 
 /**
  * @return array<string, mixed>

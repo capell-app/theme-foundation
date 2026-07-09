@@ -18,7 +18,7 @@
             @endif
         </div>
 
-        <div class="grid gap-4 md:grid-cols-3">
+        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             @foreach ($section->features as $feature)
                 <article
                     class="overflow-hidden rounded-[var(--theme-radius-value)] border border-slate-200 bg-[var(--theme-surface)]"

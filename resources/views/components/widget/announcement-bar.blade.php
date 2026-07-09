@@ -1,4 +1,4 @@
-@props([
+@props ([
     'align' => $widget->getMeta('align', 'center'),
     'title' => $widget->translation?->title,
     'content' => $widget->translation?->content,

@@ -28,8 +28,10 @@ use Capell\Core\ThemeStudio\Rendering\ViewSectionRenderer;
 use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
 use Capell\FoundationTheme\Actions\ResolveFoundationThemeTokensAction;
 use Capell\FoundationTheme\Console\Commands\DemoCommand;
+use Capell\FoundationTheme\Console\Commands\MakeThemeCommand;
 use Capell\FoundationTheme\Console\Commands\SetupCommand;
 use Capell\FoundationTheme\Console\Commands\ThemeCatalogueReportCommand;
+use Capell\FoundationTheme\Console\Commands\ValidateThemesCommand;
 use Capell\FoundationTheme\Enums\FoundationThemeAssetEnum;
 use Capell\FoundationTheme\Filament\Extenders\FoundationLayoutContainerSchemaExtender;
 use Capell\FoundationTheme\Filament\Settings\FoundationThemeSettingsSchema;
@@ -37,6 +39,7 @@ use Capell\FoundationTheme\Listeners\RunTailwindAssetsOnPackageChange;
 use Capell\FoundationTheme\Livewire\Assets\Table\PageAssets;
 use Capell\FoundationTheme\Livewire\Widget\Pages;
 use Capell\FoundationTheme\Rendering\ChromeSplitBladeThemeRenderer;
+use Capell\FoundationTheme\Rendering\VariantViewSectionRenderer;
 use Capell\FoundationTheme\Settings\FoundationThemeSettings;
 use Capell\FoundationTheme\Support\Assets\FoundationThemeAssetContributor;
 use Capell\FoundationTheme\Support\Blade\BladeDirectives;
@@ -95,7 +98,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
             previewImage: '/vendor/capell-theme-foundation/preview.jpg',
             tags: ['Foundation', 'Structured', 'Default'],
             bestFit: ['Starter sites', 'Documentation', 'General publishing'],
-            includedSections: ['navigation', 'hero', 'features', 'proof', 'content-listing', 'cta', 'footer'],
+            includedSections: ['navigation', 'hero', 'features', 'proof', 'content-listing', 'search', 'pagination', 'form', 'cta', 'footer'],
             presets: [
                 new ThemePresetData(
                     key: 'default',
@@ -123,6 +126,18 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
             ],
             assets: ['css' => 'vendor/capell-theme-foundation/theme-foundation.css'],
             runtime: FrontendRuntime::Blade,
+            frontend: [
+                'sectionVariants' => [
+                    'hero' => ['default', 'split', 'stacked', 'full-bleed'],
+                    'content-listing' => ['default', 'grid', 'rows', 'masonry-safe'],
+                    'cta' => ['default', 'band', 'card', 'inline'],
+                    'form' => ['default', 'encouraging'],
+                    'pricing-value-spectrum' => ['default', 'compact'],
+                    'faq-search-discovery' => ['default', 'categorised'],
+                    'changelog-stream' => ['default', 'grid'],
+                    'stats-display-band' => ['default', 'light'],
+                ],
+            ],
         );
     }
 
@@ -136,6 +151,8 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
                 DemoCommand::class,
                 SetupCommand::class,
                 ThemeCatalogueReportCommand::class,
+                MakeThemeCommand::class,
+                ValidateThemesCommand::class,
             ]);
     }
 
@@ -470,12 +487,89 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
     {
         return [
             'navigation' => new ViewSectionRenderer(self::THEME_KEY, 'navigation', 'capell-theme-foundation::theme.sections.navigation', failLoudly: true),
-            'hero' => new ViewSectionRenderer(self::THEME_KEY, 'hero', 'capell-theme-foundation::theme.sections.hero', failLoudly: true),
+            'hero' => new VariantViewSectionRenderer(
+                themeKey: self::THEME_KEY,
+                sectionKey: 'hero',
+                baseView: 'capell-theme-foundation::theme.sections.hero',
+                variantViews: [
+                    'split' => 'capell-theme-foundation::theme.sections.hero--split',
+                    'stacked' => 'capell-theme-foundation::theme.sections.hero--stacked',
+                    'full-bleed' => 'capell-theme-foundation::theme.sections.hero--full-bleed',
+                ],
+                failLoudly: true,
+            ),
             'features' => new ViewSectionRenderer(self::THEME_KEY, 'features', 'capell-theme-foundation::theme.sections.features', failLoudly: true),
             'proof' => new ViewSectionRenderer(self::THEME_KEY, 'proof', 'capell-theme-foundation::theme.sections.proof', failLoudly: true),
-            'content-listing' => new ViewSectionRenderer(self::THEME_KEY, 'content-listing', 'capell-theme-foundation::theme.sections.content-listing', failLoudly: true),
-            'cta' => new ViewSectionRenderer(self::THEME_KEY, 'cta', 'capell-theme-foundation::theme.sections.cta', failLoudly: true),
+            'content-listing' => new VariantViewSectionRenderer(
+                themeKey: self::THEME_KEY,
+                sectionKey: 'content-listing',
+                baseView: 'capell-theme-foundation::theme.sections.content-listing',
+                variantViews: [
+                    'grid' => 'capell-theme-foundation::theme.sections.content-listing--grid',
+                    'rows' => 'capell-theme-foundation::theme.sections.content-listing--rows',
+                    'masonry-safe' => 'capell-theme-foundation::theme.sections.content-listing--masonry-safe',
+                ],
+                failLoudly: true,
+            ),
+            'search' => new ViewSectionRenderer(self::THEME_KEY, 'search', 'capell-theme-foundation::theme.sections.search', failLoudly: true),
+            'pagination' => new ViewSectionRenderer(self::THEME_KEY, 'pagination', 'capell-theme-foundation::theme.sections.pagination', failLoudly: true),
+            'form' => new VariantViewSectionRenderer(
+                themeKey: self::THEME_KEY,
+                sectionKey: 'form',
+                baseView: 'capell-theme-foundation::theme.sections.form',
+                variantViews: [
+                    'encouraging' => 'capell-theme-foundation::theme.sections.form--encouraging',
+                ],
+                failLoudly: true,
+            ),
+            'cta' => new VariantViewSectionRenderer(
+                themeKey: self::THEME_KEY,
+                sectionKey: 'cta',
+                baseView: 'capell-theme-foundation::theme.sections.cta',
+                variantViews: [
+                    'band' => 'capell-theme-foundation::theme.sections.cta--band',
+                    'card' => 'capell-theme-foundation::theme.sections.cta--card',
+                    'inline' => 'capell-theme-foundation::theme.sections.cta--inline',
+                ],
+                failLoudly: true,
+            ),
             'footer' => new ViewSectionRenderer(self::THEME_KEY, 'footer', 'capell-theme-foundation::theme.sections.footer', failLoudly: true),
+            'pricing-value-spectrum' => new VariantViewSectionRenderer(
+                themeKey: self::THEME_KEY,
+                sectionKey: 'pricing-value-spectrum',
+                baseView: 'capell-theme-foundation::theme.sections.pricing-value-spectrum',
+                variantViews: [
+                    'compact' => 'capell-theme-foundation::theme.sections.pricing-value-spectrum--compact',
+                ],
+                failLoudly: true,
+            ),
+            'faq-search-discovery' => new VariantViewSectionRenderer(
+                themeKey: self::THEME_KEY,
+                sectionKey: 'faq-search-discovery',
+                baseView: 'capell-theme-foundation::theme.sections.faq-search-discovery',
+                variantViews: [
+                    'categorised' => 'capell-theme-foundation::theme.sections.faq-search-discovery--categorised',
+                ],
+                failLoudly: true,
+            ),
+            'changelog-stream' => new VariantViewSectionRenderer(
+                themeKey: self::THEME_KEY,
+                sectionKey: 'changelog-stream',
+                baseView: 'capell-theme-foundation::theme.sections.changelog-stream',
+                variantViews: [
+                    'grid' => 'capell-theme-foundation::theme.sections.changelog-stream--grid',
+                ],
+                failLoudly: true,
+            ),
+            'stats-display-band' => new VariantViewSectionRenderer(
+                themeKey: self::THEME_KEY,
+                sectionKey: 'stats-display-band',
+                baseView: 'capell-theme-foundation::theme.sections.stats-display-band',
+                variantViews: [
+                    'light' => 'capell-theme-foundation::theme.sections.stats-display-band--light',
+                ],
+                failLoudly: true,
+            ),
         ];
     }
 

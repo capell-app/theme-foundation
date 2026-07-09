@@ -1,4 +1,4 @@
-@props([
+@props ([
     'assetRenderDataItems',
     'currency' => $widget->getMeta('currency', '$'),
     'billingOptions' => $widget->getMeta('billing_options', 'monthly'),
@@ -61,7 +61,7 @@
         @endif
 
         <div
-            class="pricing-grid mx-auto grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-3"
+            class="pricing-grid mx-auto grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
             data-billing="{{ $billingOptions === 'both' ? 'monthly' : $billingOptions }}"
         >
             @forelse ($assetRenderDataItems as $assetRenderDataItem)

@@ -1,4 +1,4 @@
-@props([
+@props ([
     'assetRenderDataItems',
     'columns' => $widget->getMeta('columns', 3),
     'container',
@@ -83,7 +83,7 @@
                             class="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-lg bg-emerald-50 text-[#0f766e]"
                         >
                             @if (str_starts_with((string) $icon, 'heroicon-'))
-                                @svg($icon, 'h-10 w-10')
+                                @svg ($icon, 'h-10 w-10')
                             @else
                                 <span class="text-4xl">{{ $icon }}</span>
                             @endif

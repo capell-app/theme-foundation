@@ -2,12 +2,17 @@
 
 use Capell\FoundationTheme\Actions\ResolveFoundationThemeTokensAction;
 use Capell\FoundationTheme\Data\FoundationThemeTokensData;
+use Capell\FoundationTheme\Settings\FoundationThemeSettings;
 use Capell\Frontend\Facades\Frontend;
 
 $preparedTokens = Frontend::getFrontendData('foundation.theme.tokens');
 $tokens = $preparedTokens instanceof FoundationThemeTokensData
     ? $preparedTokens
     : ResolveFoundationThemeTokensAction::run(resolveSettings: false);
+
+// prefers-reduced-motion always wins: force the "none" tier's static
+// composition regardless of the theme's configured motionIntensity token.
+$noneMotionTokens = FoundationThemeSettings::MOTION_INTENSITY_OPTIONS['none'];
 
 ?>
 
@@ -42,6 +47,10 @@ $tokens = $preparedTokens instanceof FoundationThemeTokensData
         --foundation-heading-size-h3: {{ $tokens->headingSizeH3 }};
         --foundation-heading-line-height: {{ $tokens->headingLineHeight }};
         --foundation-radius: 0.5rem;
+        --foundation-motion-duration: {{ $tokens->motionDuration }};
+        --foundation-motion-ease: {{ $tokens->motionEase }};
+        --foundation-motion-stagger: {{ $tokens->motionStagger }};
+        --foundation-motion-distance: {{ $tokens->motionDistance }};
     }
 
     .dark:root {
@@ -59,5 +68,13 @@ $tokens = $preparedTokens instanceof FoundationThemeTokensData
         --foundation-band-accent-bg: {{ $tokens->darkBandAccentBackground }};
         --foundation-band-border: {{ $tokens->darkBandBorder }};
         --foundation-image-border: {{ $tokens->darkImageBorder }};
+    }
+    @media (prefers-reduced-motion: reduce) {
+        :root {
+            --foundation-motion-duration: {{ $noneMotionTokens['duration'] }};
+            --foundation-motion-ease: {{ $noneMotionTokens['ease'] }};
+            --foundation-motion-stagger: {{ $noneMotionTokens['stagger'] }};
+            --foundation-motion-distance: {{ $noneMotionTokens['distance'] }};
+        }
     }
 </style>

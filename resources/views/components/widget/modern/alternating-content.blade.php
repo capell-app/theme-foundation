@@ -1,4 +1,4 @@
-@props([
+@props ([
     'assetRenderDataItems',
     'container',
     'containerKey',
@@ -45,7 +45,7 @@
                     class="grid grid-cols-1 items-center gap-5 md:grid-cols-2 md:gap-8"
                 >
                     <div
-                        @class([
+                        @class ([
                             'flex min-h-40 items-center justify-center rounded-2xl bg-gray-50 p-6 md:min-h-48 md:p-8',
                             'md:order-last' => $isRight,
                         ])
@@ -53,7 +53,7 @@
                         @if ($icon !== '')
                             <span class="text-blue-700">
                                 @if (str_starts_with($icon, 'heroicon-'))
-                                    @svg($icon, 'h-20 w-20')
+                                    @svg ($icon, 'h-20 w-20')
                                 @else
                                     <span class="text-8xl">{{ $icon }}</span>
                                 @endif

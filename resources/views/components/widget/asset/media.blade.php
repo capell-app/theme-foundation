@@ -6,7 +6,7 @@
     $theme = Frontend::theme();
 @endphp
 
-@props([
+@props ([
     'assetRenderDataItems',
     'assets',
     'color' => $widget->getMeta('color', 'dark'),
@@ -48,7 +48,7 @@
 
         @if ($assets->isNotEmpty())
             <div
-                @class([
+                @class ([
                     'grid grid-cols-2 md:grid-cols-3 2xl:container',
                     'gap-2' => $spacing === 'sm',
                     'gap-4' => $spacing === 'md',
@@ -68,7 +68,7 @@
                 @endphp
                 {{-- format-ignore-end --}}
                     <div
-                        @class([
+                        @class ([
                             'widget-media-item group relative h-full cursor-pointer overflow-hidden text-center',
                             'md:col-span-1 md:row-span-2' => ($loop->iteration > 5 && $loop->iteration % 5 === 0) || $loop->iteration === 2,
                         ])
@@ -110,7 +110,7 @@
 
                         @if ($assetRenderData->title)
                             <div
-                                @class([
+                                @class ([
                                     'pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-center
                                 break-words bg-gray-600/75 px-2 py-4 font-medium leading-none leading-tight text-white
                                 transform translate-y-full opacity-0 transition-all duration-300

@@ -11,7 +11,7 @@
     $widget ??= $widget ?? null;
 @endphp
 
-@props([
+@props ([
     'backgroundAttachment' => $widget->getMeta('background_attachment'),
     'backgroundColor' => $widget->getMeta('background_color'),
     'backgroundImage' => ResolveLoadedWidgetBackgroundImageAction::run($widget),
@@ -39,7 +39,7 @@
     }
 @endphp
 
-@aware([
+@aware ([
     'containerColspan' => null,
 ])
 
@@ -114,7 +114,7 @@
 
     @if ($containerWidth !== ContainerWidthEnum::Full)
         <div
-            @class([
+            @class ([
                 $containerWidth->getContainerClass(),
                 $containerClass ?: '' => $containerClass,
             ])

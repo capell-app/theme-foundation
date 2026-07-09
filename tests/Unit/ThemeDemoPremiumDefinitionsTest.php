@@ -71,7 +71,7 @@ it('adds premium demo page surfaces for every prompt-built theme', function (str
     ['automotive-dealer', 'Automotive Dealer'],
     ['property-developer', 'Property Developer'],
     ['recruitment-jobs', 'Recruitment Jobs'],
-    ['quiet-type', 'Quiet Type'],
+    ['blog', 'Blog'],
 ]);
 
 it('attaches object-form navigation and footer chrome to every base demo surface', function (): void {

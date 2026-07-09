@@ -1,4 +1,4 @@
-@props([
+@props ([
     'icon' => null,
 ])
-@svg($icon, $attributes->get('class'))
+@svg ($icon, $attributes->get('class'))

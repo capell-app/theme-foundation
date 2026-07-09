@@ -55,8 +55,8 @@ function themeCatalogueEntries(): array
 }
 
 /**
- * Package directory ("theme-quiet-type") for a catalogue package name
- * ("capell-app/theme-quiet-type").
+ * Package directory ("theme-blog") for a catalogue package name
+ * ("capell-app/theme-blog").
  */
 function themePackageDirectory(string $packageName): string
 {

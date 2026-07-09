@@ -2,7 +2,7 @@
 
 <!-- prettier-ignore-start -->
 
-## What This Plugin Adds
+## What This Extension Adds
 
 Foundation Theme is an **Available**, **No schema impact** Capell theme in the **Capell Foundation** product group. It ships as `capell-app/theme-foundation` and extends these surfaces: admin, frontend.
 
@@ -65,7 +65,7 @@ Foundation Theme owns the stable child theme override surface for Capell themes.
 
 Stable contract points:
 
-- Theme Studio sections: `navigation`, `hero`, `features`, `proof`, `content-listing`, `cta`, `footer`.
+- Theme Studio sections: `navigation`, `hero`, `features`, `proof`, `content-listing`, `search`, `pagination`, `form`, `cta`, `footer`.
 - Shared views: `capell::theme.page`, `capell::layout.area`, `capell::media.svg`.
 - Runtime tokens: `--foundation-page-bg`, `--foundation-section-spacing`, `--foundation-widget-gap`.
 - Layout Builder chrome areas: `header`.

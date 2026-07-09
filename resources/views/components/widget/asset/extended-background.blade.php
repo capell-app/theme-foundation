@@ -1,10 +1,10 @@
-@props([
+@props ([
     'color',
     'position',
 ])
 
 <div
-    @class([
+    @class ([
         'capell-asset-extended-background',
         'absolute top-0 -z-1 h-full w-1/2',
         match ($position) {

@@ -1,0 +1,21 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ rootNamespace }}\Actions;
+
+use Capell\FoundationTheme\Contracts\InstallsThemeDemo;
+use Capell\FoundationTheme\Data\ThemeDemoInstallData;
+use Capell\FoundationTheme\Support\Demo\ThemeDemoPageInstaller;
+use {{ rootNamespace }}\Support\Demo\{{ studlyName }}DemoContent;
+use Lorisleiva\Actions\Concerns\AsObject;
+
+final class Install{{ studlyName }}ThemeDemoAction implements InstallsThemeDemo
+{
+    use AsObject;
+
+    public function handle(ThemeDemoInstallData $data): int
+    {
+        return ThemeDemoPageInstaller::run($data, '{{ themeSlug }}', '{{ displayName }}', new {{ studlyName }}DemoContent);
+    }
+}

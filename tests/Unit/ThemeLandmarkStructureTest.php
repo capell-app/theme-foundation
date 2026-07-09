@@ -41,26 +41,26 @@ require_once __DIR__ . '/../../../../tests/Packages/Support/ThemeLayoutNativeSup
 
 const THEMES_MIGRATED_TO_LANDMARK_SPLIT = [
     'default', // Foundation — the first migration per Wave 7.3's stated order.
-    'open-studio', // The contract-tested pair, migrated next per Wave 7.3.
-    'front-row',
+    'portfolio', // The contract-tested pair, migrated next per Wave 7.3.
+    'agency',
     // Wave 7.3 completion: the remaining fleet, migrated in one sweep. Every
     // theme now renders <nav>/<footer> as siblings of <main>.
-    'night-shift',
-    'ink-press',
-    'art-paper',
-    'quiet-type',
-    'wild-card',
-    'far-field',
-    'field-guide',
-    'launch-pad',
+    'platform',
+    'editorial',
+    'photography',
+    'blog',
+    'submissions',
+    'magazine',
+    'catalogue',
+    'saas',
     'liquid-glass',
-    'first-light',
-    'reel-room',
-    'one-take',
-    'deep-bench',
-    'soft-focus',
-    'off-grid',
-    'gold-rush',
+    'curated',
+    'showreel',
+    'onepage',
+    'directory',
+    'minimalist',
+    'brutalist',
+    'awards',
 ];
 
 /**

@@ -6,7 +6,7 @@
     $theme = Frontend::theme();
 @endphp
 
-@props([
+@props ([
     'assetRenderDataItems',
     'assets',
     'align' => $widget->getMeta('align', 'center'),
@@ -68,7 +68,7 @@
 
         @if ($assets->isNotEmpty())
             <div
-                @class([
+                @class ([
                     'relative',
                     'pb-4' => $total > 1,
                 ])
@@ -134,7 +134,7 @@
                                 itemtype="https://schema.org/Review"
                             >
                                 <div
-                                    @class([
+                                    @class ([
                                         'relative flex w-full shrink-0 basis-full flex-col space-y-4',
                                         'items-center justify-center text-center' => $align === 'center',
                                         'items-start justify-start text-left' => $align === 'left',

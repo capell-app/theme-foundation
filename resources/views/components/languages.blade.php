@@ -8,7 +8,7 @@ $theme = Frontend::theme();
 
 ?>
 
-@props([
+@props ([
     'linkClass' => 'dropdown-item hover:text-primary focus:text-primary widget w-full bg-transparent px-4 py-3 text-left text-base text-sm leading-none font-medium whitespace-nowrap',
     'name' => 'languages',
     'dropdownLabelClass' => '',
@@ -41,9 +41,9 @@ $theme = Frontend::theme();
         />
         <span class="{{ $dropdownLabelClass }}">
             <span>{{ $language->name }}</span>
-            @svg('heroicon-m-chevron-down', 'inline h-4 w-4')
+            @svg ('heroicon-m-chevron-down', 'inline h-4 w-4')
         </span>
-    </x-slot>
+    </x-slot:trigger>
 
     <div
         class="border-b border-gray-200 px-4 py-3 text-xs font-semibold tracking-wide text-gray-500"
@@ -52,7 +52,7 @@ $theme = Frontend::theme();
     </div>
 
     @foreach ($languages as $siteLanguage)
-        @continue($siteLanguage['id'] === $language->id)
+        @continue ($siteLanguage['id'] === $language->id)
         <div>
             <a
                 href="{{ $siteLanguage['url'] }}"

@@ -5,7 +5,7 @@
     use Capell\Frontend\Facades\Frontend;
 @endphp
 
-@props([
+@props ([
     'align' => '',
     'contentType' => ContentStructure::Html,
     'color' => '',

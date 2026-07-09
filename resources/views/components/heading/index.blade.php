@@ -1,4 +1,4 @@
-@props([
+@props ([
     'tag' => 'div',
     'size' => $tag !== 'div' ? $tag : null,
 ])
