@@ -80,7 +80,7 @@ final class FoundationThemeAssetContributor implements FrontendAssetContributor
     {
         $themeKey = $context->theme?->key;
 
-        if (! is_string($themeKey) || $themeKey === '' || ! config('capell-theme-foundation.tailwind.split_theme_css', false)) {
+        if (! is_string($themeKey) || $themeKey === '' || ! config('capell-theme-foundation.tailwind.split_theme_css', true)) {
             return null;
         }
 

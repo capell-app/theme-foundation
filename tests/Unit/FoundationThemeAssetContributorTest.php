@@ -27,6 +27,8 @@ it('declares only the foundation css asset for blade only pages', function (): v
 });
 
 it('keeps the generated foundation css separate from theme meta assets', function (): void {
+    config(['capell-theme-foundation.tailwind.split_theme_css' => false]);
+
     $theme = Theme::factory()->make([
         'meta' => [
             'assets' => ['resources/css/app.css'],

@@ -33,11 +33,11 @@ final class StandardThemeEditorSchema
                 'media' => ['overlayTreatment'],
             ],
             'tokens' => [
-                'spacing' => ['options' => ['compact', 'cozy', 'spacious']],
-                'layoutPresentation' => ['options' => ['contained', 'full-bleed']],
-                'cardStyle' => ['options' => ['flat', 'outlined', 'raised']],
-                'cardDensity' => ['options' => ['compact', 'comfortable']],
-                'headingScale' => ['options' => ['compact', 'default', 'expressive']],
+                'spacing' => ['options' => ['compact', 'snug', 'tight', 'balanced', 'relaxed', 'generous', 'airy', 'spacious']],
+                'layoutPresentation' => ['options' => ['structured', 'editorial', 'grid', 'full-bleed']],
+                'cardStyle' => ['options' => ['flat', 'outlined', 'raised', 'bordered', 'elevated', 'hairline', 'raw', 'scoreboard', 'sharp', 'understated']],
+                'cardDensity' => ['options' => ['compact', 'comfortable', 'spacious']],
+                'headingScale' => ['options' => ['compact', 'balanced', 'expressive']],
                 'overlayTreatment' => ['options' => ['none', 'subtle', 'strong']],
             ],
         ];

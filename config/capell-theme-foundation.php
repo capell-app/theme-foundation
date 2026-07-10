@@ -38,7 +38,7 @@ return [
         // When enabled, each theme-css:<key> conditioned import compiles into its
         // own resources/css/capell/themes/<key>.css instead of the shared bundle.
         // Off by default: byte-identical output until enabled and verified in staging.
-        'split_theme_css' => env('CAPELL_TW_SPLIT_THEME_CSS', false),
+        'split_theme_css' => env('CAPELL_TW_SPLIT_THEME_CSS', true),
         'theme_css_output_directory' => 'resources/css/capell/themes',
     ],
 

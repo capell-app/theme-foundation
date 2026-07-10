@@ -171,7 +171,7 @@ class TailwindAssetsGenerator
 
     private function shouldSplitThemeCss(): bool
     {
-        return (bool) config('capell-theme-foundation.tailwind.split_theme_css', false);
+        return (bool) config('capell-theme-foundation.tailwind.split_theme_css', true);
     }
 
     private function collectWithTarget(string $targetPath): TailwindAssetsRegistry

@@ -95,7 +95,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
             name: 'Foundation',
             description: 'Clean starter theme for structured Capell sites, content previews, and shared child-theme defaults.',
             package: self::$packageName,
-            previewImage: '/vendor/capell-theme-foundation/preview.jpg',
+            previewImage: '/vendor/capell/themes/foundation.png',
             tags: ['Foundation', 'Structured', 'Default'],
             bestFit: ['Starter sites', 'Documentation', 'General publishing'],
             includedSections: ['navigation', 'hero', 'features', 'proof', 'content-listing', 'search', 'pagination', 'form', 'cta', 'footer'],
@@ -104,7 +104,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
                     key: 'default',
                     name: 'Foundation',
                     description: 'Balanced neutral defaults with clear hierarchy and quiet content surfaces.',
-                    previewImage: '/vendor/capell-theme-foundation/preview.jpg',
+                    previewImage: '/vendor/capell/themes/foundation.png',
                     values: [
                         'primaryColor' => '#315f8f',
                         'accentColor' => '#7c5f3f',
@@ -114,7 +114,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
                         'headingFont' => 'inter',
                         'bodyFont' => 'inter',
                         'spacing' => 'balanced',
-                        'cardStyle' => 'subtle',
+                        'cardStyle' => 'flat',
                         'layoutPresentation' => 'structured',
                         'motionIntensity' => 'subtle',
                         'mediaTreatment' => 'natural',
@@ -699,6 +699,30 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
         $this->publishes([
             __DIR__ . '/../../publishes/build' => public_path('vendor/capell-theme-foundation'),
         ], 'capell-theme-foundation-assets');
+
+        $previewImages = [];
+        $packageDirectories = glob(dirname(__DIR__, 3) . '/theme-*', GLOB_ONLYDIR) ?: [];
+
+        foreach ($packageDirectories as $packageDirectory) {
+            $packageName = basename($packageDirectory);
+
+            if (! str_starts_with($packageName, 'theme-')) {
+                continue;
+            }
+
+            $themeKey = substr($packageName, strlen('theme-'));
+            $source = $packageDirectory . '/docs/screenshots/' . $themeKey . '-homepage.png';
+
+            if (! is_file($source)) {
+                continue;
+            }
+
+            $previewImages[$source] = public_path('vendor/capell/themes/' . $themeKey . '.png');
+        }
+
+        if ($previewImages !== []) {
+            $this->publishes($previewImages, 'capell-theme-preview-images');
+        }
     }
 
     private function registerLayoutBuilderRendering(): void

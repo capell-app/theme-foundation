@@ -72,6 +72,61 @@ function editorSchemaTokenCustomProperty(string $tokenKey): string
     return '--theme-' . $kebab;
 }
 
+/**
+ * @return array<string, list<string>>
+ */
+function editorSchemaProviderPresetValues(): array
+{
+    $packagesRoot = dirname(__DIR__, 3);
+    $providerFiles = array_merge(
+        glob($packagesRoot . '/theme-*/src/*ThemeServiceProvider.php') ?: [],
+        glob($packagesRoot . '/theme-*/src/Providers/*ThemeServiceProvider.php') ?: [],
+    );
+    $values = [];
+
+    foreach (StandardThemeEditorSchema::tokenKeys() as $tokenKey) {
+        $values[$tokenKey] = [];
+    }
+
+    foreach ($providerFiles as $providerFile) {
+        $source = file_get_contents($providerFile);
+
+        if (! is_string($source)) {
+            continue;
+        }
+
+        foreach (array_keys($values) as $tokenKey) {
+            preg_match_all("/'" . preg_quote($tokenKey, '/') . "'\\s*=>\\s*'([^']+)'/", $source, $matches);
+            $values[$tokenKey] = [...$values[$tokenKey], ...$matches[1]];
+        }
+    }
+
+    foreach ($values as $tokenKey => $tokenValues) {
+        $values[$tokenKey] = array_values(array_unique($tokenValues));
+        sort($values[$tokenKey]);
+    }
+
+    return $values;
+}
+
+/**
+ * @return array<string, list<string>>
+ */
+function editorSchemaCssValues(): array
+{
+    $stylesheets = editorSchemaFoundationStylesheet() . implode("\n", editorSchemaThemeStylesheets());
+    $values = [];
+
+    foreach (StandardThemeEditorSchema::tokenKeys() as $tokenKey) {
+        $customProperty = preg_quote(editorSchemaTokenCustomProperty($tokenKey), '/');
+        preg_match_all('/style\\(' . $customProperty . ':\\s*([a-z0-9-]+)\\)/', $stylesheets, $matches);
+        $values[$tokenKey] = array_values(array_unique($matches[1]));
+        sort($values[$tokenKey]);
+    }
+
+    return $values;
+}
+
 it('declares a well-formed editor schema: every grouped token has options', function (): void {
     $schema = StandardThemeEditorSchema::definition();
 
@@ -103,6 +158,42 @@ it('exposes only tokens that every theme actually consumes in CSS', function ():
 
             expect($consumed)->toBeTrue(
                 "Editor token [{$tokenKey}] resolves to {$customProperty}, but {$packageDirectory} never consumes it — the Theme Studio control would be a no-op.",
+            );
+        }
+    }
+});
+
+it('keeps provider presets inside the editor vocabulary and CSS consumers', function (): void {
+    $schema = StandardThemeEditorSchema::definition();
+    $presetValues = editorSchemaProviderPresetValues();
+    $cssValues = editorSchemaCssValues();
+    $unconditionedDefaults = [
+        'spacing' => 'balanced',
+        'layoutPresentation' => 'structured',
+        'cardStyle' => 'flat',
+        'cardDensity' => 'comfortable',
+        'headingScale' => 'balanced',
+        'overlayTreatment' => 'subtle',
+    ];
+
+    foreach ($schema['tokens'] as $tokenKey => $definition) {
+        $consumedValues = array_values(array_unique([
+            ...$cssValues[$tokenKey],
+            $unconditionedDefaults[$tokenKey],
+        ]));
+
+        foreach ($presetValues[$tokenKey] as $presetValue) {
+            expect(in_array($presetValue, $definition['options'], true))->toBeTrue(
+                "Provider preset [{$tokenKey}: {$presetValue}] is not available in the shared editor schema.",
+            );
+            expect(in_array($presetValue, $consumedValues, true))->toBeTrue(
+                "Provider preset [{$tokenKey}: {$presetValue}] has no CSS consumer.",
+            );
+        }
+
+        foreach ($definition['options'] as $option) {
+            expect(in_array($option, $consumedValues, true))->toBeTrue(
+                "Editor option [{$tokenKey}: {$option}] has no CSS consumer.",
             );
         }
     }

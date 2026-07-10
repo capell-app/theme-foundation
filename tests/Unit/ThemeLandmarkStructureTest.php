@@ -177,6 +177,15 @@ it('places nav/footer chrome outside <main> in every migrated theme layout', fun
 
     $blade = (string) file_get_contents($bladePath);
 
+    if (str_contains($blade, '<x-capell-theme-foundation::theme.page-shell')) {
+        expect($blade)->toContain(':chrome-header=')
+            ->toContain(':chrome-footer=')
+            ->toContain(':main-content=')
+            ->toContain(':$content');
+
+        return;
+    }
+
     // A migrated layout must consume the split vars the
     // ChromeSplitBladeThemeRenderer passes, so nav/footer render as siblings.
     expect($blade)->toContain('chromeHeader')
