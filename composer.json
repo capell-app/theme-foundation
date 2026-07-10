@@ -18,6 +18,11 @@
             "Capell\\FoundationTheme\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Capell\\FoundationTheme\\Tests\\": "tests/"
+        }
+    },
     "extra": {
         "laravel": {
             "providers": [
