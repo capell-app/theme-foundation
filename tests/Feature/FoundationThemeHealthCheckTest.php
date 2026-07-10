@@ -12,6 +12,7 @@ beforeEach(function (): void {
     CapellCore::forcePackageInstalled(FoundationThemeServiceProvider::$packageName);
     CapellCore::forcePackageInstalled('capell-app/frontend');
     CapellCore::forcePackageInstalled('capell-app/layout-builder');
+    CapellCore::forcePackageInstalled('capell-app/navigation');
     foundationThemeRegisterInstalledHealthSurfaces();
 
     $this->publishedManifestPath = public_path('vendor/capell-theme-foundation/manifest.json');
@@ -83,6 +84,15 @@ it('fails the package installation check when a dependency is missing', function
     expect($check->missingInstalledPackages())->toContain('capell-app/layout-builder')
         ->and($check->packageInstallationCheck()->passed)->toBeFalse()
         ->and(FoundationThemeHealthCheck::passed())->toBeFalse();
+});
+
+it('fails the package installation check when navigation is missing', function (): void {
+    CapellCore::forcePackageInstalled('capell-app/navigation', false);
+
+    $check = new FoundationThemeHealthCheck;
+
+    expect($check->missingInstalledPackages())->toContain('capell-app/navigation')
+        ->and($check->packageInstallationCheck()->passed)->toBeFalse();
 });
 
 it('fails the published assets check when the manifest is missing', function (): void {

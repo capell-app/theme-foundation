@@ -36,6 +36,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
         'capell-app/theme-foundation',
         'capell-app/frontend',
         'capell-app/layout-builder',
+        'capell-app/navigation',
     ];
 
     /**
@@ -144,7 +145,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
             label: 'Foundation Theme package installation',
             passed: $missingPackages === [],
             message: $missingPackages === []
-                ? 'Foundation Theme and its required frontend/layout-builder dependencies are installed.'
+                ? 'Foundation Theme and its required frontend, layout-builder, and navigation dependencies are installed.'
                 : 'Missing installed packages: ' . implode(', ', $missingPackages) . '.',
             remediation: $missingPackages === []
                 ? null
@@ -476,8 +477,8 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
 
         $requiredPackages = $manifest['dependencies']['requires'] ?? [];
 
-        if (! is_array($requiredPackages) || collect(['capell-app/frontend', 'capell-app/layout-builder'])->diff($requiredPackages)->isNotEmpty()) {
-            $issues[] = 'Manifest dependencies must require frontend and layout-builder.';
+        if (! is_array($requiredPackages) || collect(['capell-app/frontend', 'capell-app/layout-builder', 'capell-app/navigation'])->diff($requiredPackages)->isNotEmpty()) {
+            $issues[] = 'Manifest dependencies must require frontend, layout-builder, and navigation.';
         }
 
         $runtimeProviders = $manifest['providers']['runtime'] ?? [];
