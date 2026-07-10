@@ -49,7 +49,7 @@
         "setup": "Capell\\FoundationTheme\\Actions\\SetupFoundationThemePackageAction",
         "demo": "Capell\\FoundationTheme\\Actions\\InstallFoundationThemeDemoAction"
     },
-    "settings": [],
+    "settings": ["Capell\\FoundationTheme\\Settings\\FoundationThemeSettings"],
     "permissions": [],
     "capabilities": ["frontend-assets", "cache-blocking"],
     "security": {

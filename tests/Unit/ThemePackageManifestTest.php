@@ -6,6 +6,7 @@ use Capell\Core\ThemeStudio\Rendering\BladeThemeRenderer;
 use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
 use Capell\FoundationTheme\Actions\ValidateThemeCatalogueEntryAction;
 use Capell\FoundationTheme\Providers\FoundationThemeServiceProvider;
+use Capell\FoundationTheme\Settings\FoundationThemeSettings;
 
 require_once __DIR__ . '/../Support/ThemeCatalogueScreenshotSurfaceGap.php';
 
@@ -18,7 +19,8 @@ it('declares foundation as the default theme package', function (): void {
         ->and($manifest['manifest-version'])->toBe(3)
         ->and($manifest['kind'])->toBe('theme')
         ->and($manifest['themeKey'])->toBe('default')
-        ->and($manifest['extends'])->toBeNull();
+        ->and($manifest['extends'])->toBeNull()
+        ->and($manifest['settings'])->toBe([FoundationThemeSettings::class]);
 });
 
 it('registers only the shipped foundation theme service provider', function (): void {
