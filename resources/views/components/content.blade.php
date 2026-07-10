@@ -206,7 +206,7 @@
             :page="$page"
         />
     @else
-        {!! RenderHtmlContentAction::run($content, $pageVariables) !!}
+        {{ RenderHtmlContentAction::run($content, $pageVariables) }}
     @endif
 
     {{ $slot ?? '' }}

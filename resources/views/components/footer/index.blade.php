@@ -165,12 +165,12 @@
                 :$siteLanguages
                 class="sub-footer"
             >
-                {!!
+                {{
                     RenderHtmlContentAction::run(Lang::get($footerCopy, [
                         'name' => $site->name,
                         'year' => date('Y'),
                     ]))
-                !!}
+                }}
             </x-capell::footer.sub-footer>
         </div>
     @endif
