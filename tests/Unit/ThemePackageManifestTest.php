@@ -77,7 +77,7 @@ it('registers a Theme Studio definition that matches the manifest', function ():
         ->and($registered->key)->toBe(FoundationThemeServiceProvider::THEME_KEY)
         ->and($registered->package)->toBe($manifest['name'])
         ->and($registered->extends)->toBe($manifest['extends'])
-        ->and($registry->hasRenderer($manifest['themeKey']))->toBeFalse();
+        ->and($registry->has($manifest['themeKey']))->toBeTrue();
 });
 
 it('declares committed marketplace screenshots', function (): void {
