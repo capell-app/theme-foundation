@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Capell\Core\ThemeStudio\Rendering\BladeThemeRenderer;
 use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
 use Capell\FoundationTheme\Actions\ValidateThemeCatalogueEntryAction;
 use Capell\FoundationTheme\Providers\FoundationThemeServiceProvider;
@@ -68,15 +67,7 @@ it('registers a Theme Studio definition that matches the manifest', function ():
     $manifest = themePackageManifest('theme-foundation');
 
     $registry = new ThemeRegistry;
-    $registry->register(
-        FoundationThemeServiceProvider::definition(),
-        new BladeThemeRenderer(
-            themeKey: FoundationThemeServiceProvider::THEME_KEY,
-            layoutView: 'capell-theme-foundation::theme.page',
-            sectionRenderers: [],
-        ),
-        [],
-    );
+    $registry->register(FoundationThemeServiceProvider::definition());
 
     expect($registry->has($manifest['themeKey']))->toBeTrue();
 
@@ -85,7 +76,8 @@ it('registers a Theme Studio definition that matches the manifest', function ():
     expect($registered->key)->toBe($manifest['themeKey'])
         ->and($registered->key)->toBe(FoundationThemeServiceProvider::THEME_KEY)
         ->and($registered->package)->toBe($manifest['name'])
-        ->and($registered->extends)->toBe($manifest['extends']);
+        ->and($registered->extends)->toBe($manifest['extends'])
+        ->and($registry->hasRenderer($manifest['themeKey']))->toBeFalse();
 });
 
 it('declares committed marketplace screenshots', function (): void {
