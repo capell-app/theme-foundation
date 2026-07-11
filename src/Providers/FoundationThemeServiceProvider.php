@@ -32,6 +32,7 @@ use Capell\FoundationTheme\Console\Commands\MakeThemeCommand;
 use Capell\FoundationTheme\Console\Commands\SetupCommand;
 use Capell\FoundationTheme\Console\Commands\ThemeCatalogueReportCommand;
 use Capell\FoundationTheme\Console\Commands\ValidateThemesCommand;
+use Capell\FoundationTheme\Contracts\OptionalExtensionAvailability;
 use Capell\FoundationTheme\Enums\FoundationThemeAssetEnum;
 use Capell\FoundationTheme\Filament\Extenders\FoundationLayoutContainerSchemaExtender;
 use Capell\FoundationTheme\Filament\Settings\FoundationThemeSettingsSchema;
@@ -43,15 +44,19 @@ use Capell\FoundationTheme\Rendering\VariantViewSectionRenderer;
 use Capell\FoundationTheme\Settings\FoundationThemeSettings;
 use Capell\FoundationTheme\Support\Assets\FoundationThemeAssetContributor;
 use Capell\FoundationTheme\Support\Blade\BladeDirectives;
+use Capell\FoundationTheme\Support\CapellOptionalExtensionAvailability;
 use Capell\FoundationTheme\Support\FoundationThemeRuntimeManifestContributor;
 use Capell\FoundationTheme\Support\Interceptors\Themes\FoundationThemeInterceptor;
 use Capell\FoundationTheme\Support\Media\CapellUrlGenerator;
+use Capell\FoundationTheme\Support\ResultsSectionContributor;
 use Capell\FoundationTheme\View\Components\Actions as ActionsComponent;
 use Capell\FoundationTheme\View\Components\App\Body as AppBodyComponent;
 use Capell\FoundationTheme\View\Components\Footer\Index as FooterIndexComponent;
 use Capell\FoundationTheme\View\Components\Layout\Index as LayoutIndexComponent;
 use Capell\FoundationTheme\View\Components\Layout\Main as LayoutMainComponent;
 use Capell\FoundationTheme\View\Components\Media\Svg;
+use Capell\FoundationTheme\View\Components\NewsletterForm;
+use Capell\FoundationTheme\View\Components\ThemeFormEmbed;
 use Capell\FoundationTheme\View\Components\Widget\Page\Breadcrumbs as PageBreadcrumbsComponent;
 use Capell\FoundationTheme\View\Components\Widget\Page\Children as PageChildrenComponent;
 use Capell\FoundationTheme\View\Components\Widget\Page\Content as PageContentComponent;
@@ -62,6 +67,7 @@ use Capell\Frontend\Contracts\AssetsRegistryInterface;
 use Capell\Frontend\Contracts\FrontendAssetContributor;
 use Capell\Frontend\Contracts\FrontendComponentRegistryInterface;
 use Capell\Frontend\Contracts\FrontendRuntimeManifestContributor;
+use Capell\Frontend\Contracts\ThemeSectionPayloadContributor;
 use Capell\Frontend\Data\FrontendAssetContextData;
 use Capell\Frontend\Data\FrontendAssetData;
 use Capell\Frontend\Events\FrontendContextResolved;
@@ -98,7 +104,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
             previewImage: '/vendor/capell/themes/foundation.png',
             tags: ['Foundation', 'Structured', 'Default'],
             bestFit: ['Starter sites', 'Documentation', 'General publishing'],
-            includedSections: ['navigation', 'hero', 'features', 'proof', 'content-listing', 'search', 'pagination', 'form', 'cta', 'footer'],
+            includedSections: ['navigation', 'hero', 'features', 'proof', 'content-listing', 'search', 'pagination', 'form', 'contact-split', 'cta', 'footer'],
             presets: [
                 new ThemePresetData(
                     key: 'default',
@@ -187,6 +193,12 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
     public function packageRegistered(): void
     {
         $this->app->scoped(FoundationThemeAssetContributor::class);
+        $this->app->scoped(ResultsSectionContributor::class);
+        $this->app->tag(ResultsSectionContributor::class, ThemeSectionPayloadContributor::TAG);
+        $this->app->singleton(
+            OptionalExtensionAvailability::class,
+            CapellOptionalExtensionAvailability::class,
+        );
 
         $this->registerVendorNpmDependencies();
     }
@@ -267,6 +279,8 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
         Blade::component(FooterIndexComponent::class, 'capell::footer.index');
         Blade::component(LayoutIndexComponent::class, 'capell::layout.index');
         Blade::component(LayoutMainComponent::class, 'capell::layout.main');
+        Blade::component(NewsletterForm::class, 'capell::newsletter-form');
+        Blade::component(ThemeFormEmbed::class, 'capell::form-embed');
     }
 
     private function registerSettingsSchemas(): void
@@ -522,6 +536,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
                 ],
                 failLoudly: true,
             ),
+            'contact-split' => new ViewSectionRenderer(self::THEME_KEY, 'contact-split', 'capell-theme-foundation::theme.sections.contact-split', failLoudly: true),
             'cta' => new VariantViewSectionRenderer(
                 themeKey: self::THEME_KEY,
                 sectionKey: 'cta',

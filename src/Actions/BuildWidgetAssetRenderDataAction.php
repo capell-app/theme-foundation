@@ -10,6 +10,7 @@ use Capell\Core\Contracts\Pageable;
 use Capell\Core\Data\ImageSourceData;
 use Capell\Core\Enums\ContentStructure;
 use Capell\Core\Enums\MediaCollectionEnum;
+use Capell\Core\Facades\CapellCore;
 use Capell\FoundationTheme\Data\WidgetAssetRenderData;
 use Capell\LayoutBuilder\Models\WidgetAsset;
 use Illuminate\Database\Eloquent\Model;
@@ -46,6 +47,7 @@ final class BuildWidgetAssetRenderDataAction
             cropPreset: $this->metaString($asset, 'crop_preset'),
             headingSize: $this->metaString($asset, 'heading_size') ?? 'h3',
             headingWeight: $this->metaString($asset, 'heading_weight') ?? 'medium',
+            hasTranslations: CapellCore::getAsset($widgetAsset->asset_type)->hasTranslations,
             icon: $this->metaString($asset, 'icon'),
             linkText: $this->stringValue($translation, 'link_text'),
             linkUrl: $this->linkedPageUrl($widgetAsset, $asset),

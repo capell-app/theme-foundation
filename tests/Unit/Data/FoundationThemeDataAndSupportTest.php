@@ -53,6 +53,7 @@ it('carries foundation theme render data objects', function (): void {
         cropPreset: '16:9',
         headingSize: 'lg',
         headingWeight: 'bold',
+        hasTranslations: true,
         icon: 'heroicon-o-star',
         linkText: 'Open',
         linkUrl: '/open',

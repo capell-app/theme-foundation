@@ -82,7 +82,7 @@
                     <span class="ap-showcase-cta__proof-mark">
                         @svg ('heroicon-o-check', 'h-4 w-4')
                     </span>
-                    <p class="ap-showcase-cta__proof-text">Built for Laravel, Filament, and serious CMS teams.</p>
+                    <p class="ap-showcase-cta__proof-text">Built for growing teams that need a dependable publishing workflow.</p>
                 </div>
             </div>
         </div>

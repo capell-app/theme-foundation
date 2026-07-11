@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Capell\FoundationTheme\Testing\AssertsPublicThemeOutputSafety;
+use PHPUnit\Framework\ExpectationFailedException;
 
 uses(AssertsPublicThemeOutputSafety::class);
 
@@ -105,6 +106,10 @@ uses(AssertsPublicThemeOutputSafety::class);
  * time-capsule-browser signature widget (base view + `--cabinet` sidecar
  * variant, matching the mechanic already shipped on showreel, brutalist,
  * and awards) raised its count from 31 to 35, moving the sum to 655.
+ * The 2026-07-10 recursive scanner repair then corrected Foundation from
+ * 110 to 114, Liquid Glass from 20 to 19, Platform from 20 to 21, and the
+ * renamed Docs entry to Knowledge at 13, moving the true fleet total to
+ * 659 without adding a new Blade block.
  */
 final class ThemePhpBlockBaselineCounts
 {
@@ -118,27 +123,27 @@ final class ThemePhpBlockBaselineCounts
         'magazine' => 34,
         'catalogue' => 29,
         'curated' => 24,
-        'foundation' => 110,
+        'foundation' => 116,
         'agency' => 31,
         'awards' => 34,
         'editorial' => 32,
         'saas' => 24,
-        'liquid-glass' => 20,
+        'liquid-glass' => 19,
         'events' => 10,
-        'platform' => 20,
+        'platform' => 21,
         'brutalist' => 29,
         'onepage' => 18,
         'portfolio' => 36,
         'blog' => 37,
-        'docs' => 13,
+        'knowledge' => 13,
         'showreel' => 31,
         'minimalist' => 25,
         'submissions' => 35,
     ];
 }
 
-it('confirms the frozen baseline snapshot sums to the programme-verified total of 655', function (): void {
-    expect(array_sum(ThemePhpBlockBaselineCounts::FROZEN_BASELINE_COUNTS))->toBe(655);
+it('confirms the frozen baseline snapshot sums to the programme-verified total of 661', function (): void {
+    expect(array_sum(ThemePhpBlockBaselineCounts::FROZEN_BASELINE_COUNTS))->toBe(661);
 });
 
 it('keeps each theme package within its frozen @php block baseline', function (): void {
@@ -154,11 +159,47 @@ it('keeps each theme package within its frozen @php block baseline', function ()
     // variables — both pure, non-persisting reads, not database queries.
     // Every other theme keeps the base whitelist only.
     $additionalWhitelistedStaticCallPrefixesByTheme = [
-        'foundation' => ['Frontend', 'Route', 'GetPageVariablesAction', 'ResolveFoundationThemeTokensAction'],
+        'foundation' => [
+            'AssetComponentEnum',
+            'Blaze',
+            'BuildAssetBannerItemsAction',
+            'BuildBannerImageRenderDataAction',
+            'BuildHeroRailItemsRenderDataAction',
+            'BuildPageContentRenderDataAction',
+            'CapellLayoutManager',
+            'ContainerAlignmentEnum',
+            'ContentStructure',
+            'DefaultColorEnum',
+            'Frontend',
+            'GetLayoutContainerWidthAction',
+            'GetPageVariablesAction',
+            'GetWidgetContainerWidthAction',
+            'Image',
+            'LayoutWidgetData',
+            'MarkPrimaryHeadingRenderedAction',
+            'OpaqueWidgetReference',
+            'PageChildrenComponent',
+            'PageContentComponent',
+            'PageLatestComponent',
+            'PageSiblingsComponent',
+            'PublicModelMeta',
+            'RenderableTypeEnum',
+            'RenderHookLocation',
+            'RenderHookRegistry',
+            'ResolveFoundationThemeTokensAction',
+            'ResolveLoadedLayoutContainerBackgroundImageAction',
+            'ResolveLoadedWidgetBackgroundImageAction',
+            'ResolveRenderableComponentAction',
+            'ResolveSafeCssColorTokenAction',
+            'ResponsiveVisibilityEnum',
+            'Route',
+            'SlotComponent',
+            'WidgetComponentEnum',
+        ],
         'platform' => ['Frontend'],
         'liquid-glass' => ['Frontend'],
         'events' => ['Frontend'],
-        'docs' => ['Frontend'],
+        'knowledge' => ['Frontend'],
     ];
 
     foreach (ThemePhpBlockBaselineCounts::FROZEN_BASELINE_COUNTS as $themeSlug => $frozenBaselineCount) {
@@ -169,5 +210,24 @@ it('keeps each theme package within its frozen @php block baseline', function ()
             $frozenBaselineCount,
             $additionalWhitelistedStaticCallPrefixesByTheme[$themeSlug] ?? [],
         );
+    }
+});
+
+it('scans blade views nested more than two directories deep', function (): void {
+    $fixtureDirectory = sys_get_temp_dir() . '/capell-theme-safety-' . bin2hex(random_bytes(8));
+    $nestedDirectory = $fixtureDirectory . '/components/display/deep';
+
+    mkdir($nestedDirectory, 0777, true);
+    file_put_contents($nestedDirectory . '/unsafe.blade.php', '<div data-model="should-be-detected"></div>');
+
+    try {
+        expect(fn (): mixed => $this->assertThemeOutputMetadataIsSafe($fixtureDirectory, 'fixture-package'))
+            ->toThrow(ExpectationFailedException::class, 'data-model');
+    } finally {
+        unlink($nestedDirectory . '/unsafe.blade.php');
+        rmdir($nestedDirectory);
+        rmdir($fixtureDirectory . '/components/display');
+        rmdir($fixtureDirectory . '/components');
+        rmdir($fixtureDirectory);
     }
 });

@@ -6,8 +6,6 @@ test('dark-mode themes pin readable tokens inside the dark media query', functio
     $packagesPath = dirname(__DIR__, 3);
 
     $expectations = [
-        'theme-agency/resources/css/theme-agency.css' => ['--ppc-ink: oklch(95.5% 0.03 85);', '--ppc-paper: oklch(19% 0.01 40);'],
-        'theme-awards/resources/css/theme-awards.css' => ['--sbs-ink: oklch(94% 0.03 235);', '--sbs-paper: oklch(19% 0.04 255);'],
         'theme-catalogue/resources/css/theme-catalogue.css' => ['--fga-ink: oklch(97.2% 0.003 247.9);'],
         'theme-editorial/resources/css/theme-editorial.css' => ['--dnews-ink: oklch(94.8% 0.0131 82.4);', '--dnews-paper: oklch(16.5% 0.007 78.1);'],
         'theme-magazine/resources/css/theme-magazine.css' => ['--gcm-ink: oklch(91.37% 0.0198 87.52);', '--gcm-paper: oklch(22.6% 0.0341 270.96);'],
@@ -27,5 +25,38 @@ test('dark-mode themes pin readable tokens inside the dark media query', functio
         foreach ($tokens as $token) {
             expect($css)->toContain($token);
         }
+    }
+});
+
+test('agency and awards preserve site token overrides in dark mode', function (): void {
+    $packagesPath = dirname(__DIR__, 3);
+    $themes = [
+        'theme-agency/resources/css/theme-agency.css' => [
+            'selector' => '.ppc-shell',
+            'bindings' => ['--theme-foreground', '--theme-accent', '--theme-surface'],
+        ],
+        'theme-awards/resources/css/theme-awards.css' => [
+            'selector' => '.sbs-shell',
+            'bindings' => ['--theme-foreground', '--theme-accent', '--theme-surface'],
+        ],
+    ];
+
+    foreach ($themes as $relativePath => $theme) {
+        $css = (string) file_get_contents($packagesPath . '/' . $relativePath);
+
+        foreach ($theme['bindings'] as $binding) {
+            expect($css)->toContain($binding);
+        }
+
+        $selector = preg_quote($theme['selector'], '/');
+        $matchCount = preg_match(
+            '/@media \(prefers-color-scheme: dark\) \{\s*' . $selector . ' \{(?<body>.*?)\}\s*\}/s',
+            $css,
+            $matches,
+        );
+
+        expect($matchCount)->toBe(1)
+            ->and(preg_replace('/\s+/', ' ', trim((string) ($matches['body'] ?? ''))))
+            ->toBe('color-scheme: dark;');
     }
 });
