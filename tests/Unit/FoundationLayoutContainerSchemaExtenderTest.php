@@ -9,7 +9,6 @@ use Capell\FoundationTheme\Providers\FoundationThemeServiceProvider;
 use Capell\LayoutBuilder\Data\LayoutContainerSchemaContextData;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Schema;
-use RuntimeException;
 
 it('adds foundation theme layout container fields for the foundation theme key', function (): void {
     $theme = Theme::factory()->create(['key' => FoundationThemeServiceProvider::THEME_KEY]);

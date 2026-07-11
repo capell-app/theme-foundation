@@ -30,6 +30,7 @@ final class WidgetAssetRenderData extends Data
         public readonly ?string $cropPreset,
         public readonly ?string $headingSize,
         public readonly ?string $headingWeight,
+        public readonly bool $hasTranslations,
         public readonly ?string $icon,
         public readonly ?string $linkText,
         public readonly ?string $linkUrl,

@@ -33,6 +33,33 @@ final class ThemeDemoPageDefinition
     }
 
     /**
+     * Reuse an authored demo composition for an additional, explicitly named
+     * capture surface while preserving its layout and widget boundaries.
+     *
+     * @param  array<string, mixed>  $renderDataOverrides
+     */
+    public function forSurface(
+        string $surface,
+        string $name,
+        string $title,
+        string $slug,
+        array $renderDataOverrides = [],
+    ): self {
+        return new self(
+            surface: $surface,
+            name: $name,
+            title: $title,
+            slug: $slug,
+            content: $this->content,
+            renderData: array_replace($this->renderData, $renderDataOverrides),
+            type: $this->type,
+            layout: $this->layout,
+            containers: $this->containers,
+            widgets: $this->widgets,
+        );
+    }
+
+    /**
      * The ordered section payloads this surface seeds, each normalised to a
      * string-keyed map so callers get a typed list instead of raw `mixed`.
      *

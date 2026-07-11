@@ -157,3 +157,21 @@ it('is an inert no-op by default with all token fallbacks unset', function (): v
         ->toContain('var(--foundation-photo-tint, transparent)')
         ->toContain('var(--foundation-photo-tint-opacity, 0)');
 });
+
+it('renders a cache-safe map link only for valid coordinates', function (): void {
+    $html = Blade::render(
+        '<x-capell-theme-foundation::display.map-link :latitude="$latitude" :longitude="$longitude" label="Find us" />',
+        ['latitude' => 51.5074, 'longitude' => -0.1278],
+    );
+
+    $missingCoordinatesHtml = Blade::render(
+        '<x-capell-theme-foundation::display.map-link :latitude="$latitude" :longitude="$longitude" />',
+        ['latitude' => 91, 'longitude' => -0.1278],
+    );
+
+    expect($html)
+        ->toContain('https://www.google.com/maps/search/?api=1&amp;query=51.5074%2C-0.1278')
+        ->toContain('Find us')
+        ->not->toContain('iframe')
+        ->and($missingCoordinatesHtml)->toBeEmpty();
+});

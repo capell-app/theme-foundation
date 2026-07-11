@@ -17,11 +17,13 @@ use Capell\Core\Models\Site;
 use Capell\Core\Models\Theme;
 use Capell\Core\Support\Creator\BlueprintCreator;
 use Capell\Core\Support\Creator\PageCreator;
+use Capell\FoundationTheme\Actions\BuildThemeDemoFormsPayloadAction;
 use Capell\FoundationTheme\Contracts\ProvidesThemeDemoContent;
 use Capell\FoundationTheme\Data\ThemeDemoInstallData;
 use Capell\LayoutBuilder\Support\Creator\WidgetCreator;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Lorisleiva\Actions\Concerns\AsObject;
@@ -44,6 +46,7 @@ final class ThemeDemoPageInstaller
 
         foreach ($sites as $site) {
             $this->installForSite($site, $languages, $definitions, $themeKey, $data->force);
+            $this->dispatchFormBlueprints($site, $definitions);
         }
 
         return Command::SUCCESS;
@@ -242,6 +245,23 @@ final class ThemeDemoPageInstaller
     }
 
     /**
+     * Keep the optional form integration decoupled: Foundation emits a typed
+     * scalar event payload and an installed form provider may consume it.
+     *
+     * @param  array<int, ThemeDemoPageDefinition>  $definitions
+     */
+    private function dispatchFormBlueprints(Site $site, array $definitions): void
+    {
+        $payload = BuildThemeDemoFormsPayloadAction::run($definitions);
+
+        if ($payload === '[]') {
+            return;
+        }
+
+        Event::dispatch('capell.theme-demo.forms', [$site->getKey(), $payload]);
+    }
+
+    /**
      * @param  array<string, mixed>  $renderData
      * @return array<string, mixed>
      */
@@ -265,9 +285,66 @@ final class ThemeDemoPageInstaller
             $renderData['form'] = $this->contactFormData();
         }
 
+        if ($definition->surface === 'contact' && ! $definition->hasContainers()) {
+            $renderData = $this->renderDataWithContactSplit($renderData);
+        }
+
         if ($definition->surface === 'empty') {
             $renderData = $this->renderDataWithSearchRecoverySection($renderData);
         }
+
+        return $renderData;
+    }
+
+    /**
+     * @param  array<string, mixed>  $renderData
+     * @return array<string, mixed>
+     */
+    private function renderDataWithContactSplit(array $renderData): array
+    {
+        $sections = $renderData['sections'] ?? null;
+
+        if (! is_array($sections)) {
+            return $renderData;
+        }
+
+        foreach ($sections as $section) {
+            if (is_array($section) && ($section['type'] ?? null) === 'contact-split') {
+                return $renderData;
+            }
+        }
+
+        $formSection = null;
+        $remainingSections = [];
+
+        foreach ($sections as $section) {
+            if ($formSection === null && is_array($section) && ($section['type'] ?? null) === 'form') {
+                $formSection = $section;
+
+                continue;
+            }
+
+            $remainingSections[] = $section;
+        }
+
+        $contactForm = is_array($renderData['form'] ?? null) ? $renderData['form'] : $this->contactFormData();
+        $contactSplit = [
+            'type' => 'contact-split',
+            'heading' => is_string(data_get($formSection, 'heading')) ? data_get($formSection, 'heading') : 'Start the right conversation',
+            'summary' => is_string(data_get($formSection, 'summary')) ? data_get($formSection, 'summary') : (string) ($contactForm['summary'] ?? ''),
+            'form_handle' => data_get($formSection, 'form_handle'),
+            'form_instance_id' => data_get($formSection, 'form_instance_id', $contactForm['id'] ?? 'theme-demo-contact-form'),
+            'fallback_message' => data_get($formSection, 'fallback_message'),
+            'fallback_label' => data_get($formSection, 'fallback_label'),
+            'fallback_url' => data_get($formSection, 'fallback_url'),
+            'fields' => data_get($formSection, 'fields', $contactForm['fields'] ?? []),
+            'address_lines' => ['Capell Studio', 'London, United Kingdom', 'Remote-first delivery'],
+            'latitude' => 51.5074,
+            'longitude' => -0.1278,
+        ];
+
+        array_unshift($remainingSections, $contactSplit);
+        $renderData['sections'] = $remainingSections;
 
         return $renderData;
     }

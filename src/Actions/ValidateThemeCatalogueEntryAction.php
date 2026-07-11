@@ -76,9 +76,10 @@ final class ValidateThemeCatalogueEntryAction
 
         $violations = [
             ...$this->manifestViolations($manifest, $themeKey),
+            ...$this->integrationViolations($packagesRoot . '/' . $packageDirectory, $manifest, $themeKey),
             ...$this->catalogueViolations($packagesRoot, $manifest, $themeKey),
             ...$this->definitionViolations($manifest, $themeKey),
-            ...$this->screenshotManifestViolations($packagesRoot, $packageDirectory, $themeKey),
+            ...$this->screenshotManifestViolations($packagesRoot, $packageDirectory, $themeKey, $manifest),
         ];
 
         return new ThemeValidationResultData(
@@ -105,6 +106,35 @@ final class ValidateThemeCatalogueEntryAction
 
         if (! is_array($manifest['product'] ?? null) || ! is_string($manifest['product']['tier'] ?? null)) {
             $violations[] = "{$themeKey}: capell.json is missing product.tier.";
+        }
+
+        return $violations;
+    }
+
+    /**
+     * @param  array<string, mixed>  $manifest
+     * @return list<string>
+     */
+    private function integrationViolations(string $themeDirectory, array $manifest, string $themeKey): array
+    {
+        $supports = $manifest['dependencies']['supports'] ?? [];
+
+        if (! is_array($supports)) {
+            return ["{$themeKey}: dependencies.supports must be an array."];
+        }
+
+        $violations = [];
+
+        foreach ($supports as $packageName) {
+            if (! is_string($packageName) || $packageName === '') {
+                $violations[] = "{$themeKey}: dependencies.supports entries must be non-empty package names.";
+
+                continue;
+            }
+
+            if (! HasThemeIntegrationEvidenceAction::run($themeDirectory, $packageName)) {
+                $violations[] = "{$themeKey}: dependencies.supports claims {$packageName} without a corresponding integration marker.";
+            }
         }
 
         return $violations;
@@ -240,8 +270,12 @@ final class ValidateThemeCatalogueEntryAction
     /**
      * @return list<string>
      */
-    private function screenshotManifestViolations(string $packagesRoot, string $packageDirectory, string $themeKey): array
-    {
+    private function screenshotManifestViolations(
+        string $packagesRoot,
+        string $packageDirectory,
+        string $themeKey,
+        array $manifest,
+    ): array {
         $screenshotsPath = $packagesRoot . '/' . $packageDirectory . '/docs/screenshots.json';
 
         if (! is_file($screenshotsPath)) {
@@ -251,17 +285,80 @@ final class ValidateThemeCatalogueEntryAction
         $screenshots = $this->readJsonObject($screenshotsPath);
         $entries = is_array($screenshots['entries'] ?? null) ? $screenshots['entries'] : [];
 
-        $missingSurfaces = array_values(array_diff(self::REQUIRED_DEMO_SURFACES, $this->capturedDemoSurfaces($entries)));
+        $violations = $this->promotedScreenshotViolations($packageDirectory, $themeKey, $manifest, $entries);
+        $missingSurfaces = array_values(array_diff(
+            self::REQUIRED_DEMO_SURFACES,
+            $this->capturedDemoSurfaces($entries),
+        ));
 
-        if ($missingSurfaces === []) {
+        if ($missingSurfaces !== []) {
+            $violations[] = sprintf(
+                '%s: docs/screenshots.json is missing captures for the DemoContent surface(s): %s.',
+                $themeKey,
+                implode(', ', $missingSurfaces),
+            );
+        }
+
+        return $violations;
+    }
+
+    /**
+     * Marketplace-promoted runner captures are release evidence, not optional
+     * examples. Every promoted PNG must map to a reproducible manifest entry
+     * and that entry must fail the screenshot run when capture breaks.
+     *
+     * @param  array<string, mixed>  $manifest
+     * @param  array<mixed>  $entries
+     * @return list<string>
+     */
+    private function promotedScreenshotViolations(
+        string $packageDirectory,
+        string $themeKey,
+        array $manifest,
+        array $entries,
+    ): array {
+        $promotedScreenshots = $manifest['marketplace']['screenshots'] ?? [];
+
+        if (! is_array($promotedScreenshots)) {
             return [];
         }
 
-        return [sprintf(
-            '%s: docs/screenshots.json is missing captures for the DemoContent surface(s): %s.',
-            $themeKey,
-            implode(', ', $missingSurfaces),
-        )];
+        $violations = [];
+
+        foreach ($promotedScreenshots as $promotedScreenshot) {
+            if (! is_array($promotedScreenshot) || ! is_string($promotedScreenshot['path'] ?? null)) {
+                continue;
+            }
+
+            $path = $promotedScreenshot['path'];
+
+            if (! str_starts_with($path, 'docs/screenshots/')) {
+                continue;
+            }
+
+            $screenshotPath = 'packages/' . $packageDirectory . '/' . $path;
+            $matchingEntry = null;
+
+            foreach ($entries as $entry) {
+                if (is_array($entry) && ($entry['screenshotPath'] ?? null) === $screenshotPath) {
+                    $matchingEntry = $entry;
+
+                    break;
+                }
+            }
+
+            if ($matchingEntry === null) {
+                $violations[] = "{$themeKey}: promoted screenshot {$path} has no reproducible docs/screenshots.json entry.";
+
+                continue;
+            }
+
+            if (($matchingEntry['required'] ?? null) !== true) {
+                $violations[] = "{$themeKey}: promoted screenshot {$path} must be required in docs/screenshots.json.";
+            }
+        }
+
+        return $violations;
     }
 
     /**

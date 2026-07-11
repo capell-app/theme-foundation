@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Capell\FoundationTheme\Testing;
 
+use FilesystemIterator;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use SplFileInfo;
+
 /**
  * Canonical frontend-authoring-safety assertions for theme Pest suites.
  *
@@ -265,10 +270,28 @@ trait AssertsPublicThemeOutputSafety
     {
         $viewsDirectory = rtrim($viewsDirectory, '/');
 
-        $paths = array_values(array_unique(array_merge(
-            glob($viewsDirectory . '/*.blade.php') ?: [],
-            glob($viewsDirectory . '/**/*.blade.php') ?: [],
-        )));
+        if (! is_dir($viewsDirectory)) {
+            return '';
+        }
+
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($viewsDirectory, FilesystemIterator::SKIP_DOTS),
+        );
+        $paths = [];
+
+        foreach ($iterator as $fileInfo) {
+            if (! $fileInfo instanceof SplFileInfo || ! $fileInfo->isFile()) {
+                continue;
+            }
+
+            if (! str_ends_with($fileInfo->getFilename(), '.blade.php')) {
+                continue;
+            }
+
+            $paths[] = $fileInfo->getPathname();
+        }
+
+        sort($paths, SORT_STRING);
 
         return implode(PHP_EOL, array_map(static fn (string $path): string => file_get_contents($path) ?: '', $paths));
     }

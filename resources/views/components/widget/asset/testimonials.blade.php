@@ -1,5 +1,4 @@
 @php
-    use Capell\Core\Facades\CapellCore;
     use Capell\Frontend\Facades\Frontend;
 
     $page = Frontend::page();
@@ -121,7 +120,7 @@
                                 ? $assetRenderData->translation->getMeta('company', '')
                                 : '';
 
-                            if (CapellCore::getAsset($widgetAsset->asset_type)->hasTranslations) {
+                            if ($assetRenderData->hasTranslations) {
                                 $title = $assetRenderData->title;
                                 $content = $assetRenderData->content;
                             }

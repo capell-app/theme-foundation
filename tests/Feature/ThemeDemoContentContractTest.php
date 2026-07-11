@@ -44,6 +44,21 @@ const FLEET_DEMO_CONTRACT_EXCLUSIONS = [
 ];
 
 /**
+ * Themes whose contact surface is part of the first form-builder integration wave.
+ *
+ * @var list<string>
+ */
+const FLEET_FORM_BUILDER_THEMES = [
+    'agency',
+    'brutalist',
+    'directory',
+    'onepage',
+    'portfolio',
+    'showreel',
+    'submissions',
+];
+
+/**
  * The demo content provider FQCN for a theme slug.
  *
  * Every vertical theme follows the `Capell\Theme<Studio>\Support\Demo\<Studio>DemoContent`
@@ -102,7 +117,9 @@ it('theme ships a demo content provider covering every foundation surface', func
         $bySurface[$definition->surface] = $definition;
     }
 
-    expect(array_keys($bySurface))->toEqualCanonicalizing(FLEET_FOUNDATION_SURFACES);
+    foreach (FLEET_FOUNDATION_SURFACES as $surface) {
+        expect($bySurface)->toHaveKey($surface);
+    }
 
     foreach (FLEET_FOUNDATION_SURFACES as $surface) {
         $definition = $bySurface[$surface];
@@ -152,3 +169,32 @@ it('theme ships a demo content provider covering every foundation surface', func
         );
     }
 })->with('fleet_themes_for_demo_contract');
+
+it('priority themes ship a populated form-builder contact section', function (string $slug): void {
+    $studio = Str::studly($slug);
+    $providerClass = fleetDemoContentProviderClass($slug, $studio);
+    $provider = new $providerClass;
+
+    throw_unless($provider instanceof ProvidesThemeDemoContent, RuntimeException::class, "Theme [{$slug}] demo content provider must implement ProvidesThemeDemoContent.");
+
+    $contactDefinition = collect($provider->definitions($slug, Str::headline($slug), "https://{$slug}.test"))
+        ->firstWhere('surface', 'contact');
+
+    expect($contactDefinition)->not->toBeNull();
+    throw_if($contactDefinition === null, RuntimeException::class, "Theme [{$slug}] must define a contact surface.");
+
+    $sections = $contactDefinition->renderData['sections'] ?? [];
+    throw_unless(is_array($sections), RuntimeException::class, "Theme [{$slug}] contact sections must be an array.");
+
+    $formSection = collect($sections)->first(
+        fn (mixed $section): bool => is_array($section) && ($section['type'] ?? null) === 'form',
+    );
+
+    expect($formSection)
+        ->toBeArray()
+        ->and($formSection['form_handle'] ?? null)->toBeString()->not->toBeEmpty()
+        ->and($formSection['fields'] ?? null)->toBeArray()->toHaveCount(4)
+        ->and($formSection['fallback_url'] ?? null)->toBeString()->not->toBeEmpty();
+})->with(collect(FLEET_FORM_BUILDER_THEMES)->mapWithKeys(
+    fn (string $slug): array => [$slug => [$slug]],
+)->all());
