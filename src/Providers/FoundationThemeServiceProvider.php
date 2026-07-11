@@ -48,7 +48,6 @@ use Capell\FoundationTheme\Support\CapellOptionalExtensionAvailability;
 use Capell\FoundationTheme\Support\FoundationThemeRuntimeManifestContributor;
 use Capell\FoundationTheme\Support\Interceptors\Themes\FoundationThemeInterceptor;
 use Capell\FoundationTheme\Support\Media\CapellUrlGenerator;
-use Capell\FoundationTheme\Support\ResultsSectionContributor;
 use Capell\FoundationTheme\View\Components\Actions as ActionsComponent;
 use Capell\FoundationTheme\View\Components\App\Body as AppBodyComponent;
 use Capell\FoundationTheme\View\Components\Footer\Index as FooterIndexComponent;
@@ -67,7 +66,6 @@ use Capell\Frontend\Contracts\AssetsRegistryInterface;
 use Capell\Frontend\Contracts\FrontendAssetContributor;
 use Capell\Frontend\Contracts\FrontendComponentRegistryInterface;
 use Capell\Frontend\Contracts\FrontendRuntimeManifestContributor;
-use Capell\Frontend\Contracts\ThemeSectionPayloadContributor;
 use Capell\Frontend\Data\FrontendAssetContextData;
 use Capell\Frontend\Data\FrontendAssetData;
 use Capell\Frontend\Events\FrontendContextResolved;
@@ -193,8 +191,6 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
     public function packageRegistered(): void
     {
         $this->app->scoped(FoundationThemeAssetContributor::class);
-        $this->app->scoped(ResultsSectionContributor::class);
-        $this->app->tag(ResultsSectionContributor::class, ThemeSectionPayloadContributor::TAG);
         $this->app->singleton(
             OptionalExtensionAvailability::class,
             CapellOptionalExtensionAvailability::class,
