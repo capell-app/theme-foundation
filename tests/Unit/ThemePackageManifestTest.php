@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
 use Capell\FoundationTheme\Actions\ValidateThemeCatalogueEntryAction;
 use Capell\FoundationTheme\Providers\FoundationThemeServiceProvider;
+use Capell\FoundationTheme\Providers\FoundationThemeSiteSpecServiceProvider;
 use Capell\FoundationTheme\Settings\FoundationThemeSettings;
 
 require_once __DIR__ . '/../Support/ThemeCatalogueScreenshotSurfaceGap.php';
@@ -33,6 +34,7 @@ it('registers only the shipped foundation theme service provider', function (): 
         ->and($manifest['providers']['frontend'])->toBe([])
         ->and($composer['extra']['laravel']['providers'])->toBe([
             FoundationThemeServiceProvider::class,
+            FoundationThemeSiteSpecServiceProvider::class,
         ]);
 });
 
