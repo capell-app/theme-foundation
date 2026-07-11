@@ -95,7 +95,7 @@
                             class="mb-2"
                             :compact="true"
                             :content="$content"
-                            :content-type="$widget->type->content_structure"
+                            :content-type="$widget->blueprint->content_structure"
                             :divider="$widget->getMeta('content_divider')"
                             :heading-size="$headingSize"
                             :title="$title"

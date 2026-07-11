@@ -39,7 +39,7 @@ final class ResolveThemeResultsListingAction
                         ? data_get($page->relationLoaded('translation') ? $page->translation : null, 'meta.description')
                         : null,
                     'url' => (string) ($page->relationLoaded('pageUrl') ? $page->pageUrl?->full_url : '#'),
-                    'type' => $page->relationLoaded('type') && is_string($page->type?->name ?? null) ? $page->type->name : null,
+                    'type' => $page->relationLoaded('blueprint') && is_string($page->blueprint?->name ?? null) ? $page->blueprint->name : null,
                 ])
                 ->filter(fn (array $item): bool => $item['url'] !== '#')
                 ->values()

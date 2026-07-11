@@ -56,7 +56,7 @@
                 <x-capell::content
                     :compact="true"
                     :content="$widget->translation->content ?? ($showPageContent ? $page->translation->content : null)"
-                    :content-type="$widget->translation->content ? $widget->type->content_structure : ($showPageContent ? $page->type->content_structure : null)"
+                    :content-type="$widget->translation->content ? $widget->blueprint->content_structure : ($showPageContent ? $page->blueprint->content_structure : null)"
                     :divider="$widget->getMeta('content_divider')"
                     :color="$color"
                     :muted="in_array($containerKey, $theme->secondary_containers)"

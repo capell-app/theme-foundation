@@ -41,7 +41,7 @@ class Children extends AbstractPagesWidget
             return;
         }
 
-        if (isset($page->type->meta['hidden']) && $page->type->meta['hidden'] === true) {
+        if (isset($page->blueprint->meta['hidden']) && $page->blueprint->meta['hidden'] === true) {
             $this->skipRender = true;
 
             return;

@@ -36,7 +36,7 @@
                 :compact="true"
                 align="center"
                 :content="$widget->translation->content"
-                :content-type="$widget->type->content_structure"
+                :content-type="$widget->blueprint->content_structure"
                 :color="$color"
                 :divider="$widget->getMeta('content_divider')"
                 :muted="in_array($containerKey, $theme->secondary_containers)"

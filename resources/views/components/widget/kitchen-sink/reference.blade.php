@@ -17,7 +17,7 @@
             <x-capell::content
                 :compact="true"
                 :content="$widget->translation->content"
-                :content-type="$widget->type->content_structure"
+                :content-type="$widget->blueprint->content_structure"
                 :title="$widget->translation->title"
             />
         @endif

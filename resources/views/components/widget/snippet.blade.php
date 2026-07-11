@@ -21,7 +21,7 @@
         class="widget-content"
         :compact="true"
         :content="$content"
-        :content-type="$widget->type->content_structure"
+        :content-type="$widget->blueprint->content_structure"
         :divider="$widget->getMeta('content_divider')"
         :heading-size="$widget->getMeta('heading_size', 'h3')"
         :title="$title"

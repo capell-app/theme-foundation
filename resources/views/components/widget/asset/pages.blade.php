@@ -71,7 +71,7 @@
                     class="widget-content"
                     :compact="true"
                     :content="$showContent ? ($widget->translation->content ?: ($showPageContent ? $currentPageTranslation?->content : null)) : null"
-                    :content-type="$widget->translation->content ? $widget->type->content_structure : ($showPageContent ? $currentPageType?->content_structure : null)"
+                    :content-type="$widget->translation->content ? $widget->blueprint->content_structure : ($showPageContent ? $currentPageType?->content_structure : null)"
                     :divider="$widget->getMeta('content_divider')"
                     :muted="in_array($containerKey, $theme->secondary_containers)"
                     :text-align="$widget->getMeta('align')"

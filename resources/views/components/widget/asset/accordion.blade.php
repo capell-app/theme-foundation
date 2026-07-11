@@ -37,7 +37,7 @@
                 class="mb-4"
                 :compact="true"
                 :content="$widget->translation->content"
-                :content-type="$widget->type->content_structure"
+                :content-type="$widget->blueprint->content_structure"
                 :divider="$widget->getMeta('content_divider')"
                 :muted="in_array($containerKey, $theme->secondary_containers)"
                 :title="$widget->translation->title"

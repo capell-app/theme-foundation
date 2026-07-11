@@ -23,7 +23,7 @@
             class="widget-content"
             :compact="true"
             :content="$content"
-            :content-type="$widget->type->content_structure"
+            :content-type="$widget->blueprint->content_structure"
             :heading-size="$widget->getMeta('heading_size', 'h3')"
             :title="$title"
             :text-align="$align"
