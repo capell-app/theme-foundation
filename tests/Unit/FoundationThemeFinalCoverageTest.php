@@ -130,11 +130,11 @@ it('mounts successful child and sibling page widgets with hydrated frontend cont
         ],
     ]);
 
-    foundationThemeFinalFrontendState($language, $site, $theme, $layout, $parentPage->load('type', 'layout'));
+    foundationThemeFinalFrontendState($language, $site, $theme, $layout, $parentPage->load('blueprint', 'layout'));
 
     $children = new Children([], 'main', 0, new stdClass, $widget);
 
-    foundationThemeFinalFrontendState($language, $site, $theme, $layout, $currentChild->load('type', 'layout'));
+    foundationThemeFinalFrontendState($language, $site, $theme, $layout, $currentChild->load('blueprint', 'layout'));
 
     $siblings = new Siblings([], 'main', 0, new stdClass, $widget);
     $childrenPages = $children->pages ?? collect();
@@ -188,7 +188,7 @@ it('mounts the livewire pages widget around selected page assets', function (): 
         ->asset($selectedPage)
         ->create(['order' => 1]);
 
-    foundationThemeFinalFrontendState($language, $site, $theme, $layout, $page->load('type', 'layout'));
+    foundationThemeFinalFrontendState($language, $site, $theme, $layout, $page->load('blueprint', 'layout'));
 
     $component = new LivewirePages;
     $component->mount(OpaqueWidgetReference::encode([
@@ -364,7 +364,7 @@ it('renders navigation and breadcrumbs with frontend context data', function ():
     ]);
     $breadcrumbsWidget = Widget::factory()->create(['key' => 'breadcrumbs-widget']);
 
-    foundationThemeFinalFrontendState($language, $site, $theme, $layout, $page->load('type', 'layout', 'translation'));
+    foundationThemeFinalFrontendState($language, $site, $theme, $layout, $page->load('blueprint', 'layout', 'translation'));
 
     $navigationComponent = new Navigation([], 'main', 0, new stdClass, $navigationWidget);
     $navigationByKeyWidget = Widget::factory()->create([
@@ -431,7 +431,7 @@ it('covers content neighbor links and small frontend context helper branches', f
         }
     };
     $slotWidget = new Widget;
-    $slotWidget->setRelation('type', $slotType);
+    $slotWidget->setRelation('blueprint', $slotType);
 
     $media = new Media;
     $media->collection_name = 'background_image';
@@ -439,7 +439,7 @@ it('covers content neighbor links and small frontend context helper branches', f
     $backgroundWidget = new Widget;
     $backgroundWidget->setRelation('media', new Collection([$media]));
 
-    foundationThemeFinalFrontendState($language, $site, $theme, $layout, $page->load('type', 'layout'));
+    foundationThemeFinalFrontendState($language, $site, $theme, $layout, $page->load('blueprint', 'layout'));
 
     MarkPrimaryHeadingRenderedAction::run();
 

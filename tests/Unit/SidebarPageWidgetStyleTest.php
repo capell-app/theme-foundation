@@ -536,7 +536,7 @@ test('asset page widget view does not query or lazy-load optional item parents',
     $item = Page::factory()->site($site)->parent($parentPage)->create(['name' => 'Child Page']);
 
     $currentPage->setRelation('translation', null);
-    $currentPage->setRelation('type', null);
+    $currentPage->setRelation('blueprint', null);
 
     $item->setRelation('translation', (object) [
         'summary' => 'Loaded summary',
