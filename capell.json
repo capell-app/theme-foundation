@@ -4,7 +4,7 @@
     "slug": "theme-foundation",
     "displayName": "Foundation Theme",
     "kind": "theme",
-    "capellApiVersion": "^4.0",
+    "capellApiVersion": "^0.0",
     "version": "0.0.x-dev",
     "description": "Capell's foundation theme — base Blade layouts, runtime design tokens, the Tailwind asset pipeline, Blade directives, media/SVG handling, and the override contracts that all vertical Capell themes extend.",
     "product": {
