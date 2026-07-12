@@ -50,6 +50,25 @@ it('keeps the generated foundation css separate from theme meta assets', functio
         ->and($requirements[0]->buildPath)->toBe('build');
 });
 
+it('does not request a split theme css entry that has not been generated', function (): void {
+    $theme = Theme::factory()->make([
+        'key' => 'missing-theme-bundle',
+        'meta' => ['assets_path' => 'build'],
+    ]);
+
+    $requirements = resolve(FoundationThemeAssetContributor::class)->requirements(new FrontendAssetContextData(
+        page: null,
+        site: null,
+        language: null,
+        layout: null,
+        theme: $theme,
+        runtime: FrontendRuntimeManifestData::forRenderingStrategy(RenderingStrategyEnum::BladeOnly),
+    ));
+
+    expect(collect($requirements)->pluck('handle')->all())
+        ->not->toContain('theme-css:missing-theme-bundle');
+});
+
 it('allows a theme to opt out of the generated foundation frontend css', function (): void {
     $theme = Theme::factory()->make([
         'meta' => [
