@@ -21,12 +21,12 @@ final class BuildPageContentRenderDataAction
     public function handle(?Pageable $page, array $pageContents, bool $showPageTitle): PageContentRenderData
     {
         $translation = $page instanceof Model ? $this->loadedRelation($page, 'translation') : null;
-        $type = $page instanceof Model ? $this->loadedRelation($page, 'type') : null;
+        $blueprint = $page instanceof Model ? $this->loadedRelation($page, 'blueprint') : null;
         $image = $page instanceof Model ? $this->loadedRelation($page, 'image') : null;
         $content = data_get($translation, 'content');
         $title = data_get($translation, 'title');
         $displayTitle = data_get($translation, 'meta.hero_title');
-        $contentStructure = data_get($type, 'content_structure');
+        $contentStructure = data_get($blueprint, 'content_structure');
         $contentStructure = $contentStructure instanceof ContentStructure
             ? $contentStructure
             : ContentStructure::Html;

@@ -126,7 +126,7 @@ class Navigation extends AbstractWidget
         $widgetType = $widgetRelations['type'] ?? null;
         $pageRelations = $page->getRelations();
         $pageTranslation = $pageRelations['translation'] ?? null;
-        $pageType = $pageRelations['type'] ?? null;
+        $pageBlueprint = $pageRelations['blueprint'] ?? null;
         $showPageTitle = (bool) data_get($this->widgetData, 'meta.show_page_title', false);
         $showPageContent = (bool) data_get($this->widgetData, 'meta.show_page_content', false);
 
@@ -140,7 +140,7 @@ class Navigation extends AbstractWidget
             $this->headingContent = $widgetContent ?: ($showPageContent ? data_get($pageTranslation, 'content') : null);
             $this->headingContentStructure = $widgetContent
                 ? data_get($widgetType, 'content_structure')
-                : ($showPageContent ? data_get($pageType, 'content_structure') : null);
+                : ($showPageContent ? data_get($pageBlueprint, 'content_structure') : null);
         }
     }
 }

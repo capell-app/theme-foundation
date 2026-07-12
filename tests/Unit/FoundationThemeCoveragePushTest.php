@@ -598,14 +598,14 @@ it('builds page asset table queries with scoped exclusions', function (): void {
     capell_expect($query->toSql())->toContain('not')
         ->and($query->getEagerLoads())->toHaveKeys([
             'translations.language',
-            'ancestors.type',
+            'ancestors.blueprint',
             'creator',
             'layout',
             'image',
             'media',
             'editor',
             'site.siteDomains',
-            'type',
+            'blueprint',
         ]);
 });
 
