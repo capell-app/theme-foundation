@@ -110,7 +110,14 @@ it('owns the default body content and layout component files', function (): void
         ->and($layout)->toContain("\$header ??= array_key_exists('header', \$layoutMeta) ? \$layoutMeta['header'] : null")
         ->and($layout)->toContain("\$footer ??= array_key_exists('footer', \$layoutMeta) ? \$layoutMeta['footer'] : null")
         ->and($layout)->toContain('<x-capell::header.index />')
+        ->and($layout)->toContain('<x-capell::layout.main')
         ->and($layout)->toContain("\$theme['meta']['footer_file'] ?? 'capell::footer'");
+
+    expect($layout)
+        ->not->toContain('$isSystemPageLayout &&')
+        ->not->toContain('system_page_layout')
+        ->not->toContain('background: #f8fafc')
+        ->not->toContain('components.demo.contact-page');
 });
 
 it('keeps runtime asset registrations behind the installed package guard', function (): void {
@@ -177,7 +184,7 @@ it('documents the stable child theme override surface', function (): void {
         expect($document)
             ->toContain('Child Theme Override Contract')
             ->toContain("extends: 'default'")
-            ->toContain('`navigation`, `hero`, `features`, `proof`, `content-listing`, `search`, `pagination`, `form`, `cta`, `footer`')
+            ->toContain('`navigation`, `hero`, `features`, `proof`, `content-listing`, `search`, `pagination`, `form`, `contact-split`, `cta`, `footer`')
             ->toContain('`capell::theme.page`')
             ->toContain('`capell::layout.area`')
             ->toContain('`capell::media.svg`')

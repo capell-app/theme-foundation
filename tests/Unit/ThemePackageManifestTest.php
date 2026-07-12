@@ -144,7 +144,7 @@ it('declares the standard light-only screenshot matrix', function (): void {
         ->and($entries->pluck('id')->sort()->values()->all())->toBe($expectedIds->sort()->values()->all())
         ->and($entries->pluck('colorSchemes')->unique()->values()->all())->toBe([['light']])
         ->and($entries->filter(fn (array $entry): bool => str_contains((string) $entry['id'], 'contact'))->pluck('waitFor')->unique()->values()->all())
-        ->toBe(['.theme-demo-contact-page']);
+        ->toBe(['#main']);
 
     foreach ($entries as $entry) {
         expect(is_file(dirname(__DIR__, 2) . '/' . str_replace('packages/theme-foundation/', '', (string) $entry['screenshotPath'])))->toBeTrue();

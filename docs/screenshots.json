@@ -190,7 +190,7 @@
             "useCase": "A buyer reviews the Foundation contact surface before selecting theme-foundation.",
             "package": "theme-foundation",
             "scenario": "frontend-page",
-            "waitFor": ".theme-demo-contact-page",
+            "waitFor": "#main",
             "colorSchemes": ["light"],
             "viewport": "desktop",
             "fullPage": true
@@ -209,7 +209,7 @@
             "useCase": "A buyer reviews the Foundation contact surface before selecting theme-foundation.",
             "package": "theme-foundation",
             "scenario": "frontend-page",
-            "waitFor": ".theme-demo-contact-page",
+            "waitFor": "#main",
             "colorSchemes": ["light"],
             "viewport": "tablet",
             "fullPage": true
@@ -228,7 +228,7 @@
             "useCase": "A buyer reviews the Foundation contact surface before selecting theme-foundation.",
             "package": "theme-foundation",
             "scenario": "frontend-page",
-            "waitFor": ".theme-demo-contact-page",
+            "waitFor": "#main",
             "colorSchemes": ["light"],
             "viewport": "mobile",
             "fullPage": true

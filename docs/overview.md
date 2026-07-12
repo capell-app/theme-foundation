@@ -73,7 +73,7 @@ The header drops to the wordmark and the Preview button. Everything else stacks 
 
 Child themes declare `extends: 'default'` and override documented surfaces rather than replacing the public rendering path:
 
-- Theme Studio sections: `navigation`, `hero`, `features`, `proof`, `content-listing`, `search`, `pagination`, `form`, `cta`, `footer`.
+- Theme Studio sections: `navigation`, `hero`, `features`, `proof`, `content-listing`, `search`, `pagination`, `form`, `contact-split`, `cta`, `footer`.
 - Shared views: `capell::theme.page`, `capell::layout.area`, `capell::media.svg`.
 - Runtime tokens: `--foundation-page-bg`, `--foundation-section-spacing`, `--foundation-widget-gap`.
 - Layout Builder chrome areas: `header`.
