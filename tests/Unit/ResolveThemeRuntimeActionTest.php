@@ -21,7 +21,7 @@ it('layers parent defaults before child defaults and applies database overrides 
         'slug' => 'base-theme',
         'displayName' => 'Base Theme',
         'kind' => 'theme',
-        'capellApiVersion' => '^4.0',
+        'capellApiVersion' => '^0.0',
         'version' => '1.0.0',
         'product' => [
             'group' => 'Theme',
@@ -45,7 +45,7 @@ it('layers parent defaults before child defaults and applies database overrides 
         'slug' => 'child-theme',
         'displayName' => 'Child Theme',
         'kind' => 'theme',
-        'capellApiVersion' => '^4.0',
+        'capellApiVersion' => '^0.0',
         'version' => '1.0.0',
         'product' => [
             'group' => 'Theme',

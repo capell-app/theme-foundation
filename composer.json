@@ -5,10 +5,10 @@
     "license": "proprietary",
     "require": {
         "php": "^8.4",
-        "capell-app/core": "^1.0 || 1.x-dev",
-        "capell-app/frontend": "^1.0 || 1.x-dev",
-        "capell-app/layout-builder": "^1.0 || 1.x-dev",
-        "capell-app/navigation": "^1.0 || 1.x-dev",
+        "capell-app/core": "^0.0 || 0.0.x-dev",
+        "capell-app/frontend": "^0.0 || 0.0.x-dev",
+        "capell-app/layout-builder": "^0.0 || 0.0.x-dev",
+        "capell-app/navigation": "^0.0 || 0.0.x-dev",
         "lorisleiva/laravel-actions": "^2.8",
         "spatie/laravel-data": "^4.0",
         "spatie/laravel-package-tools": "^1.0"
@@ -31,7 +31,7 @@
             ]
         },
         "branch-alias": {
-            "dev-main": "1.x-dev"
+            "dev-main": "0.0.x-dev"
         }
     },
     "homepage": "https://github.com/capell-app/theme-foundation",
