@@ -6,6 +6,31 @@ namespace Capell\FoundationTheme\Support\Demo;
 
 final class ThemeDemoMedia
 {
+    /** @var array<string, string> */
+    private const array MEDIA_POOL_BY_THEME = [
+        'agency' => 'agency',
+        'awards' => 'corporate',
+        'blog' => 'knowledge',
+        'brutalist' => 'corporate',
+        'business' => 'local-services',
+        'catalogue' => 'portfolio',
+        'curated' => 'portfolio',
+        'directory' => 'agency',
+        'editorial' => 'knowledge',
+        'events' => 'nonprofit',
+        'knowledge' => 'knowledge',
+        'liquid-glass' => 'saas',
+        'magazine' => 'knowledge',
+        'minimalist' => 'portfolio',
+        'onepage' => 'agency',
+        'photography' => 'portfolio',
+        'platform' => 'saas',
+        'portfolio' => 'portfolio',
+        'saas' => 'saas',
+        'showreel' => 'portfolio',
+        'submissions' => 'commerce',
+    ];
+
     /**
      * @return array<int, string>
      */
@@ -21,9 +46,10 @@ final class ThemeDemoMedia
     {
         $normalizedThemeKey = strtolower(trim($themeKey));
         $catalogue = self::catalogue();
+        $mediaPoolKey = self::MEDIA_POOL_BY_THEME[$normalizedThemeKey] ?? $normalizedThemeKey;
 
-        if (array_key_exists($normalizedThemeKey, $catalogue)) {
-            return self::withMinimumPreviewMedia($catalogue[$normalizedThemeKey]);
+        if (array_key_exists($mediaPoolKey, $catalogue)) {
+            return self::withMinimumPreviewMedia($catalogue[$mediaPoolKey]);
         }
 
         return self::withMinimumPreviewMedia($catalogue['default']);
