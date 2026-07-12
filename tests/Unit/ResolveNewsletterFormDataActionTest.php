@@ -3,8 +3,11 @@
 declare(strict_types=1);
 
 use Capell\FoundationTheme\Actions\ResolveNewsletterFormDataAction;
+use Capell\FoundationTheme\Data\NewsletterFormData;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Routing\Router;
+use Illuminate\Support\HtmlString;
+use Illuminate\View\ComponentAttributeBag;
 
 it('uses a safe inert fallback when the newsletter route is unavailable', function (): void {
     $router = Mockery::mock(Router::class);
@@ -25,6 +28,25 @@ it('uses a safe inert fallback when the newsletter route is unavailable', functi
         ->and($data->method)->toBe('get')
         ->and($data->source)->toBe('public_newsletter')
         ->and($data->wired)->toBeFalse();
+});
+
+it('renders the unwired fallback without a submitting form', function (): void {
+    $html = view('capell-theme-foundation::forms.newsletter', [
+        'form' => new NewsletterFormData(
+            action: '#newsletter',
+            method: 'get',
+            source: 'public_newsletter',
+            wired: false,
+        ),
+        'attributes' => new ComponentAttributeBag(['class' => 'newsletter-shell']),
+        'slot' => new HtmlString('<input type="email" name="email"><button type="submit">Join</button>'),
+    ])->render();
+
+    expect($html)
+        ->toContain('data-newsletter-unavailable')
+        ->toContain('newsletter-shell')
+        ->not->toContain('<form')
+        ->not->toContain('method="get"');
 });
 
 it('posts to the package-neutral subscribe route when it is available', function (): void {
