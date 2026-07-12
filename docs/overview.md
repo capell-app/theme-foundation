@@ -6,6 +6,8 @@ Foundation is the free base theme: the Blade layouts, runtime design tokens, Tai
 
 Read this two ways. If you are choosing a free theme, Foundation is a plain, high-contrast navy-on-white design that works as a finished site. If you are building a child theme, Foundation is the contract you inherit.
 
+## Child Theme Override Contract
+
 ![The Foundation homepage: a white header with the serif CAPELL wordmark, Pages / Layouts / Packages / Settings links and a blue Preview button, above a pale grey page with the heading "Homepage layout", a Layout contract card, a row of stat cards, a dark navy statistics strip and blue pill links.](screenshots/foundation-homepage.png)
 
 ## Put it on your site
@@ -71,7 +73,7 @@ The header drops to the wordmark and the Preview button. Everything else stacks 
 
 Child themes declare `extends: 'default'` and override documented surfaces rather than replacing the public rendering path:
 
-- Theme Studio sections: `navigation`, `hero`, `features`, `proof`, `content-listing`, `search`, `pagination`, `form`, `cta`, `footer`.
+- Theme Studio sections: `navigation`, `hero`, `features`, `proof`, `content-listing`, `search`, `pagination`, `form`, `contact-split`, `cta`, `footer`.
 - Shared views: `capell::theme.page`, `capell::layout.area`, `capell::media.svg`.
 - Runtime tokens: `--foundation-page-bg`, `--foundation-section-spacing`, `--foundation-widget-gap`.
 - Layout Builder chrome areas: `header`.

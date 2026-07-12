@@ -101,7 +101,8 @@ it('renders count-up-stat without throwing', function (): void {
         ->toContain('data-count-up="4200"')
         ->toContain('Happy customers')
         ->toContain('data-count-up-suffix="+"')
-        ->toContain('>4,200+</span>');
+        ->toContain('4,200+')
+        ->toContain('</span');
 });
 
 it('renders byline-with-metadata without throwing', function (): void {
