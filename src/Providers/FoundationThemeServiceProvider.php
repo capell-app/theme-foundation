@@ -24,7 +24,6 @@ use Capell\Core\Support\Packages\AbstractPackageServiceProvider;
 use Capell\Core\Support\Themes\ThemeChromeRegistry;
 use Capell\Core\ThemeStudio\Data\ThemeDefinitionData;
 use Capell\Core\ThemeStudio\Data\ThemePresetData;
-use Capell\Core\ThemeStudio\Rendering\ViewSectionRenderer;
 use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
 use Capell\FoundationTheme\Actions\ResolveFoundationThemeTokensAction;
 use Capell\FoundationTheme\Console\Commands\DemoCommand;
@@ -39,8 +38,6 @@ use Capell\FoundationTheme\Filament\Settings\FoundationThemeSettingsSchema;
 use Capell\FoundationTheme\Listeners\RunTailwindAssetsOnPackageChange;
 use Capell\FoundationTheme\Livewire\Assets\Table\PageAssets;
 use Capell\FoundationTheme\Livewire\Widget\Pages;
-use Capell\FoundationTheme\Rendering\ChromeSplitBladeThemeRenderer;
-use Capell\FoundationTheme\Rendering\VariantViewSectionRenderer;
 use Capell\FoundationTheme\Settings\FoundationThemeSettings;
 use Capell\FoundationTheme\Support\Assets\FoundationThemeAssetContributor;
 use Capell\FoundationTheme\Support\Blade\BladeDirectives;
@@ -470,17 +467,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
     private function registerThemeStudioDefinition(): void
     {
         $register = function (ThemeRegistry $registry): void {
-            $sectionRenderers = $this->themeStudioSectionRenderers();
-
-            $registry->register(
-                definition: self::definition(),
-                themeRenderer: new ChromeSplitBladeThemeRenderer(
-                    themeKey: self::THEME_KEY,
-                    layoutView: 'capell-theme-foundation::theme.page',
-                    sectionRenderers: $sectionRenderers,
-                ),
-                sectionRenderers: array_values($sectionRenderers),
-            );
+            $registry->register(definition: self::definition());
         };
 
         $this->app->afterResolving(ThemeRegistry::class, $register);
@@ -488,100 +475,6 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
         if ($this->app->resolved(ThemeRegistry::class)) {
             $register($this->app->make(ThemeRegistry::class));
         }
-    }
-
-    /**
-     * @return array<string, ViewSectionRenderer>
-     */
-    private function themeStudioSectionRenderers(): array
-    {
-        return [
-            'navigation' => new ViewSectionRenderer(self::THEME_KEY, 'navigation', 'capell-theme-foundation::theme.sections.navigation', failLoudly: true),
-            'hero' => new VariantViewSectionRenderer(
-                themeKey: self::THEME_KEY,
-                sectionKey: 'hero',
-                baseView: 'capell-theme-foundation::theme.sections.hero',
-                variantViews: [
-                    'split' => 'capell-theme-foundation::theme.sections.hero--split',
-                    'stacked' => 'capell-theme-foundation::theme.sections.hero--stacked',
-                    'full-bleed' => 'capell-theme-foundation::theme.sections.hero--full-bleed',
-                ],
-                failLoudly: true,
-            ),
-            'features' => new ViewSectionRenderer(self::THEME_KEY, 'features', 'capell-theme-foundation::theme.sections.features', failLoudly: true),
-            'proof' => new ViewSectionRenderer(self::THEME_KEY, 'proof', 'capell-theme-foundation::theme.sections.proof', failLoudly: true),
-            'content-listing' => new VariantViewSectionRenderer(
-                themeKey: self::THEME_KEY,
-                sectionKey: 'content-listing',
-                baseView: 'capell-theme-foundation::theme.sections.content-listing',
-                variantViews: [
-                    'grid' => 'capell-theme-foundation::theme.sections.content-listing--grid',
-                    'rows' => 'capell-theme-foundation::theme.sections.content-listing--rows',
-                    'masonry-safe' => 'capell-theme-foundation::theme.sections.content-listing--masonry-safe',
-                ],
-                failLoudly: true,
-            ),
-            'search' => new ViewSectionRenderer(self::THEME_KEY, 'search', 'capell-theme-foundation::theme.sections.search', failLoudly: true),
-            'pagination' => new ViewSectionRenderer(self::THEME_KEY, 'pagination', 'capell-theme-foundation::theme.sections.pagination', failLoudly: true),
-            'form' => new VariantViewSectionRenderer(
-                themeKey: self::THEME_KEY,
-                sectionKey: 'form',
-                baseView: 'capell-theme-foundation::theme.sections.form',
-                variantViews: [
-                    'encouraging' => 'capell-theme-foundation::theme.sections.form--encouraging',
-                ],
-                failLoudly: true,
-            ),
-            'contact-split' => new ViewSectionRenderer(self::THEME_KEY, 'contact-split', 'capell-theme-foundation::theme.sections.contact-split', failLoudly: true),
-            'cta' => new VariantViewSectionRenderer(
-                themeKey: self::THEME_KEY,
-                sectionKey: 'cta',
-                baseView: 'capell-theme-foundation::theme.sections.cta',
-                variantViews: [
-                    'band' => 'capell-theme-foundation::theme.sections.cta--band',
-                    'card' => 'capell-theme-foundation::theme.sections.cta--card',
-                    'inline' => 'capell-theme-foundation::theme.sections.cta--inline',
-                ],
-                failLoudly: true,
-            ),
-            'footer' => new ViewSectionRenderer(self::THEME_KEY, 'footer', 'capell-theme-foundation::theme.sections.footer', failLoudly: true),
-            'pricing-value-spectrum' => new VariantViewSectionRenderer(
-                themeKey: self::THEME_KEY,
-                sectionKey: 'pricing-value-spectrum',
-                baseView: 'capell-theme-foundation::theme.sections.pricing-value-spectrum',
-                variantViews: [
-                    'compact' => 'capell-theme-foundation::theme.sections.pricing-value-spectrum--compact',
-                ],
-                failLoudly: true,
-            ),
-            'faq-search-discovery' => new VariantViewSectionRenderer(
-                themeKey: self::THEME_KEY,
-                sectionKey: 'faq-search-discovery',
-                baseView: 'capell-theme-foundation::theme.sections.faq-search-discovery',
-                variantViews: [
-                    'categorised' => 'capell-theme-foundation::theme.sections.faq-search-discovery--categorised',
-                ],
-                failLoudly: true,
-            ),
-            'changelog-stream' => new VariantViewSectionRenderer(
-                themeKey: self::THEME_KEY,
-                sectionKey: 'changelog-stream',
-                baseView: 'capell-theme-foundation::theme.sections.changelog-stream',
-                variantViews: [
-                    'grid' => 'capell-theme-foundation::theme.sections.changelog-stream--grid',
-                ],
-                failLoudly: true,
-            ),
-            'stats-display-band' => new VariantViewSectionRenderer(
-                themeKey: self::THEME_KEY,
-                sectionKey: 'stats-display-band',
-                baseView: 'capell-theme-foundation::theme.sections.stats-display-band',
-                variantViews: [
-                    'light' => 'capell-theme-foundation::theme.sections.stats-display-band--light',
-                ],
-                failLoudly: true,
-            ),
-        ];
     }
 
     private function registerLayoutAreas(): void

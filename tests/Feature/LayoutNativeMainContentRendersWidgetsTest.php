@@ -54,7 +54,7 @@ it('renders real layout-builder widget content in the main landmark for a layout
 
     [$pageUrl, $pageTitle] = layoutNativeThemeCreatePage(LiquidGlassThemeServiceProvider::THEME_KEY, 'Main Content Regression');
 
-    expect($registry->hasRenderer(LiquidGlassThemeServiceProvider::THEME_KEY))->toBeFalse();
+    expect($registry->has(LiquidGlassThemeServiceProvider::THEME_KEY))->toBeTrue();
 
     $response = get($pageUrl->full_url);
 

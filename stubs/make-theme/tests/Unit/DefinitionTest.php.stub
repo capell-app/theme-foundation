@@ -25,7 +25,7 @@ it('registers {{ themeSlug }} as definition-only with no legacy renderer', funct
     $provider = new {{ studlyName }}ThemeServiceProvider(app());
     $provider->boot($registry);
 
-    expect($registry->hasRenderer({{ studlyName }}ThemeServiceProvider::THEME_KEY))->toBeFalse();
+    expect($registry->has({{ studlyName }}ThemeServiceProvider::THEME_KEY))->toBeTrue();
 
     CapellCore::clearPackages();
 });
