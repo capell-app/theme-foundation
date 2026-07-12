@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Pest\Expectation;
+
 test('showreel editorial winner feature spans existing grid tracks only', function (): void {
     $packagesPath = dirname(__DIR__, 3);
 
@@ -152,10 +154,22 @@ test('theme section navigations expose the shared mobile disclosure menu', funct
             ->toContain('capell-desktop-nav')
             ->toContain("view('capell-theme-foundation::theme.partials.mobile-navigation'")
             ->and($css)
-            ->toContain('.capell-mobile-nav')
-            ->toContain('@media (max-width: 767px)')
-            ->toContain('.capell-desktop-nav-action');
+            ->when(
+                $theme === 'editorial',
+                fn (Expectation $expectation): Expectation => $expectation->toContain("@import '../../../theme-foundation/resources/css/theme/chrome.css';"),
+                fn (Expectation $expectation): Expectation => $expectation
+                    ->toContain('.capell-mobile-nav')
+                    ->toContain('@media (max-width: 767px)')
+                    ->toContain('.capell-desktop-nav-action'),
+            );
     }
+
+    $sharedChrome = file_get_contents($packagesPath . '/theme-foundation/resources/css/theme/chrome.css');
+
+    expect($sharedChrome)
+        ->toContain('.capell-mobile-nav')
+        ->toContain('@media (max-width: 767px)')
+        ->toContain('.capell-desktop-nav-action');
 });
 
 test('platform contact screenshots wait for the shared contact form', function (): void {

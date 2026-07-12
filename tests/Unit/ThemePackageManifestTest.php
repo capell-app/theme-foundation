@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Capell\Core\ThemeStudio\Rendering\BladeThemeRenderer;
 use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
 use Capell\FoundationTheme\Actions\ValidateThemeCatalogueEntryAction;
 use Capell\FoundationTheme\Providers\FoundationThemeServiceProvider;
+use Capell\FoundationTheme\Providers\FoundationThemeSiteSpecServiceProvider;
 use Capell\FoundationTheme\Settings\FoundationThemeSettings;
 
 require_once __DIR__ . '/../Support/ThemeCatalogueScreenshotSurfaceGap.php';
@@ -34,6 +34,7 @@ it('registers only the shipped foundation theme service provider', function (): 
         ->and($manifest['providers']['frontend'])->toBe([])
         ->and($composer['extra']['laravel']['providers'])->toBe([
             FoundationThemeServiceProvider::class,
+            FoundationThemeSiteSpecServiceProvider::class,
         ]);
 });
 
@@ -68,15 +69,7 @@ it('registers a Theme Studio definition that matches the manifest', function ():
     $manifest = themePackageManifest('theme-foundation');
 
     $registry = new ThemeRegistry;
-    $registry->register(
-        FoundationThemeServiceProvider::definition(),
-        new BladeThemeRenderer(
-            themeKey: FoundationThemeServiceProvider::THEME_KEY,
-            layoutView: 'capell-theme-foundation::theme.page',
-            sectionRenderers: [],
-        ),
-        [],
-    );
+    $registry->register(FoundationThemeServiceProvider::definition());
 
     expect($registry->has($manifest['themeKey']))->toBeTrue();
 
@@ -85,7 +78,8 @@ it('registers a Theme Studio definition that matches the manifest', function ():
     expect($registered->key)->toBe($manifest['themeKey'])
         ->and($registered->key)->toBe(FoundationThemeServiceProvider::THEME_KEY)
         ->and($registered->package)->toBe($manifest['name'])
-        ->and($registered->extends)->toBe($manifest['extends']);
+        ->and($registered->extends)->toBe($manifest['extends'])
+        ->and($registry->has($manifest['themeKey']))->toBeTrue();
 });
 
 it('declares committed marketplace screenshots', function (): void {
@@ -150,7 +144,7 @@ it('declares the standard light-only screenshot matrix', function (): void {
         ->and($entries->pluck('id')->sort()->values()->all())->toBe($expectedIds->sort()->values()->all())
         ->and($entries->pluck('colorSchemes')->unique()->values()->all())->toBe([['light']])
         ->and($entries->filter(fn (array $entry): bool => str_contains((string) $entry['id'], 'contact'))->pluck('waitFor')->unique()->values()->all())
-        ->toBe(['.theme-demo-contact-page']);
+        ->toBe(['#main']);
 
     foreach ($entries as $entry) {
         expect(is_file(dirname(__DIR__, 2) . '/' . str_replace('packages/theme-foundation/', '', (string) $entry['screenshotPath'])))->toBeTrue();

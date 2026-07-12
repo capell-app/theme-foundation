@@ -281,6 +281,16 @@ test('public blade getMeta and translation relation reads stay reviewed', functi
     );
 });
 
+test('demo contact page uses only the prepared current domain relation', function (): void {
+    $contactPage = file_get_contents(
+        dirname(__DIR__, 2) . '/resources/views/components/demo/contact-page.blade.php',
+    );
+
+    expect($contactPage)
+        ->not->toContain('->defaultDomain')
+        ->toContain('$site->siteDomain?->url');
+});
+
 test('theme public views and assets avoid package and theme implementation markers', function (): void {
     $packagesRoot = dirname(__DIR__, 3);
     $packagePaths = [

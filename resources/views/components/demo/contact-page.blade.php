@@ -243,7 +243,7 @@
     <div class="theme-demo-contact-shell">
         <a
             class="theme-demo-contact-home"
-            href="{{ $site->defaultDomain?->url ?? $site->siteDomain?->url ?? '/' }}"
+            href="{{ $site->siteDomain?->url ?? '/' }}"
         >
             {{ $site->translation->title ?? $site->name }}
         </a>

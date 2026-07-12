@@ -4,7 +4,13 @@ declare(strict_types=1);
 
 namespace Capell\FoundationTheme\Support\Providers;
 
+use Capell\Core\Data\VendorAssetData;
+use Capell\Core\Enums\VendorAssetEnum;
+use Capell\Core\Facades\CapellCore;
+use Capell\Core\ThemeStudio\Data\ThemeDefinitionData;
+use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
 use Capell\LayoutBuilder\Support\LayoutAreas\LayoutAreaRegistry;
+use Closure;
 use Illuminate\Support\Facades\Blade;
 
 /**
@@ -21,6 +27,49 @@ use Illuminate\Support\Facades\Blade;
  */
 trait RegistersLayoutNativeThemeDefaults
 {
+    /**
+     * Boot the invariant part of a definition-only, layout-native theme.
+     *
+     * The callback is intentionally theme-owned. It may register only new,
+     * package-owned renderable keys or other scoped integrations; this seam
+     * never replaces shared layout-widget keys and therefore cannot alter a
+     * different active theme's rendering.
+     */
+    protected function bootLayoutNativeThemeDefaults(
+        ThemeRegistry $registry,
+        string $packageName,
+        string $translationNamespace,
+        string $translationsPath,
+        string $viewNamespace,
+        string $viewsPath,
+        string $cssSource,
+        string $cssCondition,
+        ThemeDefinitionData $definition,
+        ?Closure $registerThemeRenderables = null,
+    ): bool {
+        if (! CapellCore::isPackageInstalled($packageName)) {
+            return false;
+        }
+
+        $this->loadTranslationsFrom($translationsPath, $translationNamespace);
+        $this->registerThemeViewNamespace($viewNamespace, $viewsPath);
+
+        CapellCore::registerVendorAsset(new VendorAssetData(
+            type: VendorAssetEnum::TailwindImport,
+            value: $cssSource,
+            packageName: $packageName,
+            condition: $cssCondition,
+        ));
+        CapellCore::registerVendorAsset(VendorAssetData::tailwindSource('resources/views/**/*.blade.php', $packageName));
+
+        $this->registerStandardLayoutAreas();
+        $registerThemeRenderables?->__invoke();
+
+        $registry->register(definition: $definition);
+
+        return true;
+    }
+
     /**
      * Registers a theme's Blade views under both a plain view namespace and
      * an anonymous-component namespace of the same name.

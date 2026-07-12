@@ -10,6 +10,7 @@ use Capell\Frontend\Data\FrontendAssetContextData;
 use Capell\Frontend\Data\FrontendAssetRequirementData;
 use Capell\Frontend\Data\FrontendRuntimeManifestData;
 use Capell\Frontend\Enums\RenderingStrategyEnum;
+use Illuminate\Support\Facades\File;
 
 it('declares only the foundation css asset for blade only pages', function (): void {
     $requirements = resolve(FoundationThemeAssetContributor::class)->requirements(new FrontendAssetContextData(
@@ -251,6 +252,8 @@ it('emits the active theme own compiled bundle when the split flag is on', funct
         'capell-theme-foundation.tailwind.split_theme_css' => true,
         'capell-theme-foundation.tailwind.theme_css_output_directory' => 'resources/css/capell/themes',
     ]);
+    File::ensureDirectoryExists(base_path('resources/css/capell/themes'));
+    File::put(base_path('resources/css/capell/themes/showreel.css'), '/* test */');
 
     $theme = Theme::factory()->make(['key' => 'showreel']);
 
@@ -272,6 +275,8 @@ it('emits the active theme own compiled bundle when the split flag is on', funct
     /** @var FrontendAssetRequirementData $requirement */
     expect($requirement->kind)->toBe(FrontendAssetRequirementData::KIND_CSS)
         ->and($requirement->source)->toBe('resources/css/capell/themes/showreel.css');
+
+    File::delete(base_path('resources/css/capell/themes/showreel.css'));
 });
 
 it('never emits a per-theme css requirement without an active theme', function (): void {
