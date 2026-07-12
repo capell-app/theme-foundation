@@ -49,10 +49,10 @@
                     />
                 </pattern>
             </defs>
-            <rect width="640" height="360" fill="var(--theme-surface, #f8fafc)" />
+            <rect width="640" height="360" fill="var(--theme-surface, Canvas)" />
             <rect width="640" height="360" fill="url(#theme-map-grid)" class="text-slate-900" />
-            <circle cx="320" cy="180" r="20" fill="var(--theme-primary, #2563eb)" />
-            <circle cx="320" cy="180" r="8" fill="#fff" />
+            <circle cx="320" cy="180" r="20" fill="var(--theme-primary, LinkText)" />
+            <circle cx="320" cy="180" r="8" fill="Canvas" />
         </svg>
         <span class="sr-only">{{ $mapLabel }}</span>
     </a>

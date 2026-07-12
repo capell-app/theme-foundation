@@ -190,7 +190,7 @@ it('documents the stable child theme override surface', function (): void {
     }
 
     expect($provider)
-        ->toContain("includedSections: ['navigation', 'hero', 'features', 'proof', 'content-listing', 'search', 'pagination', 'form', 'cta', 'footer']")
+        ->toContain("includedSections: ['navigation', 'hero', 'features', 'proof', 'content-listing', 'search', 'pagination', 'form', 'contact-split', 'cta', 'footer']")
         ->toContain("->register('header'");
 
     expect($tokens)
