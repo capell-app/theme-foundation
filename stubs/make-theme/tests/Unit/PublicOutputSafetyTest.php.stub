@@ -1,0 +1,15 @@
+<?php
+
+declare(strict_types=1);
+
+use Capell\FoundationTheme\Testing\AssertsPublicThemeOutputSafety;
+
+uses(AssertsPublicThemeOutputSafety::class);
+
+it('keeps public Blade free of authoring or package metadata, and legacy sections free of database access', function (): void {
+    $this->assertLayoutNativeThemeOutputIsSafe(__DIR__ . '/../../resources/views', '{{ composerPackageName }}');
+});
+
+it('keeps the @php block count within the frozen baseline and static calls whitelisted', function (): void {
+    $this->assertPhpBlockPolicy(__DIR__ . '/../../resources/views', 0);
+});

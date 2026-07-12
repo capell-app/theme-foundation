@@ -1,0 +1,31 @@
+<?php
+
+declare(strict_types=1);
+
+use Capell\Core\Facades\CapellCore;
+use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
+use {{ rootNamespace }}\{{ studlyName }}ThemeServiceProvider;
+
+it('defines the {{ themeSlug }} theme contract', function (): void {
+    $definition = {{ studlyName }}ThemeServiceProvider::definition();
+
+    expect($definition->package)->toBe('{{ composerPackageName }}')
+        ->and($definition->key)->toBe({{ studlyName }}ThemeServiceProvider::THEME_KEY)
+        ->and($definition->name)->toBe('{{ displayName }}')
+        ->and($definition->extends)->toBe('default')
+        ->and($definition->runtime->value)->toBe('blade')
+        ->and($definition->presets)->toHaveCount(1);
+});
+
+it('registers {{ themeSlug }} as definition-only with no legacy renderer', function (): void {
+    CapellCore::clearPackages();
+    CapellCore::forcePackageInstalled({{ studlyName }}ThemeServiceProvider::$packageName);
+
+    $registry = new ThemeRegistry;
+    $provider = new {{ studlyName }}ThemeServiceProvider(app());
+    $provider->boot($registry);
+
+    expect($registry->has({{ studlyName }}ThemeServiceProvider::THEME_KEY))->toBeTrue();
+
+    CapellCore::clearPackages();
+});

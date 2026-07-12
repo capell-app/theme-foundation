@@ -1,0 +1,674 @@
+@import './utilities/swiper-carousel.css';
+
+@layer components {
+    @keyframes kitchenSinkFragmentShimmer {
+        0% {
+            background-position: 180% 0;
+        }
+
+        100% {
+            background-position: -180% 0;
+        }
+    }
+
+    @keyframes faqFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-4px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .faq-item.is-visible {
+        animation: faqFadeIn 0.25s ease-out;
+    }
+
+    .billing-toggle-button.is-annual .billing-toggle-dot {
+        left: 30px;
+    }
+
+    /*
+     * Wave 4c: pricing-value-spectrum range-slider thumb/track styling.
+     * The discrete-tier radio fallback (`:has(:checked)` in the Blade view)
+     * needs no CSS of its own beyond Tailwind's `has-[:checked]` utilities,
+     * so this block only styles the slider input itself.
+     */
+    .pricing-spectrum-slider {
+        accent-color: var(--theme-primary, #315f8f);
+        block-size: 0.5rem;
+        cursor: pointer;
+    }
+
+    .pricing-spectrum-tier-radio {
+        accent-color: var(--theme-primary, #315f8f);
+    }
+
+    /* Wave 4c: faq-search-discovery match highlight. */
+    .faq-search-item mark,
+    .faq-search-item [data-faq-search-question-text] mark,
+    .faq-search-item [data-faq-search-answer-text] mark {
+        background-color: rgb(252 211 77 / 55%);
+        border-radius: 0.15rem;
+        color: inherit;
+        padding-inline: 0.1rem;
+    }
+
+    .faq-search-category-tab[data-active='true'] {
+        background-color: #0f172a;
+        color: #ffffff;
+    }
+
+    .widget[class*='widget-kitchen-sink-'] {
+        --kitchen-sink-ink: #0f172a;
+        --kitchen-sink-muted: #475569;
+        --kitchen-sink-line: rgb(148 163 184 / 28%);
+        --kitchen-sink-panel: rgb(255 255 255 / 92%);
+        --kitchen-sink-panel-strong: #ffffff;
+        --kitchen-sink-accent: #0f766e;
+        --kitchen-sink-accent-2: #2563eb;
+        overflow-wrap: anywhere;
+        position: relative;
+        scroll-margin-top: calc(var(--header-height, 0px) + 1.5rem);
+    }
+
+    .widget[class*='widget-kitchen-sink-'] > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .widget[class*='widget-kitchen-sink-']:not(.capell-modern-hero-banner):not(
+            .widget-banner-image
+        )::before {
+        background-image:
+            linear-gradient(rgb(15 23 42 / 4%) 1px, transparent 1px),
+            linear-gradient(90deg, rgb(15 23 42 / 4%) 1px, transparent 1px);
+        background-size: 32px 32px;
+        content: '';
+        inset: 0;
+        opacity: 0.5;
+        pointer-events: none;
+        position: absolute;
+        z-index: 0;
+    }
+
+    .widget[class*='widget-kitchen-sink-'].bg-primary,
+    .widget[class*='widget-kitchen-sink-'].bg-secondary,
+    .widget[class*='widget-kitchen-sink-'].bg-black,
+    .widget[class*='widget-kitchen-sink-'].bg-dark-gray {
+        --kitchen-sink-ink: #f8fafc;
+        --kitchen-sink-muted: rgb(226 232 240 / 86%);
+        --kitchen-sink-line: rgb(255 255 255 / 20%);
+        --kitchen-sink-panel: rgb(15 23 42 / 34%);
+        --kitchen-sink-panel-strong: rgb(15 23 42 / 46%);
+        color: var(--kitchen-sink-ink);
+    }
+
+    .widget[class*='widget-kitchen-sink-'].bg-primary::before,
+    .widget[class*='widget-kitchen-sink-'].bg-secondary::before,
+    .widget[class*='widget-kitchen-sink-'].bg-black::before,
+    .widget[class*='widget-kitchen-sink-'].bg-dark-gray::before {
+        background-image:
+            linear-gradient(rgb(255 255 255 / 8%) 1px, transparent 1px),
+            linear-gradient(90deg, rgb(255 255 255 / 8%) 1px, transparent 1px);
+        opacity: 0.34;
+    }
+
+    .widget[class*='widget-kitchen-sink-'].bg-primary
+        :where(h1, h2, h3, h4, p, li, dt, dd, label, caption, figcaption),
+    .widget[class*='widget-kitchen-sink-'].bg-secondary
+        :where(h1, h2, h3, h4, p, li, dt, dd, label, caption, figcaption),
+    .widget[class*='widget-kitchen-sink-'].bg-black
+        :where(h1, h2, h3, h4, p, li, dt, dd, label, caption, figcaption),
+    .widget[class*='widget-kitchen-sink-'].bg-dark-gray
+        :where(h1, h2, h3, h4, p, li, dt, dd, label, caption, figcaption) {
+        color: inherit;
+    }
+
+    .widget[class*='widget-kitchen-sink-'].bg-primary
+        :where(.widget-content, .prose, .capell-standard-page-content),
+    .widget[class*='widget-kitchen-sink-'].bg-secondary
+        :where(.widget-content, .prose, .capell-standard-page-content),
+    .widget[class*='widget-kitchen-sink-'].bg-black
+        :where(.widget-content, .prose, .capell-standard-page-content),
+    .widget[class*='widget-kitchen-sink-'].bg-dark-gray
+        :where(.widget-content, .prose, .capell-standard-page-content) {
+        --tw-prose-body: var(--kitchen-sink-muted);
+        --tw-prose-headings: var(--kitchen-sink-ink);
+        --tw-prose-bold: var(--kitchen-sink-ink);
+        --tw-prose-links: #ffffff;
+        color: var(--kitchen-sink-muted);
+    }
+
+    .widget[class*='widget-kitchen-sink-'].bg-primary
+        :where(
+            .content-component,
+            .widget-content,
+            .prose,
+            .capell-standard-page-content
+        ),
+    .widget[class*='widget-kitchen-sink-'].bg-secondary
+        :where(
+            .content-component,
+            .widget-content,
+            .prose,
+            .capell-standard-page-content
+        ),
+    .widget[class*='widget-kitchen-sink-'].bg-black
+        :where(
+            .content-component,
+            .widget-content,
+            .prose,
+            .capell-standard-page-content
+        ),
+    .widget[class*='widget-kitchen-sink-'].bg-dark-gray
+        :where(
+            .content-component,
+            .widget-content,
+            .prose,
+            .capell-standard-page-content
+        ) {
+        color: var(--kitchen-sink-muted) !important;
+    }
+
+    .widget[class*='widget-kitchen-sink-'].bg-primary
+        :where(
+            .content-component,
+            .widget-content,
+            .prose,
+            .capell-standard-page-content
+        )
+        :where(h1, h2, h3, h4, h5, h6, strong, b, a),
+    .widget[class*='widget-kitchen-sink-'].bg-secondary
+        :where(
+            .content-component,
+            .widget-content,
+            .prose,
+            .capell-standard-page-content
+        )
+        :where(h1, h2, h3, h4, h5, h6, strong, b, a),
+    .widget[class*='widget-kitchen-sink-'].bg-black
+        :where(
+            .content-component,
+            .widget-content,
+            .prose,
+            .capell-standard-page-content
+        )
+        :where(h1, h2, h3, h4, h5, h6, strong, b, a),
+    .widget[class*='widget-kitchen-sink-'].bg-dark-gray
+        :where(
+            .content-component,
+            .widget-content,
+            .prose,
+            .capell-standard-page-content
+        )
+        :where(h1, h2, h3, h4, h5, h6, strong, b, a) {
+        color: var(--kitchen-sink-ink) !important;
+    }
+
+    .widget[class*='widget-kitchen-sink-'].bg-primary
+        :where(
+            .content-component,
+            .widget-content,
+            .prose,
+            .capell-standard-page-content
+        )
+        :where(p, li, dt, dd, label, caption, figcaption, small, span),
+    .widget[class*='widget-kitchen-sink-'].bg-secondary
+        :where(
+            .content-component,
+            .widget-content,
+            .prose,
+            .capell-standard-page-content
+        )
+        :where(p, li, dt, dd, label, caption, figcaption, small, span),
+    .widget[class*='widget-kitchen-sink-'].bg-black
+        :where(
+            .content-component,
+            .widget-content,
+            .prose,
+            .capell-standard-page-content
+        )
+        :where(p, li, dt, dd, label, caption, figcaption, small, span),
+    .widget[class*='widget-kitchen-sink-'].bg-dark-gray
+        :where(
+            .content-component,
+            .widget-content,
+            .prose,
+            .capell-standard-page-content
+        )
+        :where(p, li, dt, dd, label, caption, figcaption, small, span) {
+        color: var(--kitchen-sink-muted) !important;
+    }
+
+    .widget[class*='widget-kitchen-sink-'].bg-primary
+        :where(
+            .ap-card,
+            .ap-feature-item,
+            .ap-gallery-item,
+            .layout-builder-card
+        ),
+    .widget[class*='widget-kitchen-sink-'].bg-secondary
+        :where(
+            .ap-card,
+            .ap-feature-item,
+            .ap-gallery-item,
+            .layout-builder-card
+        ),
+    .widget[class*='widget-kitchen-sink-'].bg-black
+        :where(
+            .ap-card,
+            .ap-feature-item,
+            .ap-gallery-item,
+            .layout-builder-card
+        ),
+    .widget[class*='widget-kitchen-sink-'].bg-dark-gray
+        :where(
+            .ap-card,
+            .ap-feature-item,
+            .ap-gallery-item,
+            .layout-builder-card
+        ) {
+        background: rgb(255 255 255 / 94%);
+        border-color: rgb(255 255 255 / 36%);
+        color: #0f172a !important;
+    }
+
+    .widget[class*='widget-kitchen-sink-'].bg-primary
+        :where(
+            .ap-card,
+            .ap-feature-item,
+            .ap-gallery-item,
+            .layout-builder-card
+        )
+        :where(h2, h3, h4, p, span, li, dt, dd),
+    .widget[class*='widget-kitchen-sink-'].bg-secondary
+        :where(
+            .ap-card,
+            .ap-feature-item,
+            .ap-gallery-item,
+            .layout-builder-card
+        )
+        :where(h2, h3, h4, p, span, li, dt, dd),
+    .widget[class*='widget-kitchen-sink-'].bg-black
+        :where(
+            .ap-card,
+            .ap-feature-item,
+            .ap-gallery-item,
+            .layout-builder-card
+        )
+        :where(h2, h3, h4, p, span, li, dt, dd),
+    .widget[class*='widget-kitchen-sink-'].bg-dark-gray
+        :where(
+            .ap-card,
+            .ap-feature-item,
+            .ap-gallery-item,
+            .layout-builder-card
+        )
+        :where(h2, h3, h4, p, span, li, dt, dd) {
+        color: inherit !important;
+    }
+
+    .widget[class*='widget-kitchen-sink-'] .widget-content {
+        max-width: min(100%, 62rem);
+    }
+
+    .widget[class*='widget-kitchen-sink-'].widget-announcement-bar
+        .widget-content {
+        margin-inline: auto;
+    }
+
+    .widget[class*='widget-kitchen-sink-'].widget-announcement-bar .rounded-md {
+        background: var(--kitchen-sink-panel);
+        border-color: var(--kitchen-sink-line);
+        border-radius: 0.75rem;
+        box-shadow: 0 18px 48px rgb(15 23 42 / 9%);
+        padding: clamp(1rem, 2vw, 1.4rem);
+    }
+
+    .widget[class*='widget-kitchen-sink-'].widget-default,
+    .widget[class*='widget-kitchen-sink-'].widget-snippet,
+    .widget[class*='widget-kitchen-sink-'].widget-page-content {
+        text-wrap: pretty;
+    }
+
+    .widget[class*='widget-kitchen-sink-'].widget-default
+        > :where(.container, [class*='max-w']),
+    .widget[class*='widget-kitchen-sink-'].widget-snippet
+        > :where(.container, [class*='max-w']) {
+        border-radius: 0.85rem;
+        padding-block: clamp(1rem, 2vw, 1.5rem);
+    }
+
+    .widget[class*='widget-kitchen-sink-'].widget-media-carousel
+        .swiper-wrapper,
+    .widget[class*='widget-kitchen-sink-'].widget-media-carousel
+        .widget-media-item {
+        align-items: center;
+    }
+
+    .widget[class*='widget-kitchen-sink-'].widget-media-carousel
+        .swiper-slide-img {
+        border: 1px solid rgb(255 255 255 / 30%);
+        border-radius: 0.75rem;
+        box-shadow: 0 24px 70px rgb(15 23 42 / 18%);
+    }
+
+    .widget[class*='widget-kitchen-sink-'].widget-pages .widget-content {
+        margin-inline: auto;
+        text-align: center;
+    }
+
+    .widget[class*='widget-kitchen-sink-'].widget-pages
+        :where(article, .latest-articles-page-item) {
+        border-color: var(--kitchen-sink-line);
+        transition:
+            border-color 180ms ease,
+            box-shadow 180ms ease,
+            transform 180ms ease;
+    }
+
+    .widget[class*='widget-kitchen-sink-'].widget-pages
+        :where(article, .latest-articles-page-item):hover {
+        box-shadow: 0 24px 54px rgb(15 23 42 / 10%);
+        transform: translateY(-2px);
+    }
+
+    .widget[class*='widget-kitchen-sink-'].widget-accordion section,
+    .widget[class*='widget-kitchen-sink-'].widget-assets-features
+        .capell-asset-feature-item {
+        border-color: var(--kitchen-sink-line);
+        border-radius: 0.75rem;
+    }
+
+    .widget[class*='widget-kitchen-sink-'].widget-banner-image {
+        color: white;
+        min-height: clamp(18rem, 42vw, 32rem);
+    }
+
+    .widget[class*='widget-kitchen-sink-'].widget-banner-image::after {
+        background: linear-gradient(
+            90deg,
+            rgb(15 23 42 / 84%),
+            rgb(15 23 42 / 24%)
+        );
+        content: '';
+        inset: 0;
+        pointer-events: none;
+        position: absolute;
+        z-index: 0;
+    }
+
+    .widget[class*='widget-kitchen-sink-'].widget-banner-image > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .deferred-fragment {
+        background:
+            linear-gradient(
+                90deg,
+                rgb(241 245 249) 0%,
+                rgb(226 232 240) 35%,
+                rgb(248 250 252) 70%,
+                rgb(241 245 249) 100%
+            ),
+            #f8fafc;
+        background-size: 220% 100%;
+        border-block: 1px solid rgb(203 213 225 / 60%);
+        display: block;
+        min-height: clamp(8rem, 16vw, 13rem);
+        position: relative;
+    }
+
+    .deferred-fragment::before {
+        animation: kitchenSinkFragmentShimmer 1.35s ease-in-out infinite;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgb(255 255 255 / 56%),
+            transparent
+        );
+        content: '';
+        inset: 0;
+        position: absolute;
+    }
+
+    .deferred-fragment::after {
+        background:
+            linear-gradient(rgb(15 23 42 / 10%) 1px, transparent 1px),
+            linear-gradient(90deg, rgb(15 23 42 / 10%) 1px, transparent 1px);
+        background-size: 28px 28px;
+        content: '';
+        inset: 1rem;
+        opacity: 0.38;
+        position: absolute;
+    }
+
+    .capell-kitchen-sink-reference,
+    .capell-kitchen-sink-fragment,
+    .capell-kitchen-sink-livewire {
+        --kitchen-lab-ink: #0f172a;
+        --kitchen-lab-muted: #475569;
+        --kitchen-lab-line: rgb(148 163 184 / 34%);
+        --kitchen-lab-panel: rgb(255 255 255 / 92%);
+        background:
+            radial-gradient(
+                circle at 18% 8%,
+                rgb(20 184 166 / 10%),
+                transparent 34%
+            ),
+            linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        color: var(--kitchen-lab-ink);
+    }
+
+    .capell-kitchen-sink-reference > .space-y-8,
+    .capell-kitchen-sink-fragment,
+    .capell-kitchen-sink-livewire {
+        margin-inline: auto;
+        max-width: 76rem;
+    }
+
+    .capell-kitchen-sink-reference article,
+    .capell-kitchen-sink-fragment {
+        background: var(--kitchen-lab-panel);
+        border: 1px solid var(--kitchen-lab-line);
+        border-radius: 0.85rem;
+        box-shadow: 0 18px 44px rgb(15 23 42 / 5%);
+        padding: clamp(1.1rem, 2vw, 1.65rem);
+    }
+
+    .capell-kitchen-sink-reference article + article {
+        margin-top: 1rem;
+    }
+
+    .capell-kitchen-sink-reference header p:first-child,
+    .capell-kitchen-sink-fragment > p:first-child,
+    .capell-kitchen-sink-livewire p:first-child {
+        color: var(--kitchen-sink-accent);
+        font-size: 0.74rem;
+        font-weight: 900;
+        letter-spacing: 0;
+        margin: 0;
+        text-transform: uppercase;
+    }
+
+    .capell-kitchen-sink-reference h2,
+    .capell-kitchen-sink-fragment h2,
+    .capell-kitchen-sink-livewire h2 {
+        color: var(--kitchen-lab-ink);
+        font-size: 2.1rem;
+        letter-spacing: 0;
+        line-height: 1.08;
+        margin: 0;
+        text-wrap: balance;
+    }
+
+    @media (max-width: 640px) {
+        .capell-kitchen-sink-reference h2,
+        .capell-kitchen-sink-fragment h2,
+        .capell-kitchen-sink-livewire h2 {
+            font-size: 1.5rem;
+        }
+    }
+
+    .capell-kitchen-sink-reference aside {
+        background: #f8fafc;
+        border: 1px solid rgb(226 232 240);
+        border-radius: 0.75rem;
+        padding: 1rem;
+    }
+
+    .capell-kitchen-sink-reference dl {
+        margin: 0;
+    }
+
+    .capell-kitchen-sink-reference dt {
+        color: #334155;
+        font-size: 0.78rem;
+        letter-spacing: 0;
+        text-transform: uppercase;
+    }
+
+    .capell-kitchen-sink-reference dd {
+        color: var(--kitchen-lab-muted);
+        line-height: 1.6;
+        margin: 0.2rem 0 0;
+    }
+
+    .capell-kitchen-sink-reference
+        :where(button, input, table, pre, iframe, video, audio),
+    .capell-kitchen-sink-fragment :where(button, input, table, pre) {
+        border: 1px solid rgb(148 163 184 / 45%);
+        border-radius: 0.65rem;
+    }
+
+    .capell-kitchen-sink-reference :where(button),
+    .capell-kitchen-sink-fragment :where(button) {
+        background: #0f172a;
+        color: white;
+        font-weight: 800;
+        min-height: 2.5rem;
+        padding: 0.65rem 0.9rem;
+    }
+
+    .capell-kitchen-sink-reference :where(input) {
+        background: white;
+        color: #0f172a;
+        min-height: 2.6rem;
+        padding-inline: 0.75rem;
+    }
+
+    .capell-kitchen-sink-reference :where(table) {
+        border-collapse: separate;
+        border-spacing: 0;
+        overflow: hidden;
+        width: 100%;
+    }
+
+    .capell-kitchen-sink-reference :where(th, td) {
+        border-bottom: 1px solid rgb(226 232 240);
+        padding: 0.75rem;
+        text-align: start;
+    }
+
+    .capell-kitchen-sink-reference :where(pre) {
+        background: #0f172a;
+        color: #d1fae5;
+        overflow-x: auto;
+        padding: 1rem;
+    }
+
+    .capell-kitchen-sink-fragment {
+        margin-block: 1rem;
+        padding: clamp(1.25rem, 3vw, 2rem);
+    }
+
+    .capell-kitchen-sink-fragment header {
+        display: grid;
+        gap: 0.55rem;
+        margin-bottom: 1rem;
+    }
+
+    .capell-kitchen-sink-fragment dl {
+        display: grid;
+        gap: 0.65rem;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin: 0 0 1rem;
+    }
+
+    .capell-kitchen-sink-fragment dl > div {
+        background: #f8fafc;
+        border: 1px solid rgb(226 232 240);
+        border-radius: 0.65rem;
+        padding: 0.75rem;
+    }
+
+    .capell-kitchen-sink-fragment dt {
+        color: #64748b;
+        font-size: 0.7rem;
+        font-weight: 900;
+        letter-spacing: 0;
+        text-transform: uppercase;
+    }
+
+    .capell-kitchen-sink-fragment dd {
+        color: #0f172a;
+        font-weight: 850;
+        line-height: 1.3;
+        margin: 0.18rem 0 0;
+    }
+
+    .capell-kitchen-sink-fragment__content {
+        color: var(--kitchen-lab-muted);
+        line-height: 1.65;
+    }
+
+    .capell-kitchen-sink-livewire {
+        border: 1px solid var(--kitchen-lab-line);
+        border-radius: 0.95rem;
+        box-shadow: 0 24px 70px rgb(15 23 42 / 7%);
+        margin-block: clamp(1.5rem, 4vw, 3rem);
+    }
+
+    .capell-kitchen-sink-livewire article {
+        background: rgb(255 255 255 / 72%);
+        box-shadow: inset 0 1px 0 rgb(255 255 255 / 70%);
+    }
+
+    .capell-kitchen-sink-livewire button {
+        box-shadow: 0 14px 34px rgb(15 23 42 / 16%);
+        transition:
+            background-color 160ms ease,
+            box-shadow 160ms ease,
+            transform 160ms ease;
+    }
+
+    .capell-kitchen-sink-livewire button:hover {
+        box-shadow: 0 18px 40px rgb(15 23 42 / 18%);
+        transform: translateY(-1px);
+    }
+
+    @media (max-width: 700px) {
+        .widget[class*='widget-kitchen-sink-'].widget-pages .widget-content {
+            text-align: start;
+        }
+
+        .capell-kitchen-sink-reference article,
+        .capell-kitchen-sink-fragment,
+        .capell-kitchen-sink-livewire {
+            border-radius: 0.7rem;
+        }
+
+        .deferred-fragment {
+            min-height: 7rem;
+        }
+
+        .capell-kitchen-sink-fragment dl {
+            grid-template-columns: 1fr;
+        }
+    }
+}
