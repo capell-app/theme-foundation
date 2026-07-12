@@ -1,15 +1,22 @@
-<form
-    method="{{ $form->method }}"
-    action="{{ $form->action }}"
-    {{ $attributes }}
->
-    @if ($form->wired)
+@if ($form->wired)
+    <form
+        method="{{ $form->method }}"
+        action="{{ $form->action }}"
+        {{ $attributes }}
+    >
         <input
             type="hidden"
             name="source"
             value="{{ $form->source }}"
         />
-    @endif
 
-    {{ $slot }}
-</form>
+        {{ $slot }}
+    </form>
+@else
+    <div
+        data-newsletter-unavailable
+        {{ $attributes }}
+    >
+        {{ $slot }}
+    </div>
+@endif
