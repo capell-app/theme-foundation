@@ -10,6 +10,7 @@ use Capell\Frontend\Data\FrontendAssetContextData;
 use Capell\Frontend\Data\FrontendAssetRequirementData;
 use Capell\Frontend\Data\FrontendRuntimeManifestData;
 use Capell\Frontend\Enums\RenderingStrategyEnum;
+use Illuminate\Support\Facades\File;
 
 it('declares only the foundation css asset for blade only pages', function (): void {
     $requirements = resolve(FoundationThemeAssetContributor::class)->requirements(new FrontendAssetContextData(
@@ -48,6 +49,25 @@ it('keeps the generated foundation css separate from theme meta assets', functio
     expect($requirements)->toHaveCount(1)
         ->and($requirements[0]->source)->toBe('resources/css/capell/frontend.css')
         ->and($requirements[0]->buildPath)->toBe('build');
+});
+
+it('does not request a split theme css entry that has not been generated', function (): void {
+    $theme = Theme::factory()->make([
+        'key' => 'missing-theme-bundle',
+        'meta' => ['assets_path' => 'build'],
+    ]);
+
+    $requirements = resolve(FoundationThemeAssetContributor::class)->requirements(new FrontendAssetContextData(
+        page: null,
+        site: null,
+        language: null,
+        layout: null,
+        theme: $theme,
+        runtime: FrontendRuntimeManifestData::forRenderingStrategy(RenderingStrategyEnum::BladeOnly),
+    ));
+
+    expect(collect($requirements)->pluck('handle')->all())
+        ->not->toContain('theme-css:missing-theme-bundle');
 });
 
 it('allows a theme to opt out of the generated foundation frontend css', function (): void {
@@ -232,6 +252,8 @@ it('emits the active theme own compiled bundle when the split flag is on', funct
         'capell-theme-foundation.tailwind.split_theme_css' => true,
         'capell-theme-foundation.tailwind.theme_css_output_directory' => 'resources/css/capell/themes',
     ]);
+    File::ensureDirectoryExists(base_path('resources/css/capell/themes'));
+    File::put(base_path('resources/css/capell/themes/showreel.css'), '/* test */');
 
     $theme = Theme::factory()->make(['key' => 'showreel']);
 
@@ -253,6 +275,8 @@ it('emits the active theme own compiled bundle when the split flag is on', funct
     /** @var FrontendAssetRequirementData $requirement */
     expect($requirement->kind)->toBe(FrontendAssetRequirementData::KIND_CSS)
         ->and($requirement->source)->toBe('resources/css/capell/themes/showreel.css');
+
+    File::delete(base_path('resources/css/capell/themes/showreel.css'));
 });
 
 it('never emits a per-theme css requirement without an active theme', function (): void {
