@@ -214,7 +214,7 @@ HTML);
         }
 
         $type = $widget->relationLoaded('blueprint')
-            ? $widget->getRelation('type')
+            ? $widget->getRelation('blueprint')
             : (Model::getConnectionResolver() === null ? null : $widget->getRelationValue('blueprint'));
 
         if ($type instanceof Blueprint) {

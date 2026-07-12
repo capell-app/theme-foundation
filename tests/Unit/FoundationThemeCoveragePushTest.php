@@ -444,7 +444,7 @@ it('skips empty navigation and page listing widgets without public markup', func
     $hiddenType = new Blueprint;
     $hiddenType->meta = ['hidden' => true];
 
-    $page->setRelation('type', $hiddenType);
+    $page->setRelation('blueprint', $hiddenType);
     $page->setRelation('layout', $layout);
 
     resolve(FrontendState::class)

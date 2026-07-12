@@ -345,7 +345,7 @@ abstract class AbstractWidget extends Component
         }
 
         try {
-            $page = $pageClass::query()->with(['translation', 'type', 'image'])->find($this->pageId);
+            $page = $pageClass::query()->with(['translation', 'blueprint', 'image'])->find($this->pageId);
         } catch (Throwable) {
             $page = $pageClass::query()->find($this->pageId);
         }
