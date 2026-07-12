@@ -380,6 +380,14 @@ final class ValidateThemeCatalogueEntryAction
                 continue;
             }
 
+            $surfaceName = $entry['surfaceName'] ?? null;
+
+            if (is_string($surfaceName) && in_array($surfaceName, self::REQUIRED_DEMO_SURFACES, true)) {
+                $covered[$surfaceName] = $surfaceName;
+
+                continue;
+            }
+
             $baseId = (string) preg_replace('/-(?:desktop|tablet|mobile)$/', '', $entry['id']);
 
             foreach (self::REQUIRED_DEMO_SURFACES as $surface) {
