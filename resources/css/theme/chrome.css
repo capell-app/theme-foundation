@@ -211,3 +211,69 @@
         padding-block: 3.25rem;
     }
 }
+/* Shared mobile disclosure navigation for classic child themes. */
+.capell-mobile-nav {
+    display: none;
+    margin-inline-start: auto;
+    position: relative;
+}
+
+.capell-mobile-nav__toggle {
+    align-items: center;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    justify-content: center;
+    line-height: 1;
+    list-style: none;
+    min-height: 2.75rem;
+    padding: 0 1rem;
+}
+
+.capell-mobile-nav__toggle::-webkit-details-marker {
+    display: none;
+}
+
+.capell-mobile-nav__panel {
+    background: var(--theme-surface, Canvas);
+    border: 1px solid currentColor;
+    border-radius: 0.75rem;
+    box-shadow: 0 1.25rem 3rem color-mix(in srgb, #000000 18%, transparent);
+    color: var(--theme-foreground, CanvasText);
+    display: grid;
+    gap: 0.35rem;
+    inset-inline-end: 0;
+    margin-block-start: 0.75rem;
+    min-inline-size: min(18rem, calc(100vw - 2rem));
+    padding: 0.65rem;
+    position: absolute;
+    z-index: 50;
+}
+
+.capell-mobile-nav__panel a {
+    align-items: center;
+    border-radius: 0.5rem;
+    display: flex;
+    min-height: 2.75rem;
+    padding: 0.7rem 0.85rem;
+    text-decoration: none;
+}
+
+.capell-mobile-nav__cta {
+    border: 1px solid currentColor;
+    font-weight: 700;
+}
+
+@media (max-width: 767px) {
+    .capell-desktop-nav,
+    .capell-desktop-nav-action {
+        display: none !important;
+    }
+
+    .capell-mobile-nav {
+        display: block;
+    }
+}
