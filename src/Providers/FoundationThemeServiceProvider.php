@@ -24,7 +24,6 @@ use Capell\Core\Support\Packages\AbstractPackageServiceProvider;
 use Capell\Core\Support\Themes\ThemeChromeRegistry;
 use Capell\Core\ThemeStudio\Data\ThemeDefinitionData;
 use Capell\Core\ThemeStudio\Data\ThemePresetData;
-use Capell\Core\ThemeStudio\Rendering\ViewSectionRenderer;
 use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
 use Capell\FoundationTheme\Actions\ResolveFoundationThemeTokensAction;
 use Capell\FoundationTheme\Console\Commands\DemoCommand;
@@ -41,6 +40,7 @@ use Capell\FoundationTheme\Livewire\Assets\Table\PageAssets;
 use Capell\FoundationTheme\Livewire\Widget\Pages;
 use Capell\FoundationTheme\Rendering\ChromeSplitBladeThemeRenderer;
 use Capell\FoundationTheme\Rendering\VariantViewSectionRenderer;
+use Capell\FoundationTheme\Rendering\VariantViewSectionRenderer as ViewSectionRenderer;
 use Capell\FoundationTheme\Settings\FoundationThemeSettings;
 use Capell\FoundationTheme\Support\Assets\FoundationThemeAssetContributor;
 use Capell\FoundationTheme\Support\Blade\BladeDirectives;
@@ -469,6 +469,10 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
     private function registerThemeStudioDefinition(): void
     {
+        if (! interface_exists('Capell\\Core\\ThemeStudio\\Contracts\\SectionRenderer')) {
+            return;
+        }
+
         $register = function (ThemeRegistry $registry): void {
             $sectionRenderers = $this->themeStudioSectionRenderers();
 
