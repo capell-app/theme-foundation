@@ -99,9 +99,9 @@ it('registers foundation theme provider runtime services and package boot hooks'
     config([
         'capell-theme-foundation.blaze.enabled' => false,
         'capell-theme-foundation.npm_dependencies' => [
-            '' => '^1.0',
+            '' => '^0.0',
             'invalid-version' => '',
-            123 => '^1.0',
+            123 => '^0.0',
             'swiper' => '^11.0',
         ],
     ]);
