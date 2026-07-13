@@ -32,7 +32,7 @@
             <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 @foreach ($stats as $stat)
                     <x-capell-theme-foundation::display.count-up-stat
-                        :value="$stat['value'] ?? 0"
+                        :stat-value="$stat['value'] ?? 0"
                         :label="$stat['label'] ?? ''"
                         :prefix="$stat['prefix'] ?? ''"
                         :suffix="$stat['suffix'] ?? ''"

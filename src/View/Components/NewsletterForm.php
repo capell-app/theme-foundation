@@ -17,7 +17,7 @@ final class NewsletterForm extends Component
         string $fallbackAction = '#newsletter',
         string $source = 'public_newsletter',
     ) {
-        $this->form = ResolveNewsletterFormDataAction::run(
+        $this->form = app(ResolveNewsletterFormDataAction::class)->handle(
             fallbackAction: $fallbackAction,
             source: $source,
         );

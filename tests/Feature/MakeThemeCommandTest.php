@@ -45,27 +45,19 @@ it('generates a complete theme scaffold with correct manifest, namespace, and pr
 
     $packageDirectory = $this->scaffoldBasePath . '/theme-business';
 
-    $manifest = json_decode(
-        (string) file_get_contents($packageDirectory . '/capell.json'),
-        true,
-        flags: JSON_THROW_ON_ERROR,
-    );
+    $manifest = decodeThemeScaffoldJson($packageDirectory . '/capell.json');
 
     expect($manifest['themeKey'])->toBe('business')
         ->and($manifest['extends'])->toBe('default')
         ->and($manifest['kind'])->toBe('theme')
         ->and($manifest['name'])->toBe('capell-app/theme-business')
-        ->and($manifest['product']['tier'])->toBe('premium')
-        ->and($manifest['providers']['runtime'])->toContain('Capell\\ThemeBusiness\\BusinessThemeServiceProvider');
+        ->and(data_get($manifest, 'product.tier'))->toBe('premium')
+        ->and(data_get($manifest, 'providers.runtime'))->toContain('Capell\\ThemeBusiness\\BusinessThemeServiceProvider');
 
-    $composerJson = json_decode(
-        (string) file_get_contents($packageDirectory . '/composer.json'),
-        true,
-        flags: JSON_THROW_ON_ERROR,
-    );
+    $composerJson = decodeThemeScaffoldJson($packageDirectory . '/composer.json');
 
     expect($composerJson['name'])->toBe('capell-app/theme-business')
-        ->and($composerJson['autoload']['psr-4'])->toHaveKey('Capell\\ThemeBusiness\\');
+        ->and(data_get($composerJson, 'autoload.psr-4'))->toHaveKey('Capell\\ThemeBusiness\\');
 
     $serviceProviderContents = (string) file_get_contents(
         $packageDirectory . '/src/BusinessThemeServiceProvider.php',
@@ -106,13 +98,10 @@ it('generates a complete theme scaffold with correct manifest, namespace, and pr
 
     expect($demoCommandContents)->toContain("'capell:theme-business-demo");
 
-    $screenshotsManifest = json_decode(
-        (string) file_get_contents($packageDirectory . '/docs/screenshots.json'),
-        true,
-        flags: JSON_THROW_ON_ERROR,
-    );
+    $screenshotsManifest = decodeThemeScaffoldJson($packageDirectory . '/docs/screenshots.json');
 
-    $screenshotSurfaceIds = array_column($screenshotsManifest['entries'], 'id');
+    $screenshotEntries = $screenshotsManifest['entries'] ?? [];
+    $screenshotSurfaceIds = is_array($screenshotEntries) ? array_column($screenshotEntries, 'id') : [];
 
     expect($screenshotSurfaceIds)->toContain(
         'business-homepage',
@@ -169,14 +158,31 @@ it('scaffolds a free-tier theme into its own package directory without touching 
 
     GenerateThemeScaffoldAction::run($firstRequest);
 
-    $manifest = json_decode(
-        (string) file_get_contents($this->scaffoldBasePath . '/theme-docs/capell.json'),
-        true,
-        flags: JSON_THROW_ON_ERROR,
-    );
+    $manifest = decodeThemeScaffoldJson($this->scaffoldBasePath . '/theme-docs/capell.json');
 
-    expect($manifest['product']['tier'])->toBe('free')
+    expect(data_get($manifest, 'product.tier'))->toBe('free')
         ->and($manifest['themeKey'])->toBe('docs');
 
     expect($this->scaffoldBasePath . '/theme-business')->not->toBeDirectory();
 });
+
+/** @return array<string, mixed> */
+function decodeThemeScaffoldJson(string $path): array
+{
+    $contents = file_get_contents($path);
+    $decoded = is_string($contents) ? json_decode($contents, true, flags: JSON_THROW_ON_ERROR) : null;
+
+    if (! is_array($decoded)) {
+        throw new RuntimeException("Expected JSON object at {$path}.");
+    }
+
+    $map = [];
+
+    foreach ($decoded as $key => $value) {
+        if (is_string($key)) {
+            $map[$key] = $value;
+        }
+    }
+
+    return $map;
+}

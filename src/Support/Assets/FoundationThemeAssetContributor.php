@@ -86,16 +86,11 @@ final class FoundationThemeAssetContributor implements FrontendAssetContributor
 
         $directory = config('capell-theme-foundation.tailwind.theme_css_output_directory', 'resources/css/capell/themes');
         $directory = is_string($directory) && $directory !== '' ? $directory : 'resources/css/capell/themes';
-        $source = rtrim($directory, '/') . '/' . $themeKey . '.css';
-
-        if (! is_file(base_path($source))) {
-            return null;
-        }
 
         return new FrontendAssetRequirementData(
             handle: 'theme-css:' . $themeKey,
             kind: FrontendAssetRequirementData::KIND_CSS,
-            source: $source,
+            source: rtrim($directory, '/') . '/' . $themeKey . '.css',
             buildPath: $this->frontendCssBuildPath($context),
         );
     }

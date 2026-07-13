@@ -22,8 +22,7 @@
             "waitFor": "#main",
             "colorSchemes": ["light"],
             "viewport": "desktop",
-            "fullPage": true,
-            "surfaceName": "homepage"
+            "fullPage": true
         },
         {
             "id": "foundation-homepage-tablet",
@@ -42,8 +41,7 @@
             "waitFor": "#main",
             "colorSchemes": ["light"],
             "viewport": "tablet",
-            "fullPage": true,
-            "surfaceName": "homepage"
+            "fullPage": true
         },
         {
             "id": "foundation-homepage-mobile",
@@ -62,8 +60,7 @@
             "waitFor": "#main",
             "colorSchemes": ["light"],
             "viewport": "mobile",
-            "fullPage": true,
-            "surfaceName": "homepage"
+            "fullPage": true
         },
         {
             "id": "foundation-directory",
@@ -310,8 +307,7 @@
             "waitFor": "#main",
             "colorSchemes": ["light"],
             "viewport": "desktop",
-            "fullPage": true,
-            "surfaceName": "not-found"
+            "fullPage": true
         },
         {
             "id": "foundation-not-found-tablet",
@@ -330,8 +326,7 @@
             "waitFor": "#main",
             "colorSchemes": ["light"],
             "viewport": "tablet",
-            "fullPage": true,
-            "surfaceName": "not-found"
+            "fullPage": true
         },
         {
             "id": "foundation-not-found-mobile",
@@ -350,8 +345,7 @@
             "waitFor": "#main",
             "colorSchemes": ["light"],
             "viewport": "mobile",
-            "fullPage": true,
-            "surfaceName": "not-found"
+            "fullPage": true
         },
         {
             "id": "foundation-cta",
@@ -370,8 +364,7 @@
             "waitFor": "#main",
             "colorSchemes": ["light"],
             "viewport": "desktop",
-            "fullPage": true,
-            "surfaceName": "cta"
+            "fullPage": true
         },
         {
             "id": "foundation-cta-tablet",
@@ -390,8 +383,7 @@
             "waitFor": "#main",
             "colorSchemes": ["light"],
             "viewport": "tablet",
-            "fullPage": true,
-            "surfaceName": "cta"
+            "fullPage": true
         },
         {
             "id": "foundation-cta-mobile",
@@ -410,8 +402,7 @@
             "waitFor": "#main",
             "colorSchemes": ["light"],
             "viewport": "mobile",
-            "fullPage": true,
-            "surfaceName": "cta"
+            "fullPage": true
         }
     ]
 }

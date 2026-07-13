@@ -338,7 +338,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
             }
         }
 
-        return array_values($missing);
+        return $missing;
     }
 
     /**
@@ -379,7 +379,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
             }
         }
 
-        return array_values($missing);
+        return $missing;
     }
 
     /**
@@ -412,7 +412,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
             }
         }
 
-        return array_values($missing);
+        return $missing;
     }
 
     public function isThemeStudioDefinitionRegistered(): bool

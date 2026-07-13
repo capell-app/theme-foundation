@@ -16,7 +16,7 @@ it('reuses an authored composition for an explicitly named capture surface', fun
         renderData: ['summary' => 'Original summary', 'sections' => [['type' => 'listing']]],
         type: PageTypeEnum::Default,
         layout: LayoutEnum::Results,
-        containers: [['key' => 'main']],
+        containers: ['main' => ['key' => 'main']],
         widgets: [['method' => 'pageContent']],
     );
 

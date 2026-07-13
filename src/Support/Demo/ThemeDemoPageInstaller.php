@@ -331,7 +331,7 @@ final class ThemeDemoPageInstaller
         $contactSplit = [
             'type' => 'contact-split',
             'heading' => is_string(data_get($formSection, 'heading')) ? data_get($formSection, 'heading') : 'Start the right conversation',
-            'summary' => is_string(data_get($formSection, 'summary')) ? data_get($formSection, 'summary') : (string) ($contactForm['summary'] ?? ''),
+            'summary' => is_string(data_get($formSection, 'summary')) ? data_get($formSection, 'summary') : $this->stringValue($contactForm['summary'] ?? null),
             'form_handle' => data_get($formSection, 'form_handle'),
             'form_instance_id' => data_get($formSection, 'form_instance_id', $contactForm['id'] ?? 'theme-demo-contact-form'),
             'fallback_message' => data_get($formSection, 'fallback_message'),
@@ -420,6 +420,11 @@ final class ThemeDemoPageInstaller
     {
         $key = $this->definitionLayoutKey($site, $themeKey, $definition);
         $baseLayout = Layout::query()->firstWhere('key', $definition->layout->value);
+        $baseLayoutGroup = $baseLayout instanceof Layout ? $baseLayout->group : null;
+        $baseLayoutMeta = $baseLayout instanceof Layout && is_array($baseLayout->meta) ? $baseLayout->meta : [];
+        $baseLayoutAdmin = $baseLayout instanceof Layout && is_array($baseLayout->admin) ? $baseLayout->admin : [];
+        $baseLayoutOrder = $baseLayout instanceof Layout ? $baseLayout->order : null;
+        $themeId = $site->getAttribute('theme_id');
 
         /** @var Layout $layout */
         $layout = Layout::query()->updateOrCreate(
@@ -427,18 +432,18 @@ final class ThemeDemoPageInstaller
             [
                 'name' => sprintf('%s - %s', $definition->title, Str::headline($definition->surface)),
                 'site_id' => $site->getKey(),
-                'theme_id' => $site->theme_id,
-                'group' => $baseLayout?->group ?? $definition->layout->value,
+                'theme_id' => is_int($themeId) ? $themeId : null,
+                'group' => $baseLayoutGroup ?? $definition->layout->value,
                 'meta' => [
-                    ...(is_array($baseLayout?->meta) ? $baseLayout->meta : []),
+                    ...$baseLayoutMeta,
                     'theme_demo' => [
                         'theme_key' => $themeKey,
                         'surface' => $definition->surface,
                         'base_layout' => $definition->layout->value,
                     ],
                 ],
-                'admin' => is_array($baseLayout?->admin) ? $baseLayout->admin : [],
-                'order' => $baseLayout?->order ?? 100,
+                'admin' => $baseLayoutAdmin,
+                'order' => $baseLayoutOrder ?? 100,
                 'default' => false,
                 'status' => true,
             ],
@@ -449,13 +454,20 @@ final class ThemeDemoPageInstaller
 
     private function definitionLayoutKey(Site $site, string $themeKey, ThemeDemoPageDefinition $definition): string
     {
+        $siteKey = $site->getKey();
+
         return Str::slug(sprintf(
             'theme-demo-%s-%s-%s-%s',
             $themeKey,
-            $site->getKey(),
+            is_int($siteKey) || is_string($siteKey) ? $siteKey : '',
             $definition->layout->value,
             $definition->surface,
         ));
+    }
+
+    private function stringValue(mixed $value): string
+    {
+        return is_string($value) ? $value : '';
     }
 
     private function updateExistingPageLayout(Site $site, ThemeDemoPageDefinition $definition, ?Layout $layout = null): void

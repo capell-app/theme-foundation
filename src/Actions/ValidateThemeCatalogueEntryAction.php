@@ -117,7 +117,8 @@ final class ValidateThemeCatalogueEntryAction
      */
     private function integrationViolations(string $themeDirectory, array $manifest, string $themeKey): array
     {
-        $supports = $manifest['dependencies']['supports'] ?? [];
+        $dependencies = $manifest['dependencies'] ?? null;
+        $supports = is_array($dependencies) ? ($dependencies['supports'] ?? []) : [];
 
         if (! is_array($supports)) {
             return ["{$themeKey}: dependencies.supports must be an array."];
@@ -268,6 +269,7 @@ final class ValidateThemeCatalogueEntryAction
     }
 
     /**
+     * @param  array<string, mixed>  $manifest
      * @return list<string>
      */
     private function screenshotManifestViolations(
@@ -317,7 +319,8 @@ final class ValidateThemeCatalogueEntryAction
         array $manifest,
         array $entries,
     ): array {
-        $promotedScreenshots = $manifest['marketplace']['screenshots'] ?? [];
+        $marketplace = $manifest['marketplace'] ?? null;
+        $promotedScreenshots = is_array($marketplace) ? ($marketplace['screenshots'] ?? []) : [];
 
         if (! is_array($promotedScreenshots)) {
             return [];
@@ -377,14 +380,6 @@ final class ValidateThemeCatalogueEntryAction
 
         foreach ($entries as $entry) {
             if (! is_array($entry) || ! is_string($entry['id'] ?? null)) {
-                continue;
-            }
-
-            $surfaceName = $entry['surfaceName'] ?? null;
-
-            if (is_string($surfaceName) && in_array($surfaceName, self::REQUIRED_DEMO_SURFACES, true)) {
-                $covered[$surfaceName] = $surfaceName;
-
                 continue;
             }
 

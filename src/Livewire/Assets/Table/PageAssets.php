@@ -67,14 +67,14 @@ class PageAssets extends AbstractAssets implements HasPageResource
 
         return $model::with([
             'translations.language',
-            'ancestors.type',
+            'ancestors.blueprint',
             'creator',
             'layout',
             'image',
             'media',
             'editor',
             'site.siteDomains',
-            'type',
+            'blueprint',
         ])
             ->when(
                 is_numeric($pageId),

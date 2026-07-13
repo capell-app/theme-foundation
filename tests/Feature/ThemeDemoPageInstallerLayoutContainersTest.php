@@ -241,19 +241,19 @@ it('seeds layout builder containers and widgets from a demo page definition', fu
     $page = Page::query()->where('name', 'Layout Containers Demo Home')->firstOrFail();
     $layout = $page->layout;
 
-    expect(Widget::query()->where('key', 'page-content')->exists())->toBeTrue();
-    expect($layout)->not->toBeNull()
-        ->and($layout?->key)->toContain('homepage');
+    throw_unless($layout instanceof Layout, RuntimeException::class, 'Expected the demo page to have a layout.');
 
-    $mainContainers = ResolveLayoutAreaContainersAction::run($layout->containers, LayoutAreaRegistry::MAIN);
+    expect(Widget::query()->where('key', 'page-content')->exists())->toBeTrue();
+    expect($layout->key)->toContain('homepage');
+
+    $mainContainers = app(ResolveLayoutAreaContainersAction::class)->handle($layout->containers, LayoutAreaRegistry::MAIN);
 
     expect($mainContainers)->toHaveKey('main')
         ->and($mainContainers['main']['widgets'])->toBe([
             ['widget_key' => 'page-content'],
         ]);
 
-    expect($page)->not->toBeNull()
-        ->and($page->meta['theme_demo']['render_data'])->not->toHaveKey('sections');
+    expect(data_get($page->meta, 'theme_demo.render_data'))->not->toHaveKey('sections');
 });
 
 it('does not clobber an existing layout with containers unless forced', function (): void {
@@ -359,7 +359,8 @@ it('adds a search recovery section to empty demo pages when one is omitted', fun
     );
 
     $page = Page::query()->where('name', 'Layout Containers Demo Empty Search Empty')->firstOrFail();
-    $sectionTypes = array_column(data_get($page->meta, 'theme_demo.render_data.sections', []), 'type');
+    $sections = data_get($page->meta, 'theme_demo.render_data.sections', []);
+    $sectionTypes = is_array($sections) ? array_column($sections, 'type') : [];
 
     expect($sectionTypes)->toBe(['hero', 'search', 'cta'])
         ->and(data_get($page->meta, 'theme_demo.render_data.sections.1.query'))->toBe('no matching results')

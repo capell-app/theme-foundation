@@ -8,6 +8,7 @@ use FilesystemIterator;
 use Lorisleiva\Actions\Concerns\AsObject;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use SplFileInfo;
 
 /**
  * Proves that a theme's optional-package claim reaches a real public or
@@ -51,6 +52,10 @@ final class HasThemeIntegrationEvidenceAction
             );
 
             foreach ($files as $file) {
+                if (! $file instanceof SplFileInfo) {
+                    continue;
+                }
+
                 if (! $file->isFile() || ! in_array($file->getExtension(), ['php'], true)) {
                     continue;
                 }

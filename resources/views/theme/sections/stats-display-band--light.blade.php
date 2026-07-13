@@ -29,7 +29,7 @@
             <div class="flex flex-wrap justify-center gap-8">
                 @foreach ($stats as $stat)
                     <x-capell-theme-foundation::display.count-up-stat
-                        :value="$stat['value'] ?? 0"
+                        :stat-value="$stat['value'] ?? 0"
                         :label="$stat['label'] ?? ''"
                         :prefix="$stat['prefix'] ?? ''"
                         :suffix="$stat['suffix'] ?? ''"

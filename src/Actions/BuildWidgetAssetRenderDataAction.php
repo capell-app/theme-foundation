@@ -25,12 +25,12 @@ final class BuildWidgetAssetRenderDataAction
     {
         $asset = $this->loadedRelation($widgetAsset, 'asset');
         $translation = $asset instanceof Model ? $this->loadedRelation($asset, 'translation') : null;
-        $type = $asset instanceof Model ? $this->loadedRelation($asset, 'type') : null;
+        $blueprint = $asset instanceof Model ? $this->loadedRelation($asset, 'blueprint') : null;
         $meta = is_array(data_get($asset, 'meta')) ? data_get($asset, 'meta') : [];
         $title = $this->stringValue($translation, 'title');
         $placementTitle = $this->metaString($widgetAsset, 'title') ?? $this->metaString($widgetAsset, 'caption');
         $placementContent = $this->metaString($widgetAsset, 'content');
-        $contentStructure = data_get($type, 'content_structure');
+        $contentStructure = data_get($blueprint, 'content_structure');
 
         return new WidgetAssetRenderData(
             asset: $asset,
@@ -47,7 +47,7 @@ final class BuildWidgetAssetRenderDataAction
             cropPreset: $this->metaString($asset, 'crop_preset'),
             headingSize: $this->metaString($asset, 'heading_size') ?? 'h3',
             headingWeight: $this->metaString($asset, 'heading_weight') ?? 'medium',
-            hasTranslations: CapellCore::getAsset($widgetAsset->asset_type)->hasTranslations,
+            hasTranslations: CapellCore::getAsset($this->assetRegistryName($widgetAsset->asset_type))->hasTranslations,
             icon: $this->metaString($asset, 'icon'),
             linkText: $this->stringValue($translation, 'link_text'),
             linkUrl: $this->linkedPageUrl($widgetAsset, $asset),
@@ -56,9 +56,21 @@ final class BuildWidgetAssetRenderDataAction
             social: $this->metaArray($asset, 'social'),
             status: $this->metaString($asset, 'status'),
             tags: $this->metaArray($asset, 'tags'),
-            textAlign: $this->metaString($asset, 'align') ?? $this->metaString($type, 'align'),
+            textAlign: $this->metaString($asset, 'align') ?? $this->metaString($blueprint, 'align'),
             title: $placementTitle ?? $title,
         );
+    }
+
+    private function assetRegistryName(string $assetType): string
+    {
+        if (! class_exists($assetType) || ! is_subclass_of($assetType, Model::class)) {
+            return $assetType;
+        }
+
+        /** @var class-string<Model> $assetModelClass */
+        $assetModelClass = $assetType;
+
+        return (new $assetModelClass)->getMorphClass();
     }
 
     private function image(WidgetAsset $widgetAsset, mixed $asset): ?ImageSourceData
