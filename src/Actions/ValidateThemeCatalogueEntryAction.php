@@ -117,7 +117,8 @@ final class ValidateThemeCatalogueEntryAction
      */
     private function integrationViolations(string $themeDirectory, array $manifest, string $themeKey): array
     {
-        $supports = $manifest['dependencies']['supports'] ?? [];
+        $dependencies = $manifest['dependencies'] ?? null;
+        $supports = is_array($dependencies) ? ($dependencies['supports'] ?? []) : [];
 
         if (! is_array($supports)) {
             return ["{$themeKey}: dependencies.supports must be an array."];
@@ -268,6 +269,7 @@ final class ValidateThemeCatalogueEntryAction
     }
 
     /**
+     * @param  array<string, mixed>  $manifest
      * @return list<string>
      */
     private function screenshotManifestViolations(
@@ -317,7 +319,8 @@ final class ValidateThemeCatalogueEntryAction
         array $manifest,
         array $entries,
     ): array {
-        $promotedScreenshots = $manifest['marketplace']['screenshots'] ?? [];
+        $marketplace = $manifest['marketplace'] ?? null;
+        $promotedScreenshots = is_array($marketplace) ? ($marketplace['screenshots'] ?? []) : [];
 
         if (! is_array($promotedScreenshots)) {
             return [];

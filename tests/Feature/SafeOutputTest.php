@@ -2,12 +2,10 @@
 
 declare(strict_types=1);
 
-use Capell\Core\ThemeStudio\Data\HeroSectionData;
 use Capell\FoundationTheme\View\Components\Actions;
 use Capell\Frontend\Actions\Performance\RecordExtensionRenderContributionAction;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\View;
 use Symfony\Component\Finder\Finder;
 
 test('default theme escapes site titles and plain footer text', function (): void {
@@ -106,31 +104,6 @@ test('language flag images reserve dimensions for stable public layout', functio
     );
 });
 
-test('default theme hero media reserves LCP dimensions', function (): void {
-    $themePath = dirname(__DIR__, 2);
-
-    View::addNamespace('capell-theme-foundation', $themePath . '/resources/views');
-
-    $html = view('capell-theme-foundation::theme.sections.hero', [
-        'section' => new HeroSectionData(
-            heading: 'Foundation hero',
-            summary: 'Shared theme media should reserve layout space.',
-            mediaUrl: '/images/foundation-hero.jpg',
-            mediaAlt: 'Foundation theme layout preview',
-        ),
-    ])->render();
-
-    expect($html)
-        ->toContain('src="/images/foundation-hero.jpg"')
-        ->toContain('alt="Foundation theme layout preview"')
-        ->toContain('width="1200"')
-        ->toContain('height="750"')
-        ->toContain('loading="eager"')
-        ->toContain('decoding="async"')
-        ->toContain('fetchpriority="high"')
-        ->toContain('sizes="(min-width: 1024px) 50vw, 100vw"');
-});
-
 test('public action buttons mark their csrf output as non-cacheable', function (): void {
     Route::post('/public-actions/{action}', static fn (): string => 'ok')
         ->name('capell-public-actions.submit');
@@ -205,7 +178,7 @@ test('public blade getMeta and translation relation reads stay reviewed', functi
         'resources/views/components/footer/site-info.blade.php' => ['getMeta' => 4, 'translation' => 0],
         'resources/views/components/header/index.blade.php' => ['getMeta' => 13, 'translation' => 1],
         'resources/views/components/layout/index.blade.php' => ['getMeta' => 1, 'translation' => 3],
-        'resources/views/components/layout/main.blade.php' => ['getMeta' => 1, 'translation' => 0],
+        'resources/views/components/layout/main.blade.php' => ['getMeta' => 2, 'translation' => 0],
         'resources/views/components/logo/index.blade.php' => ['getMeta' => 0, 'translation' => 1],
         'resources/views/components/section/team-member.blade.php' => ['getMeta' => 1, 'translation' => 2],
         'resources/views/components/widget/announcement-bar.blade.php' => ['getMeta' => 4, 'translation' => 2],

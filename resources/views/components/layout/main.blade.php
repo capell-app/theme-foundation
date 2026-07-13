@@ -1,10 +1,22 @@
 @php
     use Capell\Core\Contracts\Pageable;
+    use Capell\FoundationTheme\Actions\BuildPageContentRenderDataAction;
     use Capell\FoundationTheme\Actions\ResolveSafeCssColorTokenAction;
     use Capell\Frontend\Data\MainContentRenderHookData;
     use Capell\Frontend\Enums\RenderHookLocation;
+    use Capell\Frontend\Facades\Frontend;
     use Capell\Frontend\Support\Render\RenderHookRegistry;
 
+    $layoutNeighborLinks ??= null;
+    $themeModel ??= Frontend::theme();
+    $previousPage ??= $layoutNeighborLinks?->previousPage;
+    $nextPage ??= $layoutNeighborLinks?->nextPage;
+    $finalCta ??= $page->getMeta('final_cta');
+    $pageContentRenderData ??= BuildPageContentRenderDataAction::run(
+        page: $page,
+        pageContents: ['title', 'content'],
+        showPageTitle: true,
+    );
     $themeData = is_array($theme) ? $theme : [];
 
     $mainContentHookData = new MainContentRenderHookData(

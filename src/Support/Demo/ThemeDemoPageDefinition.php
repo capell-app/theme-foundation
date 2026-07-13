@@ -33,6 +33,53 @@ final class ThemeDemoPageDefinition
     }
 
     /**
+     * @return list<array{widget_key: string, occurrence: int}>
+     */
+    public function mainContainerWidgets(): array
+    {
+        $widgets = $this->containers['main']['widgets'] ?? null;
+
+        if (! is_array($widgets)) {
+            return [];
+        }
+
+        $normalized = [];
+
+        foreach ($widgets as $widget) {
+            if (! is_array($widget)) {
+                continue;
+            }
+
+            $widgetKey = $widget['widget_key'] ?? null;
+            $occurrence = $widget['occurrence'] ?? null;
+
+            if (is_string($widgetKey) && is_int($occurrence)) {
+                $normalized[] = ['widget_key' => $widgetKey, 'occurrence' => $occurrence];
+            }
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function bespokeWidgetComponentKeys(): array
+    {
+        $componentKeys = [];
+
+        foreach (array_slice($this->widgets ?? [], 1) as $widget) {
+            $componentKey = $widget['args'][2] ?? null;
+
+            if (is_string($componentKey)) {
+                $componentKeys[] = $componentKey;
+            }
+        }
+
+        return $componentKeys;
+    }
+
+    /**
      * Reuse an authored demo composition for an additional, explicitly named
      * capture surface while preserving its layout and widget boundaries.
      *

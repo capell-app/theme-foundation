@@ -221,7 +221,9 @@ it('scans blade views nested more than two directories deep', function (): void 
     file_put_contents($nestedDirectory . '/unsafe.blade.php', '<div data-model="should-be-detected"></div>');
 
     try {
-        expect(fn (): mixed => $this->assertThemeOutputMetadataIsSafe($fixtureDirectory, 'fixture-package'))
+        expect(function () use ($fixtureDirectory): void {
+            $this->assertThemeOutputMetadataIsSafe($fixtureDirectory, 'fixture-package');
+        })
             ->toThrow(ExpectationFailedException::class, 'data-model');
     } finally {
         unlink($nestedDirectory . '/unsafe.blade.php');

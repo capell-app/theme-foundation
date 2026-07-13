@@ -1,6 +1,6 @@
 @props ([
-    'value',
-    'label',
+    'statValue' => null,
+    'label' => null,
     'duration' => 1200,
     'locale' => null,
     'numberStyle' => 'decimal',
@@ -11,10 +11,13 @@
 ])
 
 @php
+    $resolvedValue = $statValue ?? $attributes->get('value', 0);
+    $resolvedLabel = $label ?? $attributes->get('label', '');
+    $attributes = $attributes->except(['value', 'label']);
     $decimalPlaces = max(0, (int) $decimals);
-    $numericValue = is_numeric($value) ? (float) $value : null;
+    $numericValue = is_numeric($resolvedValue) ? (float) $resolvedValue : null;
     $displayValue = $numericValue === null
-        ? (string) $value
+        ? (string) $resolvedValue
         : number_format($numericValue, $decimalPlaces);
 @endphp
 
@@ -32,7 +35,7 @@
     <span
         class="text-4xl font-bold"
         style="color: var(--foundation-body-fg)"
-        data-count-up="{{ $value }}"
+        data-count-up="{{ $resolvedValue }}"
         data-count-up-duration="{{ $duration }}"
         @if ($locale) data-count-up-locale="{{ $locale }}" @endif
         data-count-up-style="{{ $numberStyle }}"
@@ -47,6 +50,6 @@
         class="mt-2 text-sm"
         style="color: var(--foundation-border-strong)"
     >
-        {{ $label }}
+        {{ $resolvedLabel }}
     </span>
 </div>

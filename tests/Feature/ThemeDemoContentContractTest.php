@@ -190,6 +190,8 @@ it('priority themes ship a populated form-builder contact section', function (st
         fn (mixed $section): bool => is_array($section) && ($section['type'] ?? null) === 'form',
     );
 
+    throw_unless(is_array($formSection), RuntimeException::class, "Theme [{$slug}] form section must be an array.");
+
     expect($formSection)
         ->toBeArray()
         ->and($formSection['form_handle'] ?? null)->toBeString()->not->toBeEmpty()

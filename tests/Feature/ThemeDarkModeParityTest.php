@@ -172,6 +172,10 @@ function darkModeParityFleetBladeFiles(): array
     $iterator = new RecursiveIteratorIterator($directoryIterator);
 
     foreach ($iterator as $fileInfo) {
+        if (! $fileInfo instanceof SplFileInfo) {
+            continue;
+        }
+
         $path = $fileInfo->getPathname();
 
         if (! str_contains($path, '/theme-') || ! str_contains($path, '/resources/views/') || ! str_ends_with($path, '.blade.php')) {

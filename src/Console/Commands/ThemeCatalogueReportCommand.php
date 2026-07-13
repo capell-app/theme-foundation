@@ -24,7 +24,7 @@ class ThemeCatalogueReportCommand extends Command
     /**
      * Per-theme CSS line budget — kept in step with ThemeCssIsolationTest.
      */
-    private const CSS_LINE_BUDGET = 1800;
+    private const int CSS_LINE_BUDGET = 1800;
 
     protected $signature = 'capell:theme-catalogue-report {--write : Write the scoreboard to docs/theme-catalogue-report.md instead of printing it}';
 
@@ -79,7 +79,7 @@ class ThemeCatalogueReportCommand extends Command
     }
 
     /**
-     * @return array<int, array<string, mixed>>
+     * @return list<array{slug: string, cssLines: int, sections: int, reducedMotion: bool, dark: bool, print: bool, forcedColors: bool, contrast: bool, containerQueries: bool, viewTransitions: bool}>
      */
     private function collectThemeMetrics(string $packagesRoot): array
     {
@@ -132,8 +132,8 @@ class ThemeCatalogueReportCommand extends Command
      * Compares measured reality against docs/themes.json and returns a list of
      * human-readable drift notes (empty when the catalogue matches source).
      *
-     * @param  array<int, array<string, mixed>>  $metrics
-     * @return array<int, string>
+     * @param  list<array{slug: string, cssLines: int, sections: int, reducedMotion: bool, dark: bool, print: bool, forcedColors: bool, contrast: bool, containerQueries: bool, viewTransitions: bool}>  $metrics
+     * @return list<string>
      */
     private function catalogueDrift(string $packagesRoot, array $metrics): array
     {
@@ -160,7 +160,7 @@ class ThemeCatalogueReportCommand extends Command
         $drift = [];
 
         foreach ($metrics as $theme) {
-            $slug = (string) $theme['slug'];
+            $slug = $theme['slug'];
 
             if (! isset($cataloguedKeys[$slug])) {
                 $drift[] = sprintf('Theme "%s" has source but no docs/themes.json entry.', $slug);
@@ -175,8 +175,8 @@ class ThemeCatalogueReportCommand extends Command
     }
 
     /**
-     * @param  array<int, array<string, mixed>>  $metrics
-     * @param  array<int, string>  $catalogueDrift
+     * @param  list<array{slug: string, cssLines: int, sections: int, reducedMotion: bool, dark: bool, print: bool, forcedColors: bool, contrast: bool, containerQueries: bool, viewTransitions: bool}>  $metrics
+     * @param  list<string>  $catalogueDrift
      */
     private function renderReport(array $metrics, array $catalogueDrift): string
     {

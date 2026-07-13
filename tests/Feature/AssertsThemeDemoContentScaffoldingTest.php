@@ -64,7 +64,9 @@ it('fails the surface-coverage assertion when a required surface is missing', fu
         }
     };
 
-    expect(fn (): mixed => $this->assertAllDemoSurfacesArePresent($incompleteProvider, 'incomplete-theme', 'Incomplete Theme'))
+    expect(function () use ($incompleteProvider): void {
+        $this->assertAllDemoSurfacesArePresent($incompleteProvider, 'incomplete-theme', 'Incomplete Theme');
+    })
         ->toThrow(Exception::class);
 });
 
@@ -77,6 +79,8 @@ it('fails the render-without-throwing assertion when no definitions are returned
         }
     };
 
-    expect(fn (): mixed => $this->assertThemeDemoContentRendersWithoutThrowing($emptyProvider, 'empty-theme', 'Empty Theme'))
+    expect(function () use ($emptyProvider): void {
+        $this->assertThemeDemoContentRendersWithoutThrowing($emptyProvider, 'empty-theme', 'Empty Theme');
+    })
         ->toThrow(Exception::class);
 });

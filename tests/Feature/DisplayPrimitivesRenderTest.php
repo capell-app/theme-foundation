@@ -2,7 +2,31 @@
 
 declare(strict_types=1);
 
-use Illuminate\Support\Facades\Blade;
+use Illuminate\View\ComponentAttributeBag;
+use Illuminate\View\ComponentSlot;
+use Livewire\Blaze\Blaze;
+
+/**
+ * @param  view-string  $view
+ * @param  array<string, mixed>  $data
+ */
+function renderFoundationPrimitive(string $view, array $data = [], string $slot = ''): string
+{
+    $wasBlazeEnabled = Blaze::isEnabled();
+    Blaze::disable();
+
+    try {
+        return view($view, [
+            ...$data,
+            'attributes' => new ComponentAttributeBag,
+            'slot' => new ComponentSlot($slot),
+        ])->render();
+    } finally {
+        if ($wasBlazeEnabled) {
+            Blaze::enable();
+        }
+    }
+}
 
 /*
 |--------------------------------------------------------------------------
@@ -15,7 +39,7 @@ use Illuminate\Support\Facades\Blade;
 | the view resolves and renders to a non-empty string containing an
 | expected fragment, proving the prop contract works end to end.
 |
-| Rendered via Blade::render() with the compiled `<x-...>` tag syntax
+| Rendered via renderFoundationPrimitive() with the compiled `<x-...>` tag syntax
 | (rather than a bare view() call) because these are `@props`-based
 | anonymous components: `$attributes` and prop/slot binding are only
 | populated by Blade's component-tag compilation step, not by resolving
@@ -23,8 +47,8 @@ use Illuminate\Support\Facades\Blade;
 */
 
 it('renders art-directed-picture without throwing', function (): void {
-    $html = Blade::render(
-        '<x-capell-theme-foundation::display.art-directed-picture :alt="$alt" :aspect-ratio="$aspectRatio" :focal-x="$focalX" :focal-y="$focalY" :sources="$sources" :src="$src" />',
+    $html = renderFoundationPrimitive(
+        'capell-theme-foundation::components.display.art-directed-picture',
         [
             'alt' => 'A mountain at dusk',
             'aspectRatio' => '16/9',
@@ -44,8 +68,8 @@ it('renders art-directed-picture without throwing', function (): void {
 });
 
 it('renders hover-video-poster without throwing', function (): void {
-    $html = Blade::render(
-        '<x-capell-theme-foundation::display.hover-video-poster :alt="$alt" :poster="$poster" :video-src="$videoSrc" />',
+    $html = renderFoundationPrimitive(
+        'capell-theme-foundation::components.display.hover-video-poster',
         [
             'alt' => 'Studio walkthrough',
             'poster' => '/images/studio-poster.jpg',
@@ -60,8 +84,10 @@ it('renders hover-video-poster without throwing', function (): void {
 });
 
 it('renders card-frame-wrapper without throwing', function (): void {
-    $html = Blade::render(
-        '<x-capell-theme-foundation::display.card-frame-wrapper hover-effect="lift" variant="elevated">Card body content</x-capell-theme-foundation::display.card-frame-wrapper>',
+    $html = renderFoundationPrimitive(
+        'capell-theme-foundation::components.display.card-frame-wrapper',
+        ['hoverEffect' => 'lift', 'variant' => 'elevated'],
+        'Card body content',
     );
 
     expect($html)
@@ -71,8 +97,8 @@ it('renders card-frame-wrapper without throwing', function (): void {
 });
 
 it('renders responsive-table-to-cards without throwing', function (): void {
-    $html = Blade::render(
-        '<x-capell-theme-foundation::display.responsive-table-to-cards :headers="$headers" :rows="$rows" />',
+    $html = renderFoundationPrimitive(
+        'capell-theme-foundation::components.display.responsive-table-to-cards',
         [
             'headers' => ['Name', 'Role'],
             'rows' => [
@@ -89,11 +115,12 @@ it('renders responsive-table-to-cards without throwing', function (): void {
 });
 
 it('renders count-up-stat without throwing', function (): void {
-    $html = Blade::render(
-        '<x-capell-theme-foundation::display.count-up-stat :value="$value" :label="$label" suffix="+" />',
+    $html = renderFoundationPrimitive(
+        'capell-theme-foundation::components.display.count-up-stat',
         [
             'label' => 'Happy customers',
-            'value' => 4200,
+            'statValue' => 4200,
+            'suffix' => '+',
         ],
     );
 
@@ -106,8 +133,8 @@ it('renders count-up-stat without throwing', function (): void {
 });
 
 it('renders byline-with-metadata without throwing', function (): void {
-    $html = Blade::render(
-        '<x-capell-theme-foundation::display.byline-with-metadata :author-name="$authorName" :date="$date" :read-time="$readTime" />',
+    $html = renderFoundationPrimitive(
+        'capell-theme-foundation::components.display.byline-with-metadata',
         [
             'authorName' => 'Jamie Rivers',
             'date' => '3 July 2026',
@@ -122,8 +149,8 @@ it('renders byline-with-metadata without throwing', function (): void {
 });
 
 it('renders timestamp-metadata-block without throwing', function (): void {
-    $html = Blade::render(
-        '<x-capell-theme-foundation::display.timestamp-metadata-block :datetime="$datetime" :label="$label" />',
+    $html = renderFoundationPrimitive(
+        'capell-theme-foundation::components.display.timestamp-metadata-block',
         [
             'datetime' => '2026-07-03T09:00:00+00:00',
             'label' => '3 July 2026',
@@ -137,8 +164,10 @@ it('renders timestamp-metadata-block without throwing', function (): void {
 });
 
 it('renders photo-treatment-filter without throwing', function (): void {
-    $html = Blade::render(
-        '<x-capell-theme-foundation::display.photo-treatment-filter aspect-ratio="4/3"><img src="/images/mountain.jpg" alt="A mountain at dusk" /></x-capell-theme-foundation::display.photo-treatment-filter>',
+    $html = renderFoundationPrimitive(
+        'capell-theme-foundation::components.display.photo-treatment-filter',
+        ['aspectRatio' => '4/3'],
+        '<img src="/images/mountain.jpg" alt="A mountain at dusk" />',
     );
 
     expect($html)
@@ -149,8 +178,10 @@ it('renders photo-treatment-filter without throwing', function (): void {
 });
 
 it('is an inert no-op by default with all token fallbacks unset', function (): void {
-    $html = Blade::render(
-        '<x-capell-theme-foundation::display.photo-treatment-filter><img src="/images/mountain.jpg" alt="" /></x-capell-theme-foundation::display.photo-treatment-filter>',
+    $html = renderFoundationPrimitive(
+        'capell-theme-foundation::components.display.photo-treatment-filter',
+        [],
+        '<img src="/images/mountain.jpg" alt="" />',
     );
 
     expect($html)
@@ -160,13 +191,13 @@ it('is an inert no-op by default with all token fallbacks unset', function (): v
 });
 
 it('renders a cache-safe map link only for valid coordinates', function (): void {
-    $html = Blade::render(
-        '<x-capell-theme-foundation::display.map-link :latitude="$latitude" :longitude="$longitude" label="Find us" />',
-        ['latitude' => 51.5074, 'longitude' => -0.1278],
+    $html = renderFoundationPrimitive(
+        'capell-theme-foundation::components.display.map-link',
+        ['label' => 'Find us', 'latitude' => 51.5074, 'longitude' => -0.1278],
     );
 
-    $missingCoordinatesHtml = Blade::render(
-        '<x-capell-theme-foundation::display.map-link :latitude="$latitude" :longitude="$longitude" />',
+    $missingCoordinatesHtml = renderFoundationPrimitive(
+        'capell-theme-foundation::components.display.map-link',
         ['latitude' => 91, 'longitude' => -0.1278],
     );
 

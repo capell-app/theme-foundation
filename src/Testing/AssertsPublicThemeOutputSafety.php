@@ -196,6 +196,7 @@ trait AssertsPublicThemeOutputSafety
      * top of it. Every other banned token from the shared list still
      * applies to theme-foundation.
      */
+    /** @param list<string> $exemptBannedTokens */
     protected function assertThemeOutputMetadataIsSafe(string $viewsDirectory, string $packageName, array $exemptBannedTokens = []): void
     {
         $publicOutput = self::readBladeViewsRecursively($viewsDirectory);
@@ -230,6 +231,7 @@ trait AssertsPublicThemeOutputSafety
      * for that class of view, as opposed to the legacy
      * `sections/*.blade.php` copies where such calls remain banned.
      */
+    /** @param list<string> $additionalWhitelistedStaticCallPrefixes */
     protected function assertPhpBlockPolicy(string $viewsDirectory, int $frozenBaselineCount, array $additionalWhitelistedStaticCallPrefixes = []): void
     {
         $bladeViews = self::readBladeViewsRecursively($viewsDirectory);

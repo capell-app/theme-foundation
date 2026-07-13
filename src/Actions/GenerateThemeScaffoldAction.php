@@ -15,6 +15,8 @@ use RuntimeException;
  * placeholder replacement (`strtr()`), not Blade compilation — stub files use
  * `{{ placeholder }}` tokens that are resolved once per file and written
  * verbatim to the destination package directory.
+ *
+ * @method static list<string> run(ThemeScaffoldRequestData $request)
  */
 final class GenerateThemeScaffoldAction
 {
