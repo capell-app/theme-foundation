@@ -835,7 +835,7 @@ function ae(e) {
 }
 function oe(e) {
     let t = Y(e)
-    for (; W(t) && !ce(t); )
+    for (; W(t) && !ce(t);)
         if (ae(t)) return t
         else t = Y(t)
     return null
@@ -937,7 +937,7 @@ function Z(e, t, n, r) {
             t = r && U(r) ? B(r) : r,
             n = e,
             i = n.frameElement
-        for (; i && r && t !== n; ) {
+        for (; i && r && t !== n;) {
             let e = pe(i),
                 t = i.getBoundingClientRect(),
                 r = J(i),
@@ -1059,7 +1059,7 @@ function De(e, t) {
         i = null,
         a = J(e).position === `fixed`,
         o = a ? Y(e) : e
-    for (; U(o) && !ce(o); ) {
+    for (; U(o) && !ce(o);) {
         let t = J(o),
             n = ae(o)
         ;(!n && t.position === `fixed` && (i = null),
@@ -1132,7 +1132,7 @@ function Me(e, t) {
     let n = B(e)
     if (!W(e) || ve(e)) return n
     let r = je(e, t)
-    for (; r && q(r) && J(r).position === `static`; ) r = je(r, t)
+    for (; r && q(r) && J(r).position === `static`;) r = je(r, t)
     return r &&
         (ie(r) === `html` ||
             (ie(r) === `body` && J(r).position === `static` && !ae(r)))
@@ -1763,7 +1763,7 @@ var Ze = Xe,
                 f(e).position === `fixed`
             )
                 return null
-            for (var n = g(e); a(n) && [`html`, `body`].indexOf(l(n)) < 0; ) {
+            for (var n = g(e); a(n) && [`html`, `body`].indexOf(l(n)) < 0;) {
                 var r = f(n)
                 if (
                     r.transform !== `none` ||
@@ -4084,14 +4084,12 @@ var Ze = Xe,
                     ye()
                     return
                 }
-                if (
-                    !(
-                        L.props.trigger.indexOf(`mouseenter`) >= 0 &&
-                        L.props.trigger.indexOf(`click`) >= 0 &&
-                        [`mouseleave`, `mousemove`].indexOf(e.type) >= 0 &&
-                        s
-                    )
-                ) {
+                if (!(
+                    L.props.trigger.indexOf(`mouseenter`) >= 0 &&
+                    L.props.trigger.indexOf(`click`) >= 0 &&
+                    [`mouseleave`, `mousemove`].indexOf(e.type) >= 0 &&
+                    s
+                )) {
                     var t = J(!1)
                     t
                         ? (a = setTimeout(function () {
@@ -5411,7 +5409,7 @@ function Mt(e, t = ``) {
 }
 function Nt(e, t) {
     let n = [t]
-    for (; n.length > 0; ) {
+    for (; n.length > 0;) {
         let t = n.shift()
         if (e === t) return !0
         n.push(
@@ -5444,7 +5442,7 @@ function It(e, t = []) {
 }
 function Lt(e, t) {
     let n = []
-    for (; e.previousElementSibling; ) {
+    for (; e.previousElementSibling;) {
         let r = e.previousElementSibling
         ;(t ? r.matches(t) && n.push(r) : n.push(r), (e = r))
     }
@@ -5452,7 +5450,7 @@ function Lt(e, t) {
 }
 function Rt(e, t) {
     let n = []
-    for (; e.nextElementSibling; ) {
+    for (; e.nextElementSibling;) {
         let r = e.nextElementSibling
         ;(t ? r.matches(t) && n.push(r) : n.push(r), (e = r))
     }
@@ -5465,7 +5463,7 @@ function Bt(e) {
     let t = e,
         n
     if (t) {
-        for (n = 0; (t = t.previousSibling) !== null; )
+        for (n = 0; (t = t.previousSibling) !== null;)
             t.nodeType === 1 && (n += 1)
         return n
     }
@@ -5473,7 +5471,7 @@ function Bt(e) {
 function Vt(e, t) {
     let n = [],
         r = e.parentElement
-    for (; r; )
+    for (; r;)
         (t ? r.matches(t) && n.push(r) : n.push(r), (r = r.parentElement))
     return n
 }
@@ -5887,12 +5885,9 @@ function an() {
     for (let r = 0; r < u; r += 1) {
         w = 0
         let i = l[r]
-        if (
-            !(
-                i &&
-                (C && e.grid.updateSlide(r, i, l), zt(i, `display`) === `none`)
-            )
-        ) {
+        if (!(
+            i && (C && e.grid.updateSlide(r, i, l), zt(i, `display`) === `none`)
+        )) {
             if (s && n.slidesPerView === `auto`)
                 (n.virtual.slidesPerViewAutoSlideSize &&
                     (w = n.virtual.slidesPerViewAutoSlideSize),

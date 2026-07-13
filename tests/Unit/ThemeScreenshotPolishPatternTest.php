@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-use Pest\Expectation;
-
 test('showreel editorial winner feature spans existing grid tracks only', function (): void {
     $packagesPath = dirname(__DIR__, 3);
 
@@ -74,6 +72,7 @@ test('directory and submissions ghost buttons keep readable dark-mode contrast',
     $packagesPath = dirname(__DIR__, 3);
 
     $directoryCss = file_get_contents($packagesPath . '/theme-directory/resources/css/theme-directory.css');
+    throw_unless(is_string($directoryCss), RuntimeException::class, 'Unable to read Directory theme CSS.');
     $submissionsCss = file_get_contents($packagesPath . '/theme-submissions/resources/css/theme-submissions.css');
 
     preg_match('/\\.pfd-section-night \\.pfd-button \\{[^}]+\\}/', $directoryCss, $directoryNightButton);
@@ -152,16 +151,16 @@ test('theme section navigations expose the shared mobile disclosure menu', funct
 
         expect($navigation)
             ->toContain('capell-desktop-nav')
-            ->toContain("view('capell-theme-foundation::theme.partials.mobile-navigation'")
-            ->and($css)
-            ->when(
-                $theme === 'editorial',
-                fn (Expectation $expectation): Expectation => $expectation->toContain("@import '../../../theme-foundation/resources/css/theme/chrome.css';"),
-                fn (Expectation $expectation): Expectation => $expectation
-                    ->toContain('.capell-mobile-nav')
-                    ->toContain('@media (max-width: 767px)')
-                    ->toContain('.capell-desktop-nav-action'),
-            );
+            ->toContain("view('capell-theme-foundation::theme.partials.mobile-navigation'");
+
+        if ($theme === 'editorial') {
+            expect($css)->toContain("@import '../../../theme-foundation/resources/css/theme/chrome.css';");
+        } else {
+            expect($css)
+                ->toContain('.capell-mobile-nav')
+                ->toContain('@media (max-width: 767px)')
+                ->toContain('.capell-desktop-nav-action');
+        }
     }
 
     $sharedChrome = file_get_contents($packagesPath . '/theme-foundation/resources/css/theme/chrome.css');
@@ -176,10 +175,11 @@ test('platform contact screenshots wait for the shared contact form', function (
     $packagesPath = dirname(__DIR__, 3);
 
     $manifest = file_get_contents($packagesPath . '/theme-platform/docs/screenshots.json');
+    throw_unless(is_string($manifest), RuntimeException::class, 'Unable to read Platform screenshot manifest.');
 
     preg_match_all('/"id": "platform-contact-form(?:-tablet|-mobile)?".+?"waitFor": "([^"]+)"/s', $manifest, $contactWaits);
 
-    expect($contactWaits[1] ?? [])->toBe(['#contact-form', '#contact-form', '#contact-form']);
+    expect($contactWaits[1])->toBe(['#contact-form', '#contact-form', '#contact-form']);
 });
 
 test('saas mobile screenshots clip horizontal rails to the viewport', function (): void {
