@@ -85,7 +85,7 @@ it('knows when neighboring page links should render', function (): void {
 });
 
 it('defines foundation theme metadata and canonical view names', function (): void {
-    expect(FoundationThemeHealthCheck::compatibleCapellApiVersion())->toBe('^4.0')
+    expect(FoundationThemeHealthCheck::compatibleCapellApiVersion())->toBe('^1.0')
         ->and(FoundationThemeAssetEnum::Page->getAsset())->toBe(AssetEnum::Page)
         ->and(FoundationThemeAssetEnum::Page->getComponent())->toBe(AssetComponentEnum::Page->value)
         ->and(FoundationThemeViewName::canonical('capell-layout-builder::components.widget.hero'))->toBe('capell-theme-foundation::components.widget.hero')

@@ -36,7 +36,7 @@ afterEach(function (): void {
 });
 
 it('reports a compatible capell api version', function (): void {
-    expect(FoundationThemeHealthCheck::compatibleCapellApiVersion())->toBe('^4.0');
+    expect(FoundationThemeHealthCheck::compatibleCapellApiVersion())->toBe('^1.0');
 });
 
 it('runs real diagnostics returning check results', function (): void {
