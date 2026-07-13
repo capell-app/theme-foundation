@@ -4,7 +4,7 @@
 
 ## What This Plugin Adds
 
-Foundation Theme is an **Available**, **No schema impact** Capell theme in the **Capell Foundation** product group. It ships as `capell-app/theme-foundation` and extends these surfaces: admin, frontend.
+Foundation Theme is an **Available**, **No schema impact** Capell theme in the **Capell Themes** product group. It ships as `capell-app/theme-foundation` and extends these surfaces: admin, frontend.
 
 Capell's foundation theme - base Blade layouts, runtime design tokens, the Tailwind asset pipeline, Blade directives, media/SVG handling, and the override contracts that all vertical Capell themes extend.
 
@@ -14,7 +14,7 @@ Status details:
 
 - Status: Available
 - Tier: free
-- Bundle: foundation
+- Bundle: themes
 - Composer package: `capell-app/theme-foundation`
 - Namespace: `Capell\FoundationTheme`
 - Theme key: `default`
@@ -28,6 +28,10 @@ Status details:
 ## Screens And Workflow
 
 Screenshot contract: `docs/screenshots.json`.
+
+![Foundation Homepage](docs/screenshots/foundation-homepage.png)
+
+![Foundation Directory](docs/screenshots/foundation-directory.png)
 
 - Foundation Homepage (frontend, required).
 - Foundation Homepage - Tablet (frontend, optional).
@@ -60,8 +64,8 @@ Screenshot contract: `docs/screenshots.json`.
 - Filament classes: `FoundationLayoutContainerSchemaExtender`, `FoundationThemeSettingsSchema`.
 - Livewire components: `AbstractAssets`, `PageAssets`, `AbstractWidget`, `Pages`.
 - Listeners: `RunTailwindAssetsOnPackageChange`.
-- Actions: `BuildAssetBannerItemsAction`, `BuildBannerImageRenderDataAction`, `BuildHeroRailItemsRenderDataAction`, `BuildLayoutNeighborLinksDataAction`, `BuildPageContentRenderDataAction`, `BuildThemeDemoFormSectionAction`, `BuildThemeDemoFormsPayloadAction`, `BuildWidgetAssetRenderDataAction`, `GenerateThemeScaffoldAction`, `HasThemeIntegrationEvidenceAction`, `InstallFoundationThemeDemoAction`, `InstallFoundationThemeLayoutDefaultsAction`, `and 11 more`.
-- Data objects: `AssetBannerItemData`, `BannerImageRenderData`, `FoundationThemeTokensData`, `LayoutNeighborLinksData`, `NewsletterFormData`, `PageContentRenderData`, `ResolvedResultsData`, `ThemeDemoInstallData`, `ThemeFormEmbedData`, `ThemeScaffoldRequestData`, `ThemeValidationResultData`, `WidgetAssetRenderData`.
+- Actions: `BuildAssetBannerItemsAction`, `BuildBannerImageRenderDataAction`, `BuildHeroRailItemsRenderDataAction`, `BuildLayoutNeighborLinksDataAction`, `BuildPageContentRenderDataAction`, `BuildThemeDemoFormSectionAction`, `BuildThemeDemoFormsPayloadAction`, `BuildWidgetAssetRenderDataAction`, `GenerateThemeScaffoldAction`, `HasThemeIntegrationEvidenceAction`, `InstallFoundationThemeDemoAction`, `InstallFoundationThemeLayoutDefaultsAction`, `and 10 more`.
+- Data objects: `AssetBannerItemData`, `BannerImageRenderData`, `FoundationThemeTokensData`, `LayoutNeighborLinksData`, `NewsletterFormData`, `PageContentRenderData`, `ThemeDemoInstallData`, `ThemeFormEmbedData`, `ThemeScaffoldRequestData`, `ThemeValidationResultData`, `WidgetAssetRenderData`.
 - Command signatures: `capell:theme-foundation-demo`, `capell:theme-foundation-setup`.
 - Console command classes: `DemoCommand`, `GenerateTailwindAssetsCommand`, `MakeThemeCommand`, `SetupCommand`, `ThemeCatalogueReportCommand`, `ValidateThemesCommand`.
 - Health checks: `Capell\FoundationTheme\Health\FoundationThemeHealthCheck`.
@@ -74,7 +78,7 @@ Foundation Theme owns the stable child theme override surface for Capell themes.
 
 Stable contract points:
 
-- Theme Studio sections: `navigation`, `hero`, `features`, `proof`, `content-listing`, `cta`, `footer`.
+- Theme Studio sections: `navigation`, `hero`, `features`, `proof`, `content-listing`, `search`, `pagination`, `form`, `contact-split`, `cta`, `footer`.
 - Shared views: `capell::theme.page`, `capell::layout.area`, `capell::media.svg`.
 - Runtime tokens: `--foundation-page-bg`, `--foundation-section-spacing`, `--foundation-widget-gap`.
 - Layout Builder chrome areas: `header`.
