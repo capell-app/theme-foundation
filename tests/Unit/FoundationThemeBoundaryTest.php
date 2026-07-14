@@ -122,6 +122,20 @@ it('owns the default body content and layout component files', function (): void
         ->not->toContain('components.demo.contact-page');
 });
 
+it('provides the hero component registered by Layout Builder', function (): void {
+    $heroPath = dirname(__DIR__, 2) . '/resources/views/components/widget/hero.blade.php';
+    $hero = file_get_contents($heroPath);
+
+    throw_unless(is_string($hero), RuntimeException::class, 'Expected foundation hero Blade file to be readable.');
+
+    expect($heroPath)->toBeFile()
+        ->and($hero)->toContain('call_to_action_label')
+        ->and($hero)->toContain('focus-visible:outline-2')
+        ->and($hero)->toContain('motion-reduce:transition-none')
+        ->and($hero)->not->toContain('::query()')
+        ->and($hero)->not->toContain('DB::');
+});
+
 it('keeps runtime asset registrations behind the installed package guard', function (): void {
     $provider = file_get_contents(dirname(__DIR__, 2) . '/src/Providers/FoundationThemeServiceProvider.php');
 
