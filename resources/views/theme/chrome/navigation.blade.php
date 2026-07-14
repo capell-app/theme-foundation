@@ -35,21 +35,26 @@
                 @endforeach
             </div>
 
+        @endif
+
+        @if ($section->items !== [] || ($section->ctaLabel && $section->ctaUrl))
             <details class="theme-chrome-nav__mobile">
                 <summary class="theme-chrome-nav__mobile-toggle">
                     {{ __('capell-theme-foundation::generic.menu') }}
                 </summary>
                 <div class="theme-chrome-nav__mobile-panel">
-                    @foreach ($section->items as $item)
-                        @if (! empty($item['url']) && ! empty($item['label']))
-                            <a
-                                href="{{ $item['url'] }}"
-                                class="theme-chrome-nav__link"
-                            >
-                                {{ $item['label'] }}
-                            </a>
-                        @endif
-                    @endforeach
+                    @if ($section->items !== [])
+                        @foreach ($section->items as $item)
+                            @if (! empty($item['url']) && ! empty($item['label']))
+                                <a
+                                    href="{{ $item['url'] }}"
+                                    class="theme-chrome-nav__link"
+                                >
+                                    {{ $item['label'] }}
+                                </a>
+                            @endif
+                        @endforeach
+                    @endif
 
                     @if ($section->ctaLabel && $section->ctaUrl)
                         <a
