@@ -107,8 +107,9 @@ final class Index extends Component
         $this->subFooterMenuItems = $navigationAvailable
             ? $this->menuItems(NavigationHandle::SubFooter->value, $site, $language)
             : null;
-        $frontendData = Frontend::getFrontendData();
-        $this->contactPage = is_array($frontendData) && array_key_exists('foundation.footer.contact_page', $frontendData)
+        $resolvedFrontendData = Frontend::getFrontendData();
+        $frontendData = is_array($resolvedFrontendData) ? $resolvedFrontendData : [];
+        $this->contactPage = array_key_exists('foundation.footer.contact_page', $frontendData)
             ? $frontendData['foundation.footer.contact_page']
             : null;
         $this->siteLanguages = ($frontendData['foundation.footer.site_languages'] ?? null) instanceof Collection
