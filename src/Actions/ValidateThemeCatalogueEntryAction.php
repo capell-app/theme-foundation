@@ -67,16 +67,30 @@ final class ValidateThemeCatalogueEntryAction
         'notes',
     ];
 
+    /**
+     * Foundation proves the public-output contract across the whole fleet;
+     * child themes keep an explicit package-local contract beside their
+     * presentation tests.
+     *
+     * @var list<string>
+     */
+    private const array PUBLIC_OUTPUT_SAFETY_TEST_PATHS = [
+        'tests/Unit/PublicOutputSafetyTest.php',
+        'tests/Feature/FleetPublicOutputSafetyTest.php',
+    ];
+
     public function handle(string $packageDirectory, string $packagesRoot): ThemeValidationResultData
     {
         $manifestPath = $packagesRoot . '/' . $packageDirectory . '/capell.json';
         $manifest = $this->readJsonObject($manifestPath);
 
         $themeKey = is_string($manifest['themeKey'] ?? null) ? $manifest['themeKey'] : $packageDirectory;
+        $themeDirectory = $packagesRoot . '/' . $packageDirectory;
 
         $violations = [
             ...$this->manifestViolations($manifest, $themeKey),
-            ...$this->integrationViolations($packagesRoot . '/' . $packageDirectory, $manifest, $themeKey),
+            ...$this->packageProofViolations($themeDirectory, $themeKey),
+            ...$this->integrationViolations($themeDirectory, $manifest, $themeKey),
             ...$this->catalogueViolations($packagesRoot, $manifest, $themeKey),
             ...$this->definitionViolations($manifest, $themeKey),
             ...$this->screenshotManifestViolations($packagesRoot, $packageDirectory, $themeKey, $manifest),
@@ -86,6 +100,34 @@ final class ValidateThemeCatalogueEntryAction
             themeKey: $themeKey,
             violations: $violations,
         );
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function packageProofViolations(string $themeDirectory, string $themeKey): array
+    {
+        $violations = [];
+
+        if (! is_file($themeDirectory . '/README.md')) {
+            $violations[] = "{$themeKey}: README.md is missing.";
+        }
+
+        $hasPublicOutputSafetyTest = false;
+
+        foreach (self::PUBLIC_OUTPUT_SAFETY_TEST_PATHS as $relativePath) {
+            if (is_file($themeDirectory . '/' . $relativePath)) {
+                $hasPublicOutputSafetyTest = true;
+
+                break;
+            }
+        }
+
+        if (! $hasPublicOutputSafetyTest) {
+            $violations[] = "{$themeKey}: a public-output safety test is missing.";
+        }
+
+        return $violations;
     }
 
     /**
