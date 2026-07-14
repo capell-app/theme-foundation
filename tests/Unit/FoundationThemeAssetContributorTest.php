@@ -228,6 +228,27 @@ it('omits the per-theme css requirement when the split flag is off', function ()
     expect(collect($requirements)->pluck('handle')->all())->not->toContain('theme-css:showreel');
 });
 
+it('omits the per-theme css requirement when no generated source exists', function (): void {
+    config([
+        'capell-theme-foundation.tailwind.split_theme_css' => true,
+        'capell-theme-foundation.tailwind.theme_css_output_directory' => 'resources/css/capell/themes',
+    ]);
+    File::delete(base_path('resources/css/capell/themes/default.css'));
+
+    $theme = Theme::factory()->make(['key' => 'default']);
+
+    $requirements = resolve(FoundationThemeAssetContributor::class)->requirements(new FrontendAssetContextData(
+        page: null,
+        site: null,
+        language: null,
+        layout: null,
+        theme: $theme,
+        runtime: FrontendRuntimeManifestData::forRenderingStrategy(RenderingStrategyEnum::BladeOnly),
+    ));
+
+    expect(collect($requirements)->pluck('handle')->all())->not->toContain('theme-css:default');
+});
+
 it('emits the active theme own compiled bundle when the split flag is on', function (): void {
     config([
         'capell-theme-foundation.tailwind.split_theme_css' => true,

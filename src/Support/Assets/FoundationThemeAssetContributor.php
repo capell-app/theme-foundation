@@ -72,9 +72,8 @@ final class FoundationThemeAssetContributor implements FrontendAssetContributor
 
     /**
      * When capell-theme-foundation.tailwind.split_theme_css is enabled, emit
-     * the active theme's own compiled bundle as an additional requirement —
-     * every request context carries its own $context->theme, so multi-site
-     * installs resolve the right per-theme file with no extra wiring.
+     * an existing active-theme bundle as an additional requirement. The
+     * default Foundation bundle is shared and intentionally has no split file.
      */
     private function themeCssRequirement(FrontendAssetContextData $context): ?FrontendAssetRequirementData
     {
@@ -86,12 +85,28 @@ final class FoundationThemeAssetContributor implements FrontendAssetContributor
 
         $directory = config('capell-theme-foundation.tailwind.theme_css_output_directory', 'resources/css/capell/themes');
         $directory = is_string($directory) && $directory !== '' ? $directory : 'resources/css/capell/themes';
+        $source = rtrim($directory, '/') . '/' . $themeKey . '.css';
+
+        if (! $this->isProjectLocalFile($source)) {
+            return null;
+        }
 
         return new FrontendAssetRequirementData(
             handle: 'theme-css:' . $themeKey,
             kind: FrontendAssetRequirementData::KIND_CSS,
-            source: rtrim($directory, '/') . '/' . $themeKey . '.css',
+            source: $source,
             buildPath: $this->frontendCssBuildPath($context),
         );
+    }
+
+    private function isProjectLocalFile(string $source): bool
+    {
+        $projectPath = realpath(base_path());
+        $sourcePath = realpath(base_path($source));
+
+        return $projectPath !== false
+            && $sourcePath !== false
+            && is_file($sourcePath)
+            && str_starts_with($sourcePath, $projectPath . DIRECTORY_SEPARATOR);
     }
 }
