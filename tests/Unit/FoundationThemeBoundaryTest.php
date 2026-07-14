@@ -255,17 +255,24 @@ it('delegates primary header navigation to the navigation render hook', function
 it('uses complete shared navigation disclosure below the wide desktop breakpoint', function (): void {
     $header = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/header/index.blade.php');
     $navigation = file_get_contents(dirname(__DIR__, 2) . '/resources/views/theme/chrome/navigation.blade.php');
+    $mobileNavigation = file_get_contents(dirname(__DIR__, 2) . '/resources/views/theme/partials/mobile-navigation.blade.php');
     $chromeStyles = file_get_contents(dirname(__DIR__, 2) . '/resources/css/theme/chrome.css');
 
     expect($header)
         ->not->toContain('[&_.nav-items]:lg:flex-nowrap')
         ->and($navigation)->not->toContain('<style>')
+        ->and($navigation)->not->toContain('id="main-content"')
         ->and($navigation)->toContain('theme-chrome-nav__links')
         ->and($navigation)->toContain('theme-chrome-nav__mobile-cta')
+        ->and($navigation)->toContain('aria-controls="theme-chrome-navigation-panel"')
+        ->and($navigation)->toContain('aria-current="page"')
         ->and($navigation)->toContain('{{ $section->ctaLabel }}')
+        ->and($mobileNavigation)->toContain('aria-controls="{{ $mobileMenuId }}"')
+        ->and($mobileNavigation)->toContain('aria-current="page"')
         ->and($chromeStyles)->toContain('@media (min-width: 1200px)')
         ->and($chromeStyles)->toMatch('/\.theme-chrome-nav__links\s*{[^}]*white-space: nowrap;/s')
-        ->and($chromeStyles)->toMatch('/\.theme-chrome-nav__mobile-panel \.theme-chrome-nav__cta\s*{\s*display: inline-flex;/');
+        ->and($chromeStyles)->toMatch('/\.theme-chrome-nav__mobile:not\(\[open\]\) \.theme-chrome-nav__mobile-panel\s*{\s*display: none;/')
+        ->and($chromeStyles)->toContain('@media (prefers-reduced-motion: reduce)');
 });
 
 it('renders shared navigation disclosure for menu items or a complete cta', function (): void {
@@ -279,7 +286,11 @@ it('renders shared navigation disclosure for menu items or a complete cta', func
     ])->render();
 
     $items = array_map(
-        static fn (int $index): array => ['label' => "Item {$index}", 'url' => "/item-{$index}"],
+        static fn (int $index): array => [
+            'label' => "Item {$index}",
+            'url' => "/item-{$index}",
+            'active' => $index === 1,
+        ],
         range(1, 7),
     );
 
@@ -289,11 +300,38 @@ it('renders shared navigation disclosure for menu items or a complete cta', func
 
     expect($itemsAndCta)->toContain('theme-chrome-nav__mobile')
         ->and(substr_count($itemsAndCta, 'theme-chrome-nav__mobile-cta'))->toBe(1)
+        ->and(substr_count($itemsAndCta, 'aria-current="page"'))->toBe(2)
+        ->and(substr_count($itemsAndCta, 'id="theme-chrome-navigation-panel"'))->toBe(1)
+        ->and($itemsAndCta)->not->toContain('id="main-content"')
         ->and($ctaOnly)->toContain('theme-chrome-nav__mobile')
         ->and($ctaOnly)->toContain('theme-chrome-nav__mobile-cta')
         ->and($ctaOnly)->toContain('href="/contact"')
         ->and($empty)->not->toContain('theme-chrome-nav__mobile')
         ->and($empty)->not->toContain('theme-chrome-nav__cta');
+});
+
+it('renders the shared child-theme mobile menu closed with complete links only', function (): void {
+    $html = view('capell-theme-foundation::theme.partials.mobile-navigation', [
+        'links' => [
+            ['label' => 'Current page', 'url' => '/current', 'active' => true],
+            ['label' => 'Missing destination'],
+            ['url' => '/missing-label'],
+        ],
+        'ctaLabel' => 'Contact',
+        'ctaUrl' => '/contact',
+        'menuId' => 'primary navigation',
+    ])->render();
+
+    expect($html)
+        ->toContain('class="capell-mobile-nav"')
+        ->toContain('aria-controls="primary-navigation"')
+        ->toContain('id="primary-navigation"')
+        ->toContain('aria-current="page"')
+        ->toContain('href="/current"')
+        ->toContain('href="/contact"')
+        ->not->toContain('open>')
+        ->not->toContain('Missing destination')
+        ->not->toContain('/missing-label');
 });
 
 it('delegates main layout container rendering to the shared frontend hook', function (): void {

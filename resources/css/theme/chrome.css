@@ -1,130 +1,303 @@
 /*
- * Shared vertical-theme chrome (top navigation + footer).
+ * Shared public chrome for Capell themes.
  *
- * Consumed by every stub theme via a single `@import` of
- * `../../../theme-foundation/resources/css/theme/chrome.css` from its own
- * `resources/css/theme-<key>.css`. Pure CSS (no Tailwind utilities) so it
- * compiles into each theme's standalone bundle; all colour/shape/typography
- * comes from the brand `--theme-*` custom properties set on `.site-theme-shell`,
- * so each theme keeps its own identity.
+ * The shell is intentionally quiet. Child themes provide the identity through
+ * the finite --theme-* vocabulary while Foundation owns geometry, interaction,
+ * accessibility, and resilient empty states.
  */
 
 /* ---------- Navigation ---------- */
 .theme-chrome-nav {
+    --theme-chrome-border: color-mix(
+        in srgb,
+        var(--theme-foreground, #101715) 14%,
+        transparent
+    );
+    --theme-chrome-muted: color-mix(
+        in srgb,
+        var(--theme-foreground, #101715) 70%,
+        transparent
+    );
+    background: color-mix(
+        in srgb,
+        var(--theme-surface, #fcfffb) 97%,
+        transparent
+    );
+    border-bottom: 1px solid var(--theme-chrome-border);
+    color: var(--theme-foreground, #101715);
+    isolation: isolate;
     position: sticky;
     top: 0;
     z-index: 40;
-    border-bottom: 1px solid
-        color-mix(in srgb, var(--theme-neutral, #1e1b2e) 14%, transparent);
-    background: color-mix(
-        in srgb,
-        var(--theme-surface, #ffffff) 92%,
-        transparent
-    );
-    backdrop-filter: blur(8px);
+}
+
+@supports (backdrop-filter: blur(1rem)) {
+    .theme-chrome-nav {
+        backdrop-filter: blur(1rem) saturate(135%);
+        background: color-mix(
+            in srgb,
+            var(--theme-surface, #fcfffb) 88%,
+            transparent
+        );
+    }
 }
 
 .theme-chrome-nav__inner {
-    display: flex;
     align-items: center;
+    display: flex;
+    gap: clamp(0.75rem, 2vw, 1.75rem);
     justify-content: space-between;
-    gap: 1rem;
-    max-width: 72rem;
     margin-inline: auto;
-    padding: 0.85rem 1.5rem;
+    max-width: 80rem;
+    min-height: 4.75rem;
+    padding: 0.75rem clamp(1rem, 3vw, 2rem);
 }
 
 .theme-chrome-nav__brand {
-    display: inline-flex;
     align-items: center;
-    gap: 0.6rem;
-    font-weight: 600;
+    color: var(--theme-foreground, #101715);
+    display: inline-flex;
+    flex: 0 1 auto;
+    font-family: var(--theme-heading-font, Sora), system-ui, sans-serif;
+    font-size: 0.9375rem;
+    font-weight: 750;
+    gap: 0.7rem;
+    letter-spacing: -0.012em;
+    min-width: 0;
     text-decoration: none;
-    color: var(--theme-foreground, #1e1b2e);
+}
+
+.theme-chrome-nav__brand-mark,
+.theme-chrome-footer__brand-mark {
+    background:
+        linear-gradient(
+            145deg,
+            color-mix(in srgb, var(--theme-accent, #0e91b2) 68%, transparent) 0
+                42%,
+            transparent 42% 100%
+        ),
+        var(--theme-primary, #087765);
+    border-radius: max(0.2rem, calc(var(--theme-radius, 0.5rem) * 0.7));
+    box-shadow: 0 0.55rem 1.25rem
+        color-mix(in srgb, var(--theme-primary, #087765) 22%, transparent);
+    flex: 0 0 auto;
+    height: 1.75rem;
+    transform: rotate(-3deg);
+    width: 1.75rem;
+}
+
+.theme-chrome-nav__brand-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .theme-chrome-nav__links {
-    display: none;
     align-items: center;
-    gap: 1.25rem;
-    font-size: 0.9rem;
+    display: none;
+    flex: 1 1 auto;
+    gap: clamp(0.15rem, 0.7vw, 0.55rem);
+    justify-content: center;
+    min-width: 0;
     white-space: nowrap;
 }
 
 .theme-chrome-nav__link {
-    color: color-mix(
-        in srgb,
-        var(--theme-foreground, #1e1b2e) 78%,
-        transparent
-    );
+    border-radius: max(0.3rem, var(--theme-radius, 0.5rem));
+    color: var(--theme-chrome-muted);
+    display: inline-flex;
+    font-size: 0.875rem;
+    font-weight: 620;
+    line-height: 1.2;
+    min-height: 2.75rem;
+    padding: 0.8rem 0.75rem;
+    position: relative;
     text-decoration: none;
-    transition: color 0.15s ease;
+    transition:
+        background-color 160ms ease,
+        color 160ms ease;
 }
 
-.theme-chrome-nav__link:hover {
-    color: var(--theme-primary, #7c3aed);
+.theme-chrome-nav__link:hover,
+.theme-chrome-nav__link[aria-current='page'] {
+    background: color-mix(
+        in srgb,
+        var(--theme-primary, #087765) 9%,
+        transparent
+    );
+    color: var(--theme-primary, #087765);
+}
+
+.theme-chrome-nav__link[aria-current='page'] {
+    box-shadow: inset 0 -2px 0 var(--theme-primary, #087765);
+}
+
+.theme-chrome-nav__brand:focus-visible,
+.theme-chrome-nav__link:focus-visible,
+.theme-chrome-nav__cta:focus-visible,
+.theme-chrome-nav__mobile-toggle:focus-visible,
+.theme-chrome-footer__brand-name:focus-visible,
+.theme-chrome-footer__link:focus-visible,
+.capell-mobile-nav__toggle:focus-visible,
+.capell-mobile-nav__panel a:focus-visible {
+    outline: 3px solid
+        color-mix(in srgb, var(--theme-accent, #0e91b2) 74%, white);
+    outline-offset: 3px;
 }
 
 .theme-chrome-nav__cta {
-    display: none;
     align-items: center;
-    border-radius: 999px;
-    padding: 0.55rem 1.1rem;
-    background: var(--theme-primary, #7c3aed);
-    color: #ffffff;
-    font-size: 0.9rem;
-    font-weight: 600;
+    background: var(--theme-primary, #087765);
+    border: 1px solid var(--theme-primary, #087765);
+    border-radius: max(0.4rem, var(--theme-radius, 0.5rem));
+    box-shadow: 0 0.65rem 1.5rem
+        color-mix(in srgb, var(--theme-primary, #087765) 18%, transparent);
+    color: var(--theme-primary-contrast, #ffffff);
+    display: none;
+    flex: 0 0 auto;
+    font-size: 0.875rem;
+    font-weight: 720;
+    justify-content: center;
+    line-height: 1.1;
+    min-height: 2.75rem;
+    padding: 0.75rem 1rem;
     text-decoration: none;
-    transition: opacity 0.15s ease;
+    transition:
+        background-color 160ms ease,
+        border-color 160ms ease,
+        box-shadow 160ms ease,
+        transform 160ms ease;
 }
 
 .theme-chrome-nav__cta:hover {
-    opacity: 0.9;
+    background: color-mix(in srgb, var(--theme-primary, #087765) 88%, black);
+    border-color: color-mix(in srgb, var(--theme-primary, #087765) 88%, black);
+    box-shadow: 0 0.8rem 1.8rem
+        color-mix(in srgb, var(--theme-primary, #087765) 25%, transparent);
+    transform: translateY(-1px);
 }
 
-/* Mobile menu (details/summary, no JS) */
+/* Native details disclosure keeps navigation usable without JavaScript. */
 .theme-chrome-nav__mobile {
+    flex: 0 0 auto;
+    margin-inline-start: auto;
     position: relative;
 }
 
 .theme-chrome-nav__mobile-toggle {
+    align-items: center;
+    background: color-mix(
+        in srgb,
+        var(--theme-surface, #fcfffb) 92%,
+        var(--theme-foreground, #101715)
+    );
+    border: 1px solid var(--theme-chrome-border);
+    border-radius: max(0.4rem, var(--theme-radius, 0.5rem));
+    color: var(--theme-foreground, #101715);
     cursor: pointer;
+    display: inline-flex;
+    font-size: 0.8125rem;
+    font-weight: 720;
+    gap: 0.7rem;
+    justify-content: center;
+    line-height: 1;
     list-style: none;
-    border: 1px solid
-        color-mix(in srgb, var(--theme-neutral, #1e1b2e) 25%, transparent);
-    border-radius: var(--theme-radius, 0.5rem);
-    padding: 0.45rem 0.8rem;
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--theme-foreground, #1e1b2e);
+    min-height: 2.75rem;
+    padding: 0.75rem 0.9rem;
+    user-select: none;
 }
 
-.theme-chrome-nav__mobile-toggle::-webkit-details-marker {
+.theme-chrome-nav__mobile-toggle::after,
+.capell-mobile-nav__toggle::after {
+    border-bottom: 1.5px solid currentColor;
+    border-inline-end: 1.5px solid currentColor;
+    content: '';
+    height: 0.42rem;
+    margin-block-start: -0.2rem;
+    transform: rotate(45deg);
+    transition: transform 160ms ease;
+    width: 0.42rem;
+}
+
+.theme-chrome-nav__mobile-toggle::-webkit-details-marker,
+.capell-mobile-nav__toggle::-webkit-details-marker {
+    display: none;
+}
+
+.theme-chrome-nav__mobile[open] .theme-chrome-nav__mobile-toggle {
+    background: color-mix(
+        in srgb,
+        var(--theme-primary, #087765) 9%,
+        var(--theme-surface, #fcfffb)
+    );
+    border-color: color-mix(
+        in srgb,
+        var(--theme-primary, #087765) 38%,
+        var(--theme-chrome-border)
+    );
+    color: var(--theme-primary, #087765);
+}
+
+.theme-chrome-nav__mobile[open] .theme-chrome-nav__mobile-toggle::after,
+.capell-mobile-nav[open] .capell-mobile-nav__toggle::after {
+    margin-block-start: 0.2rem;
+    transform: rotate(225deg);
+}
+
+.theme-chrome-nav__mobile:not([open]) .theme-chrome-nav__mobile-panel {
     display: none;
 }
 
 .theme-chrome-nav__mobile-panel {
-    position: absolute;
-    inset-inline-end: 0;
-    z-index: 30;
-    margin-top: 0.75rem;
+    background: var(--theme-surface, #fcfffb);
+    border: 1px solid var(--theme-chrome-border);
+    border-radius: max(0.65rem, calc(var(--theme-radius, 0.5rem) * 1.4));
+    box-shadow:
+        0 1.5rem 3.5rem color-mix(in srgb, #020617 18%, transparent),
+        0 0 0 1px color-mix(in srgb, white 32%, transparent) inset;
     display: grid;
-    gap: 0.75rem;
-    min-width: 12rem;
-    border: 1px solid
-        color-mix(in srgb, var(--theme-neutral, #1e1b2e) 18%, transparent);
-    border-radius: var(--theme-radius, 0.5rem);
-    background: var(--theme-surface, #ffffff);
-    padding: 1rem;
-    font-size: 0.9rem;
-    box-shadow: 0 18px 40px -20px rgba(0, 0, 0, 0.45);
+    gap: 0.2rem;
+    inset-inline-end: 0;
+    margin-top: 0.75rem;
+    max-height: min(70dvh, 34rem);
+    min-width: min(19rem, calc(100vw - 2rem));
+    overflow-y: auto;
+    padding: 0.6rem;
+    position: absolute;
+    width: max-content;
+    z-index: 50;
+}
+
+.theme-chrome-nav__mobile-panel .theme-chrome-nav__link {
+    width: 100%;
 }
 
 .theme-chrome-nav__mobile-panel .theme-chrome-nav__cta {
     display: inline-flex;
+    margin-top: 0.35rem;
+    width: 100%;
 }
 
-/* Wide desktop: inline links + CTA, hide mobile toggle */
+@media (prefers-reduced-motion: no-preference) {
+    .theme-chrome-nav__mobile[open] .theme-chrome-nav__mobile-panel,
+    .capell-mobile-nav[open] .capell-mobile-nav__panel {
+        animation: theme-chrome-menu-in 160ms ease-out both;
+        transform-origin: top right;
+    }
+
+    @keyframes theme-chrome-menu-in {
+        from {
+            opacity: 0;
+            transform: translateY(-0.35rem) scale(0.98);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+}
+
 @media (min-width: 1200px) {
     .theme-chrome-nav__links {
         display: flex;
@@ -141,82 +314,142 @@
 
 /* ---------- Footer ---------- */
 .theme-chrome-footer {
+    --theme-footer-ink: #f4f8f6;
+    --theme-footer-muted: rgb(244 248 246 / 68%);
+    --theme-footer-line: rgb(244 248 246 / 14%);
+    background:
+        radial-gradient(
+            circle at 12% -12%,
+            color-mix(in srgb, var(--theme-primary, #087765) 28%, transparent) 0,
+            transparent 32rem
+        ),
+        color-mix(in srgb, var(--theme-neutral, #244c43) 90%, #07110f);
+    color: var(--theme-footer-ink);
     margin-top: auto;
-    background: color-mix(in srgb, var(--theme-neutral, #1e1b2e) 92%, #000000);
-    color: #f8fafc;
 }
 
 .theme-chrome-footer__sr {
-    position: absolute;
-    width: 1px;
+    border: 0;
+    clip: rect(0, 0, 0, 0);
     height: 1px;
-    padding: 0;
     margin: -1px;
     overflow: hidden;
-    clip: rect(0, 0, 0, 0);
+    padding: 0;
+    position: absolute;
     white-space: nowrap;
-    border: 0;
+    width: 1px;
 }
 
 .theme-chrome-footer__inner {
     display: grid;
-    gap: 2rem;
-    max-width: 72rem;
+    gap: clamp(2.25rem, 5vw, 5rem);
     margin-inline: auto;
-    padding: 2.75rem 1.5rem;
+    max-width: 80rem;
+    padding: clamp(3.5rem, 7vw, 6rem) clamp(1rem, 3vw, 2rem);
+}
+
+.theme-chrome-footer__brand {
+    align-self: start;
 }
 
 .theme-chrome-footer__brand-name {
-    font-weight: 600;
-    font-size: 0.95rem;
+    align-items: center;
+    color: var(--theme-footer-ink);
+    display: inline-flex;
+    font-family: var(--theme-heading-font, Sora), system-ui, sans-serif;
+    font-size: 1rem;
+    font-weight: 760;
+    gap: 0.75rem;
+    letter-spacing: -0.012em;
+    text-decoration: none;
+}
+
+.theme-chrome-footer__brand-mark {
+    box-shadow: 0 0.7rem 1.6rem rgb(0 0 0 / 22%);
 }
 
 .theme-chrome-footer__summary {
-    margin-top: 0.75rem;
-    max-width: 24rem;
-    font-size: 0.875rem;
-    line-height: 1.6;
-    color: color-mix(in srgb, #f8fafc 70%, transparent);
+    color: var(--theme-footer-muted);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    margin: 1.1rem 0 0;
+    max-width: 32rem;
+    text-wrap: pretty;
 }
 
 .theme-chrome-footer__columns {
     display: grid;
-    gap: 1.5rem;
-    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: 2rem clamp(1.5rem, 4vw, 3.5rem);
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
 }
 
 .theme-chrome-footer__heading {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #f8fafc;
+    color: var(--theme-footer-ink);
+    font-family: var(--theme-heading-font, Sora), system-ui, sans-serif;
+    font-size: 0.75rem;
+    font-weight: 760;
+    letter-spacing: 0.11em;
+    margin: 0;
+    text-transform: uppercase;
 }
 
 .theme-chrome-footer__links {
-    margin-top: 0.75rem;
-    list-style: none;
-    padding: 0;
     display: grid;
-    gap: 0.5rem;
     font-size: 0.875rem;
+    gap: 0.25rem;
+    list-style: none;
+    margin: 1rem 0 0;
+    padding: 0;
 }
 
 .theme-chrome-footer__link {
-    color: color-mix(in srgb, #f8fafc 70%, transparent);
+    border-radius: 0.3rem;
+    color: var(--theme-footer-muted);
+    display: inline-flex;
+    line-height: 1.4;
+    margin-inline-start: -0.45rem;
+    min-height: 2.75rem;
+    padding: 0.68rem 0.45rem;
     text-decoration: none;
-    transition: color 0.15s ease;
+    transition:
+        color 160ms ease,
+        transform 160ms ease;
 }
 
-.theme-chrome-footer__link:hover {
+.theme-chrome-footer__link:hover,
+.theme-chrome-footer__link[aria-current='page'] {
     color: #ffffff;
+    transform: translateX(0.15rem);
+}
+
+.theme-chrome-footer__link[aria-current='page'] {
+    text-decoration: underline;
+    text-decoration-color: var(--theme-accent, #0e91b2);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.35em;
+}
+
+.theme-chrome-footer__base {
+    border-top: 1px solid var(--theme-footer-line);
+    color: var(--theme-footer-muted);
+    font-size: 0.75rem;
+    line-height: 1.5;
+    margin-inline: auto;
+    max-width: 80rem;
+    padding: 1.25rem clamp(1rem, 3vw, 2rem) 1.5rem;
+}
+
+.theme-chrome-footer__base p {
+    margin: 0;
 }
 
 @media (min-width: 768px) {
     .theme-chrome-footer__inner {
-        grid-template-columns: 1.2fr 2fr;
-        padding-block: 3.25rem;
+        grid-template-columns: minmax(15rem, 0.85fr) minmax(0, 1.65fr);
     }
 }
-/* Shared mobile disclosure navigation for classic child themes. */
+
+/* ---------- Shared child-theme mobile disclosure ---------- */
 .capell-mobile-nav {
     display: none;
     margin-inline-start: auto;
@@ -225,51 +458,86 @@
 
 .capell-mobile-nav__toggle {
     align-items: center;
-    border: 1px solid currentColor;
-    border-radius: 999px;
+    background: color-mix(
+        in srgb,
+        var(--theme-surface, Canvas) 94%,
+        transparent
+    );
+    border: 1px solid
+        color-mix(in srgb, var(--theme-foreground, CanvasText) 24%, transparent);
+    border-radius: max(0.4rem, var(--theme-radius, 0.5rem));
+    color: var(--theme-foreground, CanvasText);
     cursor: pointer;
     display: inline-flex;
     font-size: 0.8125rem;
-    font-weight: 700;
+    font-weight: 720;
+    gap: 0.7rem;
     justify-content: center;
     line-height: 1;
     list-style: none;
     min-height: 2.75rem;
-    padding: 0 1rem;
+    padding: 0.75rem 0.9rem;
+    user-select: none;
 }
 
-.capell-mobile-nav__toggle::-webkit-details-marker {
+.capell-mobile-nav[open] .capell-mobile-nav__toggle {
+    border-color: var(--theme-primary, currentColor);
+    color: var(--theme-primary, currentColor);
+}
+
+.capell-mobile-nav:not([open]) .capell-mobile-nav__panel {
     display: none;
 }
 
 .capell-mobile-nav__panel {
     background: var(--theme-surface, Canvas);
-    border: 1px solid currentColor;
-    border-radius: 0.75rem;
-    box-shadow: 0 1.25rem 3rem color-mix(in srgb, #000000 18%, transparent);
+    border: 1px solid
+        color-mix(in srgb, var(--theme-foreground, CanvasText) 18%, transparent);
+    border-radius: max(0.65rem, calc(var(--theme-radius, 0.5rem) * 1.4));
+    box-shadow: 0 1.5rem 3.5rem color-mix(in srgb, #020617 20%, transparent);
     color: var(--theme-foreground, CanvasText);
     display: grid;
-    gap: 0.35rem;
+    gap: 0.2rem;
     inset-inline-end: 0;
     margin-block-start: 0.75rem;
-    min-inline-size: min(18rem, calc(100vw - 2rem));
-    padding: 0.65rem;
+    max-block-size: min(70dvh, 34rem);
+    min-inline-size: min(19rem, calc(100vw - 2rem));
+    overflow-y: auto;
+    padding: 0.6rem;
     position: absolute;
     z-index: 50;
 }
 
 .capell-mobile-nav__panel a {
     align-items: center;
-    border-radius: 0.5rem;
+    border-radius: 0.45rem;
+    color: inherit;
     display: flex;
+    font-size: 0.875rem;
+    font-weight: 620;
     min-height: 2.75rem;
-    padding: 0.7rem 0.85rem;
+    padding: 0.72rem 0.8rem;
     text-decoration: none;
 }
 
+.capell-mobile-nav__panel a:hover,
+.capell-mobile-nav__panel a[aria-current='page'] {
+    background: color-mix(
+        in srgb,
+        var(--theme-primary, currentColor) 9%,
+        transparent
+    );
+    color: var(--theme-primary, currentColor);
+}
+
+.capell-mobile-nav__panel a[aria-current='page'] {
+    box-shadow: inset 3px 0 0 var(--theme-primary, currentColor);
+}
+
 .capell-mobile-nav__cta {
-    border: 1px solid currentColor;
-    font-weight: 700;
+    border: 1px solid var(--theme-primary, currentColor);
+    font-weight: 720;
+    margin-top: 0.35rem;
 }
 
 @media (max-width: 767px) {
@@ -280,5 +548,17 @@
 
     .capell-mobile-nav {
         display: block;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .theme-chrome-nav__link,
+    .theme-chrome-nav__cta,
+    .theme-chrome-nav__mobile-toggle::after,
+    .theme-chrome-footer__link,
+    .capell-mobile-nav__toggle::after {
+        animation: none;
+        scroll-behavior: auto;
+        transition-duration: 0.01ms;
     }
 }
