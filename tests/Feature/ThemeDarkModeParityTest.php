@@ -168,38 +168,42 @@ function darkModeParityFleetBladeFiles(): array
     ];
 
     $bladeFiles = [];
-    $directoryIterator = new RecursiveDirectoryIterator($packagesRoot, FilesystemIterator::SKIP_DOTS);
-    $iterator = new RecursiveIteratorIterator($directoryIterator);
+    $viewDirectories = glob($packagesRoot . '/theme-*/resources/views', GLOB_ONLYDIR) ?: [];
 
-    foreach ($iterator as $fileInfo) {
-        if (! $fileInfo instanceof SplFileInfo) {
-            continue;
-        }
+    foreach ($viewDirectories as $viewDirectory) {
+        $directoryIterator = new RecursiveDirectoryIterator($viewDirectory, FilesystemIterator::SKIP_DOTS);
+        $iterator = new RecursiveIteratorIterator($directoryIterator);
 
-        $path = $fileInfo->getPathname();
-
-        if (! str_contains($path, '/theme-') || ! str_contains($path, '/resources/views/') || ! str_ends_with($path, '.blade.php')) {
-            continue;
-        }
-
-        $isExempt = false;
-
-        foreach ($exemptPathSuffixes as $exemptPathSuffix) {
-            if (str_ends_with($path, $exemptPathSuffix)) {
-                $isExempt = true;
-
-                break;
+        foreach ($iterator as $fileInfo) {
+            if (! $fileInfo instanceof SplFileInfo || $fileInfo->getExtension() !== 'php') {
+                continue;
             }
-        }
 
-        if ($isExempt) {
-            continue;
-        }
+            $path = $fileInfo->getPathname();
 
-        $contents = file_get_contents($path);
+            if (! str_ends_with($path, '.blade.php')) {
+                continue;
+            }
 
-        if (is_string($contents)) {
-            $bladeFiles[$path] = $contents;
+            $isExempt = false;
+
+            foreach ($exemptPathSuffixes as $exemptPathSuffix) {
+                if (str_ends_with($path, $exemptPathSuffix)) {
+                    $isExempt = true;
+
+                    break;
+                }
+            }
+
+            if ($isExempt) {
+                continue;
+            }
+
+            $contents = file_get_contents($path);
+
+            if (is_string($contents)) {
+                $bladeFiles[$path] = $contents;
+            }
         }
     }
 
