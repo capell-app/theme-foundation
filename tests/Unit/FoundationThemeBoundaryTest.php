@@ -8,6 +8,16 @@ it('owns the opinionated public body behavior', function (): void {
     expect($body)->toContain('showLightbox');
 });
 
+it('renders hero content and links through public safety boundaries', function (): void {
+    $hero = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/widget/hero.blade.php');
+
+    expect($hero)
+        ->toContain('<x-capell::content')
+        ->toContain('PublicUrlSanitizer::sanitize')
+        ->not->toContain('strip_tags(')
+        ->not->toContain('{!!');
+});
+
 it('owns the opinionated content prose and divider behavior', function (): void {
     $content = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/content.blade.php');
 
