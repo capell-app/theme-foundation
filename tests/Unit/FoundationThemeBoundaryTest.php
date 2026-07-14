@@ -136,6 +136,14 @@ it('provides the hero component registered by Layout Builder', function (): void
         ->and($hero)->not->toContain('DB::');
 });
 
+it('gives every footer social link an accessible fallback name', function (): void {
+    $socialLinks = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/footer/social-links.blade.php');
+
+    expect($socialLinks)->toBeString()
+        ->and($socialLinks)->toContain('parse_url')
+        ->and($socialLinks)->toContain('aria-label="{{ $label }}"');
+});
+
 it('keeps runtime asset registrations behind the installed package guard', function (): void {
     $provider = file_get_contents(dirname(__DIR__, 2) . '/src/Providers/FoundationThemeServiceProvider.php');
 

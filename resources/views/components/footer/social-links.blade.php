@@ -12,6 +12,7 @@
     @foreach ($links as $link)
         @php
             $icon = null;
+            $label = $link['title'] ?? $link['type'] ?? parse_url((string) ($link['url'] ?? ''), PHP_URL_HOST) ?? __('capell-theme-foundation::generic.social_link');
             $iconClass = 'shrink-0 grow-0 opacity-50 group-hover/item:opacity-100' . match ($size) {
                 'sm' => ' h-5 w-5',
                 'md' => ' h-8 w-8',
@@ -33,6 +34,7 @@
         <a
             class="hover:text-primary focus:text-primary group/item flex items-center gap-x-1"
             href="{{ $link['url'] }}"
+            aria-label="{{ $label }}"
             target="_blank"
             rel="nofollow noopener"
         >

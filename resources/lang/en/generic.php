@@ -58,6 +58,7 @@ return [
     'email' => 'Email',
     'message' => 'Message',
     'spotlight' => 'Spotlight',
+    'social_link' => 'Social profile',
     'stats_display_band' => 'By the numbers',
     'sub_footer_navigation' => 'Footer utility navigation',
     'view_preview' => 'View preview',
