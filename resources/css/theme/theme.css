@@ -226,6 +226,147 @@
             width: 100%;
         }
     }
+
+    .theme-form,
+    .theme-contact-split,
+    .theme-faq-search-discovery,
+    .theme-pricing-value-spectrum {
+        background: var(--foundation-section-bg);
+        border-color: var(--foundation-border);
+        color: var(--foundation-body-fg);
+    }
+
+    .theme-form > div,
+    .theme-contact-split > div,
+    .theme-faq-search-discovery > div,
+    .theme-pricing-value-spectrum > div {
+        padding-block: var(--foundation-section-spacing);
+    }
+
+    .theme-form :where(h1, h2),
+    .theme-contact-split :where(h1, h2),
+    .theme-faq-search-discovery h2,
+    .theme-pricing-value-spectrum h2 {
+        color: var(--foundation-heading-fg);
+        letter-spacing: -0.035em;
+        text-wrap: balance;
+    }
+
+    .theme-form :where(h1, h2) + p,
+    .theme-contact-split :where(h1, h2) + p,
+    .theme-faq-search-discovery h2 + p,
+    .theme-pricing-value-spectrum h2 + p {
+        color: var(--foundation-muted-fg);
+        text-wrap: pretty;
+    }
+
+    .theme-form form,
+    .theme-contact-split form,
+    .theme-contact-split aside > *,
+    .theme-faq-search-discovery details,
+    .theme-pricing-value-spectrum .pricing-spectrum-display,
+    .theme-pricing-value-spectrum .pricing-spectrum-tier-option {
+        background: var(--foundation-card-bg);
+        border-color: var(--foundation-border);
+        color: var(--foundation-body-fg);
+    }
+
+    .theme-form form,
+    .theme-contact-split form {
+        border: 1px solid var(--foundation-border);
+        border-radius: calc(var(--foundation-radius) + 0.25rem);
+        box-shadow: 0 22px 60px rgb(15 23 42 / 7%);
+        padding: clamp(1.25rem, 4vw, 2.25rem);
+    }
+
+    .theme-form :where(input, select, textarea),
+    .theme-contact-split :where(input, select, textarea),
+    .theme-faq-search-discovery input {
+        background: var(--foundation-card-bg);
+        border-color: var(--foundation-border);
+        color: var(--foundation-body-fg);
+        min-height: 2.75rem;
+    }
+
+    .theme-form textarea,
+    .theme-contact-split textarea {
+        min-height: 8rem;
+        resize: vertical;
+    }
+
+    .theme-form :where(input, select, textarea):focus-visible,
+    .theme-contact-split :where(input, select, textarea):focus-visible,
+    .theme-faq-search-discovery :where(input, button, summary):focus-visible,
+    .theme-pricing-value-spectrum :where(input, a, label):focus-within {
+        box-shadow:
+            0 0 0 3px var(--foundation-section-bg),
+            0 0 0 6px var(--foundation-focus-ring);
+        outline: none;
+    }
+
+    .theme-form button,
+    .theme-contact-split button,
+    .theme-pricing-value-spectrum a {
+        min-height: 2.75rem;
+        transition:
+            box-shadow 180ms ease,
+            transform 180ms ease;
+    }
+
+    .theme-form button:hover,
+    .theme-contact-split button:hover,
+    .theme-pricing-value-spectrum a:hover {
+        transform: translateY(-2px);
+    }
+
+    .theme-form--encouraging > div {
+        align-items: start;
+    }
+
+    .theme-contact-split address {
+        box-shadow: 0 16px 40px rgb(15 23 42 / 5%);
+    }
+
+    .theme-faq-search-discovery details {
+        overflow: clip;
+        transition:
+            border-color 180ms ease,
+            box-shadow 180ms ease;
+    }
+
+    .theme-faq-search-discovery details[open] {
+        border-color: color-mix(
+            in srgb,
+            var(--theme-primary) 38%,
+            var(--foundation-border)
+        );
+        box-shadow: 0 14px 34px rgb(15 23 42 / 6%);
+    }
+
+    .theme-faq-search-discovery summary {
+        min-height: 3.25rem;
+    }
+
+    .theme-pricing-value-spectrum .pricing-spectrum-tier-option {
+        min-height: 3rem;
+    }
+
+    .theme-pricing-value-spectrum .pricing-spectrum-display {
+        box-shadow: 0 24px 60px rgb(15 23 42 / 8%);
+    }
+
+    .theme-pricing-value-spectrum .pricing-spectrum-slider {
+        accent-color: var(--theme-primary);
+        min-height: 2.75rem;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .theme-form button:hover,
+        .theme-contact-split button:hover,
+        .theme-pricing-value-spectrum a:hover {
+            transform: none;
+        }
+    }
 }
 
 @layer utilities {

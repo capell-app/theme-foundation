@@ -4,7 +4,9 @@
     $formInstanceId = (string) ($section->form_instance_id ?? 'theme-contact-form');
 @endphp
 
-<section class="border-b border-slate-200/80 bg-[var(--theme-surface)]">
+<section
+    class="theme-contact-split border-b border-slate-200/80 bg-[var(--theme-surface)]"
+>
     <div
         class="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.6fr)] lg:py-16"
     >

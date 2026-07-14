@@ -176,3 +176,20 @@ it('ships discovery sections with readable states and small-screen navigation', 
         ->toContain('.theme-changelog-stream article')
         ->toContain('@media (max-width: 639px)');
 });
+
+it('ships form and decision sections with complete accessible interaction styling', function (): void {
+    $themeRoot = dirname(__DIR__, 2);
+    $contact = file_get_contents($themeRoot . '/resources/views/theme/sections/contact-split.blade.php');
+    $styles = file_get_contents($themeRoot . '/resources/css/theme/theme.css');
+
+    expect($contact)->toContain('theme-contact-split');
+
+    expect($styles)
+        ->toContain('.theme-form form')
+        ->toContain('.theme-contact-split form')
+        ->toContain(':where(input, select, textarea):focus-visible')
+        ->toContain('.theme-faq-search-discovery details[open]')
+        ->toContain('.theme-faq-search-discovery summary')
+        ->toContain('.theme-pricing-value-spectrum .pricing-spectrum-slider')
+        ->toContain('accent-color: var(--theme-primary)');
+});
