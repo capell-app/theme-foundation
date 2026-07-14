@@ -436,6 +436,7 @@ final class ThemeDemoPageInstaller
                 'group' => $baseLayoutGroup ?? $definition->layout->value,
                 'meta' => [
                     ...$baseLayoutMeta,
+                    ...$this->layoutChromeOverrides($definition),
                     'theme_demo' => [
                         'theme_key' => $themeKey,
                         'surface' => $definition->surface,
@@ -450,6 +451,44 @@ final class ThemeDemoPageInstaller
         );
 
         return $layout;
+    }
+
+    /**
+     * A page-specific demo layout must not render Foundation chrome around
+     * theme-owned navigation or footer widgets. Keep the override on the demo
+     * layout rather than the Theme model so installing preview content never
+     * changes chrome choices for unrelated, real site pages using that theme.
+     *
+     * @return array<string, false>
+     */
+    private function layoutChromeOverrides(ThemeDemoPageDefinition $definition): array
+    {
+        $overrides = [];
+
+        if ($this->definitionOwnsSection($definition, 'navigation')) {
+            $overrides['header'] = false;
+        }
+
+        if ($this->definitionOwnsSection($definition, 'footer')) {
+            $overrides['footer'] = false;
+        }
+
+        return $overrides;
+    }
+
+    private function definitionOwnsSection(ThemeDemoPageDefinition $definition, string $sectionType): bool
+    {
+        if (in_array($sectionType, $definition->sectionTypes(), true)) {
+            return true;
+        }
+
+        foreach ($definition->bespokeWidgetComponentKeys() as $componentKey) {
+            if (str_ends_with($componentKey, '.' . $sectionType)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function definitionLayoutKey(Site $site, string $themeKey, ThemeDemoPageDefinition $definition): string

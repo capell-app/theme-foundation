@@ -41,11 +41,25 @@ final class ThemeDemoPageInstallerLayoutContainersFixtureProvider implements Pro
                         'meta' => ['colspan' => 12],
                         'widgets' => [
                             ['widget_key' => 'page-content'],
+                            ['widget_key' => 'navigation-widget', 'occurrence' => 1],
+                            ['widget_key' => 'footer-widget', 'occurrence' => 1],
                         ],
                     ],
                 ],
                 widgets: [
                     ['method' => 'pageContentWidget'],
+                    ['method' => 'bespokeContentWidget', 'args' => [
+                        'navigation-widget',
+                        'Navigation widget',
+                        'capell.widget.fixture.navigation',
+                        ['type' => 'navigation'],
+                    ]],
+                    ['method' => 'bespokeContentWidget', 'args' => [
+                        'footer-widget',
+                        'Footer widget',
+                        'capell.widget.fixture.footer',
+                        ['type' => 'footer'],
+                    ]],
                 ],
             ),
         ];
@@ -245,12 +259,17 @@ it('seeds layout builder containers and widgets from a demo page definition', fu
 
     expect(Widget::query()->where('key', 'page-content')->exists())->toBeTrue();
     expect($layout->key)->toContain('homepage');
+    expect($layout->meta)
+        ->toHaveKey('header', false)
+        ->toHaveKey('footer', false);
 
     $mainContainers = app(ResolveLayoutAreaContainersAction::class)->handle($layout->containers, LayoutAreaRegistry::MAIN);
 
     expect($mainContainers)->toHaveKey('main')
         ->and($mainContainers['main']['widgets'])->toBe([
             ['widget_key' => 'page-content'],
+            ['widget_key' => 'navigation-widget', 'occurrence' => 1],
+            ['widget_key' => 'footer-widget', 'occurrence' => 1],
         ]);
 
     expect(data_get($page->meta, 'theme_demo.render_data'))->not->toHaveKey('sections');
