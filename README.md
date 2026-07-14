@@ -6,9 +6,11 @@
 
 Foundation Theme is an **Available**, **No schema impact** Capell theme in the **Capell Themes** product group. It ships as `capell-app/theme-foundation` and extends these surfaces: admin, frontend.
 
-Capell's foundation theme - base Blade layouts, runtime design tokens, the Tailwind asset pipeline, Blade directives, media/SVG handling, and the override contracts that all vertical Capell themes extend.
+Theme Foundation provides the shared public layouts, runtime design tokens, layout defaults, and override contracts used by Capell themes. It renders host-owned page data and does not introduce a separate content model.
 
-After install, admins can select the theme through the core theme management surface. Editors keep using normal Capell content workflows while the package controls public presentation.
+Sites can use Foundation directly or extend it with a child theme, while public pages share predictable layout and token rendering without frontend authoring state.
+
+Evidence: [`src/Providers/FoundationThemeServiceProvider.php`](src/Providers/FoundationThemeServiceProvider.php), [`src/Settings/FoundationThemeSettings.php`](src/Settings/FoundationThemeSettings.php), [`resources/views/app.blade.php`](resources/views/app.blade.php), [`resources/views/components/app/head/tokens.blade.php`](resources/views/components/app/head/tokens.blade.php), [`src/Support/Providers/RegistersLayoutNativeThemeDefaults.php`](src/Support/Providers/RegistersLayoutNativeThemeDefaults.php), [`tests/Feature/FleetPublicOutputSafetyTest.php`](tests/Feature/FleetPublicOutputSafetyTest.php), [`tests/Unit/ThemeRuntimeSettingsBindingTest.php`](tests/Unit/ThemeRuntimeSettingsBindingTest.php).
 
 Status details:
 
@@ -21,9 +23,11 @@ Status details:
 
 ## Why It Matters
 
-**For developers:** The package gives developers package-owned service providers, Actions, Data objects, Filament classes, and Blade views instead of pushing this behaviour into core or application code.
+**For developers:** The package centralizes theme registration, token resolution, layout defaults, and public-output safety contracts for the theme fleet.
 
-**For teams:** The base theme every Capell site and child theme builds on: shared Blade layouts, a runtime design-token system (colours, spacing, radius), the Tailwind asset pipeline, an SVG sanitiser, and the section/area contracts that vertical themes override.
+**For teams:** Teams get a consistent baseline for site chrome, layout behavior, and design settings across Capell themes.
+
+Evidence: [`src/Providers/FoundationThemeServiceProvider.php`](src/Providers/FoundationThemeServiceProvider.php), [`src/Actions/ResolveFoundationThemeTokensAction.php`](src/Actions/ResolveFoundationThemeTokensAction.php), [`src/Actions/InstallFoundationThemeLayoutDefaultsAction.php`](src/Actions/InstallFoundationThemeLayoutDefaultsAction.php), [`src/Testing/AssertsPublicThemeOutputSafety.php`](src/Testing/AssertsPublicThemeOutputSafety.php), [`src/Settings/FoundationThemeSettings.php`](src/Settings/FoundationThemeSettings.php), [`resources/views/app.blade.php`](resources/views/app.blade.php), [`tests/Unit/FoundationThemeBoundaryTest.php`](tests/Unit/FoundationThemeBoundaryTest.php).
 
 ## Screens And Workflow
 
@@ -33,27 +37,15 @@ Screenshot contract: `docs/screenshots.json`.
 
 ![Foundation Directory](docs/screenshots/foundation-directory.png)
 
+Desktop, tablet, and mobile variants remain defined in the screenshot contract; this list groups them by workflow.
+
 - Foundation Homepage (frontend, required).
-- Foundation Homepage - Tablet (frontend, optional).
-- Foundation Homepage - Mobile (frontend, optional).
 - Foundation Directory (frontend, required).
-- Foundation Directory - Tablet (frontend, optional).
-- Foundation Directory - Mobile (frontend, optional).
 - Foundation Detail Article (frontend, required).
-- Foundation Detail Article - Tablet (frontend, optional).
-- Foundation Detail Article - Mobile (frontend, optional).
 - Foundation Contact (frontend, required).
-- Foundation Contact - Tablet (frontend, optional).
-- Foundation Contact - Mobile (frontend, optional).
 - Foundation Empty State (frontend, required).
-- Foundation Empty State - Tablet (frontend, optional).
-- Foundation Empty State - Mobile (frontend, optional).
 - Foundation Page Not Found (frontend, required).
-- Foundation Page Not Found - Tablet (frontend, optional).
-- Foundation Page Not Found - Mobile (frontend, optional).
 - Foundation Call To Action (frontend, required).
-- Foundation Call To Action - Tablet (frontend, optional).
-- Foundation Call To Action - Mobile (frontend, optional).
 
 ## Technical Shape
 
@@ -63,13 +55,15 @@ Screenshot contract: `docs/screenshots.json`.
 - Settings classes: `FoundationThemeSettings`, `FoundationThemeSettingsMigrationProvider`.
 - Filament classes: `FoundationLayoutContainerSchemaExtender`, `FoundationThemeSettingsSchema`.
 - Livewire components: `AbstractAssets`, `PageAssets`, `AbstractWidget`, `Pages`.
+- Extension contracts: `InstallsThemeDemo`, `OptionalExtensionAvailability`, `ProvidesThemeDemoContent`.
 - Listeners: `RunTailwindAssetsOnPackageChange`.
 - Actions: `BuildAssetBannerItemsAction`, `BuildBannerImageRenderDataAction`, `BuildHeroRailItemsRenderDataAction`, `BuildLayoutNeighborLinksDataAction`, `BuildPageContentRenderDataAction`, `BuildThemeDemoFormSectionAction`, `BuildThemeDemoFormsPayloadAction`, `BuildWidgetAssetRenderDataAction`, `GenerateThemeScaffoldAction`, `HasThemeIntegrationEvidenceAction`, `InstallFoundationThemeDemoAction`, `InstallFoundationThemeLayoutDefaultsAction`, `and 10 more`.
 - Data objects: `AssetBannerItemData`, `BannerImageRenderData`, `FoundationThemeTokensData`, `LayoutNeighborLinksData`, `NewsletterFormData`, `PageContentRenderData`, `ThemeDemoInstallData`, `ThemeFormEmbedData`, `ThemeScaffoldRequestData`, `ThemeValidationResultData`, `WidgetAssetRenderData`.
 - Command signatures: `capell:theme-foundation-demo`, `capell:theme-foundation-setup`.
+- Manifest action API: `demo: Capell\FoundationTheme\Actions\InstallFoundationThemeDemoAction`, `setup: Capell\FoundationTheme\Actions\SetupFoundationThemePackageAction`.
 - Console command classes: `DemoCommand`, `GenerateTailwindAssetsCommand`, `MakeThemeCommand`, `SetupCommand`, `ThemeCatalogueReportCommand`, `ValidateThemesCommand`.
 - Health checks: `Capell\FoundationTheme\Health\FoundationThemeHealthCheck`.
-- Blade views: `packages/theme-foundation/resources/views/app.blade.php`, `packages/theme-foundation/resources/views/block/wrapper.blade.php`, `packages/theme-foundation/resources/views/components/actions/index.blade.php`, `packages/theme-foundation/resources/views/components/app/body.blade.php`, `packages/theme-foundation/resources/views/components/app/head/custom.blade.php`, `packages/theme-foundation/resources/views/components/app/head/tokens.blade.php`, `packages/theme-foundation/resources/views/components/badge.blade.php`, `packages/theme-foundation/resources/views/components/block/wrapper.blade.php`, `packages/theme-foundation/resources/views/components/button/index.blade.php`, `packages/theme-foundation/resources/views/components/content.blade.php`, `packages/theme-foundation/resources/views/components/demo/contact-page.blade.php`, `packages/theme-foundation/resources/views/components/display/art-directed-picture.blade.php`, `and 115 more`.
+- Blade views: `packages/theme-foundation/resources/views/app.blade.php`, `packages/theme-foundation/resources/views/block/wrapper.blade.php`, `packages/theme-foundation/resources/views/components/actions/index.blade.php`, `packages/theme-foundation/resources/views/components/app/body.blade.php`, `packages/theme-foundation/resources/views/components/app/head/custom.blade.php`, `packages/theme-foundation/resources/views/components/app/head/tokens.blade.php`, `packages/theme-foundation/resources/views/components/badge.blade.php`, `packages/theme-foundation/resources/views/components/block/wrapper.blade.php`, `packages/theme-foundation/resources/views/components/button/index.blade.php`, `packages/theme-foundation/resources/views/components/content.blade.php`, `packages/theme-foundation/resources/views/components/demo/contact-page.blade.php`, `packages/theme-foundation/resources/views/components/display/art-directed-picture.blade.php`, `and 116 more`.
 - Cache tags: `theme-foundation`.
 
 ## Child Theme Override Contract
@@ -90,39 +84,44 @@ This theme has no schema impact. It relies on core Capell site, page, locale, an
 
 ## Install Impact
 
-- Admin navigation: adds package-owned Filament classes when registered.
+- Required packages: `capell-app/core`, `capell-app/frontend`, `capell-app/layout-builder`, `capell-app/navigation`.
+- Admin navigation: no admin page or resource contribution is declared.
+- Admin/editor extensions: none declared.
 - Permissions: none declared in `capell.json`.
-- Public routes: none detected in package route files.
+- Public routes: none declared.
 - Database changes: no package migrations declared.
+- Config: `config/capell-theme-foundation.php`.
 - Settings: `Capell\FoundationTheme\Settings\FoundationThemeSettings`.
-- Queues or schedules: none detected in standard package paths.
+- Queues or schedules: none declared.
 - Cache tags: `theme-foundation`.
 - Commands: `capell:theme-foundation-demo`, `capell:theme-foundation-setup`.
 
 ## Common Pitfalls
 
-- Configure package settings before testing production-like workflows.
+- Keep required Capell packages on compatible v4 releases: `capell-app/core`, `capell-app/frontend`, `capell-app/layout-builder`, `capell-app/navigation`.
+- Review package configuration before production-like verification: `config/capell-theme-foundation.php`, `Capell\FoundationTheme\Settings\FoundationThemeSettings`.
 - Keep public Blade and cached HTML free of authoring markers, model IDs, permissions, signed editor URLs, and lazy database queries.
-- Keep `composer.json`, `composer.local.json`, `capell.json`, docs, screenshots, and tests aligned when the package surface changes.
+- Custom write integrations must preserve invalidation for `theme-foundation` cache tags.
 
 ## Troubleshooting
 
 | Symptom | Likely cause | Check | Fix |
 | --- | --- | --- | --- |
 | Package surface is missing after install | Provider or manifest is not loaded | Confirm `capell.json`, package `composer.json`, and provider registration | Reinstall the package, refresh Composer autoload, and clear host caches |
-| Background work does not run | Queue worker or scheduled command is not active | Check package jobs, commands, and host scheduler configuration | Start the queue or scheduler, then run the focused command or package test |
 | Public output leaks unexpected state | Render data, cache variation, or authoring boundary has regressed | Check public Blade, cache tags, and public-output safety tests | Move data loading out of Blade and rerun the package public-output tests |
 
 ## Quick Start
 
 1. Install the package: `composer require capell-app/theme-foundation`.
 2. Run the required setup: `php artisan capell:theme-foundation-setup`.
-3. Open the related Capell admin surface and verify Foundation Theme appears.
+3. Open the Foundation Homepage and confirm the public output renders without admin state.
 
 ## Next Steps
 
 - [Package docs](docs/README.md)
 - [Overview](docs/overview.md)
+- Configuration files: [`config/capell-theme-foundation.php`](config/capell-theme-foundation.php).
+- [Troubleshooting](#troubleshooting)
 - [Screenshot contract](docs/screenshots.json)
 - [Marketplace assets](docs/assets/marketplace/)
 - [Capell content language plan](../../docs/CONTENT_LANGUAGE_PLAN.md)
