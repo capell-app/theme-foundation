@@ -63,6 +63,169 @@
             transition-duration: 0.01ms !important;
         }
     }
+
+    .theme-content-listing,
+    .theme-search,
+    .theme-pagination,
+    .theme-changelog-stream {
+        background: var(--foundation-section-muted-bg);
+        border-color: var(--foundation-border);
+        color: var(--foundation-body-fg);
+    }
+
+    .theme-content-listing > div,
+    .theme-search > div,
+    .theme-changelog-stream > div {
+        padding-block: var(--foundation-section-spacing);
+    }
+
+    .theme-content-listing h2,
+    .theme-search h2,
+    .theme-changelog-stream h2 {
+        color: var(--foundation-heading-fg);
+        letter-spacing: -0.035em;
+        text-wrap: balance;
+    }
+
+    .theme-content-listing h2 + p,
+    .theme-search h2 + p,
+    .theme-changelog-stream h2 + p {
+        color: var(--foundation-muted-fg);
+        text-wrap: pretty;
+    }
+
+    .theme-content-listing :where(a, details, [role='tabpanel']),
+    .theme-changelog-stream article {
+        background: var(--foundation-card-bg);
+        border-color: var(--foundation-border);
+        color: var(--foundation-body-fg);
+    }
+
+    .theme-content-listing :where(a, details) {
+        text-decoration: none;
+    }
+
+    .theme-content-listing :where(a, button):focus-visible,
+    .theme-pagination a:focus-visible,
+    .theme-search :where(input, button, a):focus-visible {
+        box-shadow:
+            0 0 0 3px var(--foundation-section-muted-bg),
+            0 0 0 6px var(--foundation-focus-ring);
+        outline: none;
+    }
+
+    .theme-content-listing a:hover {
+        border-color: color-mix(
+            in srgb,
+            var(--theme-primary) 36%,
+            var(--foundation-border)
+        );
+    }
+
+    .theme-content-listing :where(h3, .text-slate-950),
+    .theme-search :where(h3, .text-slate-950),
+    .theme-changelog-stream :where(h3, .text-slate-950) {
+        color: var(--foundation-heading-fg);
+    }
+
+    .theme-content-listing :where(.text-slate-600, .text-slate-500),
+    .theme-search :where(.text-slate-600, .text-slate-500),
+    .theme-changelog-stream :where(.text-slate-600, .text-slate-500) {
+        color: var(--foundation-muted-fg);
+    }
+
+    .theme-content-listing img {
+        height: auto;
+    }
+
+    .theme-content-listing--rows a {
+        border-radius: var(--foundation-radius);
+        padding-inline: 0.5rem;
+    }
+
+    .theme-content-listing--masonry-safe > div > div:last-child {
+        align-items: start;
+    }
+
+    .theme-search form {
+        background: var(--foundation-card-bg);
+        border: 1px solid var(--foundation-border);
+        border-radius: calc(var(--foundation-radius) + 0.25rem);
+        box-shadow: 0 18px 45px rgb(15 23 42 / 6%);
+        padding: clamp(0.75rem, 2vw, 1rem);
+    }
+
+    .theme-search input {
+        background: var(--foundation-card-bg);
+        border-color: var(--foundation-border);
+        color: var(--foundation-body-fg);
+        min-height: 2.75rem;
+    }
+
+    .theme-search button {
+        min-height: 2.75rem;
+    }
+
+    .theme-search ul {
+        border-color: var(--foundation-border);
+    }
+
+    .theme-search ul a {
+        border-radius: var(--foundation-radius);
+        padding: 1rem;
+        text-decoration: none;
+        transition: background-color 180ms ease;
+    }
+
+    .theme-search ul a:hover {
+        background: var(--foundation-card-bg);
+    }
+
+    .theme-search > div > div:last-child {
+        background: var(--foundation-card-bg);
+        border-color: var(--foundation-border);
+    }
+
+    .theme-pagination > nav {
+        min-width: 0;
+    }
+
+    .theme-pagination :where(a, span) {
+        min-height: 2.75rem;
+        min-width: 2.75rem;
+    }
+
+    .theme-pagination a {
+        align-items: center;
+        display: inline-flex;
+        justify-content: center;
+        text-decoration: none;
+    }
+
+    .theme-changelog-stream article {
+        box-shadow: 0 14px 36px rgb(15 23 42 / 5%);
+    }
+
+    .theme-changelog-stream .changelog-stream-list {
+        border-color: var(--foundation-border);
+    }
+
+    @media (max-width: 639px) {
+        .theme-pagination > nav {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .theme-pagination ul {
+            justify-content: center;
+            order: -1;
+        }
+
+        .theme-pagination > nav > :where(a, span) {
+            justify-content: center;
+            width: 100%;
+        }
+    }
 }
 
 @layer utilities {

@@ -163,3 +163,16 @@ it('ships proof and conversion sections with resilient media and action states',
         ->toContain('.theme-cta a:focus-visible')
         ->toContain('@media (prefers-reduced-motion: reduce)');
 });
+
+it('ships discovery sections with readable states and small-screen navigation', function (): void {
+    $styles = file_get_contents(dirname(__DIR__, 2) . '/resources/css/theme/theme.css');
+
+    expect($styles)
+        ->toContain('.theme-content-listing :where(a, button):focus-visible')
+        ->toContain('.theme-content-listing img')
+        ->toContain('.theme-search form')
+        ->toContain('.theme-search ul a:hover')
+        ->toContain('.theme-pagination :where(a, span)')
+        ->toContain('.theme-changelog-stream article')
+        ->toContain('@media (max-width: 639px)');
+});
