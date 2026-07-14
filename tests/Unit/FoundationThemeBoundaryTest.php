@@ -224,17 +224,20 @@ it('delegates primary header navigation to the navigation render hook', function
         ->and($header)->not->toContain('Capell\\Navigation');
 });
 
-it('keeps foundation header navigation on one row and uses the disclosure at narrower widths', function (): void {
+it('uses complete shared navigation disclosure below the wide desktop breakpoint', function (): void {
     $header = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/header/index.blade.php');
     $navigation = file_get_contents(dirname(__DIR__, 2) . '/resources/views/theme/chrome/navigation.blade.php');
+    $chromeStyles = file_get_contents(dirname(__DIR__, 2) . '/resources/css/theme/chrome.css');
 
     expect($header)
-        ->toContain('capell-product-header__inner relative flex-nowrap')
-        ->and($header)->toContain('[&_.nav-items]:lg:flex-nowrap')
-        ->and($navigation)->toContain('theme-chrome-nav__links flex-nowrap whitespace-nowrap')
-        ->and($navigation)->toContain('@media (max-width: 1199px)')
-        ->and($navigation)->toMatch('/\.theme-chrome-nav__links\s*{\s*display: none;/')
-        ->and($navigation)->toMatch('/\.theme-chrome-nav__mobile\s*{\s*display: block;/');
+        ->not->toContain('[&_.nav-items]:lg:flex-nowrap')
+        ->and($navigation)->not->toContain('<style>')
+        ->and($navigation)->toContain('theme-chrome-nav__links')
+        ->and($navigation)->toContain('theme-chrome-nav__mobile-cta')
+        ->and($navigation)->toContain('{{ $section->ctaLabel }}')
+        ->and($chromeStyles)->toContain('@media (min-width: 1200px)')
+        ->and($chromeStyles)->toMatch('/\.theme-chrome-nav__links\s*{[^}]*white-space: nowrap;/s')
+        ->and($chromeStyles)->toMatch('/\.theme-chrome-nav__mobile-panel \.theme-chrome-nav__cta\s*{\s*display: inline-flex;/');
 });
 
 it('delegates main layout container rendering to the shared frontend hook', function (): void {
