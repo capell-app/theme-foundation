@@ -23,6 +23,24 @@
 
     $containerWidth = GetLayoutContainerWidthAction::run();
     $resolveHeaderColor = static fn (mixed $value, string $fallback): string => ResolveSafeCssColorTokenAction::run($value, $fallback);
+    $resolveOptionalHeaderColor = static function (mixed $value): ?string {
+        if (! is_string($value) || trim($value) === '') {
+            return null;
+        }
+
+        $resolvedValue = ResolveSafeCssColorTokenAction::run($value, 'transparent');
+
+        return $resolvedValue === 'transparent' && strtolower(trim($value)) !== 'transparent'
+            ? null
+            : $resolvedValue;
+    };
+
+    $headerColor = $resolveOptionalHeaderColor($theme->getMeta('header_color'));
+    $headerBackgroundColor = $resolveOptionalHeaderColor($theme->getMeta('header_background_color'));
+    $mainBackgroundColor = $resolveOptionalHeaderColor($theme->getMeta('main_background_color'));
+    $headerDarkColor = $resolveOptionalHeaderColor($theme->getMeta('header_dark_color'));
+    $headerDarkBackgroundColor = $resolveOptionalHeaderColor($theme->getMeta('header_dark_background_color'));
+    $mainDarkBackgroundColor = $resolveOptionalHeaderColor($theme->getMeta('main_dark_background_color'));
 @endphp
 
 @props ([
@@ -32,16 +50,16 @@
 <style>
     :root {
         --header-height: {{ $theme->getMeta('header_height', '4.7rem') }};
-        --color-header: {{ $resolveHeaderColor($theme->getMeta('header_color', '#101715'), '#101715') }};
-        --bg-color-header: {{ $resolveHeaderColor($theme->getMeta('header_background_color', '#fcfffb'), '#fcfffb') }};
-        --bg-color-main: {{ $resolveHeaderColor($theme->getMeta('main_background_color', '#f5f7f4'), '#f5f7f4') }};
+        --color-header: {{ $headerColor ?? 'var(--foundation-body-fg)' }};
+        --bg-color-header: {{ $headerBackgroundColor ?? 'var(--foundation-header-bg)' }};
+        --bg-color-main: {{ $mainBackgroundColor ?? 'var(--foundation-page-bg)' }};
         --border-header: {{ $headerBorderColor ? $resolveHeaderColor($headerBorderColor, 'transparent') : 'transparent' }};
     }
 
     .dark:root {
-        --color-header: {{ $resolveHeaderColor($theme->getMeta('header_dark_color', '#dceae5'), '#dceae5') }};
-        --bg-color-header: {{ $resolveHeaderColor($theme->getMeta('header_dark_background_color', '#0b1716'), '#0b1716') }};
-        --bg-color-main: {{ $resolveHeaderColor($theme->getMeta('main_dark_background_color', '#0b1716'), '#0b1716') }};
+        --color-header: {{ $headerDarkColor ?? 'var(--foundation-body-fg)' }};
+        --bg-color-header: {{ $headerDarkBackgroundColor ?? 'var(--foundation-header-bg)' }};
+        --bg-color-main: {{ $mainDarkBackgroundColor ?? 'var(--foundation-page-bg)' }};
         --border-header: {{ $headerDarkBorderColor ? $resolveHeaderColor($headerDarkBorderColor, 'transparent') : 'transparent' }};
     }
 
