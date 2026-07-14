@@ -27,6 +27,7 @@ use Capell\Core\ThemeStudio\Data\ThemePresetData;
 use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
 use Capell\FoundationTheme\Actions\ResolveFoundationThemeTokensAction;
 use Capell\FoundationTheme\Console\Commands\DemoCommand;
+use Capell\FoundationTheme\Console\Commands\GenerateTailwindAssetsCommand;
 use Capell\FoundationTheme\Console\Commands\MakeThemeCommand;
 use Capell\FoundationTheme\Console\Commands\SetupCommand;
 use Capell\FoundationTheme\Console\Commands\ThemeCatalogueReportCommand;
@@ -153,6 +154,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
             ->hasTranslations()
             ->hasCommands([
                 DemoCommand::class,
+                GenerateTailwindAssetsCommand::class,
                 SetupCommand::class,
                 ThemeCatalogueReportCommand::class,
                 MakeThemeCommand::class,
