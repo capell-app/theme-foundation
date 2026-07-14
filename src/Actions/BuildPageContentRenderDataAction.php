@@ -23,6 +23,10 @@ final class BuildPageContentRenderDataAction
         $translation = $page instanceof Model ? $this->loadedRelation($page, 'translation') : null;
         $blueprint = $page instanceof Model ? $this->loadedRelation($page, 'blueprint') : null;
         $image = $page instanceof Model ? $this->loadedRelation($page, 'image') : null;
+        $imageTranslation = $image instanceof Media && $image->relationLoaded('translations')
+            ? $image->translations->firstWhere('language_id', data_get($translation, 'language_id'))
+            : null;
+        $imageAlt = data_get($imageTranslation, 'meta.alt');
         $content = data_get($translation, 'content');
         $title = data_get($translation, 'title');
         $displayTitle = data_get($translation, 'meta.hero_title');
@@ -33,6 +37,7 @@ final class BuildPageContentRenderDataAction
 
         return new PageContentRenderData(
             image: $image instanceof Media ? $image : null,
+            imageAlt: is_string($imageAlt) && $imageAlt !== '' ? $imageAlt : null,
             content: is_string($content) ? $content : null,
             contentStructure: $contentStructure,
             hasContent: in_array('content', $pageContents, true) && is_string($content) && $content !== '',

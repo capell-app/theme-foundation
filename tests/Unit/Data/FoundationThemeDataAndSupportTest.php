@@ -18,6 +18,7 @@ use Capell\FoundationTheme\Support\View\FoundationThemeViewName;
 it('carries foundation theme render data objects', function (): void {
     $pageContent = new PageContentRenderData(
         image: null,
+        imageAlt: null,
         content: '<p>Portable content.</p>',
         contentStructure: ContentStructure::Html,
         hasContent: true,

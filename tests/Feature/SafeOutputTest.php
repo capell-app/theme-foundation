@@ -193,6 +193,7 @@ test('public blade getMeta and translation relation reads stay reviewed', functi
         'resources/views/components/widget/asset/widgets.blade.php' => ['getMeta' => 12, 'translation' => 3],
         'resources/views/components/widget/banner-image.blade.php' => ['getMeta' => 8, 'translation' => 2],
         'resources/views/components/widget/default.blade.php' => ['getMeta' => 10, 'translation' => 2],
+        'resources/views/components/widget/hero.blade.php' => ['getMeta' => 2, 'translation' => 2],
         'resources/views/components/widget/kitchen-sink/reference.blade.php' => ['getMeta' => 2, 'translation' => 3],
         'resources/views/components/widget/modern/alternating-content.blade.php' => ['getMeta' => 0, 'translation' => 5],
         'resources/views/components/widget/modern/card-grid.blade.php' => ['getMeta' => 3, 'translation' => 5],

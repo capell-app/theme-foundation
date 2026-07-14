@@ -79,12 +79,21 @@ it('builds page content render data from loaded relations only', function (): vo
     $page = Page::factory()->make();
     $translation = new Translation;
     $translation->setRawAttributes([
+        'language_id' => 1,
         'title' => 'Loaded page title - Browser suffix',
         'content' => '<p>Loaded page content.</p>',
         'meta' => json_encode(['hero_title' => 'Loaded page title'], JSON_THROW_ON_ERROR),
     ]);
 
     $page->setRelation('translation', $translation);
+    $image = MediaFactory::new()->make();
+    $imageTranslation = new Translation;
+    $imageTranslation->setRawAttributes([
+        'language_id' => 1,
+        'meta' => json_encode(['alt' => 'Loaded media alternative'], JSON_THROW_ON_ERROR),
+    ]);
+    $image->setRelation('translations', new Illuminate\Database\Eloquent\Collection([$imageTranslation]));
+    $page->setRelation('image', $image);
 
     DB::enableQueryLog();
 
@@ -93,6 +102,7 @@ it('builds page content render data from loaded relations only', function (): vo
     expect($renderData->title)->toBe('Loaded page title')
         ->and($renderData->content)->toBe('<p>Loaded page content.</p>')
         ->and($renderData->contentStructure)->toBe(ContentStructure::Html)
+        ->and($renderData->imageAlt)->toBe('Loaded media alternative')
         ->and($renderData->hasContent)->toBeTrue()
         ->and($renderData->hasTitle)->toBeFalse()
         ->and(DB::getQueryLog())->toBe([]);

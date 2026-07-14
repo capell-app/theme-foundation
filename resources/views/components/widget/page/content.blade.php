@@ -87,6 +87,7 @@
                     :$layout
                     :muted="in_array($containerKey, $secondaryContainers)"
                     :image="$pageContentRenderData->image"
+                    :image-title="$pageContentRenderData->imageAlt"
                     :page-record="$page"
                     :site="$site"
                     :text-align="$widget->getMeta('align')"

@@ -11,6 +11,7 @@ final class PageContentRenderData extends Data
 {
     public function __construct(
         public readonly mixed $image,
+        public readonly ?string $imageAlt,
         public readonly ?string $content,
         public readonly ?ContentStructure $contentStructure,
         public readonly bool $hasContent,
