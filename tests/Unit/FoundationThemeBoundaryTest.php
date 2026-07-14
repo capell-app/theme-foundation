@@ -224,6 +224,19 @@ it('delegates primary header navigation to the navigation render hook', function
         ->and($header)->not->toContain('Capell\\Navigation');
 });
 
+it('keeps foundation header navigation on one row and uses the disclosure at narrower widths', function (): void {
+    $header = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/header/index.blade.php');
+    $navigation = file_get_contents(dirname(__DIR__, 2) . '/resources/views/theme/chrome/navigation.blade.php');
+
+    expect($header)
+        ->toContain('capell-product-header__inner relative flex-nowrap')
+        ->and($header)->toContain('[&_.nav-items]:lg:flex-nowrap')
+        ->and($navigation)->toContain('theme-chrome-nav__links flex-nowrap whitespace-nowrap')
+        ->and($navigation)->toContain('@media (max-width: 1199px)')
+        ->and($navigation)->toMatch('/\.theme-chrome-nav__links\s*{\s*display: none;/')
+        ->and($navigation)->toMatch('/\.theme-chrome-nav__mobile\s*{\s*display: block;/');
+});
+
 it('delegates main layout container rendering to the shared frontend hook', function (): void {
     $main = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/layout/main.blade.php');
 

@@ -129,7 +129,7 @@
 >
     <div
         @class ([
-            'capell-product-header__inner relative w-full max-lg:px-0',
+            'capell-product-header__inner relative flex-nowrap w-full max-lg:px-0 [&_.nav-items]:lg:flex-nowrap',
             $containerWidth->getContainerClass(),
         ])
     >

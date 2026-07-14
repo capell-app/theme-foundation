@@ -7,6 +7,20 @@
     properties, so each theme keeps its own colours/typography.
     Data shape (NavigationData): brandName, items[{label,url}], ctaLabel, ctaUrl.
 --}}
+<style>
+    @media (max-width: 1199px) {
+        .theme-chrome-nav__links {
+            display: none;
+        }
+        .theme-chrome-nav__cta {
+            display: none;
+        }
+        .theme-chrome-nav__mobile {
+            display: block;
+        }
+    }
+</style>
+
 <nav
     class="theme-chrome-nav"
     aria-label="{{ __('capell-theme-foundation::generic.main_navigation') }}"
@@ -22,7 +36,7 @@
         </a>
 
         @if ($section->items !== [])
-            <div class="theme-chrome-nav__links">
+            <div class="theme-chrome-nav__links flex-nowrap whitespace-nowrap">
                 @foreach ($section->items as $item)
                     @if (! empty($item['url']) && ! empty($item['label']))
                         <a
