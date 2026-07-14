@@ -18,6 +18,8 @@
     'headingWeight' => 'normal',
     'headingBalance' => true,
     'image' => null,
+    'imageFetchPriority' => 'auto',
+    'imageLoading' => 'lazy',
     'muted' => null,
     'language' => null,
     'layout' => null,
@@ -92,6 +94,23 @@
         $headingTag = $headingSize;
     }
 
+    $headingTag = in_array($headingTag, ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'], true)
+        ? $headingTag
+        : 'h3';
+    $headingSize = in_array($headingSize, ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'], true)
+        ? $headingSize
+        : $headingTag;
+    $resolvedTextAlign = match ($textAlign) {
+        'center' => 'center',
+        'right', 'end' => 'end',
+        'justify' => 'justify',
+        default => 'start',
+    };
+    $resolvedImageLoading = $imageLoading === 'eager' ? 'eager' : 'lazy';
+    $resolvedImageFetchPriority = in_array($imageFetchPriority, ['high', 'low'], true)
+        ? $imageFetchPriority
+        : 'auto';
+
     if (! $muted && $headingStyle === 'secondary') {
         $muted = true;
     }
@@ -121,17 +140,17 @@
             'dark:prose-invert' => $color !== 'light' && ($theme?->withDarkMode ?? false),
             'prose-muted' => $color === 'muted' || (! $color && $muted),
             'max-w-none' => $width === 'full',
-            'mx-auto' => $align === 'center' || (! $align && $textAlign === 'center'),
+            'mx-auto' => $align === 'center' || (! $align && $resolvedTextAlign === 'center'),
             'prose-lg md:prose-xl lg:prose-2xl xl:prose-4xl' => $size === 'lg',
             'prose-sm' => $size === 'sm',
             'prose-compact' => $compact,
             'prose-headings:text-balance' => $headingBalance,
             'prose-headings:font-medium' => $headingWeight === 'medium',
             'prose-headings:font-normal' => $headingWeight === 'normal',
-            'text-left' => $textAlign === 'left',
-            'text-right' => $textAlign === 'right',
-            'text-center' => $textAlign === 'center',
-            $textAlign => ! in_array($textAlign, ['left', 'right', 'center'], true),
+            'text-start' => $resolvedTextAlign === 'start',
+            'text-end' => $resolvedTextAlign === 'end',
+            'text-center' => $resolvedTextAlign === 'center',
+            'text-justify' => $resolvedTextAlign === 'justify',
         ])
     }}
 >
@@ -147,15 +166,14 @@
                 :data-lightbox="$image->getFullUrl()"
                 role="button"
                 tabindex="0"
-                onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); this.click(); }"
                 aria-label="{{ __('capell-frontend::generic.open_image') }}: {{ $imageTitle ?? $title }}"
                 :alt="$imageTitle ?? $title"
-                fetchpriority="high"
+                :fetchpriority="$resolvedImageFetchPriority"
                 @class([
-                    'h-auto object-cover object-center lightbox cursor-pointer md:float-right md:max-w-[40%] md:ml-10 md:mt-0',
+                    'h-auto object-cover object-center lightbox cursor-pointer md:float-end md:ms-10 md:mt-0 md:max-w-[40%]',
                     'rounded' => (bool) $theme?->getMeta('rounded_images'),
                 ])
-                loading="eager"
+                :loading="$resolvedImageLoading"
                 sizes="(min-width: 768px) 40vw, 88vw"
         />
         {{-- format-ignore-end --}}

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\Blade;
 use Illuminate\View\ComponentAttributeBag;
 use Illuminate\View\ComponentSlot;
 use Livewire\Blaze\Blaze;
@@ -111,7 +112,79 @@ it('renders responsive-table-to-cards without throwing', function (): void {
     expect($html)
         ->toContain('Ada Lovelace')
         ->toContain('Grace Hopper')
-        ->toContain('<table');
+        ->toContain('<table')
+        ->toContain('<dl')
+        ->toContain('<dt>Name</dt>')
+        ->toContain('<dd>Ada Lovelace</dd>')
+        ->toContain('scope="col"');
+});
+
+it('renders an accessible responsive table caption and intentional empty state', function (): void {
+    $tableHtml = renderFoundationPrimitive(
+        'capell-theme-foundation::components.display.responsive-table-to-cards',
+        [
+            'caption' => 'Project roles',
+            'headers' => ['Name'],
+            'rows' => [['Ada Lovelace']],
+        ],
+    );
+    $emptyHtml = renderFoundationPrimitive(
+        'capell-theme-foundation::components.display.responsive-table-to-cards',
+        [
+            'emptyTitle' => 'No project roles',
+            'emptyDescription' => 'Add the first role to begin.',
+        ],
+    );
+
+    expect($tableHtml)
+        ->toContain('<caption>')
+        ->toContain('Project roles')
+        ->toContain('role="region"')
+        ->toContain('aria-label="Project roles"')
+        ->and($emptyHtml)
+        ->toContain('No project roles')
+        ->toContain('Add the first role to begin.')
+        ->not->toContain('<table');
+});
+
+it('renders safe button loading, disabled, external, and invalid-url states', function (): void {
+    $loadingButton = Blade::render(<<<'BLADE'
+        <x-capell::button type="submit" color="primary" loading>
+            Save changes
+        </x-capell::button>
+        BLADE);
+    $disabledLink = Blade::render(<<<'BLADE'
+        <x-capell::button url="/next" disabled>
+            Continue
+        </x-capell::button>
+        BLADE);
+    $externalLink = Blade::render(<<<'BLADE'
+        <x-capell::button url="https://example.test" target="_blank">
+            External resource
+        </x-capell::button>
+        BLADE);
+    $unsafeUrl = Blade::render(<<<'BLADE'
+        <x-capell::button url="javascript:alert(1)">
+            Unsafe resource
+        </x-capell::button>
+        BLADE);
+
+    expect($loadingButton)
+        ->toContain('<button')
+        ->toContain('type="submit"')
+        ->toContain('disabled')
+        ->toContain('aria-busy="true"')
+        ->toContain('Loading')
+        ->and($disabledLink)
+        ->toContain('aria-disabled="true"')
+        ->not->toContain('href="/next"')
+        ->and($externalLink)
+        ->toContain('href="https://example.test"')
+        ->toContain('target="_blank"')
+        ->toContain('rel="noopener noreferrer"')
+        ->and($unsafeUrl)
+        ->toContain('<button')
+        ->not->toContain('javascript:');
 });
 
 it('renders count-up-stat without throwing', function (): void {

@@ -45,6 +45,8 @@ it('renders the unwired fallback without a submitting form', function (): void {
     expect($html)
         ->toContain('data-newsletter-unavailable')
         ->toContain('newsletter-shell')
+        ->toContain('<fieldset')
+        ->toContain('disabled')
         ->not->toContain('<form')
         ->not->toContain('method="get"');
 });

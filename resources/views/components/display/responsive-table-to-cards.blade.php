@@ -1,67 +1,67 @@
 @props ([
+    'caption' => null,
+    'emptyDescription' => null,
+    'emptyTitle' => null,
     'headers' => [],
     'rows' => [],
 ])
 
 {{--
-    Shared Foundation display primitive (Wave 2.7): renders a `<table>` on
-    wide viewports and a stacked card-per-row layout below the `sm`
-    breakpoint, purely via CSS (Tailwind responsive utility classes) — no
-    JS is involved at all. `headers` is a flat list of header labels;
-    `rows` is a list of rows, each a list of cell values in the same order
-    as `headers`. Token-skinned via `--foundation-*` border/surface
-    properties, payload-driven only.
+    The desktop table and mobile definition lists expose the same data with
+    native semantics. No JavaScript or duplicated interactive controls.
 --}}
 
-<div {{ $attributes }}>
-    <table class="hidden w-full border-collapse text-left sm:table">
-        <thead>
-            <tr
-                style="border-bottom: 1px solid var(--foundation-border-strong)"
-            >
-                @foreach ($headers as $header)
-                    <th
-                        class="px-4 py-3 text-sm font-semibold"
-                        style="color: var(--foundation-body-fg)"
-                    >
-                        {{ $header }}
-                    </th>
-                @endforeach
-            </tr>
-        </thead>
+<div {{ $attributes->class(['responsive-data-table']) }}>
+    @if ($headers !== [] && $rows !== [])
+        <div
+            class="responsive-data-table__scroll"
+            tabindex="0"
+            role="region"
+            @if (filled($caption)) aria-label="{{ $caption }}" @endif
+        >
+            <table class="responsive-data-table__table">
+                @if (filled($caption))
+                    <caption>
+                        {{ $caption }}
+                    </caption>
+                @endif
 
-        <tbody>
-            @foreach ($rows as $row)
-                <tr style="border-bottom: 1px solid var(--foundation-border)">
-                    @foreach ($row as $cell)
-                        <td class="px-4 py-3 text-sm">{{ $cell }}</td>
+                <thead>
+                    <tr>
+                        @foreach ($headers as $header)
+                            <th scope="col">{{ $header }}</th>
+                        @endforeach
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach ($rows as $row)
+                        <tr>
+                            @foreach ($headers as $cellIndex => $header)
+                                <td>{{ data_get($row, $cellIndex, '') }}</td>
+                            @endforeach
+                        </tr>
                     @endforeach
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
+                </tbody>
+            </table>
+        </div>
 
-    <div class="flex flex-col gap-3 sm:hidden">
-        @foreach ($rows as $row)
-            <div
-                class="rounded-[var(--foundation-radius)] p-4"
-                style="
-                    border: 1px solid var(--foundation-border);
-                    background-color: var(--foundation-card-bg);
-                "
-            >
-                @foreach ($row as $cellIndex => $cell)
-                    <div class="flex justify-between gap-4 py-1 text-sm">
-                        <span
-                            class="font-semibold"
-                            style="color: var(--foundation-body-fg)"
-                        >
-                            {{ $headers[$cellIndex] ?? '' }}
-                        </span>
-                        <span class="text-right">{{ $cell }}</span>
-                    </div>
-                @endforeach
-            </div>
-        @endforeach
-    </div>
+        <div class="responsive-data-table__cards">
+            @foreach ($rows as $row)
+                <dl class="responsive-data-table__card">
+                    @foreach ($headers as $cellIndex => $header)
+                        <div class="responsive-data-table__card-row">
+                            <dt>{{ $header }}</dt>
+                            <dd>{{ data_get($row, $cellIndex, '') }}</dd>
+                        </div>
+                    @endforeach
+                </dl>
+            @endforeach
+        </div>
+    @else
+        <x-capell::no-results
+            :title="$emptyTitle"
+            :description="$emptyDescription"
+        />
+    @endif
 </div>

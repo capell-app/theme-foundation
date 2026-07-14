@@ -2,6 +2,7 @@
     <form
         method="{{ $form->method }}"
         action="{{ $form->action }}"
+        data-newsletter-form
         {{ $attributes }}
     >
         <input
@@ -15,8 +16,19 @@
 @else
     <div
         data-newsletter-unavailable
+        role="note"
         {{ $attributes }}
     >
-        {{ $slot }}
+        <p class="theme-newsletter-unavailable__message">
+            {{ __('capell-theme-foundation::generic.newsletter_unavailable') }}
+        </p>
+
+        <fieldset
+            class="theme-newsletter-unavailable__controls"
+            disabled
+            aria-disabled="true"
+        >
+            {{ $slot }}
+        </fieldset>
     </div>
 @endif

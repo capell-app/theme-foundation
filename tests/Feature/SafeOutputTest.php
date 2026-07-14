@@ -31,7 +31,21 @@ test('content component sanitizes cms html before rendering', function (): void 
 
     expect($content)->toContain('RenderHtmlContentAction::run($content, $pageVariables)')
         ->and($content)->not->toContain('{!! $content !!}')
-        ->and($content)->not->toContain('{!! $page->translation->content !!}');
+        ->and($content)->not->toContain('{!! $page->translation->content !!}')
+        ->and($content)->not->toContain('onkeydown=')
+        ->and($content)->toContain("'imageLoading' => 'lazy'")
+        ->and($content)->toContain("'imageFetchPriority' => 'auto'");
+});
+
+test('public buttons expose finite safe states and sanitize destinations', function (): void {
+    $button = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/button/index.blade.php');
+
+    expect(substr_count($button, "'color' =>"))->toBe(1)
+        ->and($button)->toContain('PublicUrlSanitizer::sanitize($url)')
+        ->toContain("'type' => 'button'")
+        ->toContain('aria-busy="true"')
+        ->toContain('aria-disabled="true"')
+        ->toContain('noopener noreferrer');
 });
 
 test('public image source component renders URL images without admin metadata', function (): void {

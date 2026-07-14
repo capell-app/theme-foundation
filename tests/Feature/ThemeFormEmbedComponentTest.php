@@ -26,6 +26,9 @@ it('renders a public-safe fallback when the optional form component is unavailab
         ->toContain('Send the brief by email instead.')
         ->toContain('mailto:hello@example.test')
         ->toContain('Email the team')
+        ->toContain('role="note"')
+        ->toContain('aria-labelledby="theme-form-fallback-title"')
+        ->toContain('data-theme-form-fallback')
         ->not->toContain('capell-form-builder')
         ->not->toContain('Capell\\FormBuilder');
 });
