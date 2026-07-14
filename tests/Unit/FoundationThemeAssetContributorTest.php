@@ -251,6 +251,33 @@ it('omits the per-theme css requirement when no generated source exists', functi
     expect(collect($requirements)->pluck('handle')->all())->not->toContain('theme-css:default');
 });
 
+it('omits a non-default split requirement when its generated source is missing', function (): void {
+    $outputDirectory = storage_path('framework/testing/foundation-contributor-missing-premium');
+
+    config([
+        'capell-theme-foundation.tailwind.split_theme_css' => true,
+        'capell-theme-foundation.tailwind.theme_css_output_directory' => $outputDirectory,
+    ]);
+    File::ensureDirectoryExists($outputDirectory);
+
+    try {
+        $theme = Theme::factory()->make(['key' => 'showreel']);
+
+        $requirements = resolve(FoundationThemeAssetContributor::class)->requirements(new FrontendAssetContextData(
+            page: null,
+            site: null,
+            language: null,
+            layout: null,
+            theme: $theme,
+            runtime: FrontendRuntimeManifestData::forRenderingStrategy(RenderingStrategyEnum::BladeOnly),
+        ));
+
+        expect(collect($requirements)->pluck('handle')->all())->not->toContain('theme-css:showreel');
+    } finally {
+        File::deleteDirectory($outputDirectory);
+    }
+});
+
 it('never emits a split requirement for the default theme when a stale source exists', function (): void {
     $outputDirectory = storage_path('framework/testing/foundation-contributor-stale-default');
 
