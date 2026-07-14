@@ -103,3 +103,35 @@ it('resolves every declared section variant to a real Blade view file', function
 
     expect($checked)->toBeGreaterThan(0);
 });
+
+it('ships every Foundation hero variant with stable media and premium interaction states', function (): void {
+    $themeRoot = dirname(__DIR__, 2);
+    $heroViews = [
+        'hero.blade.php',
+        'hero--split.blade.php',
+        'hero--stacked.blade.php',
+        'hero--full-bleed.blade.php',
+    ];
+
+    foreach ($heroViews as $heroView) {
+        $source = file_get_contents($themeRoot . '/resources/views/theme/sections/' . $heroView);
+
+        expect($source)
+            ->toContain('<h1')
+            ->toContain('width="')
+            ->toContain('height="')
+            ->toContain('loading="eager"')
+            ->toContain('fetchpriority="high"')
+            ->toContain("\$action['url']")
+            ->toContain("\$action['label']");
+    }
+
+    $styles = file_get_contents($themeRoot . '/resources/css/theme/theme.css');
+
+    expect($styles)
+        ->toContain('.theme-hero a:focus-visible')
+        ->toContain('.theme-hero--full-bleed::after')
+        ->toContain('calc(100svh - var(--header-height, 4.7rem))')
+        ->toContain('@media (max-width: 767px)')
+        ->toContain('.dark .theme-hero');
+});

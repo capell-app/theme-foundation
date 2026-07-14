@@ -1734,6 +1734,173 @@
         }
     }
 
+    /* Foundation section system: the default theme should feel authored,
+       while child themes can still replace any renderer independently. */
+    .theme-hero {
+        background:
+            radial-gradient(
+                circle at 82% 18%,
+                color-mix(in srgb, var(--theme-primary) 13%, transparent),
+                transparent 32rem
+            ),
+            var(--foundation-section-bg);
+        border-color: var(--foundation-border);
+        color: var(--foundation-body-fg);
+        overflow: clip;
+        position: relative;
+    }
+
+    .theme-hero > :where(div) {
+        gap: clamp(2rem, 5vw, 5rem);
+        min-height: min(42rem, calc(100svh - var(--header-height, 4.7rem)));
+        padding-block: clamp(3.5rem, 8vw, 7rem);
+    }
+
+    .theme-hero h1 {
+        color: var(--foundation-heading-fg);
+        font-size: clamp(2.75rem, 6vw, 5.75rem);
+        letter-spacing: -0.052em;
+        line-height: 0.98;
+        text-wrap: balance;
+    }
+
+    .theme-hero h1 + p {
+        color: var(--foundation-muted-fg);
+        font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+        line-height: 1.7;
+        text-wrap: pretty;
+    }
+
+    .theme-hero figure {
+        background: var(--foundation-card-bg);
+        border-color: color-mix(
+            in srgb,
+            var(--foundation-border) 82%,
+            transparent
+        );
+        box-shadow:
+            0 2px 4px rgb(15 23 42 / 4%),
+            0 28px 70px rgb(15 23 42 / 14%);
+        isolation: isolate;
+        position: relative;
+    }
+
+    .theme-hero figure::after {
+        border: 1px solid rgb(255 255 255 / 34%);
+        border-radius: inherit;
+        content: '';
+        inset: 0;
+        pointer-events: none;
+        position: absolute;
+    }
+
+    .theme-hero a {
+        align-items: center;
+        display: inline-flex;
+        justify-content: center;
+        min-height: 2.75rem;
+        text-decoration: none;
+        transition:
+            background-color 180ms ease,
+            border-color 180ms ease,
+            box-shadow 180ms ease,
+            color 180ms ease,
+            transform 180ms ease;
+    }
+
+    .theme-hero a:hover {
+        transform: translateY(-2px);
+    }
+
+    .theme-hero a:focus-visible {
+        box-shadow:
+            0 0 0 3px var(--foundation-section-bg),
+            0 0 0 6px var(--foundation-focus-ring);
+        outline: none;
+    }
+
+    .theme-hero--stacked > div {
+        min-height: auto;
+        padding-block-end: clamp(3rem, 7vw, 6rem);
+    }
+
+    .theme-hero--stacked figure {
+        max-width: 64rem;
+    }
+
+    .theme-hero--full-bleed {
+        background: var(--foundation-inverse-bg);
+        border-color: rgb(255 255 255 / 12%);
+        isolation: isolate;
+    }
+
+    .theme-hero--full-bleed::after {
+        background: linear-gradient(
+            90deg,
+            rgb(4 15 13 / 92%) 0%,
+            rgb(4 15 13 / 70%) 48%,
+            rgb(4 15 13 / 18%) 100%
+        );
+        content: '';
+        inset: 0;
+        pointer-events: none;
+        position: absolute;
+        z-index: 0;
+    }
+
+    .theme-hero--full-bleed > div {
+        min-height: min(46rem, calc(100svh - var(--header-height, 4.7rem)));
+        z-index: 1;
+    }
+
+    .theme-hero--full-bleed h1 {
+        color: white;
+        max-width: 12ch;
+    }
+
+    .theme-hero--full-bleed h1 + p {
+        color: rgb(226 232 240);
+    }
+
+    .theme-hero--full-bleed a:focus-visible {
+        box-shadow:
+            0 0 0 3px var(--foundation-inverse-bg),
+            0 0 0 6px white;
+    }
+
+    .dark .theme-hero {
+        background:
+            radial-gradient(
+                circle at 82% 18%,
+                color-mix(in srgb, var(--theme-primary) 18%, transparent),
+                transparent 30rem
+            ),
+            var(--foundation-section-bg);
+    }
+
+    @media (max-width: 767px) {
+        .theme-hero > :where(div) {
+            min-height: auto;
+            padding-block: 3rem;
+        }
+
+        .theme-hero h1 {
+            font-size: clamp(2.6rem, 13vw, 4rem);
+        }
+
+        .theme-hero--full-bleed::after {
+            background: linear-gradient(
+                180deg,
+                rgb(4 15 13 / 35%) 0%,
+                rgb(4 15 13 / 90%) 70%
+            );
+        }
+
+        .theme-hero--full-bleed > div {
+            min-height: min(38rem, calc(100svh - var(--header-height, 4.7rem)));
+        }
+    }
+
     @media (min-width: 901px) and (max-width: 1199px) {
         .ap-card-grid,
         .ap-gallery-grid {
