@@ -9,19 +9,14 @@ use Capell\Core\Enums\PageTypeEnum;
 use Capell\FoundationTheme\Contracts\ProvidesThemeDemoContent;
 
 /**
- * Complete, vertical-authentic demo content for the Foundation theme itself.
- *
- * Foundation has no domain vocabulary of its own — its signature sections
- * are the three it uniquely ships as the shared runtime: `search`,
- * `pagination`, and `form`. Every surface is framed as a documentation/
- * starter-kit site ("Foundation Docs") so those three sections read as
- * genuine content rather than an empty scaffold.
+ * A complete general-purpose site that demonstrates Foundation without
+ * exposing theme implementation language to prospective buyers.
  */
 final class FoundationDemoContent implements ProvidesThemeDemoContent
 {
-    private const string BRAND = 'Foundation Docs';
+    private const string BRAND = 'Field Office';
 
-    private const string SUPPORT_EMAIL = 'support@foundation-docs.example';
+    private const string SUPPORT_EMAIL = 'hello@fieldoffice.example';
 
     /**
      * @return array<int, ThemeDemoPageDefinition>
@@ -49,54 +44,56 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
         return new ThemeDemoPageDefinition(
             surface: 'homepage',
             name: self::BRAND . ' Home',
-            title: self::BRAND . ' — the starter theme every Capell site can build on',
+            title: self::BRAND . ' | Practical places, plainly made',
             slug: 'theme-' . $themeKey,
             content: $this->prose(
-                'Every Capell site starts on the same solid ground',
-                'Foundation is the shared runtime and starter theme behind every child theme in the catalogue.',
+                'Practical places, plainly made',
+                'We help small organisations turn overlooked spaces into useful, welcoming places.',
             ),
             renderData: [
-                'summary' => 'Foundation is the shared runtime, token system, and starter theme every first-party Capell theme extends — documented here as a working starter site.',
+                'summary' => 'Field Office is a small research and design practice for community spaces, shared workshops, and useful public rooms.',
                 'navigation' => $this->navigation(),
                 'footer' => $this->footer(),
                 'sections' => [
                     $this->heroSection(
-                        eyebrow: 'The Capell starter theme',
-                        heading: 'Every Capell site starts on the same solid ground',
-                        summary: 'Foundation ships the design tokens, standard sections, and shared runtime every first-party theme extends — search the docs, browse the guides, or start building.',
-                        primaryLabel: 'Search the docs',
-                        primaryUrl: '#search',
-                        secondaryLabel: 'Browse the guides',
+                        eyebrow: 'Research and spatial practice',
+                        heading: 'Practical places, plainly made',
+                        summary: 'We help small organisations understand a place, agree what matters, and make the next useful change.',
+                        primaryLabel: 'Start a conversation',
+                        primaryUrl: 'theme-' . $themeKey . '-contact',
+                        primaryIsPath: true,
+                        secondaryLabel: 'Explore our field notes',
                         secondaryUrl: '#content-listing',
                     ),
                     $this->featuresSection(
-                        heading: 'What ships with Foundation',
-                        summary: 'The building blocks every child theme inherits on day one.',
+                        heading: 'What we work on',
+                        summary: 'Focused support for teams making shared places work harder and feel better.',
                     ),
                     $this->searchSection(
-                        heading: 'Search the documentation',
-                        summary: 'Find a guide, a token reference, or a section example by keyword.',
+                        heading: 'Find a useful field note',
+                        summary: 'Search our practical notes on briefs, walk-throughs, workshops, and handovers.',
                     ),
                     $this->contentListingSection(
-                        heading: 'Start with a guide',
-                        summary: 'The most-read guides for teams building their first Capell theme.',
+                        heading: 'Notes from the field',
+                        summary: 'Short, practical guidance drawn from the questions we hear most often.',
                         media: $media,
                     ),
                     $this->proofSection(
-                        heading: 'Trusted as the base for every first-party theme',
-                        summary: 'A few numbers from the catalogue Foundation underpins.',
+                        heading: 'A clear way of working',
+                        summary: 'Enough structure to keep a project moving, without turning it into a process exercise.',
                     ),
                     $this->paginationSection(
                         currentPage: 1,
-                        totalPages: 6,
+                        totalPages: 4,
                     ),
                     $this->ctaSection(
-                        heading: 'Ready to build on Foundation?',
-                        summary: 'Start a new theme with the generator, or extend Foundation directly.',
-                        primaryLabel: 'Read the quick start',
-                        primaryUrl: '#content-listing',
-                        secondaryLabel: 'Search the docs',
-                        secondaryUrl: '#search',
+                        heading: 'Have a place with potential?',
+                        summary: 'Tell us what is changing, who the place is for, and what needs to work better.',
+                        primaryLabel: 'Tell us about it',
+                        primaryUrl: 'theme-' . $themeKey . '-contact',
+                        primaryIsPath: true,
+                        secondaryLabel: 'See how we work',
+                        secondaryUrl: '#proof',
                     ),
                 ],
             ],
@@ -112,46 +109,47 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
     {
         return new ThemeDemoPageDefinition(
             surface: 'directory',
-            name: self::BRAND . ' Guides',
-            title: 'Guides — ' . self::BRAND,
+            name: self::BRAND . ' Field Notes',
+            title: 'Field notes | ' . self::BRAND,
             slug: 'theme-' . $themeKey . '-directory',
             content: $this->prose(
-                'Every guide, indexed and searchable',
-                'Browse the full guide library, or search by keyword to jump straight to the page you need.',
+                'Useful notes for shared places',
+                'Browse practical guidance for planning, testing, adapting, and caring for community spaces.',
             ),
             renderData: [
-                'summary' => 'Every Foundation guide in one searchable, paginated index — from first install to token customisation.',
+                'summary' => 'A searchable collection of practical notes for teams responsible for shared spaces.',
                 'navigation' => $this->navigation(),
                 'footer' => $this->footer(),
                 'sections' => [
                     $this->heroSection(
-                        eyebrow: 'The guide index',
-                        heading: 'Every guide, indexed and searchable',
-                        summary: 'Search by keyword, or page through the full library below.',
-                        primaryLabel: 'Search the guides',
+                        eyebrow: 'Field notes',
+                        heading: 'Useful notes for shared places',
+                        summary: 'Search by topic or browse the complete collection, from the first walk-through to a useful handover.',
+                        primaryLabel: 'Search the notes',
                         primaryUrl: '#search',
-                        secondaryLabel: 'Jump to page 2',
-                        secondaryUrl: '#pagination',
+                        secondaryLabel: 'Discuss a project',
+                        secondaryUrl: 'theme-' . $themeKey . '-contact',
+                        secondaryIsPath: true,
                     ),
                     $this->searchSection(
-                        heading: 'Search the guides',
-                        summary: 'Type a keyword to filter the index below.',
+                        heading: 'Search the field notes',
+                        summary: 'Try a place type, project stage, or practical question.',
                     ),
                     $this->contentListingSection(
-                        heading: 'All guides',
-                        summary: 'Page 1 of 6 — the most-read guides come first.',
+                        heading: 'All field notes',
+                        summary: 'The newest notes appear first. Every note is written to be used, shared, and adapted.',
                         media: $media,
                     ),
                     $this->paginationSection(
                         currentPage: 1,
-                        totalPages: 6,
+                        totalPages: 4,
                     ),
                     $this->ctaSection(
-                        heading: 'Can\'t find what you need?',
-                        summary: 'Search the index above, or write to the docs team directly.',
-                        primaryLabel: 'Search the guides',
+                        heading: 'Need a note we have not written?',
+                        summary: 'Send us the question. If a useful answer already exists, we will point you to it.',
+                        primaryLabel: 'Search the notes',
                         primaryUrl: '#search',
-                        secondaryLabel: 'Contact the docs team',
+                        secondaryLabel: 'Ask Field Office',
                         secondaryUrl: 'theme-' . $themeKey . '-contact',
                         secondaryIsPath: true,
                     ),
@@ -168,46 +166,46 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
     {
         return new ThemeDemoPageDefinition(
             surface: 'detail',
-            name: self::BRAND . ' Guide',
-            title: 'Building your first section variant — ' . self::BRAND,
+            name: self::BRAND . ' Field Note',
+            title: 'A practical brief for a shared workshop | ' . self::BRAND,
             slug: 'theme-' . $themeKey . '-detail',
             content: $this->prose(
-                'Building your first section variant',
-                'A walkthrough of declaring a named variant for a standard Foundation section.',
+                'A practical brief for a shared workshop',
+                'Start with the people, activities, constraints, and decisions the space needs to support.',
             ),
             renderData: [
-                'summary' => 'Building your first section variant — a walkthrough of declaring a named variant for a standard Foundation section.',
+                'summary' => 'A short guide to writing a workshop brief that helps a team make useful decisions without fixing the answer too early.',
                 'navigation' => $this->navigation(),
                 'footer' => $this->footer(),
                 'sections' => [
                     $this->heroSection(
-                        eyebrow: 'Guide · Theming',
-                        heading: 'Building your first section variant',
-                        summary: 'Foundation\'s hero, content-listing, and cta sections each support 2–3 named variants out of the box. This guide walks through declaring your own.',
-                        primaryLabel: 'Fill in the request form',
+                        eyebrow: 'Field note',
+                        heading: 'A practical brief for a shared workshop',
+                        summary: 'A useful brief names the decisions ahead, the people involved, and the evidence the team still needs.',
+                        primaryLabel: 'Discuss your brief',
                         primaryUrl: '#form',
-                        secondaryLabel: 'Back to all guides',
+                        secondaryLabel: 'Back to all field notes',
                         secondaryUrl: 'theme-' . $themeKey . '-directory',
                         secondaryIsPath: true,
                         media: $media,
                         mediaKey: 'detail',
-                        mediaAlt: 'A code editor open on a Blade section variant file',
+                        mediaAlt: 'A shared worktable prepared for a planning session',
                     ),
                     $this->featuresSection(
-                        heading: 'What this guide covers',
-                        summary: 'Three steps from a blank Blade view to a working variant.',
+                        heading: 'Three things the brief should make clear',
+                        summary: 'Keep it short enough to use and specific enough to guide the next decision.',
                     ),
                     $this->formSection(
-                        heading: 'Request a deeper walkthrough',
-                        summary: 'Tell us which section you\'re customising and we\'ll follow up with worked examples.',
+                        heading: 'Bring us your working brief',
+                        summary: 'Share the project stage and the decision that feels hardest to make next.',
                     ),
                     $this->ctaSection(
-                        heading: 'Keep reading the theming guides',
-                        summary: 'This guide is part of a longer series on Foundation\'s token and section system.',
-                        primaryLabel: 'Browse all guides',
+                        heading: 'Keep exploring the field notes',
+                        summary: 'Find practical guidance for site visits, workshops, prototypes, and handovers.',
+                        primaryLabel: 'Browse all field notes',
                         primaryUrl: 'theme-' . $themeKey . '-directory',
                         primaryIsPath: true,
-                        secondaryLabel: 'Search the docs',
+                        secondaryLabel: 'Search the collection',
                         secondaryUrl: '#search',
                     ),
                 ],
@@ -223,40 +221,40 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
         return new ThemeDemoPageDefinition(
             surface: 'contact',
             name: self::BRAND . ' Contact',
-            title: 'Talk to the docs team — ' . self::BRAND,
+            title: 'Tell us about the place | ' . self::BRAND,
             slug: 'theme-' . $themeKey . '-contact',
             content: $this->prose(
-                'Talk to the docs team',
-                'Ask a theming question, report a gap in the guides, or request a new example.',
+                'Tell us about the place',
+                'Share what is changing, who uses the space, and what needs to work better.',
             ),
             renderData: [
-                'summary' => 'Ask a theming question, report a gap in the guides, or request a new example — every message reaches the docs team.',
+                'summary' => 'A simple first conversation for teams considering a new brief, a workshop, or a small spatial change.',
                 'navigation' => $this->navigation(),
                 'footer' => $this->footer(),
                 'sections' => [
                     $this->heroSection(
-                        eyebrow: 'Contact the docs team',
-                        heading: 'Talk to the docs team',
-                        summary: 'Fill in the form below, or write to ' . self::SUPPORT_EMAIL . ' directly. We reply within two business days.',
-                        primaryLabel: 'Fill in the form',
+                        eyebrow: 'Project enquiries',
+                        heading: 'Tell us about the place',
+                        summary: 'Use the form below or write to ' . self::SUPPORT_EMAIL . '. A short, unfinished outline is enough to begin.',
+                        primaryLabel: 'Start the enquiry',
                         primaryUrl: '#form',
-                        secondaryLabel: 'Email us instead',
+                        secondaryLabel: 'Write by email',
                         secondaryUrl: 'mailto:' . self::SUPPORT_EMAIL,
                     ),
                     $this->formSection(
-                        heading: 'Send us a question',
-                        summary: 'Tell us what you\'re building and where the docs fell short.',
+                        heading: 'Start with what you know',
+                        summary: 'Tell us about the place, the people involved, and the next decision ahead.',
                     ),
                     $this->featuresSection(
-                        heading: 'Other ways to reach us',
-                        summary: 'Pick whichever channel fits the question.',
+                        heading: 'What happens next',
+                        summary: 'A calm first step, with no requirement for a finished brief.',
                     ),
                     $this->ctaSection(
-                        heading: 'Prefer to search first?',
-                        summary: 'Most questions are already answered somewhere in the guide index.',
-                        primaryLabel: 'Search the docs',
+                        heading: 'Looking for practical guidance first?',
+                        summary: 'The field notes cover many of the questions that come up before a project begins.',
+                        primaryLabel: 'Search the field notes',
                         primaryUrl: '#search',
-                        secondaryLabel: 'Browse all guides',
+                        secondaryLabel: 'Browse all notes',
                         secondaryUrl: 'theme-' . $themeKey . '-directory',
                         secondaryIsPath: true,
                     ),
@@ -274,22 +272,22 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
         return new ThemeDemoPageDefinition(
             surface: 'empty',
             name: self::BRAND . ' No Results',
-            title: 'No guides match that search — ' . self::BRAND,
+            title: 'No field notes match that search | ' . self::BRAND,
             slug: 'theme-' . $themeKey . '-empty',
             content: $this->prose(
-                'No guides match that search',
-                'A composed empty state for a filtered guide search with no matching results.',
+                'No field notes match that search',
+                'Try a broader topic, clear the search, or send us the question directly.',
             ),
             renderData: [
-                'summary' => 'No guides match that search yet — try a broader keyword or browse the full index instead.',
+                'summary' => 'No field notes match that search. Try a broader topic or browse the complete collection.',
                 'navigation' => $this->navigation(),
                 'footer' => $this->footer(),
                 'sections' => [
                     $this->heroSection(
                         eyebrow: 'Search results',
-                        heading: 'No guides match that search',
-                        summary: 'Try a broader keyword, or clear the search to browse the full guide index below.',
-                        primaryLabel: 'Browse all guides',
+                        heading: 'No field notes match that search',
+                        summary: 'Try a place type, a project stage, or a broader practical question.',
+                        primaryLabel: 'Browse all field notes',
                         primaryUrl: 'theme-' . $themeKey . '-directory',
                         primaryIsPath: true,
                         secondaryLabel: 'Back to the homepage',
@@ -298,15 +296,15 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
                     ),
                     $this->searchSection(
                         heading: 'Try another search',
-                        summary: 'Search by section name, token, or feature.',
+                        summary: 'Search by place, activity, project stage, or decision.',
                     ),
                     $this->ctaSection(
-                        heading: 'Still can\'t find it?',
-                        summary: 'Send the docs team a note and we\'ll point you in the right direction.',
-                        primaryLabel: 'Contact the docs team',
+                        heading: 'Still looking for an answer?',
+                        summary: 'Send us the question. We will share a useful starting point if we have one.',
+                        primaryLabel: 'Ask Field Office',
                         primaryUrl: 'theme-' . $themeKey . '-contact',
                         primaryIsPath: true,
-                        secondaryLabel: 'Browse all guides',
+                        secondaryLabel: 'Browse all notes',
                         secondaryUrl: 'theme-' . $themeKey . '-directory',
                         secondaryIsPath: true,
                     ),
@@ -323,22 +321,22 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
         return new ThemeDemoPageDefinition(
             surface: 'not-found',
             name: self::BRAND . ' 404',
-            title: 'That page could not be found — ' . self::BRAND,
+            title: 'That page could not be found | ' . self::BRAND,
             slug: 'theme-' . $themeKey . '-404',
             content: $this->prose(
                 'That page could not be found',
-                'A not-found page that routes readers back into search and the guide index.',
+                'The link may be out of date. Search the field notes or return to the homepage.',
             ),
             renderData: [
-                'summary' => 'That page has moved or never existed — search the docs or head back to the guide index.',
+                'summary' => 'That page may have moved. Search the field notes or return to a familiar starting point.',
                 'navigation' => $this->navigation(),
                 'footer' => $this->footer(),
                 'sections' => [
                     $this->heroSection(
                         eyebrow: '404',
                         heading: 'That page could not be found',
-                        summary: 'The link is broken or the guide moved. Search the docs, or head back to the homepage.',
-                        primaryLabel: 'Search the docs',
+                        summary: 'The link may be out of date. Search the field notes or head back to the homepage.',
+                        primaryLabel: 'Search the field notes',
                         primaryUrl: '#search',
                         secondaryLabel: 'Back to the homepage',
                         secondaryUrl: 'theme-' . $themeKey,
@@ -346,12 +344,13 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
                     ),
                     $this->ctaSection(
                         heading: 'Find your way back',
-                        summary: 'Browse the full guide index, or search for the page you were looking for.',
-                        primaryLabel: 'Browse all guides',
+                        summary: 'Browse the complete collection or tell us what you were hoping to find.',
+                        primaryLabel: 'Browse all field notes',
                         primaryUrl: 'theme-' . $themeKey . '-directory',
                         primaryIsPath: true,
-                        secondaryLabel: 'Search the docs',
-                        secondaryUrl: '#search',
+                        secondaryLabel: 'Ask Field Office',
+                        secondaryUrl: 'theme-' . $themeKey . '-contact',
+                        secondaryIsPath: true,
                     ),
                 ],
             ],
@@ -367,43 +366,43 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
     {
         return new ThemeDemoPageDefinition(
             surface: 'cta',
-            name: self::BRAND . ' Get Started',
-            title: 'Start your first Capell theme — ' . self::BRAND,
+            name: self::BRAND . ' Start A Project',
+            title: 'Start with a site conversation | ' . self::BRAND,
             slug: 'theme-' . $themeKey . '-cta',
             content: $this->prose(
-                'Start your first Capell theme today',
-                'A focused conversion page inviting builders to scaffold a new theme on Foundation.',
+                'Start with a site conversation',
+                'Bring the context, the people involved, and the decision that needs to become clearer.',
             ),
             renderData: [
-                'summary' => 'Start your first Capell theme today — scaffold a new package on Foundation in minutes.',
+                'summary' => 'A focused first step for organisations planning a shared space, workshop, or practical change.',
                 'navigation' => $this->navigation(),
                 'footer' => $this->footer(),
                 'sections' => [
                     $this->heroSection(
-                        eyebrow: 'Get started',
-                        heading: 'Start your first Capell theme today',
-                        summary: 'Run the generator to scaffold a new theme package on Foundation, complete with manifest, seeded pages, and tests.',
-                        primaryLabel: 'Request early access',
+                        eyebrow: 'Start a project',
+                        heading: 'Start with a site conversation',
+                        summary: 'We begin with the place as it is, the people who use it, and the next decision that matters.',
+                        primaryLabel: 'Tell us about the place',
                         primaryUrl: '#form',
-                        secondaryLabel: 'Read the quick start',
+                        secondaryLabel: 'Read the field notes',
                         secondaryUrl: 'theme-' . $themeKey . '-directory',
                         secondaryIsPath: true,
                     ),
                     $this->featuresSection(
-                        heading: 'What you get out of the box',
-                        summary: 'Everything a new theme inherits from Foundation on day one.',
+                        heading: 'A useful first phase',
+                        summary: 'Clear outputs that help a team agree what to do next.',
                     ),
                     $this->formSection(
-                        heading: 'Request early access',
-                        summary: 'Tell us what you\'re building and we\'ll get you set up.',
+                        heading: 'Tell us what is changing',
+                        summary: 'An outline is enough. Share the place, the people, and the decision ahead.',
                     ),
                     $this->ctaSection(
-                        heading: 'Prefer to read first?',
-                        summary: 'Browse the full guide index before you start scaffolding.',
-                        primaryLabel: 'Browse all guides',
+                        heading: 'Prefer to explore first?',
+                        summary: 'Browse practical notes from earlier site visits, workshops, and handovers.',
+                        primaryLabel: 'Browse all field notes',
                         primaryUrl: 'theme-' . $themeKey . '-directory',
                         primaryIsPath: true,
-                        secondaryLabel: 'Search the docs',
+                        secondaryLabel: 'Search the notes',
                         secondaryUrl: '#search',
                     ),
                 ],
@@ -458,10 +457,10 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
             'heading' => $heading,
             'summary' => $summary,
             'action' => '/search',
-            'placeholder' => 'Search guides, tokens, and sections…',
+            'placeholder' => 'Search field notes and projects',
             'results' => [
-                ['title' => 'Declaring a section variant', 'summary' => 'How to add a new named variant to a standard section.'],
-                ['title' => 'Theme Studio token reference', 'summary' => 'Every colour, spacing, and motion token Foundation exposes.'],
+                ['title' => 'A practical brief for a shared workshop', 'summary' => 'Frame the people, activities, constraints, and decisions before fixing the answer.'],
+                ['title' => 'Planning a useful first walk-through', 'summary' => 'A short set of prompts for looking, listening, and recording what matters.'],
             ],
         ];
     }
@@ -473,11 +472,11 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
     {
         return [
             'type' => 'pagination',
-            'heading' => 'More guides',
+            'heading' => 'More field notes',
             'summary' => 'Page ' . $currentPage . ' of ' . $totalPages . '.',
             'currentPage' => $currentPage,
             'totalPages' => $totalPages,
-            'baseUrl' => '/guides',
+            'baseUrl' => '/field-notes',
         ];
     }
 
@@ -494,8 +493,8 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
             'fields' => [
                 ['type' => 'text', 'name' => 'name', 'label' => 'Your name', 'required' => true],
                 ['type' => 'email', 'name' => 'email', 'label' => 'Email address', 'required' => true],
-                ['type' => 'select', 'name' => 'topic', 'label' => 'Topic', 'options' => ['Theming', 'Layout Builder', 'Something else']],
-                ['type' => 'textarea', 'name' => 'message', 'label' => 'Message', 'required' => true],
+                ['type' => 'select', 'name' => 'topic', 'label' => 'What would you like to discuss?', 'options' => ['A new brief', 'A workshop', 'A field note', 'Something else']],
+                ['type' => 'textarea', 'name' => 'message', 'label' => 'Tell us about the place', 'required' => true],
             ],
             'submitLabel' => 'Send message',
         ];
@@ -511,9 +510,9 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
             'heading' => $heading,
             'summary' => $summary,
             'items' => [
-                ['title' => 'A full token system', 'summary' => 'Colour, spacing, radius, heading scale, and motion tokens every child theme inherits.'],
-                ['title' => 'Ten standard sections', 'summary' => 'Navigation, hero, features, proof, content-listing, search, pagination, form, cta, and footer — ready to extend.'],
-                ['title' => 'Shared JS modules', 'summary' => 'Carousel, lightbox, tabs, count-up, scroll-spy, compare-slider, and accordion, opt-in and reduced-motion aware.'],
+                ['title' => 'Understand the place', 'summary' => 'Walk, listen, map what is already useful, and notice where everyday activity gets harder than it should.'],
+                ['title' => 'Make decisions together', 'summary' => 'Turn competing needs into a brief that gives the team a clear way to choose.'],
+                ['title' => 'Test the smallest useful change', 'summary' => 'Use drawings, mock-ups, and short trials before committing time and budget too early.'],
             ],
         ];
     }
@@ -527,9 +526,9 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
         $images = array_values(array_unique(array_merge($media['listing'], $media['proof'])));
 
         $entries = [
-            ['title' => 'Quick start: your first Foundation-based theme', 'summary' => 'From `capell:make-theme` to a first render, in under ten minutes.'],
-            ['title' => 'Working with Theme Studio tokens', 'summary' => 'How colour, spacing, and motion tokens flow from settings into CSS custom properties.'],
-            ['title' => 'The ten standard sections', 'summary' => 'What each standard section expects in its render-data payload.'],
+            ['title' => 'A practical brief for a shared workshop', 'summary' => 'Start with the people, activities, constraints, and decisions the room needs to support.'],
+            ['title' => 'Planning a useful first walk-through', 'summary' => 'A compact set of prompts for looking, listening, and recording what matters.'],
+            ['title' => 'Questions to ask before the brief', 'summary' => 'Surface assumptions early and give every stakeholder a clearer role in the next decision.'],
         ];
 
         $items = [];
@@ -560,9 +559,9 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
             'heading' => $heading,
             'summary' => $summary,
             'items' => [
-                ['title' => '19 catalogue themes', 'summary' => 'Every first-party theme extends Foundation for its runtime and tokens.'],
-                ['title' => '10 standard sections', 'summary' => 'A shared vocabulary every child theme can rely on.'],
-                ['title' => '~16KB shared JS', 'summary' => 'Opt-in carousel, lightbox, tabs, and more — within a strict fleet-wide budget.'],
+                ['title' => 'An open brief', 'summary' => 'A short working document that records what matters without pretending every answer is known.'],
+                ['title' => 'A visible decision trail', 'summary' => 'Simple records help new voices join the work and keep earlier choices understandable.'],
+                ['title' => 'A practical handover', 'summary' => 'The people caring for the place receive useful drawings, priorities, and next steps.'],
             ],
         ];
     }
@@ -599,12 +598,12 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
         return [
             'brandName' => self::BRAND,
             'items' => [
-                ['label' => 'Guides', 'url' => '/'],
-                ['label' => 'Search', 'url' => '/'],
-                ['label' => 'Tokens', 'url' => '/'],
+                ['label' => 'Work', 'url' => '/'],
+                ['label' => 'Field notes', 'url' => '/'],
+                ['label' => 'Approach', 'url' => '/'],
                 ['label' => 'Contact', 'url' => '/'],
             ],
-            'ctaLabel' => 'Get started',
+            'ctaLabel' => 'Start a project',
             'ctaUrl' => '/',
         ];
     }
@@ -616,19 +615,19 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
     {
         return [
             'brandName' => self::BRAND,
-            'summary' => 'The shared runtime, token system, and starter theme every first-party Capell theme extends.',
+            'summary' => 'Research and practical design support for community spaces, shared workshops, and useful public rooms.',
             'columns' => [
                 [
-                    'heading' => 'Docs',
+                    'heading' => 'Explore',
                     'links' => [
-                        ['label' => 'Guide index', 'url' => '/'],
-                        ['label' => 'Token reference', 'url' => '/'],
+                        ['label' => 'Selected work', 'url' => '/'],
+                        ['label' => 'Field notes', 'url' => '/'],
                     ],
                 ],
                 [
-                    'heading' => 'Support',
+                    'heading' => 'Contact',
                     'links' => [
-                        ['label' => 'Contact the docs team', 'url' => 'mailto:' . self::SUPPORT_EMAIL],
+                        ['label' => 'Start a conversation', 'url' => 'mailto:' . self::SUPPORT_EMAIL],
                         ['label' => self::SUPPORT_EMAIL, 'url' => 'mailto:' . self::SUPPORT_EMAIL],
                     ],
                 ],

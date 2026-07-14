@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use Capell\FoundationTheme\Contracts\ProvidesThemeDemoContent;
+use Capell\FoundationTheme\Support\Demo\FoundationDemoContent;
+use Capell\FoundationTheme\Support\Demo\ThemeDemoPageDefinition;
 use Illuminate\Support\Str;
 
 require_once dirname(__DIR__, 4) . '/tests/Packages/Support/ThemeLayoutNativeSupport.php';
@@ -200,3 +202,33 @@ it('priority themes ship a populated form-builder contact section', function (st
 })->with(collect(FLEET_FORM_BUILDER_THEMES)->mapWithKeys(
     fn (string $slug): array => [$slug => [$slug]],
 )->all());
+
+it('foundation demonstrates a credible site instead of describing its implementation', function (): void {
+    $definitions = (new FoundationDemoContent)->definitions(
+        themeKey: 'default',
+        themeName: 'Foundation',
+        baseUrl: 'https://foundation.test',
+    );
+
+    $visibleCopy = collect($definitions)
+        ->flatMap(static fn (ThemeDemoPageDefinition $definition): array => [
+            $definition->name,
+            $definition->title,
+            $definition->content,
+            json_encode($definition->renderData, JSON_THROW_ON_ERROR),
+        ])
+        ->implode(' ');
+
+    expect(mb_strtolower($visibleCopy))
+        ->not->toContain('foundation theme')
+        ->not->toContain('foundation docs')
+        ->not->toContain('theme studio')
+        ->not->toContain('layout contract')
+        ->not->toContain('section variant')
+        ->not->toContain('capell starter theme')
+        ->not->toContain('capell:make-theme')
+        ->and($visibleCopy)
+        ->not->toContain('—')
+        ->not->toContain('–')
+        ->not->toContain('·');
+});
