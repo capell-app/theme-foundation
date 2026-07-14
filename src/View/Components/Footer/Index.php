@@ -95,7 +95,7 @@ final class Index extends Component
             $this->contactPage = null;
             $this->siteLanguages = collect();
             $this->footerCopy = null;
-            $this->footerSpacing = 'compact';
+            $this->footerSpacing = 'default';
             $this->footerDividerColor = null;
             $this->latestFooterPages = collect();
             $this->relatedSites = collect();
@@ -126,7 +126,7 @@ final class Index extends Component
             ? $preparedSiteLanguages
             : SiteLoader::pageLanguages($site, $language, $page);
         $this->footerCopy = $site->translation?->getMeta('footer_copy');
-        $this->footerSpacing = $theme->getMeta('footer_spacing', 'compact');
+        $this->footerSpacing = $theme->getMeta('footer_spacing', 'default');
         $this->footerDividerColor = (bool) $theme->getMeta('footer_divider') ? $theme->getMeta('footer_border_color') : null;
         $this->latestFooterPages = $preparedLatestFooterPages instanceof Collection
             ? $preparedLatestFooterPages

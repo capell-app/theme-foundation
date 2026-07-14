@@ -32,16 +32,16 @@
 <style>
     :root {
         --header-height: {{ $theme->getMeta('header_height', '4.7rem') }};
-        --color-header: {{ $resolveHeaderColor($theme->getMeta('header_color', '32,31,40'), '32,31,40') }};
-        --bg-color-header: {{ $resolveHeaderColor($theme->getMeta('header_background_color', '255,255,255'), '255,255,255') }};
-        --bg-color-main: {{ $resolveHeaderColor($theme->getMeta('main_background_color', '247,248,249'), '247,248,249') }};
+        --color-header: {{ $resolveHeaderColor($theme->getMeta('header_color', '#101715'), '#101715') }};
+        --bg-color-header: {{ $resolveHeaderColor($theme->getMeta('header_background_color', '#fcfffb'), '#fcfffb') }};
+        --bg-color-main: {{ $resolveHeaderColor($theme->getMeta('main_background_color', '#f5f7f4'), '#f5f7f4') }};
         --border-header: {{ $headerBorderColor ? $resolveHeaderColor($headerBorderColor, 'transparent') : 'transparent' }};
     }
 
     .dark:root {
-        --color-header: {{ $resolveHeaderColor($theme->getMeta('header_dark_color', '233,233,233'), '233,233,233') }};
-        --bg-color-header: {{ $resolveHeaderColor($theme->getMeta('header_dark_background_color', '32,31,40'), '32,31,40') }};
-        --bg-color-main: {{ $resolveHeaderColor($theme->getMeta('main_dark_background_color', '32,31,40'), '32,31,40') }};
+        --color-header: {{ $resolveHeaderColor($theme->getMeta('header_dark_color', '#dceae5'), '#dceae5') }};
+        --bg-color-header: {{ $resolveHeaderColor($theme->getMeta('header_dark_background_color', '#0b1716'), '#0b1716') }};
+        --bg-color-main: {{ $resolveHeaderColor($theme->getMeta('main_dark_background_color', '#0b1716'), '#0b1716') }};
         --border-header: {{ $headerDarkBorderColor ? $resolveHeaderColor($headerDarkBorderColor, 'transparent') : 'transparent' }};
     }
 
@@ -110,7 +110,7 @@
     @endif
     @class ([
         'site-header',
-        'capell-product-header transition-padding top-0 right-0 left-0 z-50 flex min-h-[var(--header-height)] w-full text-[var(--color-header)] transition-transform duration-300 ease-in-out xl:h-auto',
+        'capell-product-header transition-padding top-0 right-0 left-0 z-50 flex min-h-[var(--header-height)] w-full text-[var(--color-header)] transition-transform duration-300 ease-in-out motion-reduce:transition-none xl:h-auto',
         'border-b border-[var(--border-header)]' => $headerBorderColor,
         'shadow-sm shadow-black/5 dark:shadow-black/20' => $headerShadow === 'subtle',
         'header-over-hero absolute' => $showHero && $headerOverHero && ! $theme->fixed_header && ! $theme->sticky_header && ! $theme->scroll_up_header,
@@ -129,7 +129,7 @@
 >
     <div
         @class ([
-            'capell-product-header__inner relative w-full max-xl:px-0',
+            'capell-product-header__inner relative isolate w-full max-xl:px-0',
             $containerWidth->getContainerClass(),
         ])
     >
@@ -139,7 +139,7 @@
             ])
         >
             <div
-                class="max-w-[250px] min-w-0 xl:order-1 xl:w-full xl:max-w-[350px]"
+                class="max-w-[min(16rem,70vw)] min-w-0 xl:order-1 xl:w-full xl:max-w-[18rem]"
             >
                 <a
                     href="{{ $site->siteDomain->url }}"
@@ -151,14 +151,14 @@
                         @if ($site->logoInverted)
                             <x-capell::logo
                                 :media="$site->logoInverted"
-                                :class="'header-logo h-[12vh] max-h-[5rem] w-auto' . ($site->logo ? ' hidden dark:widget' : '')"
+                                :class="'header-logo h-10 max-h-10 w-auto' . ($site->logo ? ' hidden dark:widget' : '')"
                             />
                         @endif
 
                         @if ($site->logo)
                             <x-capell::logo
                                 :media="$site->logo"
-                                :class="'header-logo h-[12vh] max-h-[5rem] w-auto' . ($site->logoInverted ? ' dark:hidden' : '')"
+                                :class="'header-logo h-10 max-h-10 w-auto' . ($site->logoInverted ? ' dark:hidden' : '')"
                             />
                         @endif
                     @else

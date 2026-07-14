@@ -414,6 +414,7 @@ test('reviewed foundation chrome avoids accessibility regressions', function ():
         ->and($socialLinks)->toContain('rel="nofollow noopener"')
         ->and($relatedSites)->not->toContain('role="menu"')
         ->and($relatedSites)->not->toContain('role="menuitem"')
+        ->and($relatedSites)->toContain('ResolveSafeCssColorTokenAction::run')
         ->and($relatedSites)->toContain('border-[var(--border-color-footer)]')
         ->and($footer)->toContain('footer.related-sites')
         ->and($footer)->toContain('$containerWidth->getContainerClass()')

@@ -260,6 +260,18 @@
         text-decoration: none;
     }
 
+    .capell-product-header__brand-link:focus-visible {
+        border-radius: var(--foundation-radius);
+        box-shadow: 0 0 0 3px
+            color-mix(
+                in srgb,
+                var(--foundation-primary-action) 22%,
+                transparent
+            );
+        outline: 2px solid var(--foundation-primary-action);
+        outline-offset: 4px;
+    }
+
     .capell-product-header__logo-text {
         align-items: center;
         display: inline-flex;
@@ -401,6 +413,125 @@
     }
 
     .capell-product-menu-toggle.is-open {
+        background: var(--foundation-primary-action);
+        border-color: var(--foundation-primary-action);
+        color: white;
+    }
+
+    .capell-product-footer {
+        background:
+            radial-gradient(
+                circle at 8% -18%,
+                color-mix(
+                        in srgb,
+                        var(--foundation-primary-action) 14%,
+                        transparent
+                    )
+                    0,
+                transparent 34rem
+            ),
+            var(--bg-color-footer);
+        isolation: isolate;
+        position: relative;
+    }
+
+    .capell-product-footer::before {
+        background: linear-gradient(
+            90deg,
+            var(--foundation-primary-action),
+            color-mix(in srgb, var(--foundation-primary-action) 55%, #0e91b2),
+            transparent 72%
+        );
+        content: '';
+        height: 2px;
+        inset-inline: 0;
+        opacity: 0.72;
+        position: absolute;
+        top: -1px;
+    }
+
+    .capell-product-footer__inner {
+        position: relative;
+    }
+
+    .capell-product-footer__primary {
+        align-items: start;
+    }
+
+    .capell-product-footer__content > :where(nav, div) {
+        min-width: 0;
+    }
+
+    .capell-product-footer .footer-logo-text {
+        color: var(--color-footer-heading);
+        font-family: var(--font-family-heading);
+        font-weight: 760;
+        letter-spacing: -0.025em;
+    }
+
+    .capell-product-footer .footer-tagline {
+        max-width: 34rem;
+        text-wrap: pretty;
+    }
+
+    .capell-product-footer :where(nav, .footer-contact) a {
+        align-items: center;
+        border-radius: calc(var(--foundation-radius) * 0.75);
+        display: inline-flex;
+        min-height: 2.75rem;
+        text-underline-offset: 0.25em;
+        transition:
+            color 160ms ease,
+            text-decoration-color 160ms ease;
+    }
+
+    .capell-product-footer :where(nav, .footer-contact) a:hover {
+        text-decoration: underline;
+        text-decoration-color: color-mix(
+            in srgb,
+            var(--foundation-primary-action) 58%,
+            transparent
+        );
+        text-decoration-thickness: 2px;
+    }
+
+    .capell-product-footer a:focus-visible {
+        border-radius: calc(var(--foundation-radius) * 0.75);
+        box-shadow: 0 0 0 3px
+            color-mix(
+                in srgb,
+                var(--foundation-primary-action) 22%,
+                transparent
+            );
+        outline: 2px solid var(--foundation-primary-action);
+        outline-offset: 3px;
+    }
+
+    .capell-product-footer .footer-social-links a {
+        border: 1px solid var(--border-color-footer);
+        min-height: 2.75rem;
+        padding: 0.45rem 0.65rem;
+    }
+
+    .capell-product-footer .footer-social-links a:hover {
+        background: var(--bg-color-footer-panel);
+        text-decoration: none;
+    }
+
+    .capell-footer-sub-footer {
+        background: var(--bg-color-footer-muted);
+        border-top: 1px solid var(--border-color-footer);
+    }
+
+    .capell-scroll-top {
+        background: var(--foundation-surface-bg);
+        border: 1px solid var(--foundation-border);
+        box-shadow: 0 0.75rem 1.75rem rgb(15 23 42 / 12%);
+        color: var(--foundation-primary-action);
+    }
+
+    .capell-scroll-top:hover,
+    .capell-scroll-top:focus-visible {
         background: var(--foundation-primary-action);
         border-color: var(--foundation-primary-action);
         color: white;

@@ -16,7 +16,7 @@
 
 <style>
     :root {
-        --color-footer: {{ $resolveFooterColor('footer_color', '#1f2937') }};
+        --color-footer: {{ $resolveFooterColor('footer_color', '#244c43') }};
         --color-footer-heading: color-mix(
             in srgb,
             var(--color-footer),
@@ -28,7 +28,7 @@
             var(--bg-color-footer) 28%
         );
         --color-footer-link: color-mix(in srgb, var(--color-footer), #020617 8%);
-        --bg-color-footer: {{ $resolveFooterColor('footer_background_color', '#f1f5f9') }};
+        --bg-color-footer: {{ $resolveFooterColor('footer_background_color', '#edf2ee') }};
         --bg-color-footer-panel: color-mix(
             in srgb,
             var(--bg-color-footer),
@@ -39,11 +39,11 @@
             var(--bg-color-footer),
             #020617 6%
         );
-        --border-color-footer: {{ $resolveFooterColor('footer_border_color', '#e2e8f0') }};
+        --border-color-footer: {{ $resolveFooterColor('footer_border_color', '#cfd9d3') }};
     }
 
     .dark:root {
-        --color-footer: {{ $resolveFooterColor('footer_dark_color', '#e5e7eb') }};
+        --color-footer: {{ $resolveFooterColor('footer_dark_color', '#dceae5') }};
         --color-footer-heading: color-mix(
             in srgb,
             var(--color-footer),
@@ -55,7 +55,7 @@
             var(--bg-color-footer) 24%
         );
         --color-footer-link: color-mix(in srgb, var(--color-footer), #ffffff 6%);
-        --bg-color-footer: {{ $resolveFooterColor('footer_dark_background_color', '#111827') }};
+        --bg-color-footer: {{ $resolveFooterColor('footer_dark_background_color', '#0b1716') }};
         --bg-color-footer-panel: color-mix(
             in srgb,
             var(--bg-color-footer),
@@ -66,13 +66,13 @@
             var(--bg-color-footer),
             #ffffff 8%
         );
-        --border-color-footer: {{ $resolveFooterColor('footer_dark_border_color', '#374151') }};
+        --border-color-footer: {{ $resolveFooterColor('footer_dark_border_color', '#31423c') }};
     }
 </style>
 
 <button
     type="button"
-    class="site-scroll-top scroll-top hover:bg-primary focus:bg-primary text-primary sticky bottom-0 left-full z-999 hidden h-10 w-10 -translate-x-6 items-center justify-center rounded-t-sm bg-gray-200 transition hover:text-white focus:text-white"
+    class="capell-scroll-top site-scroll-top scroll-top sticky bottom-0 left-full z-999 hidden h-11 w-11 -translate-x-6 items-center justify-center rounded-t-lg transition motion-reduce:transition-none"
     aria-label="{{ __('capell-theme-foundation::generic.scroll_to_top') }}"
     title="{{ __('capell-theme-foundation::generic.scroll_to_top') }}"
     onclick="
@@ -90,13 +90,15 @@
 <footer
     id="footer"
     @class ([
-        'z-0 bg-[var(--bg-color-footer)] text-sm text-[var(--color-footer)]',
+        'capell-product-footer z-0 bg-[var(--bg-color-footer)] text-sm text-[var(--color-footer)]',
         'border-t border-[var(--border-color-footer)]' => $footerDividerColor,
     ])
 >
+    <h2 class="sr-only">{{ __('capell-theme-foundation::generic.footer') }}</h2>
+
     <div
         @class ([
-            '@container flex-wrap px-8',
+            'capell-product-footer__inner @container flex-wrap px-6 sm:px-8',
             'py-6 lg:py-7' => $footerSpacing === 'compact',
             'py-8 lg:py-10' => $footerSpacing === 'default' && ! $hasFooterPrimaryContent,
             'py-10 lg:py-12' => $footerSpacing === 'default' && $hasFooterPrimaryContent,
@@ -107,9 +109,9 @@
     >
         <div
             @class ([
-                'px-0 py-0',
+                'capell-product-footer__primary px-0 py-0',
                 'flex justify-center' => ! $hasFooterPrimaryContent,
-                'grid gap-x-8 gap-y-8 xl:flex xl:flex-row xl:gap-x-10 @2xl:grid-cols-2 @4xl:grid-cols-3' => $hasFooterPrimaryContent,
+                'grid gap-x-10 gap-y-10 lg:grid-cols-12' => $hasFooterPrimaryContent,
             ])
         >
             <x-capell::footer.site-info
@@ -118,19 +120,19 @@
                 @class([
                     'shrink-0',
                     'max-w-xl text-center' => ! $hasFooterPrimaryContent,
-                    'order-2 text-center lg:order-1 lg:text-left xl:max-w-[30%] xl:pr-10' => $hasFooterPrimaryContent,
+                    'order-1 text-start lg:col-span-4 lg:pr-8 xl:col-span-3' => $hasFooterPrimaryContent,
                 ])
             />
 
             @if ($hasFooterPrimaryContent)
                 <div
-                    class="order-1 grid grow gap-8 lg:order-2 xl:flex @4xl:col-span-2"
+                    class="capell-product-footer__content order-2 grid gap-10 lg:col-span-8 lg:grid-cols-2 xl:col-span-9 xl:grid-cols-3"
                 >
                     @if ($hasFooterMenu)
                         <x-capell::footer.menu
                             :$headingClass
                             :items="$footerMenuItems"
-                            class="grow"
+                            class="xl:col-span-2"
                         />
                     @endif
 

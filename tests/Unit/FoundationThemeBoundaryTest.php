@@ -245,11 +245,39 @@ it('delegates primary header navigation to the navigation render hook', function
         ->and($header)->toContain('capell-product-header')
         ->and($header)->toContain('capell-product-nav-item')
         ->and($header)->toContain('max-xl:px-0')
+        ->and($header)->toContain("getMeta('header_color', '#101715')")
+        ->and($header)->toContain("getMeta('header_background_color', '#fcfffb')")
+        ->and($header)->toContain("getMeta('main_background_color', '#f5f7f4')")
+        ->and($header)->toContain("'header-logo h-10 max-h-10 w-auto'")
+        ->and($header)->not->toContain('h-[12vh]')
         ->and($themeStyles)->toContain('@media (max-width: 1279px)')
         ->and($themeStyles)->toContain('@media (min-width: 1280px)')
+        ->and($themeStyles)->toContain('.capell-product-header__brand-link:focus-visible')
         ->and($header)->not->toContain('x-ref="toggleMenu"')
         ->and($header)->not->toContain('toggleMenu()')
         ->and($header)->not->toContain('Capell\\Navigation');
+});
+
+it('ships a stable premium default footer shell', function (): void {
+    $footer = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/footer/index.blade.php');
+    $siteInfo = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/footer/site-info.blade.php');
+    $menu = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/footer/menu.blade.php');
+    $subFooter = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/footer/sub-footer.blade.php');
+    $themeStyles = file_get_contents(dirname(__DIR__, 2) . '/resources/css/theme/theme.css');
+
+    expect($footer)
+        ->toContain('capell-product-footer')
+        ->toContain('capell-product-footer__inner')
+        ->toContain("resolveFooterColor('footer_background_color', '#edf2ee')")
+        ->toContain("resolveFooterColor('footer_dark_background_color', '#0b1716')")
+        ->toContain("__('capell-theme-foundation::generic.footer')")
+        ->and($siteInfo)->toContain('max-h-14')
+        ->and($siteInfo)->not->toContain('max-h-[32vh]')
+        ->and($menu)->toContain('break-words')
+        ->and($menu)->not->toContain('break-all')
+        ->and($subFooter)->not->toContain('sm:grid-col-2')
+        ->and($themeStyles)->toContain('.capell-product-footer')
+        ->and($themeStyles)->toContain('.capell-product-footer a:focus-visible');
 });
 
 it('uses complete shared navigation disclosure below the wide desktop breakpoint', function (): void {

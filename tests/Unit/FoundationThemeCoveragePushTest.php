@@ -324,6 +324,9 @@ it('fills foundation theme defaults without overwriting existing theme meta', fu
     capell_expect($data['meta'])
         ->toHaveKey('assets', ['resources/css/capell/frontend.css'])
         ->toHaveKey('assets_path', 'build')
+        ->toHaveKey('footer_background_color', '#edf2ee')
+        ->toHaveKey('footer_color', '#244c43')
+        ->toHaveKey('footer_dark_background_color', '#0b1716')
         ->toHaveKey('footer_spacing', 'relaxed')
         ->toHaveKey('sticky_header', false)
         ->toHaveKey('dark_mode_toggle', true);

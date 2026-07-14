@@ -1,7 +1,7 @@
 @props ([
     'items' => null,
     'headingClass' => '',
-    'menuItemClass' => 'focus:text-primary hover:text-primary text-sm leading-tight font-medium break-all text-[var(--color-footer-link)] xl:text-base',
+    'menuItemClass' => 'focus:text-primary hover:text-primary text-sm leading-snug font-semibold break-words text-[var(--color-footer-link)] xl:text-base',
     'menuSubItemClass' => 'focus:text-primary hover:text-primary py-1 text-xs leading-tight font-medium text-[var(--color-footer-muted)] xl:text-sm',
 ])
 @php
@@ -33,7 +33,7 @@
 >
     <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
         @foreach ($chunks as $chunk)
-            <ul class="flex flex-col gap-y-4">
+            <ul class="flex flex-col gap-y-1">
                 @foreach ($chunk as $id => $item)
                     <li
                         @class ([
@@ -49,11 +49,11 @@
                             {{ $item->label }}
                         </a>
                         @if ($item->children->count() > 0)
-                            <ul class="mt-2 flex flex-col gap-y-1">
+                            <ul
+                                class="mt-1 flex flex-col gap-y-1 border-s border-[var(--border-color-footer)] ps-3"
+                            >
                                 @foreach ($item->children as $child)
-                                    <li
-                                        class="nav-child-item before:content-['-']"
-                                    >
+                                    <li class="nav-child-item">
                                         <a
                                             href="{{ $child->data['url'] ?? '' }}"
                                             @wireNavigate

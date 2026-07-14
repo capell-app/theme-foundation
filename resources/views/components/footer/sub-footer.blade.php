@@ -14,13 +14,13 @@
 >
     <div
         @class ([
-            'sm:grid-col-2 grid flex-wrap items-center gap-x-4 gap-y-4 py-4 md:flex lg:grid lg:grid-cols-3 lg:py-5 xl:grid-cols-5',
+            'grid grid-cols-1 items-center gap-x-6 gap-y-4 px-6 py-4 sm:px-8 md:grid-cols-2 lg:grid-cols-3 lg:py-5 xl:grid-cols-5',
             $containerWidth->getContainerClass(),
         ])
     >
         <nav
             id="sub-footer-menu"
-            class="flex flex-wrap items-center justify-center gap-y-2 md:justify-start lg:order-1 xl:col-span-2"
+            class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 md:justify-start lg:order-1 xl:col-span-2"
             aria-label="{{ __('capell-theme-foundation::generic.sub_footer_navigation') }}"
         >
             @foreach ($items as $id => $item)
@@ -28,8 +28,7 @@
                     href="{{ $item->data['url'] ?? '' }}"
                     @wireNavigate
                     @class ([
-                        'nav-item hover:text-primary flex text-sm font-medium text-[var(--color-footer-link)]',
-                        "before:content-['|'] before:px-2 before:opacity-40 before:text-[var(--color-footer-muted)]" => ! $loop->first,
+                        'nav-item hover:text-primary flex min-h-11 items-center text-sm font-medium text-[var(--color-footer-link)]',
                         'active' => $item->active,
                     ])
                 >
@@ -66,7 +65,7 @@
 
         @if ($slot->isNotEmpty())
             <div
-                class="sm:grid-col-2 grow text-center text-xs leading-tight font-medium text-[var(--color-footer-muted)] md:col-span-1 lg:order-2"
+                class="grow text-center text-xs leading-tight font-medium text-[var(--color-footer-muted)] md:col-span-1 lg:order-2"
             >
                 {{ $slot }}
             </div>
