@@ -229,11 +229,13 @@ it('omits the per-theme css requirement when the split flag is off', function ()
 });
 
 it('omits the per-theme css requirement when no generated source exists', function (): void {
+    $outputDirectory = storage_path('framework/testing/foundation-contributor-missing');
+
     config([
         'capell-theme-foundation.tailwind.split_theme_css' => true,
-        'capell-theme-foundation.tailwind.theme_css_output_directory' => 'resources/css/capell/themes',
+        'capell-theme-foundation.tailwind.theme_css_output_directory' => $outputDirectory,
     ]);
-    File::delete(base_path('resources/css/capell/themes/default.css'));
+    File::deleteDirectory($outputDirectory);
 
     $theme = Theme::factory()->make(['key' => 'default']);
 
@@ -249,36 +251,128 @@ it('omits the per-theme css requirement when no generated source exists', functi
     expect(collect($requirements)->pluck('handle')->all())->not->toContain('theme-css:default');
 });
 
-it('emits the active theme own compiled bundle when the split flag is on', function (): void {
+it('never emits a split requirement for the default theme when a stale source exists', function (): void {
+    $outputDirectory = storage_path('framework/testing/foundation-contributor-stale-default');
+
     config([
         'capell-theme-foundation.tailwind.split_theme_css' => true,
-        'capell-theme-foundation.tailwind.theme_css_output_directory' => 'resources/css/capell/themes',
+        'capell-theme-foundation.tailwind.theme_css_output_directory' => $outputDirectory,
     ]);
-    File::ensureDirectoryExists(base_path('resources/css/capell/themes'));
-    File::put(base_path('resources/css/capell/themes/showreel.css'), '/* test */');
+    File::ensureDirectoryExists($outputDirectory);
+    File::put($outputDirectory . '/default.css', '/* stale */');
 
-    $theme = Theme::factory()->make(['key' => 'showreel']);
+    try {
+        $theme = Theme::factory()->make(['key' => 'default']);
 
-    $requirements = resolve(FoundationThemeAssetContributor::class)->requirements(new FrontendAssetContextData(
-        page: null,
-        site: null,
-        language: null,
-        layout: null,
-        theme: $theme,
-        runtime: FrontendRuntimeManifestData::forRenderingStrategy(RenderingStrategyEnum::BladeOnly),
-    ));
+        $requirements = resolve(FoundationThemeAssetContributor::class)->requirements(new FrontendAssetContextData(
+            page: null,
+            site: null,
+            language: null,
+            layout: null,
+            theme: $theme,
+            runtime: FrontendRuntimeManifestData::forRenderingStrategy(RenderingStrategyEnum::BladeOnly),
+        ));
 
-    $requirement = collect($requirements)->first(
-        fn (FrontendAssetRequirementData $requirement): bool => $requirement->handle === 'theme-css:showreel',
-    );
+        expect(collect($requirements)->pluck('handle')->all())->not->toContain('theme-css:default');
+    } finally {
+        File::deleteDirectory($outputDirectory);
+    }
+});
 
-    expect($requirement)->toBeInstanceOf(FrontendAssetRequirementData::class);
+it('emits a project-relative source for an existing bundle in an absolute output directory', function (): void {
+    $outputDirectory = storage_path('framework/testing/foundation-contributor-existing');
 
-    /** @var FrontendAssetRequirementData $requirement */
-    expect($requirement->kind)->toBe(FrontendAssetRequirementData::KIND_CSS)
-        ->and($requirement->source)->toBe('resources/css/capell/themes/showreel.css');
+    config([
+        'capell-theme-foundation.tailwind.split_theme_css' => true,
+        'capell-theme-foundation.tailwind.theme_css_output_directory' => $outputDirectory,
+    ]);
+    File::ensureDirectoryExists($outputDirectory);
+    File::put($outputDirectory . '/showreel.css', '/* test */');
 
-    File::delete(base_path('resources/css/capell/themes/showreel.css'));
+    try {
+        $theme = Theme::factory()->make(['key' => 'showreel']);
+
+        $requirements = resolve(FoundationThemeAssetContributor::class)->requirements(new FrontendAssetContextData(
+            page: null,
+            site: null,
+            language: null,
+            layout: null,
+            theme: $theme,
+            runtime: FrontendRuntimeManifestData::forRenderingStrategy(RenderingStrategyEnum::BladeOnly),
+        ));
+
+        $requirement = collect($requirements)->first(
+            fn (FrontendAssetRequirementData $requirement): bool => $requirement->handle === 'theme-css:showreel',
+        );
+
+        expect($requirement)->toBeInstanceOf(FrontendAssetRequirementData::class);
+
+        /** @var FrontendAssetRequirementData $requirement */
+        expect($requirement->kind)->toBe(FrontendAssetRequirementData::KIND_CSS)
+            ->and($requirement->source)->toBe('storage/framework/testing/foundation-contributor-existing/showreel.css');
+    } finally {
+        File::deleteDirectory($outputDirectory);
+    }
+});
+
+it('rejects a theme key that traverses outside the configured output directory', function (): void {
+    $outputDirectory = storage_path('framework/testing/foundation-contributor-traversal/themes');
+    $escapedSource = dirname($outputDirectory) . '/escaped.css';
+
+    config([
+        'capell-theme-foundation.tailwind.split_theme_css' => true,
+        'capell-theme-foundation.tailwind.theme_css_output_directory' => $outputDirectory,
+    ]);
+    File::ensureDirectoryExists($outputDirectory);
+    File::put($escapedSource, '/* escaped */');
+
+    try {
+        $theme = Theme::factory()->make(['key' => '../escaped']);
+
+        $requirements = resolve(FoundationThemeAssetContributor::class)->requirements(new FrontendAssetContextData(
+            page: null,
+            site: null,
+            language: null,
+            layout: null,
+            theme: $theme,
+            runtime: FrontendRuntimeManifestData::forRenderingStrategy(RenderingStrategyEnum::BladeOnly),
+        ));
+
+        expect(collect($requirements)->pluck('handle')->all())->not->toContain('theme-css:../escaped');
+    } finally {
+        File::deleteDirectory(dirname($outputDirectory));
+    }
+});
+
+it('rejects a split source symlink that escapes the configured output directory', function (): void {
+    $testDirectory = storage_path('framework/testing/foundation-contributor-symlink');
+    $outputDirectory = $testDirectory . '/themes';
+    $outsideSource = $testDirectory . '/outside.css';
+
+    config([
+        'capell-theme-foundation.tailwind.split_theme_css' => true,
+        'capell-theme-foundation.tailwind.theme_css_output_directory' => $outputDirectory,
+    ]);
+    File::ensureDirectoryExists($outputDirectory);
+    File::put($outsideSource, '/* outside */');
+    symlink($outsideSource, $outputDirectory . '/linked.css');
+
+    try {
+        $theme = Theme::factory()->make(['key' => 'linked']);
+
+        $requirements = resolve(FoundationThemeAssetContributor::class)->requirements(new FrontendAssetContextData(
+            page: null,
+            site: null,
+            language: null,
+            layout: null,
+            theme: $theme,
+            runtime: FrontendRuntimeManifestData::forRenderingStrategy(RenderingStrategyEnum::BladeOnly),
+        ));
+
+        expect(collect($requirements)->pluck('handle')->all())->not->toContain('theme-css:linked');
+    } finally {
+        File::deleteDirectory($testDirectory);
+    }
 });
 
 it('never emits a per-theme css requirement without an active theme', function (): void {

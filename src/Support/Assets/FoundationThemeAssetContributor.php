@@ -7,6 +7,7 @@ namespace Capell\FoundationTheme\Support\Assets;
 use Capell\Frontend\Contracts\FrontendAssetContributor;
 use Capell\Frontend\Data\FrontendAssetContextData;
 use Capell\Frontend\Data\FrontendAssetRequirementData;
+use Symfony\Component\Filesystem\Path;
 
 final class FoundationThemeAssetContributor implements FrontendAssetContributor
 {
@@ -79,15 +80,18 @@ final class FoundationThemeAssetContributor implements FrontendAssetContributor
     {
         $themeKey = $context->theme?->key;
 
-        if (! is_string($themeKey) || $themeKey === '' || ! config('capell-theme-foundation.tailwind.split_theme_css', true)) {
+        if (! is_string($themeKey)
+            || $themeKey === ''
+            || $themeKey === 'default'
+            || ! config('capell-theme-foundation.tailwind.split_theme_css', true)) {
             return null;
         }
 
         $directory = config('capell-theme-foundation.tailwind.theme_css_output_directory', 'resources/css/capell/themes');
         $directory = is_string($directory) && $directory !== '' ? $directory : 'resources/css/capell/themes';
-        $source = rtrim($directory, '/') . '/' . $themeKey . '.css';
+        $source = $this->projectRelativeThemeCssSource($directory, $themeKey);
 
-        if (! $this->isProjectLocalFile($source)) {
+        if ($source === null) {
             return null;
         }
 
@@ -99,14 +103,47 @@ final class FoundationThemeAssetContributor implements FrontendAssetContributor
         );
     }
 
-    private function isProjectLocalFile(string $source): bool
+    private function projectRelativeThemeCssSource(string $directory, string $themeKey): ?string
     {
-        $projectPath = realpath(base_path());
-        $sourcePath = realpath(base_path($source));
+        $projectPath = Path::canonicalize(base_path());
+        $realProjectPath = realpath($projectPath);
 
-        return $projectPath !== false
-            && $sourcePath !== false
-            && is_file($sourcePath)
-            && str_starts_with($sourcePath, $projectPath . DIRECTORY_SEPARATOR);
+        if ($realProjectPath === false) {
+            return null;
+        }
+
+        $realProjectPath = Path::canonicalize($realProjectPath);
+        $directoryPath = Path::isAbsolute($directory)
+            ? Path::canonicalize($directory)
+            : Path::makeAbsolute($directory, $projectPath);
+        $realDirectoryPath = realpath($directoryPath);
+
+        if ($realDirectoryPath === false) {
+            return null;
+        }
+
+        $realDirectoryPath = Path::canonicalize($realDirectoryPath);
+
+        if (! Path::isBasePath($projectPath, $directoryPath)
+            || ! Path::isBasePath($realProjectPath, $realDirectoryPath)) {
+            return null;
+        }
+
+        $sourcePath = Path::canonicalize($directoryPath . '/' . $themeKey . '.css');
+        $realSourcePath = realpath($sourcePath);
+
+        if (! Path::isBasePath($directoryPath, $sourcePath)
+            || $realSourcePath === false
+            || ! is_file($realSourcePath)) {
+            return null;
+        }
+
+        $realSourcePath = Path::canonicalize($realSourcePath);
+
+        if (! Path::isBasePath($realDirectoryPath, $realSourcePath)) {
+            return null;
+        }
+
+        return str_replace('\\', '/', Path::makeRelative($sourcePath, $projectPath));
     }
 }
