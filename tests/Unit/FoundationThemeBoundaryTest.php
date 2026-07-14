@@ -106,12 +106,14 @@ it('owns the default body content and layout component files', function (): void
     expect(file_exists(dirname(__DIR__, 2) . '/resources/views/components/app/body.blade.php'))->toBeTrue()
         ->and(file_exists(dirname(__DIR__, 2) . '/resources/views/components/content.blade.php'))->toBeTrue()
         ->and(file_exists(dirname(__DIR__, 2) . '/resources/views/components/layout/index.blade.php'))->toBeTrue()
+        ->and($layout)->toContain('$themeMeta = is_array($theme?->meta ?? null) ? $theme->meta : []')
+        ->and($layout)->not->toContain('$theme[\'meta\']')
         ->and($layout)->toContain('$layoutMeta = is_array($layout?->meta ?? null) ? $layout->meta : []')
         ->and($layout)->toContain("\$header ??= array_key_exists('header', \$layoutMeta) ? \$layoutMeta['header'] : null")
         ->and($layout)->toContain("\$footer ??= array_key_exists('footer', \$layoutMeta) ? \$layoutMeta['footer'] : null")
         ->and($layout)->toContain('<x-capell::header.index />')
         ->and($layout)->toContain('<x-capell::layout.main')
-        ->and($layout)->toContain("\$theme['meta']['footer_file'] ?? 'capell::footer'");
+        ->and($layout)->toContain("\$themeMeta['footer_file'] ?? 'capell::footer'");
 
     expect($layout)
         ->not->toContain('$isSystemPageLayout &&')

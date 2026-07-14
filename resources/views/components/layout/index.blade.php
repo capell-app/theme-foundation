@@ -15,6 +15,7 @@
     $layout ??= Frontend::layout();
     $site ??= Frontend::site();
     $layoutMeta = is_array($layout?->meta ?? null) ? $layout->meta : [];
+    $themeMeta = is_array($theme?->meta ?? null) ? $theme->meta : [];
     $header ??= array_key_exists('header', $layoutMeta) ? $layoutMeta['header'] : null;
     $footer ??= array_key_exists('footer', $layoutMeta) ? $layoutMeta['footer'] : null;
     $layoutNeighborLinks ??= null;
@@ -32,9 +33,9 @@
 
     @if ($header)
         {{ $header }}
-    @elseif ($header === null && (! isset($theme['meta']['header']) || $theme['meta']['header'] !== false))
-        @if (! empty($theme['meta']['header_file']))
-            <x-dynamic-component :component="$theme['meta']['header_file']" />
+    @elseif ($header === null && (! array_key_exists('header', $themeMeta) || $themeMeta['header'] !== false))
+        @if (! empty($themeMeta['header_file']))
+            <x-dynamic-component :component="$themeMeta['header_file']" />
         @else
             <x-capell::header.index />
         @endif
@@ -62,7 +63,7 @@
     <x-capell::layout.main
         :$layout
         :$page
-        :$theme
+        :theme="$themeMeta"
         :layout-neighbor-links="$layoutNeighborLinks"
         :page-slot="$pageSlot ?? $slot"
         :container-class="$containerClass"
@@ -91,11 +92,11 @@
         @endphp
     @if ($footer)
         {{ $footer }}
-    @elseif ($footer !== false && (! isset($theme['meta']['footer']) || $theme['meta']['footer'] !== false))
-        @if (($theme['meta']['footer_file'] ?? 'capell::footer') === 'capell::footer')
+    @elseif ($footer !== false && (! array_key_exists('footer', $themeMeta) || $themeMeta['footer'] !== false))
+        @if (($themeMeta['footer_file'] ?? 'capell::footer') === 'capell::footer')
             <x-capell::footer.index />
         @else
-            <x-dynamic-component :component="$theme['meta']['footer_file']" />
+            <x-dynamic-component :component="$themeMeta['footer_file']" />
         @endif
     @endif
     @php
