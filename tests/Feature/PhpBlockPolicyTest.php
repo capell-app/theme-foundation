@@ -109,7 +109,10 @@ uses(AssertsPublicThemeOutputSafety::class);
  * The 2026-07-10 recursive scanner repair then corrected Foundation from
  * 110 to 114, Liquid Glass from 20 to 19, Platform from 20 to 21, and the
  * renamed Docs entry to Knowledge at 13, moving the true fleet total to
- * 659 without adding a new Blade block.
+ * 659 without adding a new Blade block. The 2026-07-14 Foundation commercial
+ * pass then added nine reviewed preparation-only blocks across shared chrome,
+ * component states, URL sanitisation, and widget render data. That moved
+ * Foundation from 116 to 125 and the current fleet baseline from 676 to 685.
  */
 final class ThemePhpBlockBaselineCounts
 {
@@ -123,7 +126,7 @@ final class ThemePhpBlockBaselineCounts
         'magazine' => 35,
         'catalogue' => 29,
         'curated' => 25,
-        'foundation' => 116,
+        'foundation' => 125,
         'agency' => 32,
         'awards' => 35,
         'editorial' => 33,
@@ -142,8 +145,8 @@ final class ThemePhpBlockBaselineCounts
     ];
 }
 
-it('confirms the frozen baseline snapshot sums to the programme-verified total of 676', function (): void {
-    expect(array_sum(ThemePhpBlockBaselineCounts::FROZEN_BASELINE_COUNTS))->toBe(676);
+it('confirms the frozen baseline snapshot sums to the programme-verified total of 685', function (): void {
+    expect(array_sum(ThemePhpBlockBaselineCounts::FROZEN_BASELINE_COUNTS))->toBe(685);
 });
 
 it('keeps each theme package within its frozen @php block baseline', function (): void {
@@ -183,6 +186,7 @@ it('keeps each theme package within its frozen @php block baseline', function ()
             'PageLatestComponent',
             'PageSiblingsComponent',
             'PublicModelMeta',
+            'PublicUrlSanitizer',
             'RenderableTypeEnum',
             'RenderHookLocation',
             'RenderHookRegistry',
@@ -191,6 +195,7 @@ it('keeps each theme package within its frozen @php block baseline', function ()
             'ResolveLoadedWidgetBackgroundImageAction',
             'ResolveRenderableComponentAction',
             'ResolveSafeCssColorTokenAction',
+            'ResponsiveAssetLayoutOptions',
             'ResponsiveVisibilityEnum',
             'Route',
             'SlotComponent',
