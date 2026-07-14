@@ -19,7 +19,6 @@ use Capell\Core\Models\Language;
 use Capell\Core\Models\Page;
 use Capell\Core\Models\Site;
 use Capell\Core\Models\Theme;
-use Capell\Core\Support\Assets\VendorAssetConditionRegistry;
 use Capell\Core\Support\Packages\AbstractPackageServiceProvider;
 use Capell\Core\Support\Themes\ThemeChromeRegistry;
 use Capell\Core\ThemeStudio\Data\ThemeDefinitionData;
@@ -60,13 +59,15 @@ use Capell\FoundationTheme\View\Components\Widget\Page\Latest as PageLatestCompo
 use Capell\FoundationTheme\View\Components\Widget\Page\Siblings as PageSiblingsComponent;
 use Capell\FoundationTheme\View\Components\Widget\Slot as SlotComponent;
 use Capell\Frontend\Contracts\AssetsRegistryInterface;
-use Capell\Frontend\Contracts\FrontendAssetContributor;
 use Capell\Frontend\Contracts\FrontendComponentRegistryInterface;
+use Capell\Frontend\Contracts\FrontendResourceContributor;
 use Capell\Frontend\Contracts\FrontendRuntimeManifestContributor;
-use Capell\Frontend\Data\FrontendAssetContextData;
+use Capell\Frontend\Data\Assets\FrontendPackageDependencyData;
 use Capell\Frontend\Data\FrontendAssetData;
+use Capell\Frontend\Enums\FrontendPackageDependencyType;
 use Capell\Frontend\Events\FrontendContextResolved;
 use Capell\Frontend\Events\FrontendRenderPreparing;
+use Capell\Frontend\Support\Assets\FrontendPackageDependencyRegistry;
 use Capell\Frontend\Support\Loader\PageLoader;
 use Capell\Frontend\Support\Loader\SiteLoader;
 use Capell\LayoutBuilder\Contracts\Extenders\LayoutContainerSchemaExtender;
@@ -173,7 +174,6 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
         $this->registerAssets();
         $this->registerTailwindEventListeners();
-        $this->registerVendorAssetConditions();
         $this->registerVendorCssJsAssets();
         $this->registerMediaUrlGenerator();
         $this->registerModelInterceptors();
@@ -204,7 +204,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
     private function registerAssets(): void
     {
-        $this->app->tag(FoundationThemeAssetContributor::class, FrontendAssetContributor::TAG);
+        $this->app->tag(FoundationThemeAssetContributor::class, FrontendResourceContributor::TAG);
 
         if (! $this->app->bound(AssetsRegistryInterface::class)) {
             return;
@@ -529,6 +529,8 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
             return;
         }
 
+        $dependencies = [];
+
         foreach ($npmDependencies as $package => $version) {
             if (! is_string($package)) {
                 continue;
@@ -546,23 +548,29 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
                 continue;
             }
 
-            CapellCore::registerVendorAsset(
-                VendorAssetData::npmDependency($package, $version, self::$packageName),
+            $dependencies[] = new FrontendPackageDependencyData(
+                name: $package,
+                versionConstraint: $version,
+                type: FrontendPackageDependencyType::Runtime,
+                package: self::$packageName,
             );
+        }
+
+        $register = static function (FrontendPackageDependencyRegistry $registry) use ($dependencies): void {
+            foreach ($dependencies as $dependency) {
+                $registry->register($dependency);
+            }
+        };
+
+        $this->app->afterResolving(FrontendPackageDependencyRegistry::class, $register);
+
+        if ($this->app->resolved(FrontendPackageDependencyRegistry::class)) {
+            $register($this->app->make(FrontendPackageDependencyRegistry::class));
         }
     }
 
     private function registerVendorCssJsAssets(): void
     {
-        CapellCore::registerVendorAsset(
-            VendorAssetData::buildAsset(
-                path: 'vendor/capell-theme-foundation',
-                file: 'resources/js/capell-frontend.js',
-                packageName: self::$packageName,
-                condition: 'theme-foundation-runtime',
-            ),
-        );
-
         CapellCore::registerVendorAsset(
             VendorAssetData::tailwindImport('resources/css/theme-foundation.css', self::$packageName),
         );
@@ -593,16 +601,6 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
         CapellCore::registerVendorAsset(
             VendorAssetData::tailwindImport('swiper/css/navigation', self::$packageName),
-        );
-    }
-
-    private function registerVendorAssetConditions(): void
-    {
-        resolve(VendorAssetConditionRegistry::class)->register(
-            'theme-foundation-runtime',
-            fn (FrontendAssetContextData $context): bool => $context->runtime->usesIslands
-                || $context->runtime->usesLivewire
-                || ($context->runtime->modules['theme-foundation-runtime'] ?? false),
         );
     }
 
