@@ -349,7 +349,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
         }
 
         $this->prepareFooterData(
-            getFrontendData: fn (string $key): mixed => $event->context->getFrontendData($key),
+            getFrontendData: fn (?string $key = null): mixed => $event->context->getFrontendData($key),
             setFrontendData: fn (string $key, mixed $value) => $event->context->setFrontendData($key, $value),
             site: $site,
             language: $language,
@@ -398,7 +398,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
         }
 
         $this->prepareFooterData(
-            getFrontendData: fn (string $key): mixed => $event->context->getFrontendData($key),
+            getFrontendData: fn (?string $key = null): mixed => $event->context->getFrontendData($key),
             setFrontendData: fn (string $key, mixed $value) => $event->context->setFrontendData($key, $value),
             site: $site,
             language: $language,
@@ -408,7 +408,15 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
     private function prepareFooterData(callable $getFrontendData, callable $setFrontendData, Site $site, Language $language, Page $page): void
     {
-        if ($getFrontendData('foundation.footer.site_languages') !== null) {
+        $frontendData = $getFrontendData();
+        $footerDataKeys = [
+            'foundation.footer.contact_page',
+            'foundation.footer.site_languages',
+            'foundation.footer.latest_pages',
+            'foundation.footer.related_sites',
+        ];
+
+        if (is_array($frontendData) && array_diff_key(array_flip($footerDataKeys), $frontendData) === []) {
             return;
         }
 
