@@ -84,57 +84,57 @@ class FoundationThemeSettings extends Settings implements SettingsContract
 
     public bool $minify_assets = true;
 
-    public string $page_background_color = '#faf9f7';
+    public string $page_background_color = '#f5f7f4';
 
-    public string $surface_background_color = '#ffffff';
+    public string $surface_background_color = '#fcfffb';
 
-    public string $muted_background_color = '#f4f3f1';
+    public string $muted_background_color = '#edf2ee';
 
-    public string $header_background_color = '#fbfaf7';
+    public string $header_background_color = '#fcfffb';
 
-    public string $border_color = '#e1e5eb';
+    public string $border_color = '#cfd9d3';
 
-    public string $border_strong_color = '#c7ced8';
+    public string $border_strong_color = '#aebdb5';
 
-    public string $card_background_color = '#ffffff';
+    public string $card_background_color = '#fcfffb';
 
-    public string $primary_action_color = '#315f8f';
+    public string $primary_action_color = '#087765';
 
-    public string $band_background_color = '#faf9f7';
+    public string $band_background_color = '#f5f7f4';
 
-    public string $band_alternate_background_color = '#f4f3f1';
+    public string $band_alternate_background_color = '#edf2ee';
 
-    public string $band_accent_background_color = '#f4f3f1';
+    public string $band_accent_background_color = '#e0f2ec';
 
-    public string $band_border_color = '#e1e5eb';
+    public string $band_border_color = '#cfd9d3';
 
-    public string $image_border_color = '#e1e5eb';
+    public string $image_border_color = '#cfd9d3';
 
-    public string $dark_page_background_color = '#0f172a';
+    public string $dark_page_background_color = '#0b1716';
 
-    public string $dark_surface_background_color = '#111827';
+    public string $dark_surface_background_color = '#101d1a';
 
-    public string $dark_muted_background_color = '#1f2937';
+    public string $dark_muted_background_color = '#172621';
 
-    public string $dark_header_background_color = '#111827';
+    public string $dark_header_background_color = '#0b1716';
 
-    public string $dark_border_color = '#334155';
+    public string $dark_border_color = '#31423c';
 
-    public string $dark_border_strong_color = '#475569';
+    public string $dark_border_strong_color = '#52615b';
 
-    public string $dark_card_background_color = '#111827';
+    public string $dark_card_background_color = '#101d1a';
 
-    public string $dark_primary_action_color = '#93c5fd';
+    public string $dark_primary_action_color = '#79d7c2';
 
-    public string $dark_band_background_color = '#0f172a';
+    public string $dark_band_background_color = '#0b1716';
 
-    public string $dark_band_alternate_background_color = '#111827';
+    public string $dark_band_alternate_background_color = '#101d1a';
 
-    public string $dark_band_accent_background_color = '#1e293b';
+    public string $dark_band_accent_background_color = '#17352e';
 
-    public string $dark_band_border_color = '#334155';
+    public string $dark_band_border_color = '#31423c';
 
-    public string $dark_image_border_color = '#334155';
+    public string $dark_image_border_color = '#31423c';
 
     public string $image_radius = '0.5rem';
 

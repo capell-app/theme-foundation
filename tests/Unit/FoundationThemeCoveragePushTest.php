@@ -229,6 +229,7 @@ it('declares foundation settings schema and settings migrations', function (): v
     $designTokenComponents = foundationThemeCoverageChildComponents(foundationThemeCoverageChildComponents($components[1])[0]);
     $darkDesignTokenComponents = foundationThemeCoverageChildComponents(foundationThemeCoverageChildComponents($components[2])[0]);
     $provider = new FoundationThemeSettingsMigrationProvider;
+    $settingDefaults = (new ReflectionClass(FoundationThemeSettings::class))->getDefaultProperties();
 
     capell_expect($components)->toHaveCount(3)
         ->and($components[0])->toBeInstanceOf(Section::class)
@@ -258,6 +259,7 @@ it('declares foundation settings schema and settings migrations', function (): v
             '2026_06_07_000001_add_theme_foundation_dark_design_tokens',
             '2026_06_07_000002_add_theme_foundation_typography_tokens',
             '2026_07_05_000001_add_theme_foundation_motion_tokens',
+            '2026_07_14_210000_refresh_theme_foundation_capell_palette',
         ])
         ->and($provider->migrations())->toBe([
             '2026_05_10_190850_01_create_theme_foundation_settings',
@@ -269,12 +271,20 @@ it('declares foundation settings schema and settings migrations', function (): v
             '2026_06_07_000001_add_theme_foundation_dark_design_tokens',
             '2026_06_07_000002_add_theme_foundation_typography_tokens',
             '2026_07_05_000001_add_theme_foundation_motion_tokens',
+            '2026_07_14_210000_refresh_theme_foundation_capell_palette',
         ])
         ->and(FoundationThemeSettings::group())->toBe('theme_foundation')
         ->and(FoundationThemeSettings::schema())->toBe(FoundationThemeSettingsSchema::class)
         ->and(FoundationThemeSettings::sectionSpacingCssValueFor(null))->toBe(FoundationThemeSettings::SECTION_SPACING_OPTIONS['relaxed'])
         ->and(FoundationThemeSettings::widgetGapCssValueFor(null))->toBe(FoundationThemeSettings::WIDGET_GAP_OPTIONS['balanced'])
-        ->and(FoundationThemeSettings::headingScaleCssValuesFor(null))->toBe(FoundationThemeSettings::HEADING_SCALE_OPTIONS['balanced']);
+        ->and(FoundationThemeSettings::headingScaleCssValuesFor(null))->toBe(FoundationThemeSettings::HEADING_SCALE_OPTIONS['balanced'])
+        ->and($settingDefaults)->toMatchArray([
+            'page_background_color' => '#f5f7f4',
+            'surface_background_color' => '#fcfffb',
+            'primary_action_color' => '#087765',
+            'dark_page_background_color' => '#0b1716',
+            'dark_primary_action_color' => '#79d7c2',
+        ]);
 
 });
 

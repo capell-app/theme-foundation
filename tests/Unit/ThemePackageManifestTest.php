@@ -49,6 +49,7 @@ it('does not declare deferred route contributions because the theme ships no rou
 
 it('defines the Foundation Theme Studio parent contract', function (): void {
     $definition = FoundationThemeServiceProvider::definition();
+    $preset = $definition->presets[0];
 
     expect($definition->key)->toBe('default')
         ->and($definition->package)->toBe('capell-app/theme-foundation')
@@ -61,6 +62,17 @@ it('defines the Foundation Theme Studio parent contract', function (): void {
         ->and($definition->includedSections)->toContain('cta')
         ->and($definition->includedSections)->toContain('footer')
         ->and($definition->presets)->toHaveCount(1)
+        ->and($preset->values)->toMatchArray([
+            'primaryColor' => '#087765',
+            'accentColor' => '#0e91b2',
+            'neutralColor' => '#244c43',
+            'surfaceColor' => '#f5f7f4',
+            'foregroundColor' => '#101715',
+            'headingFont' => 'sora',
+            'bodyFont' => 'inter',
+            'radius' => 'sm',
+            'cardStyle' => 'hairline',
+        ])
         ->and($definition->runtime->value)->toBe('blade')
         ->and($definition->assets)->toHaveKey('css');
 });
