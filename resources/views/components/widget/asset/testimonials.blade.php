@@ -29,11 +29,12 @@
     'containerIndex',
     'containerWidth',
     'loop',
-    'total' => $assets->count(),
+    'total' => null,
     'widget',
     'widgetIndex',
 ])
 @php
+    $total ??= $assets->count();
     $carouselId = sprintf('testimonial-carousel-%s-%s', $widget->id ?? $widget->key, $loop->index);
     $carouselEffect = $carouselFade ? 'fade' : $carouselEffect;
 @endphp
