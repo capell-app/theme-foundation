@@ -15,7 +15,7 @@ return [
         'autoprefixer' => '^10.4.13',
         'swiper' => '^12.1.2',
         'fontaine' => '^0.8.0',
-        'laravel-vite-plugin' => '^3.1.0',
+        'laravel-vite-plugin' => '^3.1.3',
         'npm-run-all' => '^4.1.5',
         'tailwindcss' => '^4.0.14',
         'tippy.js' => '^6.3.7',
