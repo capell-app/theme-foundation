@@ -26,7 +26,11 @@
                     @if (! empty($feature['image']))
                         <img
                             src="{{ $feature['image'] }}"
-                            alt=""
+                            alt="{{ $feature['image_alt'] ?? $feature['title'] }}"
+                            width="800"
+                            height="480"
+                            loading="lazy"
+                            decoding="async"
                             class="aspect-[5/3] w-full object-cover"
                         />
                     @endif

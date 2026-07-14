@@ -135,3 +135,31 @@ it('ships every Foundation hero variant with stable media and premium interactio
         ->toContain('@media (max-width: 767px)')
         ->toContain('.dark .theme-hero');
 });
+
+it('ships proof and conversion sections with resilient media and action states', function (): void {
+    $themeRoot = dirname(__DIR__, 2);
+    $features = file_get_contents($themeRoot . '/resources/views/theme/sections/features.blade.php');
+    $proof = file_get_contents($themeRoot . '/resources/views/theme/sections/proof.blade.php');
+    $styles = file_get_contents($themeRoot . '/resources/css/theme/theme.css');
+
+    expect($features)
+        ->toContain("\$feature['image_alt'] ?? \$feature['title']")
+        ->toContain('width="800"')
+        ->toContain('height="480"')
+        ->toContain('loading="lazy"')
+        ->toContain('decoding="async"');
+
+    expect($proof)
+        ->toContain("\$item['image_alt'] ?? \$item['title'] ?? \$item['name']")
+        ->toContain('width="800"')
+        ->toContain('height="320"')
+        ->toContain('loading="lazy"')
+        ->toContain('decoding="async"');
+
+    expect($styles)
+        ->toContain('.theme-features article:hover')
+        ->toContain('.theme-proof figure')
+        ->toContain('.theme-stats-display-band .count-up-stat')
+        ->toContain('.theme-cta a:focus-visible')
+        ->toContain('@media (prefers-reduced-motion: reduce)');
+});

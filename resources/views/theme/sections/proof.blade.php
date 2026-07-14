@@ -30,7 +30,11 @@
                     @if (! empty($item['image']))
                         <img
                             src="{{ $item['image'] }}"
-                            alt=""
+                            alt="{{ $item['image_alt'] ?? $item['title'] ?? $item['name'] ?? '' }}"
+                            width="800"
+                            height="320"
+                            loading="lazy"
+                            decoding="async"
                             class="aspect-[5/2] w-full object-cover opacity-90"
                         />
                     @endif
