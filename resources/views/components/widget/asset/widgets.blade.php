@@ -5,7 +5,9 @@ $theme = Frontend::theme();
 ?>
 
 @php
+    use Capell\Core\Actions\ResolveRenderableComponentAction;
     use Capell\Core\Enums\AssetComponentEnum;
+    use Capell\Core\Enums\RenderableTypeEnum;
     use Capell\Core\Facades\CapellCore;
     use Capell\Frontend\Contracts\AssetsRegistryInterface;
 @endphp
@@ -81,7 +83,7 @@ $theme = Frontend::theme();
                 >
                     @foreach ($assets as $asset)
                         <x-dynamic-component
-                            :component="app(AssetsRegistryInterface::class)->getAsset($asset['asset_type'])->component"
+                            :component="ResolveRenderableComponentAction::run(RenderableTypeEnum::Asset, app(AssetsRegistryInterface::class)->getAsset($asset['asset_type'])->component)"
                             :componentItem="$widget->getMeta('component_item', AssetComponentEnum::Card->value)"
                             :$container
                             :$containerKey
