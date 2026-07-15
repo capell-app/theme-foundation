@@ -244,6 +244,7 @@ it('delegates primary header navigation to the navigation render hook', function
     $header = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/header/index.blade.php');
     $layoutArea = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/layout/area.blade.php');
     $provider = file_get_contents(dirname(__DIR__, 2) . '/src/Providers/FoundationThemeServiceProvider.php');
+    $themeStyles = file_get_contents(dirname(__DIR__, 2) . '/resources/css/theme/theme.css');
 
     expect($header)->toContain("scenario: 'theme-foundation-primary-navigation'")
         ->and($header)->toContain("target: 'capell::header.index'")
@@ -253,9 +254,56 @@ it('delegates primary header navigation to the navigation render hook', function
         ->and($header)->toContain('capell-navigation-menu-open-changed')
         ->and($header)->toContain('capell-product-header')
         ->and($header)->toContain('capell-product-nav-item')
+        ->and($header)->toContain('max-xl:px-0')
+        ->and($themeStyles)->toContain('@media (max-width: 1279px)')
+        ->and($themeStyles)->toContain('@media (min-width: 1280px)')
         ->and($header)->not->toContain('x-ref="toggleMenu"')
         ->and($header)->not->toContain('toggleMenu()')
         ->and($header)->not->toContain('Capell\\Navigation');
+});
+
+it('uses complete shared navigation disclosure below the wide desktop breakpoint', function (): void {
+    $header = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/header/index.blade.php');
+    $navigation = file_get_contents(dirname(__DIR__, 2) . '/resources/views/theme/chrome/navigation.blade.php');
+    $chromeStyles = file_get_contents(dirname(__DIR__, 2) . '/resources/css/theme/chrome.css');
+
+    expect($header)
+        ->not->toContain('[&_.nav-items]:lg:flex-nowrap')
+        ->and($navigation)->not->toContain('<style>')
+        ->and($navigation)->toContain('theme-chrome-nav__links')
+        ->and($navigation)->toContain('theme-chrome-nav__mobile-cta')
+        ->and($navigation)->toContain('{{ $section->ctaLabel }}')
+        ->and($chromeStyles)->toContain('@media (min-width: 1200px)')
+        ->and($chromeStyles)->toMatch('/\.theme-chrome-nav__links\s*{[^}]*white-space: nowrap;/s')
+        ->and($chromeStyles)->toMatch('/\.theme-chrome-nav__mobile-panel \.theme-chrome-nav__cta\s*{\s*display: inline-flex;/');
+});
+
+it('renders shared navigation disclosure for menu items or a complete cta', function (): void {
+    $renderNavigation = static fn (array $items, ?string $ctaLabel, ?string $ctaUrl): string => view('capell-theme-foundation::theme.chrome.navigation', [
+        'section' => (object) [
+            'brandName' => 'Capell',
+            'items' => $items,
+            'ctaLabel' => $ctaLabel,
+            'ctaUrl' => $ctaUrl,
+        ],
+    ])->render();
+
+    $items = array_map(
+        static fn (int $index): array => ['label' => "Item {$index}", 'url' => "/item-{$index}"],
+        range(1, 7),
+    );
+
+    $itemsAndCta = $renderNavigation($items, 'Contact', '/contact');
+    $ctaOnly = $renderNavigation([], 'Contact', '/contact');
+    $empty = $renderNavigation([], null, null);
+
+    expect($itemsAndCta)->toContain('theme-chrome-nav__mobile')
+        ->and(substr_count($itemsAndCta, 'theme-chrome-nav__mobile-cta'))->toBe(1)
+        ->and($ctaOnly)->toContain('theme-chrome-nav__mobile')
+        ->and($ctaOnly)->toContain('theme-chrome-nav__mobile-cta')
+        ->and($ctaOnly)->toContain('href="/contact"')
+        ->and($empty)->not->toContain('theme-chrome-nav__mobile')
+        ->and($empty)->not->toContain('theme-chrome-nav__cta');
 });
 
 it('delegates main layout container rendering to the shared frontend hook', function (): void {
