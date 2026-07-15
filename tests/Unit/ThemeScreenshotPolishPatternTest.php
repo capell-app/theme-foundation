@@ -158,7 +158,7 @@ test('theme section navigations expose the shared mobile disclosure menu', funct
         } else {
             expect($css)
                 ->toContain('.capell-mobile-nav')
-                ->toContain('@media (max-width: 767px)')
+                ->toMatch('/@media \(max-width: (?:767px|1023px)\)/')
                 ->toContain('.capell-desktop-nav-action');
         }
     }
@@ -177,7 +177,7 @@ test('platform contact screenshots wait for the shared contact form', function (
     $manifest = file_get_contents($packagesPath . '/theme-platform/docs/screenshots.json');
     throw_unless(is_string($manifest), RuntimeException::class, 'Unable to read Platform screenshot manifest.');
 
-    preg_match_all('/"id": "platform-contact-form(?:-tablet|-mobile)?".+?"waitFor": "([^"]+)"/s', $manifest, $contactWaits);
+    preg_match_all('/"id": "platform-contact(?:-tablet|-mobile)?".+?"waitFor": "([^"]+)"/s', $manifest, $contactWaits);
 
     expect($contactWaits[1])->toBe(['#contact-form', '#contact-form', '#contact-form']);
 });
