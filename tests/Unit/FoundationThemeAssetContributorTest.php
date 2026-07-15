@@ -251,6 +251,26 @@ it('emits the active theme own compiled bundle when the split flag is on', funct
     File::delete(base_path('resources/css/capell/themes/showreel.css'));
 });
 
+it('omits an active theme bundle until its split css source has been generated', function (): void {
+    config([
+        'capell-theme-foundation.tailwind.split_theme_css' => true,
+        'capell-theme-foundation.tailwind.theme_css_output_directory' => 'resources/css/capell/themes',
+    ]);
+    File::delete(base_path('resources/css/capell/themes/not-generated.css'));
+
+    $theme = Theme::factory()->make(['key' => 'not-generated']);
+    $requirements = foundationThemeResources(new FrontendResourceContextData(
+        page: null,
+        site: null,
+        language: null,
+        layout: null,
+        theme: $theme,
+        runtime: FrontendRuntimeManifestData::forRenderingStrategy(RenderingStrategyEnum::BladeOnly),
+    ));
+
+    expect(collect($requirements)->pluck('handle')->all())->not->toContain('theme-css:not-generated');
+});
+
 it('never emits a per-theme css requirement without an active theme', function (): void {
     config(['capell-theme-foundation.tailwind.split_theme_css' => true]);
 
