@@ -52,8 +52,8 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
             ),
             renderData: [
                 'summary' => 'Field Office is a small research and design practice for community spaces, shared workshops, and useful public rooms.',
-                'navigation' => $this->navigation(),
-                'footer' => $this->footer(),
+                'navigation' => $this->navigation($themeKey),
+                'footer' => $this->footer($themeKey),
                 'sections' => [
                     $this->heroSection(
                         eyebrow: 'Research and spatial practice',
@@ -118,8 +118,8 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
             ),
             renderData: [
                 'summary' => 'A searchable collection of practical notes for teams responsible for shared spaces.',
-                'navigation' => $this->navigation(),
-                'footer' => $this->footer(),
+                'navigation' => $this->navigation($themeKey),
+                'footer' => $this->footer($themeKey),
                 'sections' => [
                     $this->heroSection(
                         eyebrow: 'Field notes',
@@ -175,8 +175,8 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
             ),
             renderData: [
                 'summary' => 'A short guide to writing a workshop brief that helps a team make useful decisions without fixing the answer too early.',
-                'navigation' => $this->navigation(),
-                'footer' => $this->footer(),
+                'navigation' => $this->navigation($themeKey),
+                'footer' => $this->footer($themeKey),
                 'sections' => [
                     $this->heroSection(
                         eyebrow: 'Field note',
@@ -229,8 +229,8 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
             ),
             renderData: [
                 'summary' => 'A simple first conversation for teams considering a new brief, a workshop, or a small spatial change.',
-                'navigation' => $this->navigation(),
-                'footer' => $this->footer(),
+                'navigation' => $this->navigation($themeKey),
+                'footer' => $this->footer($themeKey),
                 'sections' => [
                     $this->heroSection(
                         eyebrow: 'Project enquiries',
@@ -280,8 +280,8 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
             ),
             renderData: [
                 'summary' => 'No field notes match that search. Try a broader topic or browse the complete collection.',
-                'navigation' => $this->navigation(),
-                'footer' => $this->footer(),
+                'navigation' => $this->navigation($themeKey),
+                'footer' => $this->footer($themeKey),
                 'sections' => [
                     $this->heroSection(
                         eyebrow: 'Search results',
@@ -329,8 +329,8 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
             ),
             renderData: [
                 'summary' => 'That page may have moved. Search the field notes or return to a familiar starting point.',
-                'navigation' => $this->navigation(),
-                'footer' => $this->footer(),
+                'navigation' => $this->navigation($themeKey),
+                'footer' => $this->footer($themeKey),
                 'sections' => [
                     $this->heroSection(
                         eyebrow: '404',
@@ -375,8 +375,8 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
             ),
             renderData: [
                 'summary' => 'A focused first step for organisations planning a shared space, workshop, or practical change.',
-                'navigation' => $this->navigation(),
-                'footer' => $this->footer(),
+                'navigation' => $this->navigation($themeKey),
+                'footer' => $this->footer($themeKey),
                 'sections' => [
                     $this->heroSection(
                         eyebrow: 'Start a project',
@@ -593,26 +593,30 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
     /**
      * @return array<string, mixed>
      */
-    private function navigation(): array
+    private function navigation(string $themeKey): array
     {
+        $homeUrl = '/theme-' . $themeKey;
+
         return [
             'brandName' => self::BRAND,
             'items' => [
-                ['label' => 'Work', 'url' => '/'],
-                ['label' => 'Field notes', 'url' => '/'],
-                ['label' => 'Approach', 'url' => '/'],
-                ['label' => 'Contact', 'url' => '/'],
+                ['label' => 'Work', 'url' => $homeUrl . '#features'],
+                ['label' => 'Field notes', 'url' => $homeUrl . '-directory'],
+                ['label' => 'Approach', 'url' => $homeUrl . '#proof'],
+                ['label' => 'Contact', 'url' => $homeUrl . '-contact'],
             ],
             'ctaLabel' => 'Start a project',
-            'ctaUrl' => '/',
+            'ctaUrl' => $homeUrl . '-contact',
         ];
     }
 
     /**
      * @return array<string, mixed>
      */
-    private function footer(): array
+    private function footer(string $themeKey): array
     {
+        $homeUrl = '/theme-' . $themeKey;
+
         return [
             'brandName' => self::BRAND,
             'summary' => 'Research and practical design support for community spaces, shared workshops, and useful public rooms.',
@@ -620,8 +624,8 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
                 [
                     'heading' => 'Explore',
                     'links' => [
-                        ['label' => 'Selected work', 'url' => '/'],
-                        ['label' => 'Field notes', 'url' => '/'],
+                        ['label' => 'How we work', 'url' => $homeUrl . '#proof'],
+                        ['label' => 'Field notes', 'url' => $homeUrl . '-directory'],
                     ],
                 ],
                 [

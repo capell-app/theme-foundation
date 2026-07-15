@@ -7,6 +7,9 @@ namespace Capell\FoundationTheme\Actions;
 use Illuminate\Support\Str;
 use Lorisleiva\Actions\Concerns\AsAction;
 
+/**
+ * @method static array<string, mixed> run(string $themeKey, string $heading, string $summary, string $fallbackUrl, string $fallbackLabel, string $successMessage = 'Thanks — your enquiry has been received.')
+ */
 final class BuildThemeDemoFormSectionAction
 {
     use AsAction;

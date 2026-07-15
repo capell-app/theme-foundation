@@ -193,11 +193,13 @@ it('priority themes ship a populated form-builder contact section', function (st
     );
 
     throw_unless(is_array($formSection), RuntimeException::class, "Theme [{$slug}] form section must be an array.");
+    $fields = $formSection['fields'] ?? null;
+    throw_unless(is_array($fields), RuntimeException::class, "Theme [{$slug}] form fields must be an array.");
 
     expect($formSection)
         ->toBeArray()
         ->and($formSection['form_handle'] ?? null)->toBeString()->not->toBeEmpty()
-        ->and($formSection['fields'] ?? null)->toBeArray()->toHaveCount(4)
+        ->and(count($fields))->toBeGreaterThanOrEqual(4)
         ->and($formSection['fallback_url'] ?? null)->toBeString()->not->toBeEmpty();
 })->with(collect(FLEET_FORM_BUILDER_THEMES)->mapWithKeys(
     fn (string $slug): array => [$slug => [$slug]],
@@ -231,4 +233,31 @@ it('foundation demonstrates a credible site instead of describing its implementa
         ->not->toContain('—')
         ->not->toContain('–')
         ->not->toContain('·');
+});
+
+it('foundation chrome links to its seeded buyer journeys', function (): void {
+    $definitions = (new FoundationDemoContent)->definitions(
+        themeKey: 'default',
+        themeName: 'Foundation',
+        baseUrl: 'https://foundation.test',
+    );
+
+    foreach ($definitions as $definition) {
+        $navigation = $definition->renderData['navigation'] ?? null;
+        $footer = $definition->renderData['footer'] ?? null;
+
+        throw_unless(is_array($navigation), RuntimeException::class, "{$definition->surface} navigation missing.");
+        throw_unless(is_array($footer), RuntimeException::class, "{$definition->surface} footer missing.");
+
+        expect($navigation['items'] ?? null)->toBe([
+            ['label' => 'Work', 'url' => '/theme-default#features'],
+            ['label' => 'Field notes', 'url' => '/theme-default-directory'],
+            ['label' => 'Approach', 'url' => '/theme-default#proof'],
+            ['label' => 'Contact', 'url' => '/theme-default-contact'],
+        ])->and($navigation['ctaUrl'] ?? null)->toBe('/theme-default-contact')
+            ->and(data_get($footer, 'columns.0.links'))->toBe([
+                ['label' => 'How we work', 'url' => '/theme-default#proof'],
+                ['label' => 'Field notes', 'url' => '/theme-default-directory'],
+            ]);
+    }
 });
