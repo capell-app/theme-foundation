@@ -1,5 +1,7 @@
 @php
+    use Capell\Core\Actions\ResolveRenderableComponentAction;
     use Capell\Core\Enums\AssetComponentEnum;
+    use Capell\Core\Enums\RenderableTypeEnum;
     use Capell\Core\Facades\CapellCore;
     use Capell\FoundationTheme\Support\ResponsiveAssetLayoutOptions;
     use Capell\Frontend\Contracts\AssetsRegistryInterface;
@@ -18,7 +20,7 @@
     'widget',
     'widgetIndex' => null,
     'loop',
-    'total' => $assets->count(),
+    'total' => null,
     'widget' => $widget,
     'widgetIndex' => $widgetIndex,
     'maxWidth' => $widget->getMeta('max_width'),
@@ -31,9 +33,11 @@
     'columns' => (int) $widget->getMeta('columns'),
     'headingSize' => $widget->getMeta('heading_size'),
     'imagePosition' => $widget->getMeta('image_position', 'left'),
-    'responsiveLayoutOptions' => ResponsiveAssetLayoutOptions::fromWidget($widget, $total),
+    'responsiveLayoutOptions' => null,
 ])
 @php
+    $total ??= $assets->count();
+    $responsiveLayoutOptions ??= ResponsiveAssetLayoutOptions::fromWidget($widget, $total);
     $responsiveLayoutPattern = $responsiveLayoutOptions->pattern;
     $assetLayoutKey = sprintf('%s-%s-%s', $containerKey, $widget->id ?? $widget->key, $loop->index);
     $assetGridId = "asset-grid-{$assetLayoutKey}";
@@ -101,7 +105,7 @@
                         @foreach ($assets as $asset)
                             <div class="swiper-slide h-auto">
                                 <x-dynamic-component
-                                    :component="app(AssetsRegistryInterface::class)->getAsset($asset['asset_type'])->component"
+                                    :component="ResolveRenderableComponentAction::run(RenderableTypeEnum::Asset, app(AssetsRegistryInterface::class)->getAsset($asset['asset_type'])->component)"
                                     :componentItem="$widget->getMeta('component_item', AssetComponentEnum::Card->value)"
                                     :$container
                                     :$containerKey
@@ -166,7 +170,7 @@
                 >
                     @foreach ($assets as $asset)
                         <x-dynamic-component
-                            :component="app(AssetsRegistryInterface::class)->getAsset($asset['asset_type'])->component"
+                            :component="ResolveRenderableComponentAction::run(RenderableTypeEnum::Asset, app(AssetsRegistryInterface::class)->getAsset($asset['asset_type'])->component)"
                             :componentItem="$widget->getMeta('component_item', AssetComponentEnum::Card->value)"
                             :$container
                             :$containerKey

@@ -5,7 +5,9 @@ $theme = Frontend::theme();
 ?>
 
 @php
+    use Capell\Core\Actions\ResolveRenderableComponentAction;
     use Capell\Core\Enums\AssetComponentEnum;
+    use Capell\Core\Enums\RenderableTypeEnum;
     use Capell\Core\Facades\CapellCore;
     use Capell\Frontend\Contracts\AssetsRegistryInterface;
 @endphp
@@ -19,7 +21,7 @@ $theme = Frontend::theme();
     'firstAssetRenderData' => null,
     'lastAssetRenderData' => null,
     'loop',
-    'total' => $assets->count(),
+    'total' => null,
     'widget',
     'widgetIndex',
     'withChildCount' => (bool) $widget->getMeta('with_child_count'),
@@ -30,6 +32,10 @@ $theme = Frontend::theme();
     'spacing' => $widget->getMeta('spacing', true),
     'columns' => (int) $widget->getMeta('columns'),
 ])
+
+@php
+    $total ??= $assets->count();
+@endphp
 
 @if ($assets->isNotEmpty() || ! config('capell-layout-builder.widget.skip_render_empty', true))
     <x-capell-theme-foundation::widget.wrapper
@@ -77,7 +83,7 @@ $theme = Frontend::theme();
                 >
                     @foreach ($assets as $asset)
                         <x-dynamic-component
-                            :component="app(AssetsRegistryInterface::class)->getAsset($asset['asset_type'])->component"
+                            :component="ResolveRenderableComponentAction::run(RenderableTypeEnum::Asset, app(AssetsRegistryInterface::class)->getAsset($asset['asset_type'])->component)"
                             :componentItem="$widget->getMeta('component_item', AssetComponentEnum::Card->value)"
                             :$container
                             :$containerKey

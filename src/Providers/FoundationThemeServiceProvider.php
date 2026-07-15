@@ -26,6 +26,7 @@ use Capell\Core\ThemeStudio\Data\ThemePresetData;
 use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
 use Capell\FoundationTheme\Actions\ResolveFoundationThemeTokensAction;
 use Capell\FoundationTheme\Console\Commands\DemoCommand;
+use Capell\FoundationTheme\Console\Commands\GenerateTailwindAssetsCommand;
 use Capell\FoundationTheme\Console\Commands\MakeThemeCommand;
 use Capell\FoundationTheme\Console\Commands\SetupCommand;
 use Capell\FoundationTheme\Console\Commands\ThemeCatalogueReportCommand;
@@ -52,6 +53,9 @@ use Capell\FoundationTheme\View\Components\Layout\Main as LayoutMainComponent;
 use Capell\FoundationTheme\View\Components\Media\Svg;
 use Capell\FoundationTheme\View\Components\NewsletterForm;
 use Capell\FoundationTheme\View\Components\ThemeFormEmbed;
+use Capell\FoundationTheme\View\Components\Widget\Asset\Accordion as AssetAccordionComponent;
+use Capell\FoundationTheme\View\Components\Widget\Asset as AssetComponent;
+use Capell\FoundationTheme\View\Components\Widget\Asset\Carousel as AssetCarouselComponent;
 use Capell\FoundationTheme\View\Components\Widget\Page\Breadcrumbs as PageBreadcrumbsComponent;
 use Capell\FoundationTheme\View\Components\Widget\Page\Children as PageChildrenComponent;
 use Capell\FoundationTheme\View\Components\Widget\Page\Content as PageContentComponent;
@@ -151,6 +155,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
             ->hasTranslations()
             ->hasCommands([
                 DemoCommand::class,
+                GenerateTailwindAssetsCommand::class,
                 SetupCommand::class,
                 ThemeCatalogueReportCommand::class,
                 MakeThemeCommand::class,
@@ -529,6 +534,8 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
             return;
         }
 
+        $dependencies = [];
+
         foreach ($npmDependencies as $package => $version) {
             if (! is_string($package)) {
                 continue;
@@ -546,12 +553,24 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
                 continue;
             }
 
-            resolve(FrontendPackageDependencyRegistry::class)->register(new FrontendPackageDependencyData(
+            $dependencies[] = new FrontendPackageDependencyData(
                 name: $package,
                 versionConstraint: $version,
                 type: FrontendPackageDependencyType::Runtime,
                 package: self::$packageName,
-            ));
+            );
+        }
+
+        $register = static function (FrontendPackageDependencyRegistry $registry) use ($dependencies): void {
+            foreach ($dependencies as $dependency) {
+                $registry->register($dependency);
+            }
+        };
+
+        $this->app->afterResolving(FrontendPackageDependencyRegistry::class, $register);
+
+        if ($this->app->resolved(FrontendPackageDependencyRegistry::class)) {
+            $register($this->app->make(FrontendPackageDependencyRegistry::class));
         }
     }
 
@@ -637,6 +656,14 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
         Blade::anonymousComponentPath(__DIR__ . '/../../resources/views/components', 'capell-theme-foundation');
         Blade::componentNamespace('Capell\\FoundationTheme\\View\\Components', 'capell');
         Blade::componentNamespace('Capell\\FoundationTheme\\View\\Components', 'capell-theme-foundation');
+        Blade::component(AssetComponent::class, 'capell::widget.asset');
+        Blade::component(AssetAccordionComponent::class, 'capell::widget.asset.accordion');
+        Blade::component(AssetComponent::class, 'capell::widget.asset.banners');
+        Blade::component(AssetCarouselComponent::class, 'capell::widget.asset.carousel');
+        Blade::component(AssetComponent::class, 'capell::widget.asset.features');
+        Blade::component(AssetComponent::class, 'capell::widget.asset.media');
+        Blade::component(AssetComponent::class, 'capell::widget.asset.testimonials');
+        Blade::component(AssetComponent::class, 'capell::widget.asset.widgets');
         Blade::component(PageBreadcrumbsComponent::class, 'capell::widget.page.breadcrumbs');
         Blade::component(ActionsComponent::class, 'capell::actions');
         Blade::component(ActionsComponent::class, 'capell-theme-foundation::actions');

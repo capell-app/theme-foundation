@@ -48,6 +48,7 @@
     align-items: center;
     gap: 1.25rem;
     font-size: 0.9rem;
+    white-space: nowrap;
 }
 
 .theme-chrome-nav__link {
@@ -119,8 +120,12 @@
     box-shadow: 0 18px 40px -20px rgba(0, 0, 0, 0.45);
 }
 
-/* Tablet / desktop: inline links + CTA, hide mobile toggle */
-@media (min-width: 768px) {
+.theme-chrome-nav__mobile-panel .theme-chrome-nav__cta {
+    display: inline-flex;
+}
+
+/* Wide desktop: inline links + CTA, hide mobile toggle */
+@media (min-width: 1200px) {
     .theme-chrome-nav__links {
         display: flex;
     }

@@ -618,10 +618,6 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
     {
         $issues = [];
 
-        if (! is_string(config('capell-theme-foundation.asset_build_tool')) || config('capell-theme-foundation.asset_build_tool') === '') {
-            $issues[] = 'asset_build_tool config is missing.';
-        }
-
         $tailwindConfig = config('capell-theme-foundation.tailwind');
 
         if (! is_array($tailwindConfig) || ! is_string($tailwindConfig['output_css'] ?? null) || $tailwindConfig['output_css'] === '') {
