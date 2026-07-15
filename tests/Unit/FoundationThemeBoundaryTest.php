@@ -26,14 +26,13 @@ it('owns the foundation frontend javascript runtime', function (): void {
 });
 
 it('bundles layout builder javascript into the foundation frontend runtime', function (): void {
-    $provider = file_get_contents(dirname(__DIR__, 2) . '/src/Providers/FoundationThemeServiceProvider.php');
+    $contributor = file_get_contents(dirname(__DIR__, 2) . '/src/Support/Assets/FoundationThemeAssetContributor.php');
     $entrypoint = file_get_contents(dirname(__DIR__, 2) . '/resources/js/capell-frontend.js');
 
     expect($entrypoint)->toContain('./widgets/widget/carousel')
-        ->and($provider)->toContain("path: 'vendor/capell-theme-foundation'")
-        ->and($provider)->toContain('theme-foundation-runtime')
-        ->and($provider)->toContain('VendorAssetConditionRegistry')
-        ->and($provider)->not->toContain('LAYOUT_BUILDER_ASSETS_CONDITION');
+        ->and($contributor)->toContain("new ViteResourceSourceData('resources/js/capell-frontend.js', 'vendor/capell-theme-foundation')")
+        ->and($contributor)->toContain('theme-foundation:runtime')
+        ->and($contributor)->not->toContain('LAYOUT_BUILDER_ASSETS_CONDITION');
 });
 
 it('moves modern widget interactions out of blade and into the frontend runtime', function (): void {

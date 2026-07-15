@@ -4,11 +4,25 @@ declare(strict_types=1);
 
 use Capell\Core\Facades\CapellCore;
 use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
+use Capell\Frontend\Providers\FrontendServiceProvider;
 use Capell\ThemeLiquidGlass\LiquidGlassThemeServiceProvider;
+use Illuminate\Support\Facades\File;
 
 use function Pest\Laravel\get;
 
 require_once __DIR__ . '/../../../../tests/Packages/Support/ThemeLayoutNativeSupport.php';
+
+beforeEach(function (): void {
+    $frontendPackageRoot = dirname((new ReflectionClass(FrontendServiceProvider::class))->getFileName(), 3);
+    $publishedBuildPath = public_path('vendor/capell-frontend');
+
+    File::ensureDirectoryExists(dirname($publishedBuildPath));
+    File::copyDirectory($frontendPackageRoot . '/publishes/build', $publishedBuildPath);
+});
+
+afterEach(function (): void {
+    File::deleteDirectory(public_path('vendor/capell-frontend'));
+});
 
 /*
 |--------------------------------------------------------------------------

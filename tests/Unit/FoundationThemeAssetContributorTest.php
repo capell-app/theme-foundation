@@ -3,17 +3,28 @@
 declare(strict_types=1);
 
 use Capell\Core\Models\Theme;
-use Capell\Core\Support\Assets\VendorAssetConditionRegistry;
-use Capell\FoundationTheme\Providers\FoundationThemeServiceProvider;
 use Capell\FoundationTheme\Support\Assets\FoundationThemeAssetContributor;
-use Capell\Frontend\Data\FrontendAssetContextData;
-use Capell\Frontend\Data\FrontendAssetRequirementData;
+use Capell\Frontend\Data\Assets\FrontendResourceContributionData;
+use Capell\Frontend\Data\Assets\FrontendResourceData;
+use Capell\Frontend\Data\FrontendResourceContextData;
 use Capell\Frontend\Data\FrontendRuntimeManifestData;
+use Capell\Frontend\Enums\FrontendResourceKind;
 use Capell\Frontend\Enums\RenderingStrategyEnum;
 use Illuminate\Support\Facades\File;
 
+/**
+ * @return array<int, FrontendResourceData>
+ */
+function foundationThemeResources(FrontendResourceContextData $context): array
+{
+    return array_map(
+        static fn (FrontendResourceContributionData $contribution): FrontendResourceData => $contribution->resource,
+        resolve(FoundationThemeAssetContributor::class)->resources($context),
+    );
+}
+
 it('declares only the foundation css asset for blade only pages', function (): void {
-    $requirements = resolve(FoundationThemeAssetContributor::class)->requirements(new FrontendAssetContextData(
+    $requirements = foundationThemeResources(new FrontendResourceContextData(
         page: null,
         site: null,
         language: null,
@@ -23,8 +34,8 @@ it('declares only the foundation css asset for blade only pages', function (): v
     ));
 
     expect($requirements)->toHaveCount(1)
-        ->and($requirements[0]->kind)->toBe(FrontendAssetRequirementData::KIND_CSS)
-        ->and($requirements[0]->source)->toBe('resources/css/capell/frontend.css');
+        ->and($requirements[0]->kind)->toBe(FrontendResourceKind::Style)
+        ->and($requirements[0]->source->entry)->toBe('resources/css/capell/frontend.css');
 });
 
 it('keeps the generated foundation css separate from theme meta assets', function (): void {
@@ -37,7 +48,7 @@ it('keeps the generated foundation css separate from theme meta assets', functio
         ],
     ]);
 
-    $requirements = resolve(FoundationThemeAssetContributor::class)->requirements(new FrontendAssetContextData(
+    $requirements = foundationThemeResources(new FrontendResourceContextData(
         page: null,
         site: null,
         language: null,
@@ -47,8 +58,8 @@ it('keeps the generated foundation css separate from theme meta assets', functio
     ));
 
     expect($requirements)->toHaveCount(1)
-        ->and($requirements[0]->source)->toBe('resources/css/capell/frontend.css')
-        ->and($requirements[0]->buildPath)->toBe('build');
+        ->and($requirements[0]->source->entry)->toBe('resources/css/capell/frontend.css')
+        ->and($requirements[0]->source->buildDirectory)->toBe('build');
 });
 
 it('allows a theme to opt out of the generated foundation frontend css', function (): void {
@@ -60,7 +71,7 @@ it('allows a theme to opt out of the generated foundation frontend css', functio
         ],
     ]);
 
-    $requirements = resolve(FoundationThemeAssetContributor::class)->requirements(new FrontendAssetContextData(
+    $requirements = foundationThemeResources(new FrontendResourceContextData(
         page: null,
         site: null,
         language: null,
@@ -73,7 +84,7 @@ it('allows a theme to opt out of the generated foundation frontend css', functio
 });
 
 it('declares runtime javascript only when the frontend runtime needs javascript', function (): void {
-    $requirements = resolve(FoundationThemeAssetContributor::class)->requirements(new FrontendAssetContextData(
+    $requirements = foundationThemeResources(new FrontendResourceContextData(
         page: null,
         site: null,
         language: null,
@@ -83,13 +94,13 @@ it('declares runtime javascript only when the frontend runtime needs javascript'
     ));
 
     expect(collect($requirements)->contains(
-        fn (FrontendAssetRequirementData $requirement): bool => $requirement->handle === 'theme-foundation:runtime'
-            && $requirement->kind === FrontendAssetRequirementData::KIND_JS,
+        fn (FrontendResourceData $requirement): bool => $requirement->handle === 'theme-foundation:runtime'
+            && $requirement->kind === FrontendResourceKind::ModuleScript,
     ))->toBeTrue();
 });
 
 it('does not load the foundation runtime for generic alpine chrome', function (): void {
-    $requirements = resolve(FoundationThemeAssetContributor::class)->requirements(new FrontendAssetContextData(
+    $requirements = foundationThemeResources(new FrontendResourceContextData(
         page: null,
         site: null,
         language: null,
@@ -120,7 +131,7 @@ it('does not load the foundation runtime for the frontend authoring beacon alone
         modules: ['frontend-chrome' => true, 'frontend-authoring' => true],
     );
 
-    $requirements = resolve(FoundationThemeAssetContributor::class)->requirements(new FrontendAssetContextData(
+    $requirements = foundationThemeResources(new FrontendResourceContextData(
         page: null,
         site: null,
         language: null,
@@ -129,23 +140,11 @@ it('does not load the foundation runtime for the frontend authoring beacon alone
         runtime: $runtime,
     ));
 
-    $context = new FrontendAssetContextData(
-        page: null,
-        site: null,
-        language: null,
-        layout: null,
-        theme: null,
-        runtime: $runtime,
-    );
-    $registerVendorAssetConditions = new ReflectionMethod(FoundationThemeServiceProvider::class, 'registerVendorAssetConditions');
-    $registerVendorAssetConditions->invoke(new FoundationThemeServiceProvider(app()));
-
-    expect(collect($requirements)->pluck('handle')->all())->not->toContain('theme-foundation:runtime')
-        ->and(resolve(VendorAssetConditionRegistry::class)->passes('theme-foundation-runtime', $context))->toBeFalse();
+    expect(collect($requirements)->pluck('handle')->all())->not->toContain('theme-foundation:runtime');
 });
 
 it('does not load the foundation runtime for blade-only layout builder output alone', function (): void {
-    $context = new FrontendAssetContextData(
+    $context = new FrontendResourceContextData(
         page: null,
         site: null,
         language: null,
@@ -161,16 +160,12 @@ it('does not load the foundation runtime for blade-only layout builder output al
             modules: ['layout-builder' => true],
         ),
     );
-    $requirements = resolve(FoundationThemeAssetContributor::class)->requirements($context);
-    $registerVendorAssetConditions = new ReflectionMethod(FoundationThemeServiceProvider::class, 'registerVendorAssetConditions');
-    $registerVendorAssetConditions->invoke(new FoundationThemeServiceProvider(app()));
-
-    expect(collect($requirements)->pluck('handle')->all())->not->toContain('theme-foundation:runtime')
-        ->and(resolve(VendorAssetConditionRegistry::class)->passes('theme-foundation-runtime', $context))->toBeFalse();
+    $requirements = foundationThemeResources($context);
+    expect(collect($requirements)->pluck('handle')->all())->not->toContain('theme-foundation:runtime');
 });
 
 it('loads the foundation runtime for the explicit foundation runtime module', function (): void {
-    $context = new FrontendAssetContextData(
+    $context = new FrontendResourceContextData(
         page: null,
         site: null,
         language: null,
@@ -186,16 +181,12 @@ it('loads the foundation runtime for the explicit foundation runtime module', fu
             modules: ['theme-foundation-runtime' => true],
         ),
     );
-    $requirements = resolve(FoundationThemeAssetContributor::class)->requirements($context);
-    $registerVendorAssetConditions = new ReflectionMethod(FoundationThemeServiceProvider::class, 'registerVendorAssetConditions');
-    $registerVendorAssetConditions->invoke(new FoundationThemeServiceProvider(app()));
-
-    expect(collect($requirements)->pluck('handle')->all())->toContain('theme-foundation:runtime')
-        ->and(resolve(VendorAssetConditionRegistry::class)->passes('theme-foundation-runtime', $context))->toBeTrue();
+    $requirements = foundationThemeResources($context);
+    expect(collect($requirements)->pluck('handle')->all())->toContain('theme-foundation:runtime');
 });
 
 it('loads the runtime from the foundation theme published build', function (): void {
-    $requirements = resolve(FoundationThemeAssetContributor::class)->requirements(new FrontendAssetContextData(
+    $requirements = foundationThemeResources(new FrontendResourceContextData(
         page: null,
         site: null,
         language: null,
@@ -205,9 +196,9 @@ it('loads the runtime from the foundation theme published build', function (): v
     ));
 
     expect(collect($requirements)->contains(
-        fn (FrontendAssetRequirementData $requirement): bool => $requirement->handle === 'theme-foundation:runtime'
-            && $requirement->source === 'resources/js/capell-frontend.js'
-            && $requirement->buildPath === 'vendor/capell-theme-foundation',
+        fn (FrontendResourceData $requirement): bool => $requirement->handle === 'theme-foundation:runtime'
+            && $requirement->source->entry === 'resources/js/capell-frontend.js'
+            && $requirement->source->buildDirectory === 'vendor/capell-theme-foundation',
     ))->toBeTrue();
 });
 
@@ -216,7 +207,7 @@ it('omits the per-theme css requirement when the split flag is off', function ()
 
     $theme = Theme::factory()->make(['key' => 'showreel']);
 
-    $requirements = resolve(FoundationThemeAssetContributor::class)->requirements(new FrontendAssetContextData(
+    $requirements = foundationThemeResources(new FrontendResourceContextData(
         page: null,
         site: null,
         language: null,
@@ -238,7 +229,7 @@ it('emits the active theme own compiled bundle when the split flag is on', funct
 
     $theme = Theme::factory()->make(['key' => 'showreel']);
 
-    $requirements = resolve(FoundationThemeAssetContributor::class)->requirements(new FrontendAssetContextData(
+    $requirements = foundationThemeResources(new FrontendResourceContextData(
         page: null,
         site: null,
         language: null,
@@ -248,14 +239,14 @@ it('emits the active theme own compiled bundle when the split flag is on', funct
     ));
 
     $requirement = collect($requirements)->first(
-        fn (FrontendAssetRequirementData $requirement): bool => $requirement->handle === 'theme-css:showreel',
+        fn (FrontendResourceData $requirement): bool => $requirement->handle === 'theme-css:showreel',
     );
 
-    expect($requirement)->toBeInstanceOf(FrontendAssetRequirementData::class);
+    expect($requirement)->toBeInstanceOf(FrontendResourceData::class);
 
-    /** @var FrontendAssetRequirementData $requirement */
-    expect($requirement->kind)->toBe(FrontendAssetRequirementData::KIND_CSS)
-        ->and($requirement->source)->toBe('resources/css/capell/themes/showreel.css');
+    /** @var FrontendResourceData $requirement */
+    expect($requirement->kind)->toBe(FrontendResourceKind::Style)
+        ->and($requirement->source->entry)->toBe('resources/css/capell/themes/showreel.css');
 
     File::delete(base_path('resources/css/capell/themes/showreel.css'));
 });
@@ -263,7 +254,7 @@ it('emits the active theme own compiled bundle when the split flag is on', funct
 it('never emits a per-theme css requirement without an active theme', function (): void {
     config(['capell-theme-foundation.tailwind.split_theme_css' => true]);
 
-    $requirements = resolve(FoundationThemeAssetContributor::class)->requirements(new FrontendAssetContextData(
+    $requirements = foundationThemeResources(new FrontendResourceContextData(
         page: null,
         site: null,
         language: null,

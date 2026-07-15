@@ -572,20 +572,8 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
             $missingAssets[] = 'public/vendor/capell-theme-foundation/manifest.json';
         }
 
-        $buildAssets = CapellCore::getVendorAssetsForType(VendorAssetEnum::BuildAsset);
         $tailwindImports = CapellCore::getVendorAssetsForType(VendorAssetEnum::TailwindImport);
         $tailwindSources = CapellCore::getVendorAssetsForType(VendorAssetEnum::TailwindSource);
-
-        $hasBuildAsset = $buildAssets->contains(
-            static fn (mixed $asset): bool => $asset->packageName === FoundationThemeServiceProvider::$packageName
-                && $asset->value === 'vendor/capell-theme-foundation'
-                && $asset->secondaryValue === 'resources/js/capell-frontend.js'
-                && $asset->condition === 'theme-foundation-runtime',
-        );
-
-        if (! $hasBuildAsset) {
-            $missingAssets[] = 'build asset registration';
-        }
 
         foreach (self::REQUIRED_TAILWIND_IMPORTS as $import) {
             $hasImport = $tailwindImports->contains(
@@ -691,15 +679,6 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
 
         if (! app()->bound(FoundationThemeAssetContributor::class)) {
             $issues[] = 'Foundation asset contributor binding is missing.';
-        }
-
-        $hasRuntimeCondition = collect(CapellCore::getVendorAssetsForType(VendorAssetEnum::BuildAsset))->contains(
-            static fn (mixed $asset): bool => $asset->packageName === FoundationThemeServiceProvider::$packageName
-                && $asset->condition === 'theme-foundation-runtime',
-        );
-
-        if (! $hasRuntimeCondition) {
-            $issues[] = 'Foundation runtime vendor asset condition is missing.';
         }
 
         return $issues;
