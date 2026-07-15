@@ -6,6 +6,7 @@ use Capell\Core\Models\Layout;
 use Capell\Core\Models\Theme;
 use Capell\FoundationTheme\Filament\Extenders\FoundationLayoutContainerSchemaExtender;
 use Capell\FoundationTheme\Providers\FoundationThemeServiceProvider;
+use Capell\FoundationTheme\Support\FoundationLayoutContainerThemePresentationProjector;
 use Capell\LayoutBuilder\Data\LayoutContainerSchemaContextData;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Schema;
@@ -28,4 +29,20 @@ it('adds foundation theme layout container fields for the foundation theme key',
         ->and($components)->toHaveCount(1)
         ->and($firstComponent)->toBeInstanceOf(Select::class)
         ->and($firstComponent->getName())->toBe('surface_tone');
+});
+
+it('projects only allowlisted foundation container presentation', function (): void {
+    $projector = new FoundationLayoutContainerThemePresentationProjector;
+
+    $muted = $projector->project([
+        'surface_tone' => 'muted',
+        'signed_url' => 'https://admin.test/private',
+    ]);
+    $invalid = $projector->project(['surface_tone' => 'untrusted']);
+
+    expect($projector->themeKey())->toBe(FoundationThemeServiceProvider::THEME_KEY)
+        ->and($muted->toArray())->toBe(['surfaceTone' => 'muted'])
+        ->and($muted->classes())->toBe(['capell-container-surface-muted'])
+        ->and($invalid->toArray())->toBe(['surfaceTone' => 'default'])
+        ->and($invalid->classes())->toBe([]);
 });

@@ -42,6 +42,7 @@ use Capell\FoundationTheme\Settings\FoundationThemeSettings;
 use Capell\FoundationTheme\Support\Assets\FoundationThemeAssetContributor;
 use Capell\FoundationTheme\Support\Blade\BladeDirectives;
 use Capell\FoundationTheme\Support\CapellOptionalExtensionAvailability;
+use Capell\FoundationTheme\Support\FoundationLayoutContainerThemePresentationProjector;
 use Capell\FoundationTheme\Support\FoundationThemeRuntimeManifestContributor;
 use Capell\FoundationTheme\Support\Interceptors\Themes\FoundationThemeInterceptor;
 use Capell\FoundationTheme\Support\Media\CapellUrlGenerator;
@@ -75,6 +76,7 @@ use Capell\Frontend\Support\Assets\FrontendPackageDependencyRegistry;
 use Capell\Frontend\Support\Loader\PageLoader;
 use Capell\Frontend\Support\Loader\SiteLoader;
 use Capell\LayoutBuilder\Contracts\Extenders\LayoutContainerSchemaExtender;
+use Capell\LayoutBuilder\Contracts\LayoutContainerThemePresentationProjector;
 use Capell\LayoutBuilder\Enums\FrontendComponentKeyEnum;
 use Capell\LayoutBuilder\Support\LayoutAreas\LayoutAreaRegistry;
 use Illuminate\Contracts\View\Factory as ViewFactory;
@@ -186,6 +188,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
         $this->registerPublicRuntimeData();
         $this->registerLayoutAreas();
         $this->registerLayoutContainerSchemaExtenders();
+        $this->registerLayoutContainerThemePresentationProjectors();
         $this->registerThemeChromeComponents();
         $this->registerThemeStudioDefinition();
     }
@@ -519,6 +522,28 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
         $this->app->singleton(FoundationLayoutContainerSchemaExtender::class);
         $this->app->tag(FoundationLayoutContainerSchemaExtender::class, LayoutContainerSchemaExtender::TAG);
+    }
+
+    private function registerLayoutContainerThemePresentationProjectors(): void
+    {
+        if (! interface_exists(LayoutContainerThemePresentationProjector::class)) {
+            return;
+        }
+
+        $alreadyTagged = collect($this->app->tagged(LayoutContainerThemePresentationProjector::TAG))
+            ->contains(
+                fn (object $projector): bool => $projector instanceof FoundationLayoutContainerThemePresentationProjector,
+            );
+
+        if ($alreadyTagged) {
+            return;
+        }
+
+        $this->app->singleton(FoundationLayoutContainerThemePresentationProjector::class);
+        $this->app->tag(
+            FoundationLayoutContainerThemePresentationProjector::class,
+            LayoutContainerThemePresentationProjector::TAG,
+        );
     }
 
     private function registerModelInterceptors(): void

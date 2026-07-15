@@ -83,10 +83,9 @@ test('public layout output does not include debug widget comments', function ():
     $container = file_get_contents($themePath . '/resources/views/components/layout/container.blade.php');
 
     expect($container)
-        ->toContain("'border border-slate-200/80' => \$border === 'subtle'")
-        ->toContain("'border-y border-slate-200/80' => \$border === 'vertical'")
-        ->toContain("'bg-slate-50/70' => \$surfaceTone === 'muted'")
-        ->toContain("'bg-slate-950 text-white [&_a]:text-white' => \$surfaceTone === 'contrast'")
+        ->toContain('...$presentation->classes()')
+        ->not->toContain('theme_settings')
+        ->not->toContain('surface_tone')
         ->not->toContain('<!-- {$widget->key} Widget')
         ->not->toContain("config('app.debug')");
 });

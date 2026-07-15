@@ -2,3 +2,233 @@
     margin-inline: auto;
     padding-inline: 2rem;
 }
+
+.capell-container-spacing-none > :not([hidden]) ~ :not([hidden]) {
+    margin-block-start: 0;
+}
+
+.capell-container-spacing-sm > :not([hidden]) ~ :not([hidden]) {
+    margin-block-start: 1rem;
+}
+
+.capell-container-spacing-md > :not([hidden]) ~ :not([hidden]) {
+    margin-block-start: 2rem;
+}
+
+.capell-container-spacing-lg > :not([hidden]) ~ :not([hidden]) {
+    margin-block-start: 2.5rem;
+}
+
+.capell-container-border-none {
+    border-width: 0;
+}
+
+.capell-container-border-subtle,
+.capell-container-border-strong {
+    border-style: solid;
+    border-width: 1px;
+}
+
+.capell-container-border-subtle {
+    border-color: rgb(226 232 240 / 80%);
+}
+
+.capell-container-border-strong {
+    border-color: rgb(203 213 225);
+}
+
+.capell-container-border-top,
+.capell-container-border-bottom,
+.capell-container-border-vertical {
+    border-color: rgb(226 232 240 / 80%);
+    border-style: solid;
+}
+
+.capell-container-border-top {
+    border-top-width: 1px;
+}
+
+.capell-container-border-bottom {
+    border-bottom-width: 1px;
+}
+
+.capell-container-border-vertical {
+    border-block-width: 1px;
+}
+
+.capell-container-surface-muted {
+    background-color: rgb(248 250 252 / 70%);
+}
+
+.capell-container-surface-contrast {
+    background-color: rgb(2 6 23);
+    color: white;
+}
+
+.capell-container-surface-contrast a {
+    color: white;
+}
+
+.capell-container-padding-none {
+    padding-block: 0;
+}
+.capell-container-padding-sm {
+    padding-block: 1rem;
+}
+.capell-container-padding-t-sm {
+    padding-top: 1rem;
+}
+.capell-container-padding-b-sm {
+    padding-bottom: 1rem;
+}
+.capell-container-padding-md {
+    padding-block: 2rem;
+}
+.capell-container-padding-t-md {
+    padding-top: 2rem;
+}
+.capell-container-padding-b-md {
+    padding-bottom: 2rem;
+}
+.capell-container-padding-lg {
+    padding-block: 2.5rem;
+}
+.capell-container-padding-t-lg {
+    padding-top: 2.5rem;
+}
+.capell-container-padding-b-lg {
+    padding-bottom: 2.5rem;
+}
+.capell-container-padding-xl {
+    padding-block: 5rem;
+}
+.capell-container-padding-t-xl {
+    padding-top: 5rem;
+}
+.capell-container-padding-b-xl {
+    padding-bottom: 5rem;
+}
+
+.capell-container-margin-none {
+    margin-block: 0;
+}
+.capell-container-margin-sm {
+    margin-block: 1rem;
+}
+.capell-container-margin-t-sm {
+    margin-top: 1rem;
+}
+.capell-container-margin-b-sm {
+    margin-bottom: 1rem;
+}
+.capell-container-margin-md {
+    margin-block: 1.5rem;
+}
+.capell-container-margin-t-md {
+    margin-top: 1.5rem;
+}
+.capell-container-margin-b-md {
+    margin-bottom: 1.5rem;
+}
+.capell-container-margin-lg {
+    margin-block: 2.5rem;
+}
+.capell-container-margin-t-lg {
+    margin-top: 2.5rem;
+}
+.capell-container-margin-b-lg {
+    margin-bottom: 2.5rem;
+}
+.capell-container-margin-xl {
+    margin-block: 5rem;
+}
+.capell-container-margin-t-xl {
+    margin-top: 5rem;
+}
+.capell-container-margin-b-xl {
+    margin-bottom: 5rem;
+}
+
+@media (min-width: 48rem) {
+    .capell-container-padding-tablet-none {
+        padding-block: 0;
+    }
+    .capell-container-padding-tablet-sm {
+        padding-block: 1rem;
+    }
+    .capell-container-padding-tablet-t-sm {
+        padding-top: 1rem;
+    }
+    .capell-container-padding-tablet-b-sm {
+        padding-bottom: 1rem;
+    }
+    .capell-container-padding-tablet-md {
+        padding-block: 2rem;
+    }
+    .capell-container-padding-tablet-t-md {
+        padding-top: 2rem;
+    }
+    .capell-container-padding-tablet-b-md {
+        padding-bottom: 2rem;
+    }
+    .capell-container-padding-tablet-lg {
+        padding-block: 2.5rem;
+    }
+    .capell-container-padding-tablet-t-lg {
+        padding-top: 2.5rem;
+    }
+    .capell-container-padding-tablet-b-lg {
+        padding-bottom: 2.5rem;
+    }
+    .capell-container-padding-tablet-xl {
+        padding-block: 5rem;
+    }
+    .capell-container-padding-tablet-t-xl {
+        padding-top: 5rem;
+    }
+    .capell-container-padding-tablet-b-xl {
+        padding-bottom: 5rem;
+    }
+}
+
+@media (min-width: 64rem) {
+    .capell-container-padding-desktop-none {
+        padding-block: 0;
+    }
+    .capell-container-padding-desktop-sm {
+        padding-block: 1rem;
+    }
+    .capell-container-padding-desktop-t-sm {
+        padding-top: 1rem;
+    }
+    .capell-container-padding-desktop-b-sm {
+        padding-bottom: 1rem;
+    }
+    .capell-container-padding-desktop-md {
+        padding-block: 2rem;
+    }
+    .capell-container-padding-desktop-t-md {
+        padding-top: 2rem;
+    }
+    .capell-container-padding-desktop-b-md {
+        padding-bottom: 2rem;
+    }
+    .capell-container-padding-desktop-lg {
+        padding-block: 2.5rem;
+    }
+    .capell-container-padding-desktop-t-lg {
+        padding-top: 2.5rem;
+    }
+    .capell-container-padding-desktop-b-lg {
+        padding-bottom: 2.5rem;
+    }
+    .capell-container-padding-desktop-xl {
+        padding-block: 5rem;
+    }
+    .capell-container-padding-desktop-t-xl {
+        padding-top: 5rem;
+    }
+    .capell-container-padding-desktop-b-xl {
+        padding-bottom: 5rem;
+    }
+}
