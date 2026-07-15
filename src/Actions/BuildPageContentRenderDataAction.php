@@ -9,6 +9,7 @@ use Capell\Core\Enums\ContentStructure;
 use Capell\Core\Models\Media;
 use Capell\FoundationTheme\Data\PageContentRenderData;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Lorisleiva\Actions\Concerns\AsObject;
 
 final class BuildPageContentRenderDataAction
@@ -23,8 +24,11 @@ final class BuildPageContentRenderDataAction
         $translation = $page instanceof Model ? $this->loadedRelation($page, 'translation') : null;
         $blueprint = $page instanceof Model ? $this->loadedRelation($page, 'blueprint') : null;
         $image = $page instanceof Model ? $this->loadedRelation($page, 'image') : null;
-        $imageTranslation = $image instanceof Media && $image->relationLoaded('translations')
-            ? $image->translations->firstWhere('language_id', data_get($translation, 'language_id'))
+        $imageTranslations = $image instanceof Media && $image->relationLoaded('translations')
+            ? $image->getRelation('translations')
+            : null;
+        $imageTranslation = $imageTranslations instanceof Collection
+            ? $imageTranslations->firstWhere('language_id', data_get($translation, 'language_id'))
             : null;
         $imageAlt = data_get($imageTranslation, 'meta.alt');
         $content = data_get($translation, 'content');

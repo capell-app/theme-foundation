@@ -1,0 +1,38 @@
+{
+    "whatThisPluginAdds": {
+        "text": "Theme Foundation provides the shared public layouts, runtime design tokens, layout defaults, and override contracts used by Capell themes. It renders host-owned page data and does not introduce a separate content model.",
+        "evidence": [
+            "src/Providers/FoundationThemeServiceProvider.php",
+            "src/Settings/FoundationThemeSettings.php",
+            "resources/views/app.blade.php",
+            "resources/views/components/app/head/tokens.blade.php"
+        ]
+    },
+    "surfaceOutcome": {
+        "text": "Sites can use Foundation directly or extend it with a child theme, while public pages share predictable layout and token rendering without frontend authoring state.",
+        "evidence": [
+            "src/Support/Providers/RegistersLayoutNativeThemeDefaults.php",
+            "tests/Feature/FleetPublicOutputSafetyTest.php",
+            "tests/Unit/ThemeRuntimeSettingsBindingTest.php"
+        ]
+    },
+    "whyItMatters": {
+        "developers": {
+            "text": "The package centralizes theme registration, token resolution, layout defaults, and public-output safety contracts for the theme fleet.",
+            "evidence": [
+                "src/Providers/FoundationThemeServiceProvider.php",
+                "src/Actions/ResolveFoundationThemeTokensAction.php",
+                "src/Actions/InstallFoundationThemeLayoutDefaultsAction.php",
+                "src/Testing/AssertsPublicThemeOutputSafety.php"
+            ]
+        },
+        "teams": {
+            "text": "Teams get a consistent baseline for site chrome, layout behavior, and design settings across Capell themes.",
+            "evidence": [
+                "src/Settings/FoundationThemeSettings.php",
+                "resources/views/app.blade.php",
+                "tests/Unit/FoundationThemeBoundaryTest.php"
+            ]
+        }
+    }
+}
