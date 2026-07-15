@@ -104,7 +104,7 @@ it('publishes the foundation frontend runtime build during setup', function (): 
     expect($provider)->toContain('capell-theme-foundation-assets')
         ->and(file_exists(dirname(__DIR__, 2) . '/publishes/build/manifest.json'))->toBeTrue()
         ->and($runtime)->toBeString()
-        ->toContain('tabs-change')
+        ->toContain('tabs-change', 'alpine:init', '_x_dataStack')
         ->and($action)->toContain('vendor:publish')
         ->and($action)->toContain('capell-theme-foundation-assets');
 });

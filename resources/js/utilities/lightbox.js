@@ -24,11 +24,10 @@
  * The Alpine component (`lightbox`) exposes `load(group, index)`,
  * `close()`, `loadPrevious()`, `loadNext()`, a `lightbox(event)` handler for
  * the `window` `"lightbox"` CustomEvent this file dispatches, and `total()`
- * for pager UI. Requires Alpine to already be present on `window` before
- * `livewire:init` fires.
+ * for pager UI. Registration supports both normal Alpine startup and assets
+ * loaded after Alpine has already scanned the document.
  */
 
-/* global Alpine */
 ;(function () {
     const querySelector = '.lightbox'
 
@@ -39,8 +38,16 @@
     const titleAttr = 'data-title'
     const typeAttr = 'data-type'
     const altAttr = 'alt'
+    let initialized = false
 
-    document.addEventListener('livewire:init', () => {
+    function initialize() {
+        const Alpine = window.Alpine
+
+        if (initialized || !Alpine) {
+            return
+        }
+
+        initialized = true
         let media = {}
 
         function collectMedia() {
@@ -201,5 +208,20 @@
                     : 0
             },
         }))
-    })
+
+        document.querySelectorAll('[x-data="lightbox"]').forEach((root) => {
+            const componentState = root._x_dataStack?.[0]
+
+            if (!componentState || Object.keys(componentState).length > 0) {
+                return
+            }
+
+            Alpine.destroyTree(root)
+            Alpine.initTree(root)
+        })
+    }
+
+    document.addEventListener('alpine:init', initialize)
+    document.addEventListener('livewire:init', initialize)
+    initialize()
 })()
