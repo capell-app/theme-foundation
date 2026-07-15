@@ -5,10 +5,7 @@ declare(strict_types=1);
 namespace Capell\FoundationTheme\View\Components\Footer;
 
 use Capell\Core\Contracts\Pageable;
-use Capell\Core\Enums\BlueprintGroupEnum;
-use Capell\Core\Enums\PageOrderEnum;
 use Capell\Core\Models\Language;
-use Capell\Core\Models\Page;
 use Capell\Core\Models\Site;
 use Capell\Core\Models\SiteDomain;
 use Capell\Core\Models\Theme;
@@ -16,8 +13,6 @@ use Capell\FoundationTheme\Support\NavigationAvailability;
 use Capell\Frontend\Actions\GetLayoutContainerWidthAction;
 use Capell\Frontend\Enums\RenderHookLocation;
 use Capell\Frontend\Facades\Frontend;
-use Capell\Frontend\Support\Loader\PageLoader;
-use Capell\Frontend\Support\Loader\SiteLoader;
 use Capell\Frontend\Support\Render\RenderHookRegistry;
 use Capell\Navigation\Actions\BuildNavigationRenderModelAction;
 use Capell\Navigation\Data\NavigationRenderContextData;
@@ -112,34 +107,23 @@ final class Index extends Component
         $this->subFooterMenuItems = $navigationAvailable
             ? $this->menuItems(NavigationHandle::SubFooter->value, $site, $language)
             : null;
-        $frontendData = Frontend::getFrontendData();
-        $hasPreparedContactPage = is_array($frontendData) && array_key_exists('foundation.footer.contact_page', $frontendData);
-        $preparedContactPage = Frontend::getFrontendData('foundation.footer.contact_page');
-        $preparedSiteLanguages = Frontend::getFrontendData('foundation.footer.site_languages');
-        $preparedLatestFooterPages = Frontend::getFrontendData('foundation.footer.latest_pages');
-        $preparedRelatedSites = Frontend::getFrontendData('foundation.footer.related_sites');
-
-        $this->contactPage = $hasPreparedContactPage
-            ? $preparedContactPage
-            : Page::getFirstPageByTypeForSite('contact', $site, $language);
-        $this->siteLanguages = $preparedSiteLanguages instanceof Collection
-            ? $preparedSiteLanguages
-            : SiteLoader::pageLanguages($site, $language, $page);
+        $resolvedFrontendData = Frontend::getFrontendData();
+        $frontendData = is_array($resolvedFrontendData) ? $resolvedFrontendData : [];
+        $this->contactPage = array_key_exists('foundation.footer.contact_page', $frontendData)
+            ? $frontendData['foundation.footer.contact_page']
+            : null;
+        $this->siteLanguages = ($frontendData['foundation.footer.site_languages'] ?? null) instanceof Collection
+            ? $frontendData['foundation.footer.site_languages']
+            : collect();
         $this->footerCopy = $site->translation?->getMeta('footer_copy');
         $this->footerSpacing = $theme->getMeta('footer_spacing', 'compact');
         $this->footerDividerColor = (bool) $theme->getMeta('footer_divider') ? $theme->getMeta('footer_border_color') : null;
-        $this->latestFooterPages = $preparedLatestFooterPages instanceof Collection
-            ? $preparedLatestFooterPages
-            : PageLoader::getPages(
-                language: $language,
-                site: $site,
-                limit: 4,
-                ordering: PageOrderEnum::Latest,
-                pageGroup: BlueprintGroupEnum::Default,
-            );
-        $this->relatedSites = $preparedRelatedSites instanceof Collection
-            ? $preparedRelatedSites
-            : $this->relatedSites($site, $language);
+        $this->latestFooterPages = ($frontendData['foundation.footer.latest_pages'] ?? null) instanceof Collection
+            ? $frontendData['foundation.footer.latest_pages']
+            : collect();
+        $this->relatedSites = ($frontendData['foundation.footer.related_sites'] ?? null) instanceof Collection
+            ? $frontendData['foundation.footer.related_sites']
+            : collect();
         $this->hasFooterMenu = $this->footerMenuItems?->isNotEmpty() === true;
         $this->hasLatestFooterPages = ! $this->hasFooterMenu && $this->latestFooterPages->isNotEmpty();
         $hasFooterRenderHooks = trim($this->footerRenderHooks) !== '';
@@ -177,27 +161,5 @@ final class Index extends Component
             language: $language,
             siteDomain: $siteDomain,
         ))->items;
-    }
-
-    /**
-     * @return Collection<int, array{description: mixed, primaryColor: mixed, title: mixed, url: mixed}>
-     */
-    private function relatedSites(Site $site, Language $language): Collection
-    {
-        return SiteLoader::related($site, $language)
-            ->map(function (Site $relatedSite): array {
-                $relations = $relatedSite->getRelations();
-                $siteDomain = $relations['siteDomain'] ?? null;
-                $translation = $relations['translation'] ?? null;
-
-                return [
-                    'description' => data_get($translation, 'meta.description'),
-                    'primaryColor' => $relatedSite->getThemeColor('primary'),
-                    'title' => data_get($translation, 'title'),
-                    'url' => data_get($siteDomain, 'full_url'),
-                ];
-            })
-            ->filter(fn (array $relatedSite): bool => is_string($relatedSite['url']) && $relatedSite['url'] !== '')
-            ->values();
     }
 }
