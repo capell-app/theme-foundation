@@ -90,10 +90,21 @@ it('keeps public asset widget blade on preloaded relations', function (): void {
 it('publishes the foundation frontend runtime build during setup', function (): void {
     $provider = file_get_contents(dirname(__DIR__, 2) . '/src/Providers/FoundationThemeServiceProvider.php');
     $action = file_get_contents(dirname(__DIR__, 2) . '/src/Actions/SetupFoundationThemePackageAction.php');
+    $manifest = json_decode(
+        file_get_contents(dirname(__DIR__, 2) . '/publishes/build/manifest.json'),
+        true,
+        flags: JSON_THROW_ON_ERROR,
+    );
+    $runtimeFile = $manifest['resources/js/capell-frontend.js']['file'] ?? null;
+
+    throw_unless(is_string($runtimeFile), RuntimeException::class, 'Expected a Foundation frontend runtime asset.');
+
+    $runtime = file_get_contents(dirname(__DIR__, 2) . '/publishes/build/' . $runtimeFile);
 
     expect($provider)->toContain('capell-theme-foundation-assets')
         ->and(file_exists(dirname(__DIR__, 2) . '/publishes/build/manifest.json'))->toBeTrue()
-        ->and(file_exists(dirname(__DIR__, 2) . '/publishes/build/assets/capell-frontend-Bpa81WpI.js'))->toBeTrue()
+        ->and($runtime)->toBeString()
+        ->toContain('tabs-change')
         ->and($action)->toContain('vendor:publish')
         ->and($action)->toContain('capell-theme-foundation-assets');
 });
