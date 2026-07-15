@@ -54,11 +54,12 @@ Desktop, tablet, and mobile variants remain defined in the screenshot contract; 
 - Settings migrations: `packages/theme-foundation/database/settings/2026_05_10_190850_01_create_theme_foundation_settings.php`, `packages/theme-foundation/database/settings/2026_05_23_160819_add_theme_foundation_design_tokens.php`, `packages/theme-foundation/database/settings/2026_05_23_161002_refresh_theme_foundation_design_token_defaults.php`, `packages/theme-foundation/database/settings/2026_05_23_170001_add_theme_foundation_composition_tokens.php`, `packages/theme-foundation/database/settings/2026_05_23_171201_quiet_theme_foundation_composition_palette.php`, `packages/theme-foundation/database/settings/2026_05_23_180101_add_theme_foundation_image_tokens.php`, `packages/theme-foundation/database/settings/2026_06_07_000001_add_theme_foundation_dark_design_tokens.php`, `packages/theme-foundation/database/settings/2026_06_07_000002_add_theme_foundation_typography_tokens.php`, `packages/theme-foundation/database/settings/2026_07_05_000001_add_theme_foundation_motion_tokens.php`.
 - Settings classes: `FoundationThemeSettings`, `FoundationThemeSettingsMigrationProvider`.
 - Filament classes: `FoundationLayoutContainerSchemaExtender`, `FoundationThemeSettingsSchema`.
+- Layout container projector: `FoundationLayoutContainerThemePresentationProjector` returns `FoundationLayoutContainerPresentationData` for the active `default` namespace.
 - Livewire components: `AbstractAssets`, `PageAssets`, `AbstractWidget`, `Pages`.
 - Extension contracts: `InstallsThemeDemo`, `OptionalExtensionAvailability`, `ProvidesThemeDemoContent`.
 - Listeners: `RunTailwindAssetsOnPackageChange`.
 - Actions: `BuildAssetBannerItemsAction`, `BuildBannerImageRenderDataAction`, `BuildHeroRailItemsRenderDataAction`, `BuildLayoutNeighborLinksDataAction`, `BuildPageContentRenderDataAction`, `BuildThemeDemoFormSectionAction`, `BuildThemeDemoFormsPayloadAction`, `BuildWidgetAssetRenderDataAction`, `GenerateThemeScaffoldAction`, `HasThemeIntegrationEvidenceAction`, `InstallFoundationThemeDemoAction`, `InstallFoundationThemeLayoutDefaultsAction`, `and 10 more`.
-- Data objects: `AssetBannerItemData`, `BannerImageRenderData`, `FoundationThemeTokensData`, `LayoutNeighborLinksData`, `NewsletterFormData`, `PageContentRenderData`, `ThemeDemoInstallData`, `ThemeFormEmbedData`, `ThemeScaffoldRequestData`, `ThemeValidationResultData`, `WidgetAssetRenderData`.
+- Data objects: `AssetBannerItemData`, `BannerImageRenderData`, `FoundationLayoutContainerPresentationData`, `FoundationThemeTokensData`, `LayoutNeighborLinksData`, `NewsletterFormData`, `PageContentRenderData`, `ThemeDemoInstallData`, `ThemeFormEmbedData`, `ThemeScaffoldRequestData`, `ThemeValidationResultData`, `WidgetAssetRenderData`.
 - Command signatures: `capell:theme-foundation-demo`, `capell:theme-foundation-setup`.
 - Manifest action API: `demo: Capell\FoundationTheme\Actions\InstallFoundationThemeDemoAction`, `setup: Capell\FoundationTheme\Actions\SetupFoundationThemePackageAction`.
 - Console command classes: `DemoCommand`, `GenerateTailwindAssetsCommand`, `MakeThemeCommand`, `SetupCommand`, `ThemeCatalogueReportCommand`, `ValidateThemesCommand`.
@@ -77,6 +78,20 @@ Stable contract points:
 - Runtime tokens: `--foundation-page-bg`, `--foundation-section-spacing`, `--foundation-widget-gap`.
 - Layout Builder chrome areas: `header`.
 - Public-output rule: child themes must not expose authoring metadata, editor controls, model IDs, field paths, permissions, or signed editor URLs.
+
+## Container Surface Tone Example
+
+Foundation demonstrates the complete Layout Builder container extension boundary. `FoundationLayoutContainerSchemaExtender` adds a translated `surface_tone` select to **Theme settings · Foundation**. Layout Builder persists it at `meta.theme_settings.default.surface_tone` without a database migration.
+
+`FoundationLayoutContainerThemePresentationProjector` receives only the `default` namespace and accepts `default`, `muted`, or `contrast`. Missing and invalid values become `default`. The projector returns `FoundationLayoutContainerPresentationData`, whose allowlisted public classes are:
+
+| Saved value | Public class |
+| --- | --- |
+| `default` | No extra surface class |
+| `muted` | `capell-container-surface-muted` |
+| `contrast` | `capell-container-surface-contrast` |
+
+The projector is tagged with `LayoutContainerThemePresentationProjector::TAG` separately from the Filament schema extender. Public Blade calls `$presentation->classes()` and never reads `theme_settings` directly. See [`FoundationLayoutContainerSchemaExtender`](src/Filament/Extenders/FoundationLayoutContainerSchemaExtender.php), [`FoundationLayoutContainerThemePresentationProjector`](src/Support/FoundationLayoutContainerThemePresentationProjector.php), and [`FoundationLayoutContainerPresentationData`](src/Data/FoundationLayoutContainerPresentationData.php).
 
 ## Data Model
 
