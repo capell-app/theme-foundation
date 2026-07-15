@@ -26,12 +26,20 @@
         @endif
 
         @if (is_string($content = $widget->translation?->content) && $content !== '')
-            <div class="max-w-3xl text-lg text-gray-700 dark:text-gray-200">
-                {!! strip_tags($content, '<p><strong><em><a><ul><ol><li>') !!}
-            </div>
+            <x-capell::content
+                class="max-w-3xl text-lg text-gray-700 dark:text-gray-200"
+                :$content
+            />
         @endif
 
-        @if (is_string($callToActionLabel = $widget->getMeta('call_to_action_label')) && $callToActionLabel !== '' && is_string($callToActionUrl = $widget->getMeta('call_to_action_url')) && $callToActionUrl !== '')
+        @php
+            $callToActionLabel = $widget->getMeta('call_to_action_label');
+            $callToActionUrl = \Capell\Core\Support\Security\PublicUrlSanitizer::sanitize(
+                $widget->getMeta('call_to_action_url'),
+            );
+        @endphp
+
+        @if (is_string($callToActionLabel) && $callToActionLabel !== '' && $callToActionUrl !== null)
             <a
                 class="inline-flex rounded-md bg-gray-950 px-5 py-3 font-medium text-white outline-offset-4 transition hover:bg-gray-800 focus-visible:outline-2 focus-visible:outline-gray-950 motion-reduce:transition-none dark:bg-white dark:text-gray-950"
                 href="{{ $callToActionUrl }}"

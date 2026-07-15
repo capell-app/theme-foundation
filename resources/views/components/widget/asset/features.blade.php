@@ -16,7 +16,7 @@
     'containerKey',
     'containerWidth' => null,
     'loop',
-    'total' => $assets->count(),
+    'total' => null,
     'widget',
     'widgetIndex',
     'withChildCount' => (bool) $widget->getMeta('with_child_count'),
@@ -25,6 +25,10 @@
     'withDate' => (bool) $widget->getMeta('with_date'),
     'withSummary' => (bool) $widget->getMeta('with_summary'),
 ])
+
+@php
+    $total ??= $assets->count();
+@endphp
 
 @if ($assets->isNotEmpty() || ! config('capell-layout-builder.widget.skip_render_empty', true))
     <x-capell-theme-foundation::widget.wrapper

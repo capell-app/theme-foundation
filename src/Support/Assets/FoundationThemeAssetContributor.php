@@ -4,42 +4,47 @@ declare(strict_types=1);
 
 namespace Capell\FoundationTheme\Support\Assets;
 
-use Capell\Frontend\Contracts\FrontendAssetContributor;
-use Capell\Frontend\Data\FrontendAssetContextData;
-use Capell\Frontend\Data\FrontendAssetRequirementData;
+use Capell\FoundationTheme\Providers\FoundationThemeServiceProvider;
+use Capell\Frontend\Contracts\FrontendResourceContributor;
+use Capell\Frontend\Data\Assets\FrontendResourceContributionData;
+use Capell\Frontend\Data\Assets\FrontendResourceData;
+use Capell\Frontend\Data\Assets\ViteResourceSourceData;
+use Capell\Frontend\Data\FrontendResourceContextData;
 
-final class FoundationThemeAssetContributor implements FrontendAssetContributor
+final class FoundationThemeAssetContributor implements FrontendResourceContributor
 {
-    public function requirements(FrontendAssetContextData $context): array
+    public function resources(FrontendResourceContextData $context): array
     {
-        $requirements = [];
+        $resources = [];
+        $buildDirectory = $this->frontendBuildDirectory($context);
 
         if ($this->shouldLoadFrontendCss($context)) {
-            $requirements[] = new FrontendAssetRequirementData(
-                handle: 'theme-foundation:css',
-                kind: FrontendAssetRequirementData::KIND_CSS,
-                source: $this->frontendCssPath(),
-                buildPath: $this->frontendCssBuildPath($context),
+            $resources[] = FrontendResourceData::style(
+                handle: 'capell-app/theme-foundation:frontend-style',
+                package: FoundationThemeServiceProvider::$packageName,
+                source: new ViteResourceSourceData($this->frontendCssPath(), $buildDirectory),
+                criticalCssEligible: true,
             );
         }
 
-        $themeCssRequirement = $this->themeCssRequirement($context);
+        $themeCss = $this->themeCssResource($context, $buildDirectory);
 
-        if ($themeCssRequirement !== null) {
-            $requirements[] = $themeCssRequirement;
+        if ($themeCss instanceof FrontendResourceData) {
+            $resources[] = $themeCss;
         }
 
         if ($this->shouldLoadRuntimeJavaScript($context)) {
-            $requirements[] = new FrontendAssetRequirementData(
-                handle: 'theme-foundation:runtime',
-                kind: FrontendAssetRequirementData::KIND_JS,
-                source: 'resources/js/capell-frontend.js',
-                buildPath: 'vendor/capell-theme-foundation',
-                defer: true,
+            $resources[] = FrontendResourceData::moduleScript(
+                handle: 'capell-app/theme-foundation:runtime',
+                package: FoundationThemeServiceProvider::$packageName,
+                source: new ViteResourceSourceData('resources/js/capell-frontend.js', 'vendor/capell-theme-foundation'),
             );
         }
 
-        return $requirements;
+        return array_map(
+            static fn (FrontendResourceData $resource): FrontendResourceContributionData => new FrontendResourceContributionData($resource),
+            $resources,
+        );
     }
 
     private function frontendCssPath(): string
@@ -49,54 +54,46 @@ final class FoundationThemeAssetContributor implements FrontendAssetContributor
         return is_string($path) && $path !== '' ? $path : 'resources/css/capell/frontend.css';
     }
 
-    private function frontendCssBuildPath(FrontendAssetContextData $context): string
+    private function frontendBuildDirectory(FrontendResourceContextData $context): string
     {
-        $buildPath = $context->theme?->getMeta('assets_path', 'build');
+        $buildDirectory = $context->theme?->getMeta('assets_path', 'build');
 
-        return is_string($buildPath) && $buildPath !== '' ? $buildPath : 'build';
+        return is_string($buildDirectory) && $buildDirectory !== '' ? $buildDirectory : 'build';
     }
 
-    private function shouldLoadFrontendCss(FrontendAssetContextData $context): bool
+    private function shouldLoadFrontendCss(FrontendResourceContextData $context): bool
     {
         $value = data_get($context->theme?->meta, 'frontend_runtime.uses_theme_foundation_css');
 
         return is_bool($value) ? $value : true;
     }
 
-    private function shouldLoadRuntimeJavaScript(FrontendAssetContextData $context): bool
+    private function shouldLoadRuntimeJavaScript(FrontendResourceContextData $context): bool
     {
         return $context->runtime->usesIslands
             || $context->runtime->usesLivewire
             || ($context->runtime->modules['theme-foundation-runtime'] ?? false);
     }
 
-    /**
-     * When capell-theme-foundation.tailwind.split_theme_css is enabled, emit
-     * the active theme's own compiled bundle as an additional requirement —
-     * every request context carries its own $context->theme, so multi-site
-     * installs resolve the right per-theme file with no extra wiring.
-     */
-    private function themeCssRequirement(FrontendAssetContextData $context): ?FrontendAssetRequirementData
+    private function themeCssResource(FrontendResourceContextData $context, string $buildDirectory): ?FrontendResourceData
     {
         $themeKey = $context->theme?->key;
 
-        if (! is_string($themeKey) || $themeKey === '' || ! config('capell-theme-foundation.tailwind.split_theme_css', true)) {
+        if (! is_string($themeKey)
+            || $themeKey === ''
+            || $themeKey === 'default'
+            || ! config('capell-theme-foundation.tailwind.split_theme_css', true)) {
             return null;
         }
 
         $directory = config('capell-theme-foundation.tailwind.theme_css_output_directory', 'resources/css/capell/themes');
         $directory = is_string($directory) && $directory !== '' ? $directory : 'resources/css/capell/themes';
-        $source = rtrim($directory, '/') . '/' . $themeKey . '.css';
 
-        if (! is_file(base_path($source))) {
-            return null;
-        }
-
-        return new FrontendAssetRequirementData(
-            handle: 'theme-css:' . $themeKey,
-            kind: FrontendAssetRequirementData::KIND_CSS,
-            source: $source,
-            buildPath: $this->frontendCssBuildPath($context),
+        return FrontendResourceData::style(
+            handle: 'capell-app/theme-foundation:theme-' . $themeKey,
+            package: FoundationThemeServiceProvider::$packageName,
+            source: new ViteResourceSourceData(rtrim($directory, '/') . '/' . $themeKey . '.css', $buildDirectory),
+            criticalCssEligible: true,
         );
     }
 }

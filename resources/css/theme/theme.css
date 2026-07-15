@@ -1124,7 +1124,9 @@
         .ap-hero__inner {
             grid-template-columns: minmax(0, 0.9fr) minmax(25rem, 0.75fr);
         }
+    }
 
+    @media (min-width: 1280px) {
         .capell-product-nav-item {
             width: auto;
         }
@@ -1154,7 +1156,7 @@
         }
     }
 
-    @media (max-width: 1023px) {
+    @media (max-width: 1279px) {
         body.menu-open #menu,
         body.menu-open #main-menu {
             transform: translateX(0) !important;

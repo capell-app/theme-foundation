@@ -32,10 +32,11 @@
     'showPageTitle' => $widgetData['meta']['show_page_title'] ?? false,
     'loop',
     'rounded' => (bool) $theme->getMeta('rounded_images'),
-    'total' => $assets->count(),
+    'total' => null,
     'widget',
 ])
 @php
+    $total ??= $assets->count();
     $carouselId = sprintf('carousel-%s-%s', $widget->id ?? $widget->key, $loop->index);
     $carouselEffect = $carouselFade ? 'fade' : $carouselEffect;
 @endphp
