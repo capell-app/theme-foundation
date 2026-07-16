@@ -11,12 +11,14 @@ use Capell\FoundationTheme\Data\FoundationThemeTokensData;
 use Capell\FoundationTheme\Settings\FoundationThemeSettings;
 use Capell\Frontend\Facades\Frontend;
 use Illuminate\Support\Collection;
-use Lorisleiva\Actions\Concerns\AsAction;
+use Lorisleiva\Actions\Concerns\AsFake;
+use Lorisleiva\Actions\Concerns\AsObject;
 use Throwable;
 
 final class ResolveFoundationThemeTokensAction
 {
-    use AsAction;
+    use AsFake;
+    use AsObject;
 
     public function handle(
         ?Theme $theme = null,
@@ -95,6 +97,9 @@ final class ResolveFoundationThemeTokensAction
             motionEase: $motion['ease'],
             motionStagger: $motion['stagger'],
             motionDistance: $motion['distance'],
+            responsiveRepeatableLayout: $settings instanceof FoundationThemeSettings
+                ? $settings->responsiveRepeatableLayoutKey()
+                : FoundationThemeSettings::responsiveRepeatableLayoutKeyFor(null),
         );
     }
 

@@ -7,6 +7,7 @@ namespace Capell\FoundationTheme\Providers;
 use Capell\Admin\Data\Extensions\ExtensionManagementSurfaceData;
 use Capell\Admin\Facades\CapellAdmin;
 use Capell\Core\Actions\RegisterBlazeOptimizedViewsAction;
+use Capell\Core\Data\RenderableDefinitionData;
 use Capell\Core\Data\VendorAssetData;
 use Capell\Core\Enums\BlueprintGroupEnum;
 use Capell\Core\Enums\FrontendRuntime;
@@ -20,6 +21,7 @@ use Capell\Core\Models\Page;
 use Capell\Core\Models\Site;
 use Capell\Core\Models\Theme;
 use Capell\Core\Support\Packages\AbstractPackageServiceProvider;
+use Capell\Core\Support\Renderables\RenderableRegistry;
 use Capell\Core\Support\Themes\ThemeChromeRegistry;
 use Capell\Core\ThemeStudio\Data\ThemeDefinitionData;
 use Capell\Core\ThemeStudio\Data\ThemePresetData;
@@ -32,6 +34,7 @@ use Capell\FoundationTheme\Console\Commands\SetupCommand;
 use Capell\FoundationTheme\Console\Commands\ThemeCatalogueReportCommand;
 use Capell\FoundationTheme\Console\Commands\ValidateThemesCommand;
 use Capell\FoundationTheme\Contracts\OptionalExtensionAvailability;
+use Capell\FoundationTheme\Enums\FoundationSectionWidgetComponentEnum;
 use Capell\FoundationTheme\Enums\FoundationThemeAssetEnum;
 use Capell\FoundationTheme\Filament\Extenders\FoundationLayoutContainerSchemaExtender;
 use Capell\FoundationTheme\Filament\Settings\FoundationThemeSettingsSchema;
@@ -57,6 +60,7 @@ use Capell\FoundationTheme\View\Components\ThemeFormEmbed;
 use Capell\FoundationTheme\View\Components\Widget\Asset\Accordion as AssetAccordionComponent;
 use Capell\FoundationTheme\View\Components\Widget\Asset as AssetComponent;
 use Capell\FoundationTheme\View\Components\Widget\Asset\Carousel as AssetCarouselComponent;
+use Capell\FoundationTheme\View\Components\Widget\FoundationSection as FoundationSectionComponent;
 use Capell\FoundationTheme\View\Components\Widget\Page\Breadcrumbs as PageBreadcrumbsComponent;
 use Capell\FoundationTheme\View\Components\Widget\Page\Children as PageChildrenComponent;
 use Capell\FoundationTheme\View\Components\Widget\Page\Content as PageContentComponent;
@@ -689,6 +693,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
         Blade::component(AssetComponent::class, 'capell::widget.asset.media');
         Blade::component(AssetComponent::class, 'capell::widget.asset.testimonials');
         Blade::component(AssetComponent::class, 'capell::widget.asset.widgets');
+        Blade::component(FoundationSectionComponent::class, 'capell-theme-foundation::widget.foundation-section');
         Blade::component(PageBreadcrumbsComponent::class, 'capell::widget.page.breadcrumbs');
         Blade::component(ActionsComponent::class, 'capell::actions');
         Blade::component(ActionsComponent::class, 'capell-theme-foundation::actions');
@@ -699,6 +704,8 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
         Blade::component(PageChildrenComponent::class, 'capell::widget.page.children');
         Blade::component(PageLatestComponent::class, 'capell::widget.page.latest');
         Blade::component(PageSiblingsComponent::class, 'capell::widget.page.siblings');
+
+        $this->registerFoundationSectionWidgetRenderables();
 
         $registerLivewireComponents = function (): void {
             Livewire::component('capell::widget.pages', Pages::class);
@@ -772,6 +779,19 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
                         'url',
                     ],
                 );
+        });
+    }
+
+    private function registerFoundationSectionWidgetRenderables(): void
+    {
+        $this->callAfterResolving(RenderableRegistry::class, static function (RenderableRegistry $registry): void {
+            foreach (FoundationSectionWidgetComponentEnum::cases() as $widgetComponent) {
+                $registry->register(new RenderableDefinitionData(
+                    key: $widgetComponent->value,
+                    type: 'layout-widget',
+                    blade: 'capell-theme-foundation::widget.foundation-section',
+                ));
+            }
         });
     }
 }

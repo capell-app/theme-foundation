@@ -53,5 +53,6 @@ final readonly class FoundationThemeTokensData
         public string $motionEase,
         public string $motionStagger,
         public string $motionDistance,
+        public string $responsiveRepeatableLayout,
     ) {}
 }

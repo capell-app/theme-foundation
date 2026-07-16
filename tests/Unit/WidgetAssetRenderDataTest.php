@@ -97,7 +97,7 @@ it('builds page content render data from loaded relations only', function (): vo
 
     DB::enableQueryLog();
 
-    $renderData = (new BuildPageContentRenderDataAction)->handle($page, ['content'], true);
+    $renderData = BuildPageContentRenderDataAction::run($page, ['content'], true);
 
     expect($renderData->title)->toBe('Loaded page title')
         ->and($renderData->content)->toBe('<p>Loaded page content.</p>')

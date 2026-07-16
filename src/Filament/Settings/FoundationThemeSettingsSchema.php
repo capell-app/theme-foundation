@@ -7,6 +7,7 @@ namespace Capell\FoundationTheme\Filament\Settings;
 use Capell\Admin\Filament\Contracts\HasSchema;
 use Capell\Admin\Filament\Support\HelperText;
 use Capell\FoundationTheme\Settings\FoundationThemeSettings;
+use Capell\LayoutBuilder\Enums\ResponsiveLayoutPattern;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Select;
@@ -130,6 +131,17 @@ class FoundationThemeSettingsSchema implements HasSchema
                                 ])
                                 ->default('subtle')
                                 ->in(array_keys(FoundationThemeSettings::MOTION_INTENSITY_OPTIONS))
+                                ->required(),
+                            Select::make('responsive_repeatable_layout')
+                                ->label(self::translate('capell-theme-foundation::form.responsive_repeatable_layout'))
+                                ->helperText(self::translate('capell-theme-foundation::form.responsive_repeatable_layout_helper'))
+                                ->options([
+                                    ResponsiveLayoutPattern::Grid->value => self::translate('capell-theme-foundation::form.responsive_repeatable_layout_options.grid'),
+                                    ResponsiveLayoutPattern::Carousel->value => self::translate('capell-theme-foundation::form.responsive_repeatable_layout_options.carousel'),
+                                    ResponsiveLayoutPattern::DesktopGridMobileCarousel->value => self::translate('capell-theme-foundation::form.responsive_repeatable_layout_options.desktop_grid_mobile_carousel'),
+                                ])
+                                ->default(ResponsiveLayoutPattern::DesktopGridMobileCarousel->value)
+                                ->in(FoundationThemeSettings::RESPONSIVE_REPEATABLE_LAYOUT_OPTIONS)
                                 ->required(),
                         ]),
                 ]),

@@ -47,3 +47,16 @@ it('resolves every first-party non-foundation theme to a deliberate media pool',
             ->not->toBe($defaultMedia, "Theme [{$themeKey}] must not inherit Foundation's default media pool.");
     }
 });
+
+it('keeps local service proof media relevant to plumbing and electrical work', function (): void {
+    $businessMedia = ThemeDemoMedia::groupedForTheme('business');
+
+    expect($businessMedia['detail'])
+        ->toHaveCount(2)
+        ->and($businessMedia['detail'][0])->toContain('photo-1676210134188-4c05dd172f89')
+        ->and($businessMedia['detail'][1])->toContain('photo-1758101755915-462eddc23f57')
+        ->and($businessMedia['proof'])
+        ->toHaveCount(3)
+        ->and($businessMedia['proof'][0])->toContain('photo-1676210133055-eab6ef033ce3')
+        ->and($businessMedia['proof'][1])->toContain('photo-1566417110090-6b15a06ec800');
+});

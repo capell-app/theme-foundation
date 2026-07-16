@@ -51,6 +51,7 @@ const FLEET_DEMO_CONTRACT_EXCLUSIONS = [
  * @var list<string>
  */
 const FLEET_FORM_BUILDER_THEMES = [
+    'foundation',
     'agency',
     'brutalist',
     'directory',
@@ -102,6 +103,7 @@ dataset('fleet_themes_for_demo_contract', function (): array {
 
 it('theme ships a demo content provider covering every foundation surface', function (string $slug): void {
     $studio = Str::studly($slug);
+    $themeKey = $slug === 'foundation' ? 'default' : $slug;
     $providerClass = fleetDemoContentProviderClass($slug, $studio);
 
     expect(class_exists($providerClass))->toBeTrue(
@@ -112,7 +114,7 @@ it('theme ships a demo content provider covering every foundation surface', func
     expect($provider)->toBeInstanceOf(ProvidesThemeDemoContent::class);
     throw_unless($provider instanceof ProvidesThemeDemoContent, RuntimeException::class, "Theme [{$slug}] demo content provider must implement ProvidesThemeDemoContent.");
 
-    $definitions = $provider->definitions($slug, Str::headline($slug), "https://{$slug}.test");
+    $definitions = $provider->definitions($themeKey, Str::headline($slug), "https://{$slug}.test");
 
     $bySurface = [];
     foreach ($definitions as $definition) {
@@ -126,7 +128,7 @@ it('theme ships a demo content provider covering every foundation surface', func
     foreach (FLEET_FOUNDATION_SURFACES as $surface) {
         $definition = $bySurface[$surface];
 
-        if (in_array($slug, themesConvertedToLayoutBuilder(), true)) {
+        if (in_array($themeKey, themesConvertedToLayoutBuilder(), true)) {
             expect($definition->hasContainers())->toBeTrue(
                 "Theme [{$slug}] surface [{$surface}] is layout-native and must carry non-empty layout-builder containers.",
             );
@@ -235,6 +237,48 @@ it('foundation demonstrates a credible site instead of describing its implementa
         ->not->toContain('·');
 });
 
+it('foundation keeps portable page copy without repeating the hero title', function (): void {
+    $definitions = (new FoundationDemoContent)->definitions(
+        themeKey: 'default',
+        themeName: 'Foundation',
+        baseUrl: 'https://foundation.test',
+    );
+
+    foreach ($definitions as $definition) {
+        $mainContainer = $definition->containers['main'] ?? null;
+
+        if (! is_array($mainContainer)) {
+            throw new RuntimeException("Foundation surface [{$definition->surface}] must contain a main container.");
+        }
+
+        $containerWidgets = $mainContainer['widgets'] ?? null;
+
+        if (! is_array($containerWidgets)) {
+            throw new RuntimeException("Foundation surface [{$definition->surface}] must contain main widgets.");
+        }
+
+        $pageContentWidget = collect($containerWidgets)->first(
+            static fn (mixed $widget): bool => is_array($widget)
+                && ($widget['widget_key'] ?? null) === 'page-content',
+        );
+
+        if (! is_array($pageContentWidget)) {
+            throw new RuntimeException("Foundation surface [{$definition->surface}] must contain a page-content widget.");
+        }
+
+        $widgetMeta = $pageContentWidget['meta'] ?? null;
+
+        if (! is_array($widgetMeta)) {
+            throw new RuntimeException("Foundation surface [{$definition->surface}] page-content widget must contain metadata.");
+        }
+
+        expect($widgetMeta['page_content'] ?? null)->toBe(
+            ['content'],
+            "Foundation surface [{$definition->surface}] must omit the duplicated page title from its page-content widget.",
+        );
+    }
+});
+
 it('foundation chrome links to its seeded buyer journeys', function (): void {
     $definitions = (new FoundationDemoContent)->definitions(
         themeKey: 'default',
@@ -259,5 +303,41 @@ it('foundation chrome links to its seeded buyer journeys', function (): void {
                 ['label' => 'How we work', 'url' => '/theme-default#proof'],
                 ['label' => 'Field notes', 'url' => '/theme-default-directory'],
             ]);
+    }
+});
+
+it('foundation local calls to action resolve to sections on the current surface', function (): void {
+    $definitions = (new FoundationDemoContent)->definitions(
+        themeKey: 'default',
+        themeName: 'Foundation',
+        baseUrl: 'https://foundation.test',
+    );
+
+    foreach ($definitions as $definition) {
+        $sections = $definition->sections();
+        $sectionTypes = collect($sections)
+            ->pluck('type')
+            ->filter(static fn (mixed $type): bool => is_string($type))
+            ->all();
+
+        foreach ($sections as $section) {
+            $actions = $section['actions'] ?? null;
+
+            if (! is_array($actions)) {
+                continue;
+            }
+
+            foreach ($actions as $action) {
+                $url = is_array($action) ? ($action['url'] ?? null) : null;
+
+                if (! is_string($url) || ! str_starts_with($url, '#')) {
+                    continue;
+                }
+
+                expect(in_array(mb_substr($url, 1), $sectionTypes, true))->toBeTrue(
+                    "Foundation surface [{$definition->surface}] links to missing local section [{$url}].",
+                );
+            }
+        }
     }
 });

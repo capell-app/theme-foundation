@@ -15,10 +15,12 @@ use Capell\FoundationTheme\Data\WidgetAssetRenderData;
 use Capell\LayoutBuilder\Models\WidgetAsset;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Lorisleiva\Actions\Concerns\AsFake;
 use Lorisleiva\Actions\Concerns\AsObject;
 
 final class BuildWidgetAssetRenderDataAction
 {
+    use AsFake;
     use AsObject;
 
     public function handle(WidgetAsset $widgetAsset): WidgetAssetRenderData

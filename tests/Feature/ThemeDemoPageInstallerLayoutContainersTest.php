@@ -263,7 +263,7 @@ it('seeds layout builder containers and widgets from a demo page definition', fu
         ->toHaveKey('header', false)
         ->toHaveKey('footer', false);
 
-    $mainContainers = app(ResolveLayoutAreaContainersAction::class)->handle($layout->containers, LayoutAreaRegistry::MAIN);
+    $mainContainers = ResolveLayoutAreaContainersAction::run($layout->containers, LayoutAreaRegistry::MAIN);
 
     expect($mainContainers)->toHaveKey('main')
         ->and($mainContainers['main']['widgets'])->toBe([

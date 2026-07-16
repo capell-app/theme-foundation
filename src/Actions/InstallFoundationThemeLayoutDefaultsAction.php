@@ -13,6 +13,7 @@ use Capell\LayoutBuilder\Actions\ApplyLayoutSidebarWidgetContributionsAction;
 use Capell\LayoutBuilder\Support\Creator\WidgetCreator;
 use Capell\LayoutBuilder\Support\LayoutModelRegistrar;
 use Illuminate\Database\Eloquent\Builder;
+use Lorisleiva\Actions\Concerns\AsFake;
 use Lorisleiva\Actions\Concerns\AsObject;
 
 /**
@@ -20,6 +21,7 @@ use Lorisleiva\Actions\Concerns\AsObject;
  */
 final class InstallFoundationThemeLayoutDefaultsAction
 {
+    use AsFake;
     use AsObject;
 
     /**

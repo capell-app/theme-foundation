@@ -12,7 +12,9 @@ it('resolves a registered public form component without exposing its package ali
         ->with('capell-app/form-builder', 'public-form')
         ->andReturnTrue();
 
-    $data = (new ResolveThemeFormEmbedDataAction($availability))->handle(
+    $data = runBoundAction(
+        ResolveThemeFormEmbedDataAction::class,
+        new ResolveThemeFormEmbedDataAction($availability),
         handle: 'contact-enquiry',
         instanceId: 'Theme Contact Form',
         fallbackMessage: 'Email us if the form is unavailable.',
@@ -36,7 +38,9 @@ it('does not resolve an optional component for a missing form handle', function 
     $availability = Mockery::mock(OptionalExtensionAvailability::class);
     $availability->shouldNotReceive('livewireComponentAvailable');
 
-    $data = (new ResolveThemeFormEmbedDataAction($availability))->handle(
+    $data = runBoundAction(
+        ResolveThemeFormEmbedDataAction::class,
+        new ResolveThemeFormEmbedDataAction($availability),
         handle: null,
         fallbackUrl: 'javascript:alert(1)',
     );

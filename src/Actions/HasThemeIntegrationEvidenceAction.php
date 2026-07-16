@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Capell\FoundationTheme\Actions;
 
 use FilesystemIterator;
+use Lorisleiva\Actions\Concerns\AsFake;
 use Lorisleiva\Actions\Concerns\AsObject;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -18,6 +19,7 @@ use SplFileInfo;
  */
 final class HasThemeIntegrationEvidenceAction
 {
+    use AsFake;
     use AsObject;
 
     public function handle(string $themeDirectory, string $packageName): bool

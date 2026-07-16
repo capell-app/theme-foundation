@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Capell\FoundationTheme\Actions;
 
+use Lorisleiva\Actions\Concerns\AsFake;
 use Lorisleiva\Actions\Concerns\AsObject;
 
 final class MarkPrimaryHeadingRenderedAction
 {
+    use AsFake;
     use AsObject;
 
     private const string FRONTEND_CONTEXT_SERVICE = 'capell.frontend.context';

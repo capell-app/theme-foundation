@@ -50,6 +50,20 @@ it('defaults repeated widget assets to a desktop grid with a mobile carousel', f
         ->and($options->carouselBreakpointsJson())->toContain('"760"');
 });
 
+it('inherits the theme-wide repeatable item pattern when the widget has no override', function (): void {
+    $widget = new Widget(['meta' => []]);
+
+    $options = ResponsiveAssetLayoutOptions::fromWidget(
+        $widget,
+        4,
+        ResponsiveLayoutPattern::Carousel->value,
+    );
+
+    expect($options->pattern)->toBe(ResponsiveLayoutPattern::Carousel)
+        ->and($options->pattern->usesMobileCarousel())->toBeTrue()
+        ->and($options->pattern->usesDesktopGrid())->toBeFalse();
+});
+
 it('preserves explicit grid responsive pattern as the mobile stack opt out', function (): void {
     $widget = new Widget([
         'meta' => [
@@ -57,7 +71,11 @@ it('preserves explicit grid responsive pattern as the mobile stack opt out', fun
         ],
     ]);
 
-    $options = ResponsiveAssetLayoutOptions::fromWidget($widget, 4);
+    $options = ResponsiveAssetLayoutOptions::fromWidget(
+        $widget,
+        4,
+        ResponsiveLayoutPattern::Carousel->value,
+    );
 
     expect($options->pattern)->toBe(ResponsiveLayoutPattern::Grid)
         ->and($options->pattern->usesMobileCarousel())->toBeFalse()

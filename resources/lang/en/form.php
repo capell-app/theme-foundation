@@ -56,6 +56,13 @@ return [
     'page_background_color' => 'Page background colour',
     'performance' => 'Performance',
     'primary_action_color' => 'Primary action colour',
+    'responsive_repeatable_layout' => 'Repeatable item layout',
+    'responsive_repeatable_layout_helper' => 'Set the default for repeatable asset widgets across every theme. Individual widgets can inherit or override it.',
+    'responsive_repeatable_layout_options' => [
+        'carousel' => 'Carousel at every width',
+        'desktop_grid_mobile_carousel' => 'Desktop grid, mobile carousel',
+        'grid' => 'Responsive grid',
+    ],
     'section_spacing' => 'Section spacing',
     'section_spacing_options' => [
         'comfortable' => 'Comfortable',

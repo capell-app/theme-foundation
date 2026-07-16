@@ -8,10 +8,12 @@ use Capell\Core\Enums\MediaCollectionEnum;
 use Capell\Core\Models\Media;
 use Capell\LayoutBuilder\Models\Widget;
 use Illuminate\Support\Collection;
+use Lorisleiva\Actions\Concerns\AsFake;
 use Lorisleiva\Actions\Concerns\AsObject;
 
 final class ResolveLoadedWidgetBackgroundImageAction
 {
+    use AsFake;
     use AsObject;
 
     public function handle(Widget $widget): ?Media

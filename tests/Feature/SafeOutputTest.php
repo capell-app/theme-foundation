@@ -37,8 +37,43 @@ test('content component sanitizes cms html before rendering', function (): void 
         ->and($content)->toContain("'imageFetchPriority' => 'auto'");
 });
 
+test('layout native foundation sections expose stable buyer journey anchors', function (): void {
+    $sectionComponent = file_get_contents(
+        dirname(__DIR__, 2) . '/src/View/Components/Widget/FoundationSection.php',
+    );
+    $sectionRenderer = file_get_contents(
+        dirname(__DIR__, 2) . '/resources/views/components/widget/foundation-section.blade.php',
+    );
+
+    expect($sectionComponent)->not->toBeFalse()
+        ->and($sectionComponent)->toContain('ANCHORABLE_SECTION_TYPES')
+        ->and($sectionRenderer)->not->toBeFalse()
+        ->and($sectionRenderer)->toContain('$anchorable')
+        ->and($sectionRenderer)->toContain('id="{{ $sectionType }}"');
+});
+
+test('the public skip link keeps an explicit high contrast focus indicator', function (): void {
+    $layout = file_get_contents(
+        dirname(__DIR__, 2) . '/resources/views/components/layout/index.blade.php',
+    );
+    $themeCss = file_get_contents(
+        dirname(__DIR__, 2) . '/resources/css/theme-foundation.css',
+    );
+
+    expect($layout)->not->toBeFalse()
+        ->and($layout)->toContain('capell-public-skip-link')
+        ->and($themeCss)->not->toBeFalse()
+        ->and($themeCss)->toContain('.capell-public-skip-link:focus')
+        ->and($themeCss)->toContain('outline: 3px solid var(--foundation-focus-ring, #1d4ed8) !important')
+        ->and($themeCss)->toContain('outline-color: Highlight !important');
+});
+
 test('public buttons expose finite safe states and sanitize destinations', function (): void {
     $button = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/button/index.blade.php');
+
+    if (! is_string($button)) {
+        throw new RuntimeException('Unable to read the public Foundation button component.');
+    }
 
     expect(substr_count($button, "'color' =>"))->toBe(1)
         ->and($button)->toContain('PublicUrlSanitizer::sanitize($url)')
@@ -201,7 +236,7 @@ test('public blade getMeta and translation relation reads stay reviewed', functi
         'resources/views/components/widget/asset/features.blade.php' => ['getMeta' => 10, 'translation' => 3],
         'resources/views/components/widget/asset/index.blade.php' => ['getMeta' => 16, 'translation' => 3],
         'resources/views/components/widget/asset/media.blade.php' => ['getMeta' => 9, 'translation' => 3],
-        'resources/views/components/widget/asset/pages.blade.php' => ['getMeta' => 16, 'translation' => 6],
+        'resources/views/components/widget/asset/pages.blade.php' => ['getMeta' => 17, 'translation' => 6],
         'resources/views/components/widget/asset/testimonials.blade.php' => ['getMeta' => 21, 'translation' => 9],
         'resources/views/components/widget/asset/widgets.blade.php' => ['getMeta' => 12, 'translation' => 3],
         'resources/views/components/widget/banner-image.blade.php' => ['getMeta' => 8, 'translation' => 2],
@@ -396,9 +431,18 @@ test('ap hero and gallery public output avoid reviewed accessibility and editor 
     $gallery = file_get_contents($themePath . '/resources/views/components/widget/modern/image-gallery.blade.php');
     $cardGrid = file_get_contents($themePath . '/resources/views/components/widget/modern/card-grid.blade.php');
     $pageContent = file_get_contents($themePath . '/resources/views/components/widget/page/content.blade.php');
+    $pageCollection = file_get_contents($themePath . '/resources/views/components/widget/asset/pages.blade.php');
+    $themeStyles = file_get_contents($themePath . '/resources/css/theme/theme.css');
 
     expect($hero)->toContain('MarkPrimaryHeadingRenderedAction::run()')
         ->and($pageContent)->toContain("\$headingTag = (\$hasPrimaryHeading ? 'h2' : 'h1');")
+        ->and($pageContent)->not->toContain('prose-headings:text-slate-950')
+        ->and($pageContent)->not->toContain('text-slate-700')
+        ->and($themeStyles)->toContain('--tw-prose-body: var(--foundation-body-fg)')
+        ->and($themeStyles)->toContain('.content-component.capell-standard-page-content')
+        ->and($themeStyles)->toMatch('/@media \(prefers-color-scheme: dark\).*?--tw-prose-body: var\(--color-slate-300\).*?--tw-prose-headings: var\(--color-slate-50\)/s')
+        ->and($themeStyles)->toContain('color: var(--color-slate-50) !important')
+        ->and($pageCollection)->toContain(":heading-tag=\"\$showPageTitle ? 'h1' : \$widget->getMeta('heading_tag', 'h2')\"")
         ->and($hero)->not->toContain('ap-hero__slideshow-play')
         ->and($gallery)->not->toContain('No images configured')
         ->and($cardGrid)->not->toContain('No cards configured');

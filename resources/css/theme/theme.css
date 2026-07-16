@@ -370,6 +370,66 @@
 }
 
 @layer utilities {
+    .content-component.capell-standard-page-content {
+        --tw-prose-body: var(--foundation-body-fg);
+        --tw-prose-headings: var(--foundation-heading-fg);
+        --tw-prose-lead: var(--foundation-muted-fg);
+        --tw-prose-links: var(--theme-primary);
+        --tw-prose-bold: var(--foundation-heading-fg);
+        --tw-prose-counters: var(--foundation-muted-fg);
+        --tw-prose-bullets: var(--foundation-border);
+        --tw-prose-hr: var(--foundation-border);
+        --tw-prose-quotes: var(--foundation-body-fg);
+        --tw-prose-quote-borders: var(--foundation-border);
+        --tw-prose-captions: var(--foundation-muted-fg);
+        --tw-prose-code: var(--foundation-heading-fg);
+        --tw-prose-pre-code: var(--foundation-body-fg);
+        --tw-prose-pre-bg: var(--foundation-card-bg);
+        --tw-prose-th-borders: var(--foundation-border);
+        --tw-prose-td-borders: var(--foundation-border);
+        color: var(--foundation-body-fg);
+        color-scheme: light dark;
+    }
+
+    .content-component.capell-standard-page-content
+        :where(h1, h2, h3, h4, h5, h6) {
+        color: var(--foundation-heading-fg);
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .content-component.capell-standard-page-content {
+            --tw-prose-body: var(--color-slate-300);
+            --tw-prose-headings: var(--color-slate-50);
+            --tw-prose-lead: var(--color-slate-300);
+            --tw-prose-bold: var(--color-slate-50);
+            --tw-prose-counters: var(--color-slate-300);
+            --tw-prose-bullets: var(--color-slate-500);
+            --tw-prose-hr: var(--color-slate-700);
+            --tw-prose-quotes: var(--color-slate-200);
+            --tw-prose-quote-borders: var(--color-slate-600);
+            --tw-prose-captions: var(--color-slate-400);
+            --tw-prose-code: var(--color-slate-100);
+            --tw-prose-pre-code: var(--color-slate-200);
+            --tw-prose-pre-bg: var(--color-slate-900);
+            --tw-prose-th-borders: var(--color-slate-600);
+            --tw-prose-td-borders: var(--color-slate-700);
+            /* Split theme bundles include their own utility layer after the
+               shared frontend bundle. Keep portable page copy legible even
+               when a later legacy text utility is still present. */
+            color: var(--color-slate-300) !important;
+        }
+
+        .content-component.capell-standard-page-content
+            :where(h1, h2, h3, h4, h5, h6) {
+            color: var(--color-slate-50) !important;
+        }
+
+        .content-component.capell-standard-page-content
+            :where(p, li, blockquote, figcaption, td) {
+            color: var(--color-slate-300) !important;
+        }
+    }
+
     .prose {
         :where(.prose-h1) {
             color: var(--tw-prose-headings);

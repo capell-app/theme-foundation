@@ -17,7 +17,10 @@ final class FoundationThemeInterceptor implements ThemeInterceptorInterface
         }
 
         $data['meta'] = array_merge([
-            'assets' => ['resources/css/capell/frontend.css'],
+            // FrontendResourceContributor owns the shared and split Vite
+            // stylesheets. Metadata assets are reserved for explicit public
+            // files and must not duplicate or bypass that resource plan.
+            'assets' => [],
             'assets_path' => 'build',
             'header_divider' => false,
             'header_over_hero' => false,

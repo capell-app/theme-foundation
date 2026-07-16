@@ -79,7 +79,7 @@ class Asset extends AbstractWidget
         return $assets
             ->map(static fn (WidgetAsset $widgetAsset): array => [
                 'widgetAsset' => $widgetAsset,
-                'renderData' => (new BuildWidgetAssetRenderDataAction)->handle($widgetAsset),
+                'renderData' => BuildWidgetAssetRenderDataAction::run($widgetAsset),
             ])
             ->values();
     }

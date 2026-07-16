@@ -7,11 +7,13 @@ namespace Capell\FoundationTheme\Actions;
 use Capell\FoundationTheme\Data\NewsletterFormData;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Routing\Router;
-use Lorisleiva\Actions\Concerns\AsAction;
+use Lorisleiva\Actions\Concerns\AsFake;
+use Lorisleiva\Actions\Concerns\AsObject;
 
 final class ResolveNewsletterFormDataAction
 {
-    use AsAction;
+    use AsFake;
+    use AsObject;
 
     private const string SUBSCRIBE_ROUTE = 'capell-newsletter.subscribe';
 

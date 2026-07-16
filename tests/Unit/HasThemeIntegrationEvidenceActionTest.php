@@ -18,5 +18,5 @@ it('rejects optional extension claims without source evidence', function (): voi
 
     expect(HasThemeIntegrationEvidenceAction::run($themeDirectory, 'capell-app/newsletter'))->toBeFalse()
         ->and(HasThemeIntegrationEvidenceAction::run($themeDirectory, 'capell-app/shopify-commerce'))->toBeFalse()
-        ->and(HasThemeIntegrationEvidenceAction::run(dirname(__DIR__, 4) . '/packages/theme-awards', 'capell-app/form-builder'))->toBeFalse();
+        ->and(HasThemeIntegrationEvidenceAction::run($themeDirectory, 'capell-app/form-builder'))->toBeFalse();
 });

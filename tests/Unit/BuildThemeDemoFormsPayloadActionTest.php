@@ -30,7 +30,7 @@ it('serializes form sections into a package-neutral demo payload', function (): 
     );
 
     $payload = json_decode(
-        app(BuildThemeDemoFormsPayloadAction::class)->handle([$definition]),
+        BuildThemeDemoFormsPayloadAction::run([$definition]),
         true,
         flags: JSON_THROW_ON_ERROR,
     );

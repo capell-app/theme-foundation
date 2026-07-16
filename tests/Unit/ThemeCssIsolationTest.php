@@ -91,10 +91,13 @@ it('does not style the shared Foundation base shell class', function (): void {
  * 4–6 signature widgets are, by definition, bespoke per-theme CSS (tokens,
  * deterministic layout seeds, scroll-driven reveals, :has()-based sync
  * states) — exactly what this policy is meant to make room for, not the
- * runaway growth it exists to catch.
+ * runaway growth it exists to catch. The final commercial pass established
+ * 2,100 lines as the fleet ceiling: it accommodates Awards' scoreboard,
+ * Showreel's archive, Submissions' index, and Brutalist's zine mechanics while
+ * retaining useful headroom of fewer than 80 lines above the largest theme.
  */
 it('keeps each theme stylesheet under the per-theme CSS line budget', function (): void {
-    $budget = 1800;
+    $budget = 2100;
 
     foreach (themeIsolationStylesheets() as $packageDirectory => $contents) {
         $lineCount = substr_count($contents, "\n") + 1;

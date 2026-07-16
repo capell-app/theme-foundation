@@ -19,6 +19,12 @@ it('owns the opinionated public head behavior', function (): void {
         ->and($tokenAction)->toContain('resolve(FoundationThemeSettings::class)')
         ->and($tokens)->toContain('--foundation-page-bg')
         ->and($tokens)->toContain('--foundation-body-fg')
+        ->and($tokens)->toContain('--foundation-section-bg')
+        ->and($tokens)->toContain('--foundation-section-muted-bg')
+        ->and($tokens)->toContain('--foundation-heading-fg')
+        ->and($tokens)->toContain('--foundation-muted-fg')
+        ->and($tokens)->toContain('--foundation-inverse-bg')
+        ->and($tokens)->toContain('--foundation-focus-ring')
         ->and($tokens)->toContain('--foundation-border')
         ->and($tokens)->toContain('--foundation-section-spacing')
         ->and($tokens)->toContain('--foundation-band-bg')
@@ -48,6 +54,7 @@ it('maps foundation design settings into public CSS hooks', function (): void {
         ->and($settings)->toContain('WIDGET_GAP_OPTIONS')
         ->and($settings)->toContain('HEADING_SCALE_OPTIONS')
         ->and($settings)->toContain('public string $heading_scale')
+        ->and($settings)->toContain('public string $responsive_repeatable_layout')
         ->and($schema)->toContain("ColorPicker::make('page_background_color')")
         ->and($schema)->toContain("ColorPicker::make('border_color')")
         ->and($schema)->toContain("ColorPicker::make('band_background_color')")
@@ -59,11 +66,13 @@ it('maps foundation design settings into public CSS hooks', function (): void {
         ->and($schema)->toContain("Select::make('section_spacing')")
         ->and($schema)->toContain("Select::make('widget_gap')")
         ->and($schema)->toContain("Select::make('heading_scale')")
+        ->and($schema)->toContain("Select::make('responsive_repeatable_layout')")
         ->and($tokenAction)->toContain('sectionSpacingCssValue()')
         ->and($tokenAction)->toContain('headingScaleCssValues()')
         ->and($tokenAction)->toContain("darkPageBackground: \$this->settingColor(\$settings, 'dark_page_background_color', '#0b1716')")
         ->and($tokenAction)->toContain("darkPrimaryAction: \$this->settingColor(\$settings, 'dark_primary_action_color', '#79d7c2')")
         ->and($tokenAction)->toContain('widgetGapCssValue()')
+        ->and($tokenAction)->toContain('responsiveRepeatableLayoutKey()')
         ->and($tokens)->toContain('.dark:root')
         ->and($tokens)->toContain('--foundation-body-fg: #f8fafc')
         ->and($tokens)->toContain('--foundation-page-bg: {{ $tokens->darkPageBackground }}')
@@ -81,6 +90,18 @@ it('maps foundation design settings into public CSS hooks', function (): void {
         ->and($styles)->toContain('var(--foundation-primary-action)')
         ->and($styles)->toContain('var(--foundation-image-border)')
         ->and($styles)->toContain('var(--foundation-image-radius)');
+});
+
+it('ships an inherited theme-wide responsive repeatable item policy', function (): void {
+    $migration = file_get_contents(dirname(__DIR__, 2) . '/database/settings/2026_07_15_210000_add_theme_foundation_responsive_repeatable_layout.php');
+    $migrationProvider = file_get_contents(dirname(__DIR__, 2) . '/src/Settings/FoundationThemeSettingsMigrationProvider.php');
+    $assetView = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/widget/asset/index.blade.php');
+
+    expect($migration)
+        ->toContain('theme_foundation.responsive_repeatable_layout')
+        ->toContain('desktop-grid-mobile-carousel')
+        ->and($migrationProvider)->toContain('2026_07_15_210000_add_theme_foundation_responsive_repeatable_layout')
+        ->and($assetView)->toContain('responsiveRepeatableLayout');
 });
 
 it('ships additive settings defaults for the dark foundation token layer', function (): void {

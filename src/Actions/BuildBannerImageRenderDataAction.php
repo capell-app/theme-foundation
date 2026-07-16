@@ -10,10 +10,12 @@ use Capell\FoundationTheme\Data\BannerImageRenderData;
 use Capell\LayoutBuilder\Models\Widget;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Lorisleiva\Actions\Concerns\AsFake;
 use Lorisleiva\Actions\Concerns\AsObject;
 
 final class BuildBannerImageRenderDataAction
 {
+    use AsFake;
     use AsObject;
 
     public function handle(Widget $widget, mixed $content, mixed $title, bool $rounded, mixed $reverseOrder): BannerImageRenderData

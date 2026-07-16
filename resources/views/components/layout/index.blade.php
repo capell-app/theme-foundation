@@ -25,7 +25,7 @@
     {{ $attributes->merge(['class' => 'flex min-h-screen flex-col bg-white dark:bg-gray-900']) }}
 >
     <a
-        class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded focus:bg-white focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-gray-900 focus:shadow"
+        class="capell-public-skip-link sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded focus:bg-white focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-gray-900 focus:shadow focus:outline-3 focus:outline-offset-2 focus:outline-blue-700"
         href="#main"
     >
         {{ __('capell-frontend::generic.skip_link') }}

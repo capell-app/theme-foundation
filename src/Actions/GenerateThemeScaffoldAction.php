@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Capell\FoundationTheme\Actions;
 
 use Capell\FoundationTheme\Data\ThemeScaffoldRequestData;
+use Lorisleiva\Actions\Concerns\AsFake;
 use Lorisleiva\Actions\Concerns\AsObject;
 use RuntimeException;
 
@@ -20,6 +21,7 @@ use RuntimeException;
  */
 final class GenerateThemeScaffoldAction
 {
+    use AsFake;
     use AsObject;
 
     /**

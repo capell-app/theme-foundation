@@ -1,25 +1,27 @@
 ## What this theme gives you
 
-Foundation Theme is the base look and feel that every Capell theme builds on. It gives you clean, fast public pages and the settings to make them yours: your logo, colours, and fonts. On its own it is a solid, neutral starting point; the vertical themes (for a law firm, a spa, a SaaS, and so on) extend it with a tailored design.
+Foundation Theme is the base runtime and visual system that Capell themes build on. It provides shared Blade layouts, public design tokens, media/SVG handling, the Tailwind asset pipeline, and the stable override contract for child themes. On its own it is a neutral starting point; vertical themes extend it with their own design and registered sections.
 
 ## How to use it
 
-1. Go to **Appearance > Themes** (or **Settings > Theme**).
-2. Choose **Foundation Theme** and **Activate**.
-3. Open **Theme settings** to set your logo, colours, and fonts.
-4. **Preview** before making it live.
+1. Install and set up Foundation Theme, then select the `default` theme definition in the shared Theme Studio workflow for the intended site.
+2. Open the Foundation Theme extension settings surface to configure performance and runtime design tokens.
+3. Build pages with the shared Layout Builder sections, then preview the public output.
+4. Activate a vertical theme when you need its specialised section set; it continues to use Foundation's runtime contracts.
 
 ## What it adds
 
 - The base page layouts every Capell theme uses.
-- Theme settings for your logo, colours, and fonts.
-- A fast, accessible, cache-safe public site out of the box.
+- Extension settings for lazy loading, asset minification, light/dark colour tokens, image radius, section spacing, widget gaps, heading scale, motion intensity, and responsive repeatable layouts.
+- Shared Blade components, layout areas, media/SVG handling, and cache-safe public rendering for child themes.
+- Setup, demo, theme-validation, theme-catalogue, Tailwind-generation, and theme-scaffolding commands for maintainers.
 
 ## Good to know
 
 - This is the base other themes build on; install it before any vertical theme.
+- The Foundation settings schema does not include a logo or font picker; configure available runtime tokens through its actual extension settings surface.
+- `capell:theme-foundation-demo` installs Foundation demo pages; `capell:theme-foundation-setup` provides the package setup command.
 - Activating a vertical theme keeps Foundation's behaviour and changes the design on top of it.
-- **Preview** to see changes before visitors do.
 
 ## Child Theme Override Contract
 

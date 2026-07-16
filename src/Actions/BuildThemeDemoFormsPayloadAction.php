@@ -6,11 +6,13 @@ namespace Capell\FoundationTheme\Actions;
 
 use Capell\FoundationTheme\Support\Demo\ThemeDemoPageDefinition;
 use JsonException;
-use Lorisleiva\Actions\Concerns\AsAction;
+use Lorisleiva\Actions\Concerns\AsFake;
+use Lorisleiva\Actions\Concerns\AsObject;
 
 final class BuildThemeDemoFormsPayloadAction
 {
-    use AsAction;
+    use AsFake;
+    use AsObject;
 
     /**
      * @param  array<int, ThemeDemoPageDefinition>  $definitions

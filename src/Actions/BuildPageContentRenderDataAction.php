@@ -10,10 +10,12 @@ use Capell\Core\Models\Media;
 use Capell\FoundationTheme\Data\PageContentRenderData;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Lorisleiva\Actions\Concerns\AsFake;
 use Lorisleiva\Actions\Concerns\AsObject;
 
 final class BuildPageContentRenderDataAction
 {
+    use AsFake;
     use AsObject;
 
     /**

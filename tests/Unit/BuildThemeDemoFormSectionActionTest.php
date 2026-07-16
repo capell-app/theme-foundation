@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Capell\FoundationTheme\Actions\BuildThemeDemoFormSectionAction;
 
 it('builds a stable portable form section for a theme demo', function (): void {
-    $section = app(BuildThemeDemoFormSectionAction::class)->handle(
+    $section = BuildThemeDemoFormSectionAction::run(
         themeKey: 'studio-index',
         heading: 'Send the project',
         summary: 'Share the work and credits.',

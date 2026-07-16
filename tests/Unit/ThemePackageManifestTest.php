@@ -151,6 +151,15 @@ it('declares the standard light-only screenshot matrix', function (): void {
         'cta',
     ];
     $viewports = ['desktop', 'tablet', 'mobile'];
+    $routes = [
+        'foundation-homepage' => '/theme-default',
+        'foundation-directory' => '/theme-default-directory',
+        'foundation-detail' => '/theme-default-detail',
+        'foundation-contact' => '/theme-default-contact',
+        'foundation-empty' => '/theme-default-empty',
+        'foundation-not-found' => '/theme-default-404',
+        'foundation-cta' => '/theme-default-cta',
+    ];
 
     $expectedIds = collect($surfaces)
         ->flatMap(fn (string $surface): array => collect($viewports)
@@ -172,8 +181,23 @@ it('declares the standard light-only screenshot matrix', function (): void {
         ->toBe(['#main']);
 
     foreach ($entries as $entry) {
+        $id = $entry['id'] ?? null;
+        $target = $entry['target'] ?? null;
+        $url = $entry['url'] ?? null;
         $screenshotPath = $entry['screenshotPath'] ?? null;
+
+        throw_unless(is_string($id), RuntimeException::class, 'Foundation screenshot id must be a string.');
+        throw_unless(is_string($target), RuntimeException::class, 'Foundation screenshot target must be a string.');
+        throw_unless(is_string($url), RuntimeException::class, 'Foundation screenshot URL must be a string.');
         throw_unless(is_string($screenshotPath), RuntimeException::class, 'Foundation screenshot path must be a string.');
+
+        $surfaceId = preg_replace('/-(tablet|mobile)$/', '', $id);
+        throw_unless(is_string($surfaceId), RuntimeException::class, 'Foundation screenshot surface id must be a string.');
+
+        expect($routes)->toHaveKey($surfaceId)
+            ->and($target)->toBe($routes[$surfaceId])
+            ->and($url)->toBe($routes[$surfaceId])
+            ->and($url)->not->toStartWith('/screenshot-fixtures/');
 
         expect(is_file(dirname(__DIR__, 2) . '/' . str_replace('packages/theme-foundation/', '', $screenshotPath)))->toBeTrue();
     }

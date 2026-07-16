@@ -6,7 +6,9 @@ namespace Capell\FoundationTheme\Support\Demo;
 
 use Capell\Core\Enums\LayoutEnum;
 use Capell\Core\Enums\PageTypeEnum;
+use Capell\FoundationTheme\Actions\BuildThemeDemoFormSectionAction;
 use Capell\FoundationTheme\Contracts\ProvidesThemeDemoContent;
+use Capell\FoundationTheme\Enums\FoundationSectionWidgetComponentEnum;
 
 /**
  * A complete general-purpose site that demonstrates Foundation without
@@ -25,7 +27,7 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
     {
         $media = ThemeDemoMedia::groupedForTheme($themeKey);
 
-        return [
+        $definitions = [
             $this->homepage($themeKey, $media),
             $this->directory($themeKey, $media),
             $this->detail($themeKey, $media),
@@ -34,6 +36,112 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
             $this->notFound($themeKey, $media),
             $this->cta($themeKey, $media),
         ];
+
+        return array_map(
+            fn (ThemeDemoPageDefinition $definition): ThemeDemoPageDefinition => $this->withLayoutBuilderComposition($definition),
+            $definitions,
+        );
+    }
+
+    private function withLayoutBuilderComposition(ThemeDemoPageDefinition $definition): ThemeDemoPageDefinition
+    {
+        $sectionWidgets = $this->sectionWidgets($definition);
+        $containerWidgets = [];
+        $pageContentInserted = false;
+
+        foreach ($sectionWidgets as $sectionWidget) {
+            $containerWidgets[] = [
+                'widget_key' => $sectionWidget['key'],
+                'occurrence' => 1,
+            ];
+
+            if ($sectionWidget['type'] === 'hero') {
+                $containerWidgets[] = $this->pageContentWidgetReference();
+                $pageContentInserted = true;
+            }
+        }
+
+        if (! $pageContentInserted) {
+            array_unshift($containerWidgets, $this->pageContentWidgetReference());
+        }
+
+        $widgets = [['method' => 'pageContentWidget']];
+
+        foreach ($sectionWidgets as $sectionWidget) {
+            $widgets[] = [
+                'method' => 'bespokeContentWidget',
+                'args' => [
+                    $sectionWidget['key'],
+                    $sectionWidget['name'],
+                    $sectionWidget['component'],
+                    $sectionWidget['meta'],
+                ],
+            ];
+        }
+
+        return new ThemeDemoPageDefinition(
+            surface: $definition->surface,
+            name: $definition->name,
+            title: $definition->title,
+            slug: $definition->slug,
+            content: $definition->content,
+            renderData: $definition->renderData,
+            type: $definition->type,
+            layout: $definition->layout,
+            containers: ['main' => ['widgets' => $containerWidgets]],
+            widgets: $widgets,
+        );
+    }
+
+    /**
+     * Keep portable semantic page copy visible without repeating the title
+     * already owned by Foundation's hero section.
+     *
+     * @return array{widget_key: string, occurrence: int, meta: array{page_content: list<string>}}
+     */
+    private function pageContentWidgetReference(): array
+    {
+        return [
+            'widget_key' => 'page-content',
+            'occurrence' => 1,
+            'meta' => ['page_content' => ['content']],
+        ];
+    }
+
+    /**
+     * @return list<array{type: string, key: string, name: string, component: string, meta: array<string, mixed>}>
+     */
+    private function sectionWidgets(ThemeDemoPageDefinition $definition): array
+    {
+        $sectionWidgets = [];
+        $occurrences = [];
+
+        foreach ($definition->sections() as $section) {
+            $sectionType = $section['type'] ?? null;
+
+            if (! is_string($sectionType)) {
+                continue;
+            }
+
+            $component = FoundationSectionWidgetComponentEnum::fromSectionType($sectionType);
+
+            if (! $component instanceof FoundationSectionWidgetComponentEnum) {
+                continue;
+            }
+
+            $occurrences[$sectionType] = ($occurrences[$sectionType] ?? 0) + 1;
+            $occurrence = $occurrences[$sectionType];
+
+            $sectionWidgets[] = [
+                'type' => $sectionType,
+                'key' => sprintf('foundation-%s-%s-%d', $sectionType, $definition->surface, $occurrence),
+                'name' => sprintf('Foundation %s (%s)', ucfirst($sectionType), $definition->surface),
+                'component' => $component->value,
+                'meta' => $section,
+            ];
+        }
+
+        return $sectionWidgets;
     }
 
     /**
@@ -206,7 +314,8 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
                         primaryUrl: 'theme-' . $themeKey . '-directory',
                         primaryIsPath: true,
                         secondaryLabel: 'Search the collection',
-                        secondaryUrl: '#search',
+                        secondaryUrl: 'theme-' . $themeKey . '-directory#search',
+                        secondaryIsPath: true,
                     ),
                 ],
             ],
@@ -253,7 +362,8 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
                         heading: 'Looking for practical guidance first?',
                         summary: 'The field notes cover many of the questions that come up before a project begins.',
                         primaryLabel: 'Search the field notes',
-                        primaryUrl: '#search',
+                        primaryUrl: 'theme-' . $themeKey . '-directory#search',
+                        primaryIsPath: true,
                         secondaryLabel: 'Browse all notes',
                         secondaryUrl: 'theme-' . $themeKey . '-directory',
                         secondaryIsPath: true,
@@ -337,7 +447,8 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
                         heading: 'That page could not be found',
                         summary: 'The link may be out of date. Search the field notes or head back to the homepage.',
                         primaryLabel: 'Search the field notes',
-                        primaryUrl: '#search',
+                        primaryUrl: 'theme-' . $themeKey . '-directory#search',
+                        primaryIsPath: true,
                         secondaryLabel: 'Back to the homepage',
                         secondaryUrl: 'theme-' . $themeKey,
                         secondaryIsPath: true,
@@ -403,7 +514,8 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
                         primaryUrl: 'theme-' . $themeKey . '-directory',
                         primaryIsPath: true,
                         secondaryLabel: 'Search the notes',
-                        secondaryUrl: '#search',
+                        secondaryUrl: 'theme-' . $themeKey . '-directory#search',
+                        secondaryIsPath: true,
                     ),
                 ],
             ],
@@ -485,19 +597,14 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
      */
     private function formSection(string $heading, string $summary): array
     {
-        return [
-            'type' => 'form',
-            'heading' => $heading,
-            'summary' => $summary,
-            'action' => '/contact',
-            'fields' => [
-                ['type' => 'text', 'name' => 'name', 'label' => 'Your name', 'required' => true],
-                ['type' => 'email', 'name' => 'email', 'label' => 'Email address', 'required' => true],
-                ['type' => 'select', 'name' => 'topic', 'label' => 'What would you like to discuss?', 'options' => ['A new brief', 'A workshop', 'A field note', 'Something else']],
-                ['type' => 'textarea', 'name' => 'message', 'label' => 'Tell us about the place', 'required' => true],
-            ],
-            'submitLabel' => 'Send message',
-        ];
+        return BuildThemeDemoFormSectionAction::run(
+            themeKey: 'foundation',
+            heading: $heading,
+            summary: $summary,
+            fallbackUrl: 'mailto:' . self::SUPPORT_EMAIL,
+            fallbackLabel: 'Email Field Office',
+            successMessage: 'Thanks — Field Office has received your enquiry.',
+        );
     }
 
     /**

@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace Capell\FoundationTheme\Actions;
 
 use Illuminate\Support\Str;
-use Lorisleiva\Actions\Concerns\AsAction;
+use Lorisleiva\Actions\Concerns\AsFake;
+use Lorisleiva\Actions\Concerns\AsObject;
 
 /**
  * @method static array<string, mixed> run(string $themeKey, string $heading, string $summary, string $fallbackUrl, string $fallbackLabel, string $successMessage = 'Thanks — your enquiry has been received.')
  */
 final class BuildThemeDemoFormSectionAction
 {
-    use AsAction;
+    use AsFake;
+    use AsObject;
 
     /**
      * @return array<string, mixed>

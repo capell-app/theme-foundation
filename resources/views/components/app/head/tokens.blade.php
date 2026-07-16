@@ -29,6 +29,24 @@ $noneMotionTokens = FoundationThemeSettings::MOTION_INTENSITY_OPTIONS['none'];
         --foundation-body-fg: color-mix(in srgb, var(--color-brand) 82%, #111827);
         --foundation-surface-bg: {{ $tokens->surfaceBackground }};
         --foundation-muted-bg: {{ $tokens->mutedBackground }};
+        --foundation-section-bg: {{ $tokens->surfaceBackground }};
+        --foundation-section-muted-bg: {{ $tokens->mutedBackground }};
+        --foundation-heading-fg: color-mix(
+            in srgb,
+            var(--color-brand) 92%,
+            #020617
+        );
+        --foundation-muted-fg: color-mix(
+            in srgb,
+            var(--foundation-body-fg) 68%,
+            transparent
+        );
+        --foundation-inverse-bg: color-mix(
+            in srgb,
+            var(--color-brand) 78%,
+            #020617
+        );
+        --foundation-focus-ring: var(--color-link-active);
         --foundation-header-bg: {{ $tokens->headerBackground }};
         --foundation-border: {{ $tokens->borderColor }};
         --foundation-border-strong: {{ $tokens->borderStrongColor }};
@@ -58,6 +76,12 @@ $noneMotionTokens = FoundationThemeSettings::MOTION_INTENSITY_OPTIONS['none'];
         --foundation-body-fg: #f8fafc;
         --foundation-surface-bg: {{ $tokens->darkSurfaceBackground }};
         --foundation-muted-bg: {{ $tokens->darkMutedBackground }};
+        --foundation-section-bg: {{ $tokens->darkSurfaceBackground }};
+        --foundation-section-muted-bg: {{ $tokens->darkMutedBackground }};
+        --foundation-heading-fg: #f8fafc;
+        --foundation-muted-fg: #cbd5e1;
+        --foundation-inverse-bg: {{ $tokens->darkPageBackground }};
+        --foundation-focus-ring: {{ $tokens->darkPrimaryAction }};
         --foundation-header-bg: {{ $tokens->darkHeaderBackground }};
         --foundation-border: {{ $tokens->darkBorderColor }};
         --foundation-border-strong: {{ $tokens->darkBorderStrongColor }};

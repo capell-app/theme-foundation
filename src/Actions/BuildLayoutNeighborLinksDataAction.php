@@ -9,10 +9,12 @@ use Capell\Core\Models\Language;
 use Capell\Core\Models\Site;
 use Capell\FoundationTheme\Data\LayoutNeighborLinksData;
 use Capell\Frontend\Support\Loader\PageLoader;
+use Lorisleiva\Actions\Concerns\AsFake;
 use Lorisleiva\Actions\Concerns\AsObject;
 
 final class BuildLayoutNeighborLinksDataAction
 {
+    use AsFake;
     use AsObject;
 
     public function handle(Pageable $page, Site $site, Language $language): LayoutNeighborLinksData

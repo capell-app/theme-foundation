@@ -40,13 +40,13 @@ class ResponsiveAssetLayoutOptions
         public readonly string $carouselAlign,
     ) {}
 
-    public static function fromWidget(Widget $widget, int $total): self
+    public static function fromWidget(Widget $widget, int $total, mixed $themePattern = null): self
     {
         $legacyColumns = (int) self::meta($widget, 'columns');
         $fallbackColumns = $legacyColumns > 0 ? $legacyColumns : max(1, min($total, 4));
 
         return new self(
-            pattern: self::responsiveLayoutPattern($widget),
+            pattern: self::responsiveLayoutPattern($widget, $themePattern),
             hasGridOverrides: self::hasAnyMeta($widget, [
                 'responsive_grid_sm_columns',
                 'responsive_grid_md_columns',
@@ -224,12 +224,14 @@ HTML);
         return $default;
     }
 
-    private static function responsiveLayoutPattern(Widget $widget): ResponsiveLayoutPattern
+    private static function responsiveLayoutPattern(Widget $widget, mixed $themePattern): ResponsiveLayoutPattern
     {
         $value = self::meta($widget, 'responsive_layout_pattern');
 
         if ($value === null || $value === '') {
-            return ResponsiveLayoutPattern::DesktopGridMobileCarousel;
+            return ResponsiveLayoutPattern::tryFrom(
+                is_string($themePattern) ? $themePattern : '',
+            ) ?? ResponsiveLayoutPattern::DesktopGridMobileCarousel;
         }
 
         return ResponsiveLayoutPattern::fromNullable($value);

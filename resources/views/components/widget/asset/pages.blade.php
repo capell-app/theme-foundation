@@ -77,7 +77,7 @@
                     :text-align="$widget->getMeta('align')"
                     :title="$showTitle ? ($widget->translation->title ?: ($showPageTitle ? $currentPageTranslation?->title : null)) : null"
                     :heading-style="$widget->getMeta('heading_style')"
-                    :heading-tag="$showPageTitle ? 'h1' : null"
+                    :heading-tag="$showPageTitle ? 'h1' : $widget->getMeta('heading_tag', 'h2')"
                 />
             @endif
 

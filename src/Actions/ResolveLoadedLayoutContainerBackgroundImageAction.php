@@ -7,10 +7,12 @@ namespace Capell\FoundationTheme\Actions;
 use Capell\Core\Models\Layout;
 use Capell\Core\Models\Media;
 use Illuminate\Support\Collection;
+use Lorisleiva\Actions\Concerns\AsFake;
 use Lorisleiva\Actions\Concerns\AsObject;
 
 final class ResolveLoadedLayoutContainerBackgroundImageAction
 {
+    use AsFake;
     use AsObject;
 
     public function handle(Layout $layout, string $containerKey): ?Media

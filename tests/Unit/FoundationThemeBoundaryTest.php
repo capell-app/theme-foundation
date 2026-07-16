@@ -99,12 +99,24 @@ it('keeps public asset widget blade on preloaded relations', function (): void {
 it('publishes the foundation frontend runtime build during setup', function (): void {
     $provider = file_get_contents(dirname(__DIR__, 2) . '/src/Providers/FoundationThemeServiceProvider.php');
     $action = file_get_contents(dirname(__DIR__, 2) . '/src/Actions/SetupFoundationThemePackageAction.php');
+    $manifestJson = file_get_contents(dirname(__DIR__, 2) . '/publishes/build/manifest.json');
+
+    if (! is_string($manifestJson)) {
+        throw new RuntimeException('Unable to read the Foundation build manifest.');
+    }
+
     $manifest = json_decode(
-        file_get_contents(dirname(__DIR__, 2) . '/publishes/build/manifest.json'),
+        $manifestJson,
         true,
         flags: JSON_THROW_ON_ERROR,
     );
-    $runtimeFile = $manifest['resources/js/capell-frontend.js']['file'] ?? null;
+
+    if (! is_array($manifest)) {
+        throw new RuntimeException('Expected the Foundation build manifest to decode to an object.');
+    }
+
+    $runtimeEntry = $manifest['resources/js/capell-frontend.js'] ?? null;
+    $runtimeFile = is_array($runtimeEntry) ? ($runtimeEntry['file'] ?? null) : null;
 
     throw_unless(is_string($runtimeFile), RuntimeException::class, 'Expected a Foundation frontend runtime asset.');
 

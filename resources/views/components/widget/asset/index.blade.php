@@ -3,12 +3,14 @@
     use Capell\Core\Enums\AssetComponentEnum;
     use Capell\Core\Enums\RenderableTypeEnum;
     use Capell\Core\Facades\CapellCore;
+    use Capell\FoundationTheme\Data\FoundationThemeTokensData;
     use Capell\FoundationTheme\Support\ResponsiveAssetLayoutOptions;
     use Capell\Frontend\Contracts\AssetsRegistryInterface;
     use Capell\Frontend\Facades\Frontend;
     use Capell\LayoutBuilder\Enums\ResponsiveLayoutPattern;
 
     $theme = Frontend::theme();
+    $preparedThemeTokens = Frontend::getFrontendData('foundation.theme.tokens');
 @endphp
 
 @props ([
@@ -37,7 +39,13 @@
 ])
 @php
     $total ??= $assets->count();
-    $responsiveLayoutOptions ??= ResponsiveAssetLayoutOptions::fromWidget($widget, $total);
+    $responsiveLayoutOptions ??= ResponsiveAssetLayoutOptions::fromWidget(
+        $widget,
+        $total,
+        $preparedThemeTokens instanceof FoundationThemeTokensData
+            ? $preparedThemeTokens->responsiveRepeatableLayout
+            : null,
+    );
     $responsiveLayoutPattern = $responsiveLayoutOptions->pattern;
     $assetLayoutKey = sprintf('%s-%s-%s', $containerKey, $widget->id ?? $widget->key, $loop->index);
     $assetGridId = "asset-grid-{$assetLayoutKey}";

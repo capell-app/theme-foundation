@@ -51,10 +51,9 @@ Desktop, tablet, and mobile variants remain defined in the screenshot contract; 
 
 - Service providers: `Capell\FoundationTheme\Providers\FoundationThemeServiceProvider`, `FoundationThemeSiteSpecServiceProvider`.
 - Config files: `packages/theme-foundation/config/capell-theme-foundation.php`.
-- Settings migrations: `packages/theme-foundation/database/settings/2026_05_10_190850_01_create_theme_foundation_settings.php`, `packages/theme-foundation/database/settings/2026_05_23_160819_add_theme_foundation_design_tokens.php`, `packages/theme-foundation/database/settings/2026_05_23_161002_refresh_theme_foundation_design_token_defaults.php`, `packages/theme-foundation/database/settings/2026_05_23_170001_add_theme_foundation_composition_tokens.php`, `packages/theme-foundation/database/settings/2026_05_23_171201_quiet_theme_foundation_composition_palette.php`, `packages/theme-foundation/database/settings/2026_05_23_180101_add_theme_foundation_image_tokens.php`, `packages/theme-foundation/database/settings/2026_06_07_000001_add_theme_foundation_dark_design_tokens.php`, `packages/theme-foundation/database/settings/2026_06_07_000002_add_theme_foundation_typography_tokens.php`, `packages/theme-foundation/database/settings/2026_07_05_000001_add_theme_foundation_motion_tokens.php`.
+- Settings migrations: `packages/theme-foundation/database/settings/2026_05_10_190850_01_create_theme_foundation_settings.php`, `packages/theme-foundation/database/settings/2026_05_23_160819_add_theme_foundation_design_tokens.php`, `packages/theme-foundation/database/settings/2026_05_23_161002_refresh_theme_foundation_design_token_defaults.php`, `packages/theme-foundation/database/settings/2026_05_23_170001_add_theme_foundation_composition_tokens.php`, `packages/theme-foundation/database/settings/2026_05_23_171201_quiet_theme_foundation_composition_palette.php`, `packages/theme-foundation/database/settings/2026_05_23_180101_add_theme_foundation_image_tokens.php`, `packages/theme-foundation/database/settings/2026_06_07_000001_add_theme_foundation_dark_design_tokens.php`, `packages/theme-foundation/database/settings/2026_06_07_000002_add_theme_foundation_typography_tokens.php`, `packages/theme-foundation/database/settings/2026_07_05_000001_add_theme_foundation_motion_tokens.php`, `packages/theme-foundation/database/settings/2026_07_14_210000_refresh_theme_foundation_capell_palette.php`, `packages/theme-foundation/database/settings/2026_07_15_210000_add_theme_foundation_responsive_repeatable_layout.php`.
 - Settings classes: `FoundationThemeSettings`, `FoundationThemeSettingsMigrationProvider`.
 - Filament classes: `FoundationLayoutContainerSchemaExtender`, `FoundationThemeSettingsSchema`.
-- Layout container projector: `FoundationLayoutContainerThemePresentationProjector` returns `FoundationLayoutContainerPresentationData` for the active `default` namespace.
 - Livewire components: `AbstractAssets`, `PageAssets`, `AbstractWidget`, `Pages`.
 - Extension contracts: `InstallsThemeDemo`, `OptionalExtensionAvailability`, `ProvidesThemeDemoContent`.
 - Listeners: `RunTailwindAssetsOnPackageChange`.
@@ -64,7 +63,7 @@ Desktop, tablet, and mobile variants remain defined in the screenshot contract; 
 - Manifest action API: `demo: Capell\FoundationTheme\Actions\InstallFoundationThemeDemoAction`, `setup: Capell\FoundationTheme\Actions\SetupFoundationThemePackageAction`.
 - Console command classes: `DemoCommand`, `GenerateTailwindAssetsCommand`, `MakeThemeCommand`, `SetupCommand`, `ThemeCatalogueReportCommand`, `ValidateThemesCommand`.
 - Health checks: `Capell\FoundationTheme\Health\FoundationThemeHealthCheck`.
-- Blade views: `packages/theme-foundation/resources/views/app.blade.php`, `packages/theme-foundation/resources/views/block/wrapper.blade.php`, `packages/theme-foundation/resources/views/components/actions/index.blade.php`, `packages/theme-foundation/resources/views/components/app/body.blade.php`, `packages/theme-foundation/resources/views/components/app/head/custom.blade.php`, `packages/theme-foundation/resources/views/components/app/head/tokens.blade.php`, `packages/theme-foundation/resources/views/components/badge.blade.php`, `packages/theme-foundation/resources/views/components/block/wrapper.blade.php`, `packages/theme-foundation/resources/views/components/button/index.blade.php`, `packages/theme-foundation/resources/views/components/content.blade.php`, `packages/theme-foundation/resources/views/components/demo/contact-page.blade.php`, `packages/theme-foundation/resources/views/components/display/art-directed-picture.blade.php`, `and 116 more`.
+- Blade views: `packages/theme-foundation/resources/views/app.blade.php`, `packages/theme-foundation/resources/views/block/wrapper.blade.php`, `packages/theme-foundation/resources/views/components/actions/index.blade.php`, `packages/theme-foundation/resources/views/components/app/body.blade.php`, `packages/theme-foundation/resources/views/components/app/head/custom.blade.php`, `packages/theme-foundation/resources/views/components/app/head/tokens.blade.php`, `packages/theme-foundation/resources/views/components/badge.blade.php`, `packages/theme-foundation/resources/views/components/block/wrapper.blade.php`, `packages/theme-foundation/resources/views/components/button/index.blade.php`, `packages/theme-foundation/resources/views/components/content.blade.php`, `packages/theme-foundation/resources/views/components/demo/contact-page.blade.php`, `packages/theme-foundation/resources/views/components/display/art-directed-picture.blade.php`, `and 117 more`.
 - Cache tags: `theme-foundation`.
 
 ## Child Theme Override Contract
@@ -78,20 +77,6 @@ Stable contract points:
 - Runtime tokens: `--foundation-page-bg`, `--foundation-section-spacing`, `--foundation-widget-gap`.
 - Layout Builder chrome areas: `header`.
 - Public-output rule: child themes must not expose authoring metadata, editor controls, model IDs, field paths, permissions, or signed editor URLs.
-
-## Container Surface Tone Example
-
-Foundation demonstrates the complete Layout Builder container extension boundary. `FoundationLayoutContainerSchemaExtender` adds a translated `surface_tone` select to **Theme settings · Foundation**. Layout Builder persists it at `meta.theme_settings.default.surface_tone` without a database migration.
-
-`FoundationLayoutContainerThemePresentationProjector` receives only the `default` namespace and accepts `default`, `muted`, or `contrast`. Missing and invalid values become `default`. The projector returns `FoundationLayoutContainerPresentationData`, whose allowlisted public classes are:
-
-| Saved value | Public class |
-| --- | --- |
-| `default` | No extra surface class |
-| `muted` | `capell-container-surface-muted` |
-| `contrast` | `capell-container-surface-contrast` |
-
-The projector is tagged with `LayoutContainerThemePresentationProjector::TAG` separately from the Filament schema extender. Public Blade calls `$presentation->classes()` and never reads `theme_settings` directly. See [`FoundationLayoutContainerSchemaExtender`](src/Filament/Extenders/FoundationLayoutContainerSchemaExtender.php), [`FoundationLayoutContainerThemePresentationProjector`](src/Support/FoundationLayoutContainerThemePresentationProjector.php), and [`FoundationLayoutContainerPresentationData`](src/Data/FoundationLayoutContainerPresentationData.php).
 
 ## Data Model
 

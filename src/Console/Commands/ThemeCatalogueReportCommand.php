@@ -24,7 +24,7 @@ class ThemeCatalogueReportCommand extends Command
     /**
      * Per-theme CSS line budget — kept in step with ThemeCssIsolationTest.
      */
-    private const int CSS_LINE_BUDGET = 1800;
+    private const int CSS_LINE_BUDGET = 2100;
 
     protected $signature = 'capell:theme-catalogue-report {--write : Write the scoreboard to docs/theme-catalogue-report.md instead of printing it}';
 

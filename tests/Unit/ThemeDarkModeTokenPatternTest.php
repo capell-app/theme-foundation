@@ -34,10 +34,12 @@ test('agency and awards preserve site token overrides in dark mode', function ()
         'theme-agency/resources/css/theme-agency.css' => [
             'selector' => '.ppc-shell',
             'bindings' => ['--theme-foreground', '--theme-accent', '--theme-surface'],
+            'darkBindings' => ['--theme-foreground', '--theme-accent', '--theme-surface'],
         ],
         'theme-awards/resources/css/theme-awards.css' => [
             'selector' => '.sbs-shell',
             'bindings' => ['--theme-foreground', '--theme-accent', '--theme-surface'],
+            'darkBindings' => [],
         ],
     ];
 
@@ -55,8 +57,13 @@ test('agency and awards preserve site token overrides in dark mode', function ()
             $matches,
         );
 
+        $darkRuleBody = preg_replace('/\s+/', ' ', trim((string) ($matches['body'] ?? '')));
+
         expect($matchCount)->toBe(1)
-            ->and(preg_replace('/\s+/', ' ', trim((string) ($matches['body'] ?? ''))))
-            ->toBe('color-scheme: dark;');
+            ->and($darkRuleBody)->toContain('color-scheme: dark;');
+
+        foreach ($theme['darkBindings'] as $binding) {
+            expect($darkRuleBody)->toContain($binding);
+        }
     }
 });

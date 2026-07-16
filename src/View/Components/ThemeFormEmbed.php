@@ -20,7 +20,7 @@ final class ThemeFormEmbed extends Component
         string $fallbackLabel = '',
         string $fallbackUrl = '',
     ) {
-        $this->formEmbed = app(ResolveThemeFormEmbedDataAction::class)->handle(
+        $this->formEmbed = ResolveThemeFormEmbedDataAction::run(
             handle: $handle,
             instanceId: $instanceId,
             fallbackMessage: $fallbackMessage,

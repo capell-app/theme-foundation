@@ -6,10 +6,17 @@ namespace Capell\FoundationTheme\Settings;
 
 use Capell\Core\Contracts\SettingsContract;
 use Capell\FoundationTheme\Filament\Settings\FoundationThemeSettingsSchema;
+use Capell\LayoutBuilder\Enums\ResponsiveLayoutPattern;
 use Spatie\LaravelSettings\Settings;
 
 class FoundationThemeSettings extends Settings implements SettingsContract
 {
+    public const array RESPONSIVE_REPEATABLE_LAYOUT_OPTIONS = [
+        ResponsiveLayoutPattern::Grid->value,
+        ResponsiveLayoutPattern::Carousel->value,
+        ResponsiveLayoutPattern::DesktopGridMobileCarousel->value,
+    ];
+
     public const array SECTION_SPACING_OPTIONS = [
         'comfortable' => 'clamp(2.75rem, 5vw, 4.75rem)',
         'relaxed' => 'clamp(3.5rem, 6vw, 6rem)',
@@ -146,6 +153,8 @@ class FoundationThemeSettings extends Settings implements SettingsContract
 
     public string $motion_intensity = 'subtle';
 
+    public string $responsive_repeatable_layout = ResponsiveLayoutPattern::DesktopGridMobileCarousel->value;
+
     public static function group(): string
     {
         return 'theme_foundation';
@@ -175,6 +184,13 @@ class FoundationThemeSettings extends Settings implements SettingsContract
     {
         return self::HEADING_SCALE_OPTIONS[$headingScale ?? 'balanced']
             ?? self::HEADING_SCALE_OPTIONS['balanced'];
+    }
+
+    public static function responsiveRepeatableLayoutKeyFor(?string $responsiveRepeatableLayout): string
+    {
+        return in_array($responsiveRepeatableLayout, self::RESPONSIVE_REPEATABLE_LAYOUT_OPTIONS, true)
+            ? $responsiveRepeatableLayout
+            : ResponsiveLayoutPattern::DesktopGridMobileCarousel->value;
     }
 
     /**
@@ -217,5 +233,10 @@ class FoundationThemeSettings extends Settings implements SettingsContract
         return array_key_exists($this->motion_intensity, self::MOTION_INTENSITY_OPTIONS)
             ? $this->motion_intensity
             : 'subtle';
+    }
+
+    public function responsiveRepeatableLayoutKey(): string
+    {
+        return self::responsiveRepeatableLayoutKeyFor($this->responsive_repeatable_layout);
     }
 }

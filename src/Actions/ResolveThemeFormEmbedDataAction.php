@@ -8,11 +8,13 @@ use Capell\Core\Support\Security\PublicUrlSanitizer;
 use Capell\FoundationTheme\Contracts\OptionalExtensionAvailability;
 use Capell\FoundationTheme\Data\ThemeFormEmbedData;
 use Illuminate\Support\Str;
-use Lorisleiva\Actions\Concerns\AsAction;
+use Lorisleiva\Actions\Concerns\AsFake;
+use Lorisleiva\Actions\Concerns\AsObject;
 
 final class ResolveThemeFormEmbedDataAction
 {
-    use AsAction;
+    use AsFake;
+    use AsObject;
 
     private const string COMPONENT_NAME = 'public-form';
 

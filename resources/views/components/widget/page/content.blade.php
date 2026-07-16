@@ -78,7 +78,7 @@
                 />
             @else
                 <x-capell::content
-                    class="capell-standard-page-content prose-headings:text-slate-950 prose-a:text-primary prose-p:leading-8 text-slate-700"
+                    class="capell-standard-page-content prose-a:text-primary prose-p:leading-8"
                     :content="$pageContentRenderData->content"
                     :content-type="$pageContentRenderData->contentStructure"
                     :divider="$widget->getMeta('content_divider')"

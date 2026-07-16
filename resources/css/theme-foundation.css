@@ -3,6 +3,17 @@
 @import './layout/layout.css';
 @import './widgets/foundation-widgets.css';
 
+.capell-public-skip-link:focus {
+    outline: 3px solid var(--foundation-focus-ring, #1d4ed8) !important;
+    outline-offset: 2px !important;
+}
+
+@media (forced-colors: active) {
+    .capell-public-skip-link:focus {
+        outline-color: Highlight !important;
+    }
+}
+
 [x-cloak] {
     display: none !important;
 }

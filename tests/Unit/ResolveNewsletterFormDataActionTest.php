@@ -19,7 +19,9 @@ it('uses a safe inert fallback when the newsletter route is unavailable', functi
         ->andReturnFalse();
     $urlGenerator->shouldNotReceive('route');
 
-    $data = (new ResolveNewsletterFormDataAction($router, $urlGenerator))->handle(
+    $data = runBoundAction(
+        ResolveNewsletterFormDataAction::class,
+        new ResolveNewsletterFormDataAction($router, $urlGenerator),
         fallbackAction: 'javascript:alert(1)',
         source: 'invalid source',
     );
@@ -64,7 +66,9 @@ it('posts to the package-neutral subscribe route when it is available', function
         ->with('capell-newsletter.subscribe', [], false)
         ->andReturn('/newsletter/subscribe');
 
-    $data = (new ResolveNewsletterFormDataAction($router, $urlGenerator))->handle(
+    $data = runBoundAction(
+        ResolveNewsletterFormDataAction::class,
+        new ResolveNewsletterFormDataAction($router, $urlGenerator),
         source: 'public_newsletter',
     );
 

@@ -6,6 +6,7 @@ namespace Capell\FoundationTheme\Actions;
 
 use Capell\Core\ThemeStudio\Data\ThemeDefinitionData;
 use Capell\FoundationTheme\Data\ThemeValidationResultData;
+use Lorisleiva\Actions\Concerns\AsFake;
 use Lorisleiva\Actions\Concerns\AsObject;
 use RuntimeException;
 
@@ -32,6 +33,7 @@ use RuntimeException;
  */
 final class ValidateThemeCatalogueEntryAction
 {
+    use AsFake;
     use AsObject;
 
     /**

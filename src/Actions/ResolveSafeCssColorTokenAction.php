@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Capell\FoundationTheme\Actions;
 
 use Capell\Core\Actions\ColorConverterAction;
+use Lorisleiva\Actions\Concerns\AsFake;
 use Lorisleiva\Actions\Concerns\AsObject;
 use Throwable;
 
@@ -13,6 +14,7 @@ use Throwable;
  */
 final class ResolveSafeCssColorTokenAction
 {
+    use AsFake;
     use AsObject;
 
     public static function isSafeCssColorToken(string $value): bool
