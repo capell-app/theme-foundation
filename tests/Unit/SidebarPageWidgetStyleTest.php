@@ -105,9 +105,10 @@ test('asset banner render data uses only loaded relations', function (): void {
     $widget->setRelation('assets', new Collection([$widgetAsset]));
 
     $items = BuildAssetBannerItemsAction::run($widget);
+    $item = $items->firstOrFail();
 
     expect($items)->toHaveCount(1)
-        ->and($items->first()->image)->toBe($media);
+        ->and($item->image)->toBe($media);
 });
 
 test('asset banner render data uses linked page loaded on the asset model', function (): void {
@@ -127,10 +128,11 @@ test('asset banner render data uses linked page loaded on the asset model', func
     $widget->setRelation('assets', new Collection([$widgetAsset]));
 
     $items = BuildAssetBannerItemsAction::run($widget);
+    $item = $items->firstOrFail();
 
     expect($items)->toHaveCount(1)
-        ->and($items->first()->url)->toBe('/linked-page')
-        ->and($items->first()->linkText)->toBe('Read more');
+        ->and($item->url)->toBe('/linked-page')
+        ->and($item->linkText)->toBe('Read more');
 });
 
 test('asset banner render data does not lazy-load relations', function (): void {

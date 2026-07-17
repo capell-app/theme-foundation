@@ -89,7 +89,7 @@ class Breadcrumbs extends AbstractWidget
     {
         $variables = GetPageVariablesAction::run($page, $site);
 
-        return (new Collection(is_array($variables) ? $variables : []))
+        return (new Collection($variables))
             ->filter(fn (mixed $value): bool => is_scalar($value) || $value instanceof Stringable)
             ->map(fn (mixed $value): string => (string) $value)
             ->all();

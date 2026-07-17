@@ -32,6 +32,7 @@ abstract class AbstractWidget extends Component
         public Widget $widget,
         public array $widgetData = [],
         public mixed $pageSlot = null,
+        public int $occurrence = 1,
     ) {
         $this->mountWidget();
     }

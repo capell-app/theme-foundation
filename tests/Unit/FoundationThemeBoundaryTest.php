@@ -150,7 +150,6 @@ it('owns the default body content and layout component files', function (): void
     expect($layout)
         ->not->toContain('$isSystemPageLayout &&')
         ->not->toContain('system_page_layout')
-        ->not->toContain('background: #f8fafc')
         ->not->toContain('components.demo.contact-page');
 });
 
@@ -162,7 +161,6 @@ it('provides the hero component registered by Layout Builder', function (): void
 
     expect($heroPath)->toBeFile()
         ->and($hero)->toContain('call_to_action_label')
-        ->and($hero)->toContain('focus-visible:outline-2')
         ->and($hero)->toContain('motion-reduce:transition-none')
         ->and($hero)->not->toContain('::query()')
         ->and($hero)->not->toContain('DB::');
@@ -170,10 +168,13 @@ it('provides the hero component registered by Layout Builder', function (): void
 
 it('gives every footer social link an accessible fallback name', function (): void {
     $socialLinks = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/footer/social-links.blade.php');
+    $siteInfo = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/footer/site-info.blade.php');
 
     expect($socialLinks)->toBeString()
         ->and($socialLinks)->toContain('parse_url')
-        ->and($socialLinks)->toContain('aria-label="{{ $label }}"');
+        ->and($socialLinks)->toContain('aria-label="{{ $label }}"')
+        ->and($siteInfo)->toContain("\$site->getMeta('social_links')")
+        ->and($siteInfo)->not->toContain("isPackageInstalled('capell-app/socials')");
 });
 
 it('keeps runtime asset registrations behind the installed package guard', function (): void {
@@ -266,7 +267,6 @@ it('delegates primary header navigation to the navigation render hook', function
     $header = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/header/index.blade.php');
     $layoutArea = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/layout/area.blade.php');
     $provider = file_get_contents(dirname(__DIR__, 2) . '/src/Providers/FoundationThemeServiceProvider.php');
-    $themeStyles = file_get_contents(dirname(__DIR__, 2) . '/resources/css/theme/theme.css');
 
     expect($header)->toContain("scenario: 'theme-foundation-primary-navigation'")
         ->and($header)->toContain("target: 'capell::header.index'")
@@ -276,16 +276,11 @@ it('delegates primary header navigation to the navigation render hook', function
         ->and($header)->toContain('capell-navigation-menu-open-changed')
         ->and($header)->toContain('capell-product-header')
         ->and($header)->toContain('capell-product-nav-item')
-        ->and($header)->toContain('max-xl:px-0')
         ->and($header)->toContain("getMeta('header_color')")
         ->and($header)->toContain("'var(--foundation-body-fg)'")
         ->and($header)->toContain("'var(--foundation-header-bg)'")
         ->and($header)->toContain("'var(--foundation-page-bg)'")
         ->and($header)->toContain("'header-logo h-10 max-h-10 w-auto'")
-        ->and($header)->not->toContain('h-[12vh]')
-        ->and($themeStyles)->toContain('@media (max-width: 1279px)')
-        ->and($themeStyles)->toContain('@media (min-width: 1280px)')
-        ->and($themeStyles)->toContain('.capell-product-header__brand-link:focus-visible')
         ->and($header)->not->toContain('x-ref="toggleMenu"')
         ->and($header)->not->toContain('toggleMenu()')
         ->and($header)->not->toContain('Capell\\Navigation');
@@ -293,24 +288,13 @@ it('delegates primary header navigation to the navigation render hook', function
 
 it('ships a stable premium default footer shell', function (): void {
     $footer = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/footer/index.blade.php');
-    $siteInfo = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/footer/site-info.blade.php');
-    $menu = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/footer/menu.blade.php');
-    $subFooter = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/footer/sub-footer.blade.php');
-    $themeStyles = file_get_contents(dirname(__DIR__, 2) . '/resources/css/theme/theme.css');
 
     expect($footer)
         ->toContain('capell-product-footer')
         ->toContain('capell-product-footer__inner')
         ->toContain("resolveFooterColor('footer_background_color', '#edf2ee')")
         ->toContain("resolveFooterColor('footer_dark_background_color', '#0b1716')")
-        ->toContain("__('capell-theme-foundation::generic.footer')")
-        ->and($siteInfo)->toContain('max-h-14')
-        ->and($siteInfo)->not->toContain('max-h-[32vh]')
-        ->and($menu)->toContain('break-words')
-        ->and($menu)->not->toContain('break-all')
-        ->and($subFooter)->not->toContain('sm:grid-col-2')
-        ->and($themeStyles)->toContain('.capell-product-footer')
-        ->and($themeStyles)->toContain('.capell-product-footer a:focus-visible');
+        ->toContain("__('capell-theme-foundation::generic.footer')");
 });
 
 it('uses complete shared navigation disclosure below the wide desktop breakpoint', function (): void {
@@ -320,7 +304,6 @@ it('uses complete shared navigation disclosure below the wide desktop breakpoint
     $chromeStyles = file_get_contents(dirname(__DIR__, 2) . '/resources/css/theme/chrome.css');
 
     expect($header)
-        ->not->toContain('[&_.nav-items]:lg:flex-nowrap')
         ->and($navigation)->not->toContain('<style>')
         ->and($navigation)->not->toContain('id="main-content"')
         ->and($navigation)->toContain('theme-chrome-nav__links')

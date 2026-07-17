@@ -1,7 +1,7 @@
 @if (is_string($sectionView))
     @if ($anchorable)
         <div
-            id="{{ $sectionType }}"
+            id="{{ $sectionAnchor }}"
             class="scroll-mt-24"
         >
             @include ($sectionView, ['section' => $section])

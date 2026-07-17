@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Capell\FoundationTheme\View\Components\Widget;
 
+use Capell\FoundationTheme\Actions\ResolveFoundationSectionAnchorAction;
 use Illuminate\Support\Fluent;
 
 final class FoundationSection extends AbstractWidget
@@ -40,6 +41,7 @@ final class FoundationSection extends AbstractWidget
     /**
      * @return array{
      *     anchorable: bool,
+     *     sectionAnchor: string,
      *     section: Fluent<array-key, mixed>,
      *     sectionType: string,
      *     sectionView: string|null
@@ -54,8 +56,18 @@ final class FoundationSection extends AbstractWidget
             $sectionMeta['features'] = $sectionMeta['items'];
         }
 
+        $sectionAnchor = ResolveFoundationSectionAnchorAction::run(
+            sectionType: $sectionType,
+            configuredAnchor: is_string($sectionMeta['anchor'] ?? null) ? $sectionMeta['anchor'] : null,
+            containerKey: $this->containerKey,
+            widgetKey: (string) $this->widget->key,
+            widgetIndex: $this->widgetIndex,
+            occurrence: $this->occurrence,
+        );
+
         return [
             'anchorable' => in_array($sectionType, self::ANCHORABLE_SECTION_TYPES, true),
+            'sectionAnchor' => $sectionAnchor,
             'section' => new Fluent($sectionMeta),
             'sectionType' => $sectionType,
             'sectionView' => self::SECTION_VIEWS[$sectionType] ?? null,

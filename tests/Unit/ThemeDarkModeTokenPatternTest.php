@@ -28,7 +28,7 @@ test('dark-mode themes pin readable tokens inside the dark media query', functio
     }
 });
 
-test('agency and awards preserve site token overrides in dark mode', function (): void {
+test('agency and business themes use the class-driven dark-mode contract', function (): void {
     $packagesPath = dirname(__DIR__, 3);
     $themes = [
         'theme-agency/resources/css/theme-agency.css' => [
@@ -36,10 +36,10 @@ test('agency and awards preserve site token overrides in dark mode', function ()
             'bindings' => ['--theme-foreground', '--theme-accent', '--theme-surface'],
             'darkBindings' => ['--theme-foreground', '--theme-accent', '--theme-surface'],
         ],
-        'theme-awards/resources/css/theme-awards.css' => [
-            'selector' => '.sbs-shell',
-            'bindings' => ['--theme-foreground', '--theme-accent', '--theme-surface'],
-            'darkBindings' => [],
+        'theme-business/resources/css/theme-business.css' => [
+            'selector' => '.rco-shell',
+            'bindings' => [],
+            'darkBindings' => ['--rco-ink', '--rco-surface', '--rco-panel'],
         ],
     ];
 
@@ -50,9 +50,9 @@ test('agency and awards preserve site token overrides in dark mode', function ()
             expect($css)->toContain($binding);
         }
 
-        $selector = preg_quote($theme['selector'], '/');
+        $selector = preg_quote('.dark ' . $theme['selector'], '/');
         $matchCount = preg_match(
-            '/@media \(prefers-color-scheme: dark\) \{\s*' . $selector . ' \{(?<body>.*?)\}\s*\}/s',
+            '/' . $selector . ' \{(?<body>.*?)\}/s',
             $css,
             $matches,
         );
@@ -60,7 +60,8 @@ test('agency and awards preserve site token overrides in dark mode', function ()
         $darkRuleBody = preg_replace('/\s+/', ' ', trim((string) ($matches['body'] ?? '')));
 
         expect($matchCount)->toBe(1)
-            ->and($darkRuleBody)->toContain('color-scheme: dark;');
+            ->and($darkRuleBody)->toContain('color-scheme: dark;')
+            ->and($css)->not->toContain('@media (prefers-color-scheme: dark)');
 
         foreach ($theme['darkBindings'] as $binding) {
             expect($darkRuleBody)->toContain($binding);

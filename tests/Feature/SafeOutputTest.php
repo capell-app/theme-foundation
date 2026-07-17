@@ -47,9 +47,10 @@ test('layout native foundation sections expose stable buyer journey anchors', fu
 
     expect($sectionComponent)->not->toBeFalse()
         ->and($sectionComponent)->toContain('ANCHORABLE_SECTION_TYPES')
+        ->and($sectionComponent)->toContain('ResolveFoundationSectionAnchorAction::run(')
         ->and($sectionRenderer)->not->toBeFalse()
         ->and($sectionRenderer)->toContain('$anchorable')
-        ->and($sectionRenderer)->toContain('id="{{ $sectionType }}"');
+        ->and($sectionRenderer)->toContain('id="{{ $sectionAnchor }}"');
 });
 
 test('the public skip link keeps an explicit high contrast focus indicator', function (): void {
@@ -440,7 +441,7 @@ test('ap hero and gallery public output avoid reviewed accessibility and editor 
         ->and($pageContent)->not->toContain('text-slate-700')
         ->and($themeStyles)->toContain('--tw-prose-body: var(--foundation-body-fg)')
         ->and($themeStyles)->toContain('.content-component.capell-standard-page-content')
-        ->and($themeStyles)->toMatch('/@media \(prefers-color-scheme: dark\).*?--tw-prose-body: var\(--color-slate-300\).*?--tw-prose-headings: var\(--color-slate-50\)/s')
+        ->and($themeStyles)->toMatch('/\.dark \.content-component\.capell-standard-page-content.*?--tw-prose-body: var\(--color-slate-300\).*?--tw-prose-headings: var\(--color-slate-50\)/s')
         ->and($themeStyles)->toContain('color: var(--color-slate-50) !important')
         ->and($pageCollection)->toContain(":heading-tag=\"\$showPageTitle ? 'h1' : \$widget->getMeta('heading_tag', 'h2')\"")
         ->and($hero)->not->toContain('ap-hero__slideshow-play')

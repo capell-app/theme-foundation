@@ -137,7 +137,10 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
                 'key' => sprintf('foundation-%s-%s-%d', $sectionType, $definition->surface, $occurrence),
                 'name' => sprintf('Foundation %s (%s)', ucfirst($sectionType), $definition->surface),
                 'component' => $component->value,
-                'meta' => $section,
+                'meta' => [
+                    ...$section,
+                    'anchor' => $occurrence === 1 ? $sectionType : sprintf('%s-%d', $sectionType, $occurrence),
+                ],
             ];
         }
 

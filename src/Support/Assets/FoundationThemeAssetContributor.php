@@ -10,6 +10,7 @@ use Capell\Frontend\Data\Assets\FrontendResourceContributionData;
 use Capell\Frontend\Data\Assets\FrontendResourceData;
 use Capell\Frontend\Data\Assets\ViteResourceSourceData;
 use Capell\Frontend\Data\FrontendResourceContextData;
+use Symfony\Component\Filesystem\Path;
 
 final class FoundationThemeAssetContributor implements FrontendResourceContributor
 {
@@ -88,12 +89,61 @@ final class FoundationThemeAssetContributor implements FrontendResourceContribut
 
         $directory = config('capell-theme-foundation.tailwind.theme_css_output_directory', 'resources/css/capell/themes');
         $directory = is_string($directory) && $directory !== '' ? $directory : 'resources/css/capell/themes';
+        $source = $this->projectRelativeThemeCssSource($directory, $themeKey);
+
+        if ($source === null) {
+            return null;
+        }
 
         return FrontendResourceData::style(
             handle: 'capell-app/theme-foundation:theme-' . $themeKey,
             package: FoundationThemeServiceProvider::$packageName,
-            source: new ViteResourceSourceData(rtrim($directory, '/') . '/' . $themeKey . '.css', $buildDirectory),
+            source: new ViteResourceSourceData($source, $buildDirectory),
             criticalCssEligible: true,
         );
+    }
+
+    private function projectRelativeThemeCssSource(string $directory, string $themeKey): ?string
+    {
+        $projectPath = Path::canonicalize(base_path());
+        $realProjectPath = realpath($projectPath);
+
+        if ($realProjectPath === false) {
+            return null;
+        }
+
+        $realProjectPath = Path::canonicalize($realProjectPath);
+        $directoryPath = Path::isAbsolute($directory)
+            ? Path::canonicalize($directory)
+            : Path::makeAbsolute($directory, $projectPath);
+        $realDirectoryPath = realpath($directoryPath);
+
+        if ($realDirectoryPath === false) {
+            return null;
+        }
+
+        $realDirectoryPath = Path::canonicalize($realDirectoryPath);
+
+        if (! Path::isBasePath($projectPath, $directoryPath)
+            || ! Path::isBasePath($realProjectPath, $realDirectoryPath)) {
+            return null;
+        }
+
+        $sourcePath = Path::canonicalize($directoryPath . '/' . $themeKey . '.css');
+        $realSourcePath = realpath($sourcePath);
+
+        if (! Path::isBasePath($directoryPath, $sourcePath)
+            || $realSourcePath === false
+            || ! is_file($realSourcePath)) {
+            return null;
+        }
+
+        $realSourcePath = Path::canonicalize($realSourcePath);
+
+        if (! Path::isBasePath($realDirectoryPath, $realSourcePath)) {
+            return null;
+        }
+
+        return str_replace('\\', '/', Path::makeRelative($sourcePath, $projectPath));
     }
 }
