@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-use Capell\FoundationTheme\Support\Providers\RegistersLayoutNativeThemeDefaults;
+use Capell\FoundationTheme\Tests\Fixtures\RegistersLayoutNativeThemeDefaultsTestProvider;
 use Capell\LayoutBuilder\Support\LayoutAreas\LayoutAreaRegistry;
 use Illuminate\Contracts\View\Factory as ViewFactory;
 use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\ServiceProvider;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,21 +22,6 @@ use Illuminate\Support\ServiceProvider;
 | down independently of any one theme's usage of it.
 |
 */
-
-final class RegistersLayoutNativeThemeDefaultsTestProvider extends ServiceProvider
-{
-    use RegistersLayoutNativeThemeDefaults;
-
-    public function registerViewNamespace(string $namespace, string $viewsPath): void
-    {
-        $this->registerThemeViewNamespace($namespace, $viewsPath);
-    }
-
-    public function registerAreas(): void
-    {
-        $this->registerStandardLayoutAreas();
-    }
-}
 
 it('registers both a plain view namespace and a matching anonymous-component namespace', function (): void {
     $provider = new RegistersLayoutNativeThemeDefaultsTestProvider($this->app);

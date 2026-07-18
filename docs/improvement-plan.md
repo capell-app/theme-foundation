@@ -56,8 +56,6 @@ Tied to `capabilities: ["frontend-assets", "cache-blocking"]` and theme-foundati
 
 - **Split-theme missing-entry risk closed 2026-07-17.** The frontend resource contributor validates the configured directory and generated file against the real project path before declaring the Vite entry, preserving the shared bundle fallback for ungenerated or factory-created theme keys.
 
-- **Split-theme missing-entry risk closed 2026-07-17.** The frontend resource contributor validates the configured directory and generated file against the real project path before declaring the Vite entry, preserving the shared bundle fallback for ungenerated or factory-created theme keys.
-
 - **Closed 2026-06-04:** the no-op admin provider was removed and the misleading README provider/surface claims were corrected. (See §2.3.)
 
 - **Shipped 2026-06-07: Theme Studio shell accessibility primitives.** `theme/page.blade.php` now provides the skip link, matching `main#main-content` landmark, and a screen-reader-only polite `role="status"` live region for Theme Studio-rendered pages, with focused boundary coverage. Note: widget-level a11y _is_ tested (`LightboxAccessibilityTest`, language-flag dimensions and `alt=""` in `SafeOutputTest`).

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Capell\FoundationTheme\Testing\AssertsPublicThemeOutputSafety;
+use Capell\FoundationTheme\Tests\Fixtures\ThemePhpBlockBaselineCounts;
 use PHPUnit\Framework\ExpectationFailedException;
 
 uses(AssertsPublicThemeOutputSafety::class);
@@ -114,37 +115,6 @@ uses(AssertsPublicThemeOutputSafety::class);
  * component states, URL sanitisation, and widget render data. That moved
  * Foundation from 116 to 125 and the current fleet baseline from 676 to 685.
  */
-final class ThemePhpBlockBaselineCounts
-{
-    /**
-     * @var array<string, int>
-     */
-    public const array FROZEN_BASELINE_COUNTS = [
-        'photography' => 19,
-        'business' => 10,
-        'directory' => 36,
-        'magazine' => 35,
-        'catalogue' => 29,
-        'curated' => 25,
-        'foundation' => 125,
-        'agency' => 32,
-        'awards' => 35,
-        'editorial' => 33,
-        'saas' => 25,
-        'liquid-glass' => 19,
-        'events' => 10,
-        'platform' => 21,
-        'brutalist' => 30,
-        'onepage' => 19,
-        'portfolio' => 37,
-        'blog' => 38,
-        'knowledge' => 13,
-        'showreel' => 32,
-        'minimalist' => 26,
-        'submissions' => 36,
-    ];
-}
-
 it('confirms the frozen baseline snapshot sums to the programme-verified total of 685', function (): void {
     expect(array_sum(ThemePhpBlockBaselineCounts::FROZEN_BASELINE_COUNTS))->toBe(685);
 });

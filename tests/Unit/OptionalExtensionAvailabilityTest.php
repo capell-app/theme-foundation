@@ -11,7 +11,7 @@ afterEach(function (): void {
 });
 
 it('reports optional packages unavailable until Capell installs them', function (): void {
-    CapellCore::shouldReceive('isPackageInstalled')
+    CapellCore::shouldReceive('isPackageAvailable')
         ->twice()
         ->with('capell-app/example')
         ->andReturnFalse();
@@ -25,7 +25,7 @@ it('reports optional packages unavailable until Capell installs them', function 
 });
 
 it('requires both the installed package and registered public component', function (): void {
-    CapellCore::shouldReceive('isPackageInstalled')
+    CapellCore::shouldReceive('isPackageAvailable')
         ->twice()
         ->with('capell-app/example')
         ->andReturnTrue();

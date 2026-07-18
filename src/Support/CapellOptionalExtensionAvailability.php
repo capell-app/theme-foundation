@@ -14,7 +14,7 @@ final readonly class CapellOptionalExtensionAvailability implements OptionalExte
 
     public function packageAvailable(string $packageName, array $requiredClasses = []): bool
     {
-        return CapellCore::isPackageInstalled($packageName)
+        return CapellCore::isPackageAvailable($packageName)
             && array_all(
                 $requiredClasses,
                 static fn (string $requiredClass): bool => class_exists($requiredClass),
