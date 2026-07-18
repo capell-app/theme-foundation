@@ -91,7 +91,15 @@
         </address>
     @endif
 
-    @if ($socialLinks = $site->getMeta('social_links'))
+    @php
+        // Once the Socials package is installed, social links are placed
+        // explicitly through its widget, so the legacy site metadata must
+        // no longer render implicitly alongside it.
+        $socialsManagesProfiles = app()->bound('Capell\Socials\Contracts\SocialProfilesResolver');
+        $socialLinks = $socialsManagesProfiles ? null : $site->getMeta('social_links');
+    @endphp
+
+    @if ($socialLinks)
         <x-capell::footer.social-links :links="$socialLinks" />
     @endif
 </div>

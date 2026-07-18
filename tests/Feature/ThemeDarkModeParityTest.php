@@ -10,12 +10,17 @@ use Capell\FoundationTheme\Settings\FoundationThemeSettings;
  * (which requires a bound config repository) — this test is a pure static
  * colour-math guard and has no need to touch the settings container.
  */
-function darkModeParityFoundationDefaultDarkSurfaceColor(): string
+function darkModeParityFoundationSettingDefault(string $propertyName, string $fallback): string
 {
-    $property = new ReflectionProperty(FoundationThemeSettings::class, 'dark_surface_background_color');
+    $property = new ReflectionProperty(FoundationThemeSettings::class, $propertyName);
     $defaultValue = $property->getDefaultValue();
 
-    return is_string($defaultValue) ? $defaultValue : '#111827';
+    return is_string($defaultValue) ? $defaultValue : $fallback;
+}
+
+function darkModeParityFoundationDefaultDarkSurfaceColor(): string
+{
+    return darkModeParityFoundationSettingDefault('dark_surface_background_color', '#101d1a');
 }
 
 /*
@@ -31,12 +36,8 @@ function darkModeParityFoundationDefaultDarkSurfaceColor(): string
  * no per-theme dark-token resolver to reuse, so this test targets the one
  * Foundation resolves for the whole fleet.
  *
- * Rather than a full WCAG contrast-ratio calculator, this uses a relative
- * luminance heuristic (same formula family as WCAG's, without the full
- * gamma-correct contrast-ratio math): a legible dark-mode swap must (a) turn
- * a light surface into a materially darker one, and (b) resolve a foreground
- * colour that is materially lighter than that dark surface, so text remains
- * readable against it.
+ * The assertions use the WCAG relative-luminance and contrast-ratio formulae.
+ * Normal text token pairs must meet the AA 4.5:1 threshold in both schemes.
  */
 
 /**
@@ -61,8 +62,7 @@ function darkModeParityHexToRgb(string $hex): array
 
 /**
  * Relative luminance in the 0.0-1.0 range using the WCAG sRGB-to-linear
- * transfer function, without the final contrast-ratio division — sufficient
- * for a "materially lighter/darker" heuristic comparison between two colours.
+ * transfer function.
  */
 function darkModeParityRelativeLuminance(string $hex): float
 {
@@ -77,6 +77,16 @@ function darkModeParityRelativeLuminance(string $hex): float
     };
 
     return 0.2126 * $linearize($red) + 0.7152 * $linearize($green) + 0.0722 * $linearize($blue);
+}
+
+function darkModeParityContrastRatio(string $foreground, string $background): float
+{
+    $foregroundLuminance = darkModeParityRelativeLuminance($foreground);
+    $backgroundLuminance = darkModeParityRelativeLuminance($background);
+    $lighter = max($foregroundLuminance, $backgroundLuminance);
+    $darker = min($foregroundLuminance, $backgroundLuminance);
+
+    return ($lighter + 0.05) / ($darker + 0.05);
 }
 
 /**
@@ -123,6 +133,17 @@ it('finds at least one light-surface preset in the fleet to guard', function ():
     expect(darkModeParityLightSurfacePresets())->not->toBeEmpty();
 });
 
+it('keeps every light-surface preset foreground at WCAG AA contrast', function (): void {
+    foreach (darkModeParityLightSurfacePresets() as $presetLabel => $colours) {
+        $contrastRatio = darkModeParityContrastRatio($colours['foregroundColor'], $colours['surfaceColor']);
+
+        expect($contrastRatio)->toBeGreaterThanOrEqual(
+            4.5,
+            "{$presetLabel} has {$contrastRatio}:1 foreground contrast; normal text requires at least 4.5:1.",
+        );
+    }
+});
+
 it('resolves a legibly darker dark-mode surface for every light-surface preset', function (): void {
     $darkSurfaceLuminance = darkModeParityRelativeLuminance(darkModeParityFoundationDefaultDarkSurfaceColor());
 
@@ -136,16 +157,26 @@ it('resolves a legibly darker dark-mode surface for every light-surface preset',
     }
 });
 
-it('resolves a legibly lighter dark-mode foreground than the dark surface for every light-surface preset', function (): void {
-    $darkSurfaceLuminance = darkModeParityRelativeLuminance(darkModeParityFoundationDefaultDarkSurfaceColor());
-    $darkForegroundLuminance = darkModeParityRelativeLuminance('#f8fafc');
+it('resolves WCAG AA foreground contrast on the dark-mode surface', function (): void {
+    $darkSurface = darkModeParityFoundationDefaultDarkSurfaceColor();
+    $darkForeground = '#f8fafc';
+    $contrastRatio = darkModeParityContrastRatio($darkForeground, $darkSurface);
 
-    foreach (darkModeParityLightSurfacePresets() as $presetLabel => $colours) {
-        expect($darkForegroundLuminance)->toBeGreaterThan(
-            $darkSurfaceLuminance,
-            "{$presetLabel} would resolve illegible dark-mode text — the dark foreground token is not lighter than the dark surface token.",
-        );
-    }
+    expect($contrastRatio)->toBeGreaterThanOrEqual(
+        4.5,
+        "Foundation dark mode has {$contrastRatio}:1 foreground contrast; normal text requires at least 4.5:1.",
+    );
+});
+
+it('keeps primary actions at WCAG AA contrast in both colour schemes', function (): void {
+    $lightSurface = darkModeParityFoundationSettingDefault('surface_background_color', '#fcfffb');
+    $lightPrimaryAction = darkModeParityFoundationSettingDefault('primary_action_color', '#087765');
+    $darkSurface = darkModeParityFoundationDefaultDarkSurfaceColor();
+    $darkPrimaryAction = darkModeParityFoundationSettingDefault('dark_primary_action_color', '#79d7c2');
+
+    expect(darkModeParityContrastRatio($lightPrimaryAction, $lightSurface))->toBeGreaterThanOrEqual(4.5)
+        ->and(darkModeParityContrastRatio('#ffffff', $lightPrimaryAction))->toBeGreaterThanOrEqual(4.5)
+        ->and(darkModeParityContrastRatio($darkPrimaryAction, $darkSurface))->toBeGreaterThanOrEqual(4.5);
 });
 
 /*

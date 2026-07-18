@@ -7,11 +7,14 @@ use Capell\FoundationTheme\Support\CapellOptionalExtensionAvailability;
 use Livewire\LivewireManager;
 
 afterEach(function (): void {
-    CapellCore::clearPackages();
+    CapellCore::clearResolvedInstances();
 });
 
 it('reports optional packages unavailable until Capell installs them', function (): void {
-    CapellCore::clearPackages();
+    CapellCore::shouldReceive('isPackageInstalled')
+        ->twice()
+        ->with('capell-app/example')
+        ->andReturnFalse();
     $livewire = Mockery::mock(LivewireManager::class);
     $livewire->shouldNotReceive('exists');
 
@@ -22,8 +25,10 @@ it('reports optional packages unavailable until Capell installs them', function 
 });
 
 it('requires both the installed package and registered public component', function (): void {
-    CapellCore::clearPackages();
-    CapellCore::forcePackageInstalled('capell-app/example');
+    CapellCore::shouldReceive('isPackageInstalled')
+        ->twice()
+        ->with('capell-app/example')
+        ->andReturnTrue();
 
     $livewire = Mockery::mock(LivewireManager::class);
     $livewire->shouldReceive('exists')

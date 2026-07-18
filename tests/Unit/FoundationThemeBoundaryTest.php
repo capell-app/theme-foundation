@@ -174,6 +174,7 @@ it('gives every footer social link an accessible fallback name', function (): vo
         ->and($socialLinks)->toContain('parse_url')
         ->and($socialLinks)->toContain('aria-label="{{ $label }}"')
         ->and($siteInfo)->toContain("\$site->getMeta('social_links')")
+        ->and($siteInfo)->toContain("app()->bound('Capell\Socials\Contracts\SocialProfilesResolver')")
         ->and($siteInfo)->not->toContain("isPackageInstalled('capell-app/socials')");
 });
 

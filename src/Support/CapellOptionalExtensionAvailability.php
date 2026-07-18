@@ -14,17 +14,11 @@ final readonly class CapellOptionalExtensionAvailability implements OptionalExte
 
     public function packageAvailable(string $packageName, array $requiredClasses = []): bool
     {
-        if (! CapellCore::isPackageInstalled($packageName)) {
-            return false;
-        }
-
-        foreach ($requiredClasses as $requiredClass) {
-            if (! class_exists($requiredClass)) {
-                return false;
-            }
-        }
-
-        return true;
+        return CapellCore::isPackageInstalled($packageName)
+            && array_all(
+                $requiredClasses,
+                static fn (string $requiredClass): bool => class_exists($requiredClass),
+            );
     }
 
     public function livewireComponentAvailable(string $packageName, string $componentName): bool

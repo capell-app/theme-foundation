@@ -64,7 +64,7 @@ final class FoundationThemeAssetContributor implements FrontendResourceContribut
 
     private function shouldLoadFrontendCss(FrontendResourceContextData $context): bool
     {
-        $value = data_get($context->theme?->meta, 'frontend_runtime.uses_theme_foundation_css');
+        $value = data_get($context->theme?->meta, 'frontend_runtime.uses_foundation_theme_css');
 
         return is_bool($value) ? $value : true;
     }

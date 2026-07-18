@@ -28,6 +28,29 @@ it('contributes typed application CSS and conditional Foundation runtime resourc
         ->and($resources[1]->resource->kind)->toBe(FrontendResourceKind::ModuleScript);
 });
 
+it('honours a theme opt out from the Foundation stylesheet', function (): void {
+    $theme = Theme::factory()->create([
+        'meta' => [
+            'frontend_runtime' => [
+                'uses_foundation_theme_css' => false,
+            ],
+        ],
+    ]);
+    $context = new FrontendResourceContextData(
+        null,
+        null,
+        null,
+        null,
+        $theme,
+        FrontendRuntimeManifestData::forRenderingStrategy(RenderingStrategyEnum::BladeOnly),
+    );
+
+    $resources = resolve(FoundationThemeAssetContributor::class)->resources($context);
+
+    expect(collect($resources)->pluck('resource.handle')->all())
+        ->not->toContain('capell-app/theme-foundation:frontend-style');
+});
+
 it('contributes the active split theme stylesheet', function (): void {
     $filesystem = resolve(Filesystem::class);
     $directory = storage_path('framework/testing/capell-theme-foundation-split-' . uniqid());

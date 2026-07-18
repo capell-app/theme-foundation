@@ -28,7 +28,6 @@ use Capell\FoundationTheme\View\Components\Widget\Page\Content;
 use Capell\FoundationTheme\View\Components\Widget\Page\Siblings;
 use Capell\Frontend\Contracts\FrontendContextReader;
 use Capell\Frontend\Facades\Frontend;
-use Capell\Frontend\Support\CapellFrontendContext;
 use Capell\Frontend\Support\State\FrontendState;
 use Capell\LayoutBuilder\Models\Widget;
 use Capell\LayoutBuilder\Models\WidgetAsset;
@@ -478,8 +477,7 @@ function foundationThemeFinalFrontendState(Language $language, Site $site, Theme
     $state = new FrontendState;
     app()->instance(FrontendState::class, $state);
     app()->instance(FrontendContextReader::class, $state);
-    app()->instance(CapellFrontendContext::class, new CapellFrontendContext($state));
-    Frontend::clearResolvedInstance(CapellFrontendContext::class);
+    Frontend::clearResolvedInstance(FrontendContextReader::class);
 
     resolve(FrontendState::class)
         ->withLanguage($language)

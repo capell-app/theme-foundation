@@ -29,10 +29,6 @@
     $pageContents = is_array($configuredPageContents) ? $configuredPageContents : $pageContents;
     $pageContents = array_values(array_filter((array) $pageContents));
     $pageContents = $pageContents === [] ? ['title', 'content'] : $pageContents;
-@endphp
-
-{{-- format-ignore-start --}}
-@php
     $page = $pageRecord;
     $secondaryContainers = $theme?->secondary_containers ?? ['sidebar'];
     $pageContentRenderData = BuildPageContentRenderDataAction::run(
@@ -48,9 +44,7 @@
     if (! $headingTag) {
         $headingTag = ($hasPrimaryHeading ? 'h2' : 'h1');
     }
-
 @endphp
-{{-- format-ignore-end --}}
 @if ($hasContent || $hasTitle || $hasNeighborLinks)
     <x-capell-theme-foundation::widget.wrapper
         :$container

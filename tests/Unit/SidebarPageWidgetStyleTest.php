@@ -16,9 +16,9 @@ use Capell\FoundationTheme\Livewire\Widget\AbstractWidget as LivewireWidget;
 use Capell\FoundationTheme\View\Components\Widget\Page\AbstractPagesWidget;
 use Capell\FoundationTheme\View\Components\Widget\Page\Breadcrumbs as BreadcrumbsWidget;
 use Capell\FoundationTheme\View\Components\Widget\Page\Content as ContentWidget;
+use Capell\Frontend\Contracts\FrontendContextReader;
 use Capell\Frontend\Data\FrontendContext;
 use Capell\Frontend\Facades\Frontend;
-use Capell\Frontend\Support\CapellFrontendContext;
 use Capell\LayoutBuilder\Models\Widget;
 use Capell\LayoutBuilder\Models\WidgetAsset;
 use Capell\LayoutBuilder\Support\Livewire\OpaqueWidgetReference;
@@ -34,6 +34,12 @@ function sidebarPageWidgetStyleView(mixed $view): View
     assert($view instanceof View);
 
     return $view;
+}
+
+function sidebarPageWidgetStyleBindContext(FrontendContext $context): void
+{
+    app()->instance(FrontendContextReader::class, $context);
+    Frontend::clearResolvedInstance(FrontendContextReader::class);
 }
 
 test('sidebar page widgets expose stable styling and current page hooks', function (): void {
@@ -224,7 +230,7 @@ test('public livewire widgets resolve the scoped layout widget clone', function 
         ->page($page, 'main', 2)
         ->create();
 
-    app()->instance(CapellFrontendContext::class, new CapellFrontendContext(new FrontendContext(
+    sidebarPageWidgetStyleBindContext(new FrontendContext(
         site: $site,
         language: $language,
         page: $page,
@@ -232,7 +238,7 @@ test('public livewire widgets resolve the scoped layout widget clone', function 
         theme: null,
         params: [],
         slug: null,
-    )));
+    ));
 
     $component = new class extends LivewireWidget
     {
@@ -269,7 +275,7 @@ test('public livewire widgets resolve the scoped layout widget clone', function 
         ->and($renderData['widgetData']['meta']['show_page_title'])->toBeTrue()
         ->and($renderData['widgetData']['occurrence'])->toBe(2);
 
-    app()->instance(CapellFrontendContext::class, new CapellFrontendContext(new FrontendContext(
+    sidebarPageWidgetStyleBindContext(new FrontendContext(
         site: null,
         language: null,
         page: null,
@@ -277,8 +283,7 @@ test('public livewire widgets resolve the scoped layout widget clone', function 
         theme: null,
         params: [],
         slug: null,
-    )));
-    Frontend::clearResolvedInstance(CapellFrontendContext::class);
+    ));
 
     $hydratedComponent = new class extends LivewireWidget
     {
@@ -362,7 +367,7 @@ test('public livewire widgets can hydrate widgets from global layouts', function
     ]);
     $page = Page::factory()->site($site)->layout($layout)->withTranslations($language)->create();
 
-    app()->instance(CapellFrontendContext::class, new CapellFrontendContext(new FrontendContext(
+    sidebarPageWidgetStyleBindContext(new FrontendContext(
         site: $site,
         language: $language,
         page: $page,
@@ -370,8 +375,7 @@ test('public livewire widgets can hydrate widgets from global layouts', function
         theme: null,
         params: [],
         slug: null,
-    )));
-    Frontend::clearResolvedInstance(CapellFrontendContext::class);
+    ));
 
     $component = new class extends LivewireWidget
     {
@@ -416,7 +420,7 @@ test('public livewire widgets reject global layout references replayed under ano
     $referencePage = Page::factory()->site($referenceSite)->layout($layout)->withTranslations($language)->create();
     $currentPage = Page::factory()->site($currentSite)->layout($layout)->withTranslations($language)->create();
 
-    app()->instance(CapellFrontendContext::class, new CapellFrontendContext(new FrontendContext(
+    sidebarPageWidgetStyleBindContext(new FrontendContext(
         site: $currentSite,
         language: $language,
         page: $currentPage,
@@ -424,8 +428,7 @@ test('public livewire widgets reject global layout references replayed under ano
         theme: null,
         params: [],
         slug: null,
-    )));
-    Frontend::clearResolvedInstance(CapellFrontendContext::class);
+    ));
 
     $component = new class extends LivewireWidget
     {
@@ -470,7 +473,7 @@ test('public livewire page content widgets render from encrypted context without
         'content' => '<p>Hydrated page content</p>',
     ])->create();
 
-    app()->instance(CapellFrontendContext::class, new CapellFrontendContext(new FrontendContext(
+    sidebarPageWidgetStyleBindContext(new FrontendContext(
         site: null,
         language: null,
         page: null,
@@ -478,8 +481,7 @@ test('public livewire page content widgets render from encrypted context without
         theme: null,
         params: [],
         slug: null,
-    )));
-    Frontend::clearResolvedInstance(CapellFrontendContext::class);
+    ));
 
     $component = new class extends LivewireWidget
     {
@@ -549,7 +551,7 @@ test('asset page widget view does not query or lazy-load optional item parents',
     $widget = new Widget(['key' => 'featured-pages', 'name' => 'Featured Pages', 'meta' => []]);
     $widget->setRelation('translation', null);
 
-    app()->instance(CapellFrontendContext::class, new CapellFrontendContext(new FrontendContext(
+    sidebarPageWidgetStyleBindContext(new FrontendContext(
         site: $site,
         language: $language,
         page: $currentPage,
@@ -557,8 +559,7 @@ test('asset page widget view does not query or lazy-load optional item parents',
         theme: $theme,
         params: [],
         slug: null,
-    )));
-    Frontend::clearResolvedInstance(CapellFrontendContext::class);
+    ));
 
     $previous = EloquentModel::preventsLazyLoading();
     EloquentModel::preventLazyLoading();
@@ -593,7 +594,7 @@ test('breadcrumbs render data does not lazy-load optional page and site relation
     $page = Page::factory()->site($site)->create();
     $widget = new Widget(['key' => 'breadcrumbs', 'name' => 'Breadcrumbs', 'meta' => ['view_file' => 'capell-theme-foundation::components.widget.page.breadcrumbs']]);
 
-    app()->instance(CapellFrontendContext::class, new CapellFrontendContext(new FrontendContext(
+    sidebarPageWidgetStyleBindContext(new FrontendContext(
         site: $site,
         language: $language,
         page: $page,
@@ -601,8 +602,7 @@ test('breadcrumbs render data does not lazy-load optional page and site relation
         theme: null,
         params: [],
         slug: null,
-    )));
-    Frontend::clearResolvedInstance(CapellFrontendContext::class);
+    ));
 
     $previous = EloquentModel::preventsLazyLoading();
     EloquentModel::preventLazyLoading();
@@ -623,7 +623,7 @@ test('breadcrumbs render data does not lazy-load optional page and site relation
 });
 
 test('content page widget ignores contextless hydration when resolving next previous links', function (): void {
-    app()->instance(CapellFrontendContext::class, new CapellFrontendContext(new FrontendContext(
+    sidebarPageWidgetStyleBindContext(new FrontendContext(
         site: null,
         language: null,
         page: null,
@@ -631,8 +631,7 @@ test('content page widget ignores contextless hydration when resolving next prev
         theme: null,
         params: [],
         slug: null,
-    )));
-    Frontend::clearResolvedInstance(CapellFrontendContext::class);
+    ));
 
     $widget = new Widget(['key' => 'content', 'name' => 'Content', 'meta' => ['view_file' => 'capell::components.no-results']]);
 
@@ -664,7 +663,7 @@ test('public livewire widgets reject references from another frontend site', fun
     ]);
     $page = Page::factory()->site($currentSite)->withTranslations($language)->create();
 
-    app()->instance(CapellFrontendContext::class, new CapellFrontendContext(new FrontendContext(
+    sidebarPageWidgetStyleBindContext(new FrontendContext(
         site: $currentSite,
         language: $language,
         page: $page,
@@ -672,7 +671,7 @@ test('public livewire widgets reject references from another frontend site', fun
         theme: null,
         params: [],
         slug: null,
-    )));
+    ));
 
     $component = new class extends LivewireWidget
     {

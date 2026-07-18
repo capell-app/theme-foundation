@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Capell\FoundationTheme\Actions;
 
+use Capell\Frontend\Contracts\FrontendContextReader;
 use Lorisleiva\Actions\Concerns\AsFake;
 use Lorisleiva\Actions\Concerns\AsObject;
 
@@ -12,18 +13,12 @@ final class MarkPrimaryHeadingRenderedAction
     use AsFake;
     use AsObject;
 
-    private const string FRONTEND_CONTEXT_SERVICE = 'capell.frontend.context';
-
     public function handle(): void
     {
-        if (! app()->bound(self::FRONTEND_CONTEXT_SERVICE)) {
+        if (! app()->bound(FrontendContextReader::class)) {
             return;
         }
 
-        $frontend = resolve(self::FRONTEND_CONTEXT_SERVICE);
-
-        if (is_object($frontend) && method_exists($frontend, 'setFrontendData')) {
-            $frontend->setFrontendData('has_primary_heading', true);
-        }
+        resolve(FrontendContextReader::class)->setFrontendData('has_primary_heading', true);
     }
 }
