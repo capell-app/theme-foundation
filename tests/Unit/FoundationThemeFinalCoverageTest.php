@@ -14,6 +14,7 @@ use Capell\Core\Models\SiteDomain;
 use Capell\Core\Models\Theme;
 use Capell\FoundationTheme\Actions\BuildLayoutNeighborLinksDataAction;
 use Capell\FoundationTheme\Actions\MarkPrimaryHeadingRenderedAction;
+use Capell\FoundationTheme\Actions\PrepareFoundationPageWidgetDataAction;
 use Capell\FoundationTheme\Actions\ResolveLoadedWidgetBackgroundImageAction;
 use Capell\FoundationTheme\Actions\WidgetIsSlotAction;
 use Capell\FoundationTheme\Livewire\Widget\Pages as LivewirePages;
@@ -44,6 +45,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Mix;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Ramsey\Uuid\Uuid;
 
@@ -145,6 +147,28 @@ it('mounts successful child and sibling page widgets with hydrated frontend cont
         ->and($siblings->pages)->not->toBeNull()
         ->and($siblingPages->pluck('id')->all())->toContain($siblingChild->id)
         ->and($siblingPages->pluck('id')->all())->not->toContain($currentChild->id);
+});
+
+it('uses prepared page widget data without querying during component construction', function (): void {
+    [$language, $site, $type] = foundationThemeFinalPageSurface();
+    $theme = Theme::factory()->defaultMeta()->create();
+    $layout = Layout::factory()->site($site)->create(['admin' => []]);
+    $page = Page::factory()->site($site)->layout($layout)->type($type)->published()->create();
+    $widget = Widget::factory()->create(['key' => 'children']);
+    $preparedPages = collect([$page]);
+
+    foundationThemeFinalFrontendState($language, $site, $theme, $layout, $page->load('blueprint', 'layout'));
+    Frontend::setFrontendData(PrepareFoundationPageWidgetDataAction::frontendDataKey($widget), $preparedPages);
+
+    $queries = 0;
+    DB::listen(static function () use (&$queries): void {
+        $queries++;
+    });
+
+    $component = new Children([], 'main', 0, new stdClass, $widget);
+
+    expect($component->pages)->toBe($preparedPages)
+        ->and($queries)->toBe(0);
 });
 
 it('mounts the livewire pages widget around selected page assets', function (): void {

@@ -29,11 +29,19 @@ final class HasThemeIntegrationEvidenceAction
         return match ($packageName) {
             'capell-app/form-builder' => str_contains($source, 'FormBuilderAvailability')
                 || str_contains($source, 'BuildThemeDemoFormSectionAction'),
-            'capell-app/newsletter' => str_contains($source, '<x-capell::newsletter-form'),
+            'capell-app/newsletter' => str_contains($source, '<x-capell::newsletter-form')
+                || str_contains($source, 'NewsletterAvailability'),
+            'capell-app/comments' => str_contains($source, 'CommentsAvailability'),
             'capell-app/blog' => str_contains($source, 'BlogAvailability'),
+            'capell-app/events' => str_contains($source, 'EventsAvailability'),
+            'capell-app/search' => str_contains($source, 'SearchAvailability'),
             'capell-app/bookings' => str_contains($source, 'BookingsAvailability'),
             'capell-app/knowledge-base' => str_contains($source, 'KnowledgeBaseIntegration'),
+            'capell-app/widget-slideshow' => str_contains($source, 'WidgetSlideshowAvailability'),
             'capell-app/widget-live-poll' => str_contains($source, 'LivePollIntegration'),
+            'capell-app/widget-countdown' => str_contains($source, 'CountdownAvailability'),
+            'capell-app/widget-data-chart' => str_contains($source, 'DataChartAvailability'),
+            'capell-app/widget-location-map' => str_contains($source, 'LocationMapAvailability'),
             default => false,
         };
     }

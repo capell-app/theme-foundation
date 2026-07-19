@@ -7,10 +7,12 @@ namespace Capell\FoundationTheme\View\Components\Widget\Page;
 use Capell\Core\Contracts\Pageable;
 use Capell\Core\Enums\PageOrderEnum;
 use Capell\Core\Models\Language;
+use Capell\FoundationTheme\Actions\PrepareFoundationPageWidgetDataAction;
 use Capell\Frontend\Facades\Frontend;
 use Capell\Frontend\Support\Loader\PageLoader;
 use Capell\Frontend\Support\Logging\FrontendLogger;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 class Children extends AbstractPagesWidget
 {
@@ -18,6 +20,15 @@ class Children extends AbstractPagesWidget
 
     protected function mountWidget(): void
     {
+        $preparedPages = Frontend::getFrontendData(PrepareFoundationPageWidgetDataAction::frontendDataKey($this->widget));
+
+        if ($preparedPages instanceof Collection) {
+            $this->pages = $preparedPages;
+            $this->skipRender = $preparedPages->isEmpty();
+
+            return;
+        }
+
         $page = Frontend::page();
         $language = Frontend::language();
 

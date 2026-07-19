@@ -7,11 +7,13 @@ namespace Capell\FoundationTheme\View\Components\Widget\Page;
 use Capell\Core\Contracts\Pageable;
 use Capell\Core\Enums\PageOrderEnum;
 use Capell\Core\Models\Language;
+use Capell\FoundationTheme\Actions\PrepareFoundationPageWidgetDataAction;
 use Capell\Frontend\Facades\Frontend;
 use Capell\Frontend\Support\Loader\PageLoader;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 class Latest extends AbstractPagesWidget
@@ -20,6 +22,15 @@ class Latest extends AbstractPagesWidget
 
     protected function mountWidget(): void
     {
+        $preparedPages = Frontend::getFrontendData(PrepareFoundationPageWidgetDataAction::frontendDataKey($this->widget));
+
+        if ($preparedPages instanceof Collection || $preparedPages instanceof LengthAwarePaginator) {
+            $this->pages = $preparedPages;
+            $this->skipRender = $preparedPages->isEmpty() && config('capell-layout-builder.widget.skip_render_empty', true) === true;
+
+            return;
+        }
+
         $page = Frontend::page();
         $language = Frontend::language();
 

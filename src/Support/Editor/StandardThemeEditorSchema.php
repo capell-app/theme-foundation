@@ -38,7 +38,7 @@ final class StandardThemeEditorSchema
                 'cardStyle' => ['options' => ['flat', 'outlined', 'raised', 'bordered', 'elevated', 'hairline', 'raw', 'scoreboard', 'sharp', 'understated']],
                 'cardDensity' => ['options' => ['compact', 'comfortable', 'spacious']],
                 'headingScale' => ['options' => ['compact', 'balanced', 'expressive']],
-                'overlayTreatment' => ['options' => ['none', 'subtle', 'strong']],
+                'overlayTreatment' => ['options' => ['none', 'subtle', 'strong', 'scrim', 'gradient']],
             ],
         ];
     }

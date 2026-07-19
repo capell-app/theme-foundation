@@ -26,6 +26,7 @@ use Capell\Core\Support\Themes\ThemeChromeRegistry;
 use Capell\Core\ThemeStudio\Data\ThemeDefinitionData;
 use Capell\Core\ThemeStudio\Data\ThemePresetData;
 use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
+use Capell\FoundationTheme\Actions\PrepareFoundationPageWidgetDataAction;
 use Capell\FoundationTheme\Actions\ResolveFoundationThemeTokensAction;
 use Capell\FoundationTheme\Console\Commands\DemoCommand;
 use Capell\FoundationTheme\Console\Commands\GenerateTailwindAssetsCommand;
@@ -43,12 +44,15 @@ use Capell\FoundationTheme\Livewire\Assets\Table\PageAssets;
 use Capell\FoundationTheme\Livewire\Widget\Pages;
 use Capell\FoundationTheme\Settings\FoundationThemeSettings;
 use Capell\FoundationTheme\Support\Assets\FoundationThemeAssetContributor;
+use Capell\FoundationTheme\Support\Assets\ThemeFrontendScriptContributor;
+use Capell\FoundationTheme\Support\Assets\ThemeFrontendScriptRegistry;
 use Capell\FoundationTheme\Support\Blade\BladeDirectives;
 use Capell\FoundationTheme\Support\CapellOptionalExtensionAvailability;
 use Capell\FoundationTheme\Support\FoundationLayoutContainerThemePresentationProjector;
 use Capell\FoundationTheme\Support\FoundationThemeRuntimeManifestContributor;
 use Capell\FoundationTheme\Support\Interceptors\Themes\FoundationThemeInterceptor;
 use Capell\FoundationTheme\Support\Media\CapellUrlGenerator;
+use Capell\FoundationTheme\Support\Tailwind\TailwindAssetsGenerator;
 use Capell\FoundationTheme\View\Components\Actions as ActionsComponent;
 use Capell\FoundationTheme\View\Components\App\Body as AppBodyComponent;
 use Capell\FoundationTheme\View\Components\Footer\Index as FooterIndexComponent;
@@ -84,6 +88,7 @@ use Capell\LayoutBuilder\Contracts\LayoutContainerThemePresentationProjector;
 use Capell\LayoutBuilder\Enums\FrontendComponentKeyEnum;
 use Capell\LayoutBuilder\Support\LayoutAreas\LayoutAreaRegistry;
 use Illuminate\Contracts\View\Factory as ViewFactory;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
 use Livewire\Livewire;
@@ -183,6 +188,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
             return;
         }
 
+        $this->registerTailwindAssetsGenerator();
         $this->registerAssets();
         $this->registerTailwindEventListeners();
         $this->registerVendorCssJsAssets();
@@ -200,6 +206,9 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
     public function packageRegistered(): void
     {
         $this->app->scoped(FoundationThemeAssetContributor::class);
+        $this->app->singleton(ThemeFrontendScriptRegistry::class);
+        $this->app->scoped(ThemeFrontendScriptContributor::class);
+        $this->app->tag(ThemeFrontendScriptContributor::class, FrontendResourceContributor::TAG);
         $this->app->singleton(
             OptionalExtensionAvailability::class,
             CapellOptionalExtensionAvailability::class,
@@ -212,6 +221,16 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
     protected function isPackageInstalled(): bool
     {
         return CapellCore::isPackageInstalled(self::$packageName);
+    }
+
+    private function registerTailwindAssetsGenerator(): void
+    {
+        $this->app->singleton(
+            'capell.tailwind.generator',
+            static fn ($application): TailwindAssetsGenerator => new TailwindAssetsGenerator(
+                $application->make(Filesystem::class),
+            ),
+        );
     }
 
     private function registerAssets(): void
@@ -329,6 +348,13 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
         if (! $site instanceof Site || ! $language instanceof Language || ! $page instanceof Page) {
             return;
         }
+
+        PrepareFoundationPageWidgetDataAction::run(
+            site: $site,
+            language: $language,
+            page: $page,
+            setFrontendData: fn (string $key, mixed $value) => $event->context->setFrontendData($key, $value),
+        );
 
         if ($event->context->getFrontendData('foundation.page.ancestors') === null) {
             $event->context->setFrontendData(
