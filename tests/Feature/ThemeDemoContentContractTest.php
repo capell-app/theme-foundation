@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Capell\Core\Enums\LayoutEnum;
 use Capell\FoundationTheme\Contracts\ProvidesThemeDemoContent;
 use Capell\FoundationTheme\Support\Demo\FoundationDemoContent;
 use Capell\FoundationTheme\Support\Demo\ThemeDemoPageDefinition;
@@ -53,13 +54,19 @@ const FLEET_DEMO_CONTRACT_EXCLUSIONS = [
 const FLEET_FORM_BUILDER_THEMES = [
     'foundation',
     'agency',
+    'almanac',
     'brutalist',
+    'catalogue',
     'directory',
+    'knowledge',
     'onepage',
     'portfolio',
     'showreel',
     'submissions',
 ];
+
+/** @var list<string> */
+const SEARCH_LED_RESULTS_THEMES = ['curated', 'directory', 'knowledge', 'catalogue', 'almanac'];
 
 /**
  * The demo content provider FQCN for a theme slug.
@@ -174,7 +181,7 @@ it('theme ships a demo content provider covering every foundation surface', func
     }
 })->with('fleet_themes_for_demo_contract');
 
-it('priority themes ship a populated form-builder contact section', function (string $slug): void {
+it('priority themes ship populated portable contact form data', function (string $slug): void {
     $studio = Str::studly($slug);
     $providerClass = fleetDemoContentProviderClass($slug, $studio);
     $provider = new $providerClass;
@@ -191,7 +198,7 @@ it('priority themes ship a populated form-builder contact section', function (st
     throw_unless(is_array($sections), RuntimeException::class, "Theme [{$slug}] contact sections must be an array.");
 
     $formSection = collect($sections)->first(
-        fn (mixed $section): bool => is_array($section) && ($section['type'] ?? null) === 'form',
+        fn (mixed $section): bool => is_array($section) && in_array($section['type'] ?? null, ['form', 'contact-split'], true),
     );
 
     throw_unless(is_array($formSection), RuntimeException::class, "Theme [{$slug}] form section must be an array.");
@@ -200,11 +207,38 @@ it('priority themes ship a populated form-builder contact section', function (st
 
     expect($formSection)
         ->toBeArray()
-        ->and($formSection['form_handle'] ?? null)->toBeString()->not->toBeEmpty()
         ->and(count($fields))->toBeGreaterThanOrEqual(4)
         ->and($formSection['fallback_url'] ?? null)->toBeString()->not->toBeEmpty();
 })->with(collect(FLEET_FORM_BUILDER_THEMES)->mapWithKeys(
     fn (string $slug): array => [$slug => [$slug]],
+)->all());
+
+it('search-led themes separate curated landing content from hydrated results', function (string $slug): void {
+    $studio = Str::studly($slug);
+    $providerClass = fleetDemoContentProviderClass($slug, $studio);
+    $provider = new $providerClass;
+
+    throw_unless($provider instanceof ProvidesThemeDemoContent, RuntimeException::class, "Theme [{$slug}] demo content provider must implement ProvidesThemeDemoContent.");
+
+    $definitions = collect($provider->definitions($slug, Str::headline($slug), "https://{$slug}.test"));
+    $landing = $definitions->firstWhere('surface', 'landing');
+    $results = $definitions->firstWhere('surface', 'directory');
+
+    expect($landing)->toBeInstanceOf(ThemeDemoPageDefinition::class)
+        ->and($results)->toBeInstanceOf(ThemeDemoPageDefinition::class);
+
+    throw_unless($landing instanceof ThemeDemoPageDefinition, RuntimeException::class, "Theme [{$slug}] must define a landing surface.");
+    throw_unless($results instanceof ThemeDemoPageDefinition, RuntimeException::class, "Theme [{$slug}] must define a directory results surface.");
+
+    $resultsListingWidgets = collect($results->widgets ?? [])
+        ->filter(static fn (array $widget): bool => data_get($widget, 'args.3.type') === 'content-listing');
+
+    expect($landing->layout)->not->toBe(LayoutEnum::Results)
+        ->and($results->layout)->toBe(LayoutEnum::Results)
+        ->and($resultsListingWidgets)->not->toBeEmpty()
+        ->and($resultsListingWidgets->every(static fn (array $widget): bool => data_get($widget, 'args.3.items') === []))->toBeTrue();
+})->with(collect(SEARCH_LED_RESULTS_THEMES)->mapWithKeys(
+    static fn (string $slug): array => [$slug => [$slug]],
 )->all());
 
 it('foundation demonstrates a credible site instead of describing its implementation', function (): void {

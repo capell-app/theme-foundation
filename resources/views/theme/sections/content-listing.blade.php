@@ -1,4 +1,5 @@
 @php
+    $listingItems = data_get($section, 'resolvedResults.items', data_get($section, 'items', []));
     $isGallery = ($section->variant ?? null) === 'gallery';
     $isPathways = ($section->variant ?? null) === 'pathways';
     $isSpotlight = ($section->variant ?? null) === 'spotlight';
@@ -95,6 +96,15 @@
             @endif
         </div>
 
+        @if (filled(data_get($section, 'resolvedResults.archiveUrl')))
+            <a
+                href="{{ data_get($section, 'resolvedResults.archiveUrl') }}"
+                class="mb-8 inline-flex font-semibold text-[var(--theme-primary)] underline-offset-4 hover:underline"
+            >
+                {{ __('capell-theme-foundation::results.archive') }}
+            </a>
+        @endif
+
         @if ($isSpotlight)
             <div
                 class="theme-content-spotlight grid gap-6 lg:grid-cols-[0.42fr_1fr] lg:items-start"
@@ -125,7 +135,7 @@
                     role="tablist"
                     aria-label="{{ $section->heading }}"
                 >
-                    @foreach ($section->items as $item)
+                    @foreach ($listingItems as $item)
                         <button
                             type="button"
                             id="{{ $spotlightId }}-tab-{{ $loop->index }}"
@@ -156,7 +166,7 @@
                 </div>
 
                 <div class="min-w-0">
-                    @foreach ($section->items as $item)
+                    @foreach ($listingItems as $item)
                         <div
                             id="{{ $spotlightId }}-panel-{{ $loop->index }}"
                             class="overflow-hidden rounded-[var(--theme-radius-value)] border border-slate-200 bg-white shadow-xl shadow-slate-950/8"
@@ -266,7 +276,7 @@
                     data-carousel-breakpoints='{"760":{"slidesPerView":2},"1080":{"slidesPerView":3}}'
                 >
                     <div class="swiper-wrapper">
-                        @foreach ($section->items as $item)
+                        @foreach ($listingItems as $item)
                             <article class="swiper-slide h-auto pe-4">
                                 <a
                                     href="{{ $item['url'] ?? '#' }}"
@@ -365,7 +375,7 @@
                 class="grid gap-3 lg:grid-cols-2"
                 data-theme-pathways
             >
-                @foreach ($section->items as $item)
+                @foreach ($listingItems as $item)
                     <details
                         class="group rounded-[var(--theme-radius-value)] border border-slate-200 bg-white p-5 shadow-sm transition open:border-slate-950 open:shadow-lg"
                         data-active="{{ $loop->first ? 'true' : 'false' }}"
@@ -418,7 +428,7 @@
             </div>
         @else
             <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                @foreach ($section->items as $item)
+                @foreach ($listingItems as $item)
                     <a
                         href="{{ $item['url'] ?? '#' }}"
                         class="group widget overflow-hidden rounded-[var(--theme-radius-value)] border border-slate-200 bg-white transition hover:border-slate-950"

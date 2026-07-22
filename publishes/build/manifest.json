@@ -1,8 +1,87 @@
 {
     "resources/js/capell-frontend.js": {
-        "file": "assets/capell-frontend-PKTDPZN4.js",
+        "file": "assets/capell-frontend-BzOE2qRN.js",
         "name": "capell-frontend",
         "src": "resources/js/capell-frontend.js",
-        "isEntry": true
+        "isEntry": true,
+        "dynamicImports": [
+            "resources/js/utilities/lightbox.js",
+            "resources/js/widgets/widget/carousel.js",
+            "resources/js/widgets/widget/faq-search.js",
+            "resources/js/widgets/widget/form-hints.js",
+            "resources/js/widgets/widget/pricing-spectrum.js",
+            "resources/js/widgets/widget/tabs.js",
+            "resources/js/widgets/widget/count-up.js",
+            "resources/js/widgets/widget/scroll-spy.js",
+            "resources/js/widgets/widget/compare-slider.js",
+            "resources/js/widgets/widget/accordion-toggle.js",
+            "resources/js/widgets/widget/hover-video-poster.js"
+        ]
+    },
+    "resources/js/utilities/lightbox.js": {
+        "file": "assets/lightbox-wYALEF-H.js",
+        "name": "lightbox",
+        "src": "resources/js/utilities/lightbox.js",
+        "isDynamicEntry": true
+    },
+    "resources/js/widgets/widget/accordion-toggle.js": {
+        "file": "assets/accordion-toggle-Dee0n6kh.js",
+        "name": "accordion-toggle",
+        "src": "resources/js/widgets/widget/accordion-toggle.js",
+        "isDynamicEntry": true
+    },
+    "resources/js/widgets/widget/carousel.js": {
+        "file": "assets/carousel-DCJnNnBe.js",
+        "name": "carousel",
+        "src": "resources/js/widgets/widget/carousel.js",
+        "isDynamicEntry": true
+    },
+    "resources/js/widgets/widget/compare-slider.js": {
+        "file": "assets/compare-slider-DnHr0pkZ.js",
+        "name": "compare-slider",
+        "src": "resources/js/widgets/widget/compare-slider.js",
+        "isDynamicEntry": true
+    },
+    "resources/js/widgets/widget/count-up.js": {
+        "file": "assets/count-up-BC3-qrpe.js",
+        "name": "count-up",
+        "src": "resources/js/widgets/widget/count-up.js",
+        "isDynamicEntry": true
+    },
+    "resources/js/widgets/widget/faq-search.js": {
+        "file": "assets/faq-search-Dut07wsy.js",
+        "name": "faq-search",
+        "src": "resources/js/widgets/widget/faq-search.js",
+        "isDynamicEntry": true
+    },
+    "resources/js/widgets/widget/form-hints.js": {
+        "file": "assets/form-hints-CKmjCoLr.js",
+        "name": "form-hints",
+        "src": "resources/js/widgets/widget/form-hints.js",
+        "isDynamicEntry": true
+    },
+    "resources/js/widgets/widget/hover-video-poster.js": {
+        "file": "assets/hover-video-poster-9dMpqR8-.js",
+        "name": "hover-video-poster",
+        "src": "resources/js/widgets/widget/hover-video-poster.js",
+        "isDynamicEntry": true
+    },
+    "resources/js/widgets/widget/pricing-spectrum.js": {
+        "file": "assets/pricing-spectrum-lFH8yBQ_.js",
+        "name": "pricing-spectrum",
+        "src": "resources/js/widgets/widget/pricing-spectrum.js",
+        "isDynamicEntry": true
+    },
+    "resources/js/widgets/widget/scroll-spy.js": {
+        "file": "assets/scroll-spy-Bf-IFy8k.js",
+        "name": "scroll-spy",
+        "src": "resources/js/widgets/widget/scroll-spy.js",
+        "isDynamicEntry": true
+    },
+    "resources/js/widgets/widget/tabs.js": {
+        "file": "assets/tabs-DO7f9tTo.js",
+        "name": "tabs",
+        "src": "resources/js/widgets/widget/tabs.js",
+        "isDynamicEntry": true
     }
 }

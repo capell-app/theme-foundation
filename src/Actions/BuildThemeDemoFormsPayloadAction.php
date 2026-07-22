@@ -25,7 +25,7 @@ final class BuildThemeDemoFormsPayloadAction
 
         foreach ($definitions as $definition) {
             foreach ($definition->sections() as $section) {
-                if (($section['type'] ?? null) !== 'form') {
+                if (! in_array($section['type'] ?? null, ['form', 'contact-split'], true)) {
                     continue;
                 }
 

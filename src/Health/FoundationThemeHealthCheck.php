@@ -96,7 +96,6 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
     private const array REQUIRED_TAILWIND_IMPORTS = [
         'resources/css/theme-foundation.css',
         'resources/css/widgets/foundation-widgets.css',
-        'tippy.js/dist/tippy.css',
         'swiper/css',
         'swiper/css/autoplay',
         'swiper/css/pagination',

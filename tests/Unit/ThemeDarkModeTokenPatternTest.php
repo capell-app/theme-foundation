@@ -68,3 +68,34 @@ test('agency and business themes use the class-driven dark-mode contract', funct
         }
     }
 });
+
+test('theme screenshot declarations match their implemented colour schemes', function (): void {
+    $packagesPath = dirname(__DIR__, 3);
+    $expectedSchemes = [
+        'theme-blog' => ['light', 'dark'],
+        'theme-brutalist' => ['light', 'dark'],
+        'theme-curated' => ['light', 'dark'],
+        'theme-platform' => ['dark'],
+    ];
+
+    foreach ($expectedSchemes as $packageDirectory => $schemes) {
+        $manifestPath = $packagesPath . '/' . $packageDirectory . '/docs/screenshots.json';
+        $manifest = json_decode((string) file_get_contents($manifestPath), true, flags: JSON_THROW_ON_ERROR);
+        $entries = is_array($manifest) && is_array($manifest['entries'] ?? null)
+            ? $manifest['entries']
+            : [];
+
+        expect($entries)->not->toBeEmpty();
+
+        foreach ($entries as $entry) {
+            $entryId = is_array($entry) && is_string($entry['id'] ?? null)
+                ? $entry['id']
+                : 'unknown';
+
+            expect(is_array($entry) ? ($entry['colorSchemes'] ?? null) : null)->toBe(
+                $schemes,
+                sprintf('%s entry %s does not declare its implemented colour schemes.', $packageDirectory, $entryId),
+            );
+        }
+    }
+});

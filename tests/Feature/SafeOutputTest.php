@@ -311,7 +311,10 @@ test('demo contact page uses only the prepared current domain relation', functio
 
     expect($contactPage)
         ->not->toContain('->defaultDomain')
-        ->toContain('$site->siteDomain?->url');
+        ->toContain('$site->siteDomain?->url')
+        ->toContain('<x-capell::form-embed')
+        ->toContain("__('capell-theme-foundation::generic.contact_expectations')")
+        ->not->toContain('action="#"');
 });
 
 test('theme public views and assets avoid package and theme implementation markers', function (): void {

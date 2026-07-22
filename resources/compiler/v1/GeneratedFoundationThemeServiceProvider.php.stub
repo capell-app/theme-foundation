@@ -1,0 +1,74 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Capell\GeneratedFoundationTheme;
+
+use Capell\Core\Enums\FrontendRuntime;
+use Capell\Core\Facades\CapellCore;
+use Capell\Core\ThemeStudio\Data\ThemeDefinitionData;
+use Capell\Core\ThemeStudio\Data\ThemePresetData;
+use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
+use Capell\FoundationTheme\Actions\DesignSpec\ReadDesignSpecAction;
+use Capell\FoundationTheme\Data\DesignSpec\DesignSpecData;
+use Capell\FoundationTheme\Support\Providers\RegistersLayoutNativeThemeDefaults;
+use Illuminate\Support\ServiceProvider;
+use RuntimeException;
+
+final class GeneratedFoundationThemeServiceProvider extends ServiceProvider
+{
+    use RegistersLayoutNativeThemeDefaults;
+
+    public const string THEME_KEY = 'generated-foundation';
+
+    public static string $packageName = 'capell-generated/foundation-theme';
+
+    public static function definition(): ThemeDefinitionData
+    {
+        $specification = self::specification();
+
+        return new ThemeDefinitionData(
+            key: self::THEME_KEY,
+            name: $specification->display->name,
+            description: $specification->display->description,
+            package: self::$packageName,
+            tags: ['Generated', 'Foundation'],
+            bestFit: ['Generated websites'],
+            presets: [new ThemePresetData(
+                key: self::THEME_KEY,
+                name: $specification->display->name,
+                description: $specification->display->description,
+                values: [],
+            )],
+            assets: ['css' => 'vendor/capell-generated-foundation/design-tokens.css'],
+            runtime: FrontendRuntime::Blade,
+            extends: 'default',
+        );
+    }
+
+    public function register(): void {}
+
+    public function boot(ThemeRegistry $registry): void
+    {
+        if (! CapellCore::isPackageInstalled(self::$packageName)) {
+            return;
+        }
+
+        $this->registerStandardLayoutAreas();
+        $registry->register(definition: self::definition());
+        $this->publishes([
+            __DIR__ . '/../resources/css/design-tokens.css' => public_path('vendor/capell-generated-foundation/design-tokens.css'),
+        ], 'capell-generated-foundation-assets');
+    }
+
+    private static function specification(): DesignSpecData
+    {
+        $bytes = file_get_contents(__DIR__ . '/../resources/design-spec.json');
+
+        if ($bytes === false) {
+            throw new RuntimeException('The generated theme DesignSpec is unavailable.');
+        }
+
+        return ReadDesignSpecAction::run($bytes);
+    }
+}

@@ -1,17 +1,81 @@
-import AlpineFloatingUI from '@awcodes/alpine-floating-ui'
-import Tooltip from '@ryangjchandler/alpine-tooltip'
+const optionalFrontendModules = [
+    {
+        key: 'lightbox',
+        selector: '[data-lightbox], .lightbox, [x-data="lightbox"]',
+        load: () => import('./utilities/lightbox'),
+    },
+    {
+        key: 'carousel',
+        selector: '.swiper',
+        load: () => import('./widgets/widget/carousel'),
+    },
+    {
+        key: 'faq-search',
+        selector: '[data-faq-search-discovery]',
+        load: () => import('./widgets/widget/faq-search'),
+    },
+    {
+        key: 'form-hints',
+        selector: '[data-form-encouraging]',
+        load: () => import('./widgets/widget/form-hints'),
+    },
+    {
+        key: 'pricing-spectrum',
+        selector: '[data-pricing-spectrum]',
+        load: () => import('./widgets/widget/pricing-spectrum'),
+    },
+    {
+        key: 'tabs',
+        selector: '[role="tablist"]',
+        load: () => import('./widgets/widget/tabs'),
+    },
+    {
+        key: 'count-up',
+        selector: '[data-count-up]',
+        load: () => import('./widgets/widget/count-up'),
+    },
+    {
+        key: 'scroll-spy',
+        selector: '[data-scroll-spy]',
+        load: () => import('./widgets/widget/scroll-spy'),
+    },
+    {
+        key: 'compare-slider',
+        selector: '[data-compare-slider]',
+        load: () => import('./widgets/widget/compare-slider'),
+    },
+    {
+        key: 'accordion-toggle',
+        selector: '[data-accordion]',
+        load: () => import('./widgets/widget/accordion-toggle'),
+    },
+    {
+        key: 'hover-video-poster',
+        selector: '[data-hover-video-poster]',
+        load: () => import('./widgets/widget/hover-video-poster'),
+    },
+]
 
-import './utilities/lightbox'
-import './widgets/widget/carousel'
-import './widgets/widget/faq-search'
-import './widgets/widget/form-hints'
-import './widgets/widget/pricing-spectrum'
-import './widgets/widget/tabs'
-import './widgets/widget/count-up'
-import './widgets/widget/scroll-spy'
-import './widgets/widget/compare-slider'
-import './widgets/widget/accordion-toggle'
-import './widgets/widget/hover-video-poster'
+const optionalModuleLoads = new Map()
+
+const containsSelector = (root, selector) =>
+    (typeof root?.matches === 'function' && root.matches(selector)) ||
+    (typeof root?.querySelector === 'function' && root.querySelector(selector))
+
+const loadOptionalModules = (root = document) => {
+    optionalFrontendModules.forEach(({ key, load, selector }) => {
+        if (!containsSelector(root, selector) || optionalModuleLoads.has(key)) {
+            return
+        }
+
+        const pendingLoad = load().catch((error) => {
+            optionalModuleLoads.delete(key)
+            console.error(`Unable to load Foundation's ${key} module.`, error)
+        })
+
+        optionalModuleLoads.set(key, pendingLoad)
+    })
+}
 
 const inactiveFaqTabClasses = [
     'border',
@@ -365,18 +429,15 @@ document.addEventListener('keydown', (event) => {
 })
 
 if (typeof document !== 'undefined') {
+    loadOptionalModules()
     initThemeCarousels()
     initPathways()
     initSpotlights()
 
     document.addEventListener('livewire:navigated', () => {
+        loadOptionalModules()
         initThemeCarousels()
         initPathways()
         initSpotlights()
     })
 }
-
-document.addEventListener('alpine:init', () => {
-    window.Alpine.plugin(Tooltip)
-    window.Alpine.plugin(AlpineFloatingUI)
-})

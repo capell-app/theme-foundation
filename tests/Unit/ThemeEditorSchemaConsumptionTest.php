@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Capell\Core\ThemeStudio\Data\BrandProfileData;
 use Capell\FoundationTheme\Support\Editor\StandardThemeEditorSchema;
 
 /*
@@ -141,6 +142,18 @@ it('declares a well-formed editor schema: every grouped token has options', func
             expect($schema['tokens'][$tokenKey]['options'])
                 ->not->toBeEmpty("Token [{$tokenKey}] must offer at least one option.");
         }
+    }
+});
+
+it('emits every standard editor token through the runtime token producer', function (): void {
+    $producedTokens = (new BrandProfileData)->tokens();
+
+    foreach (StandardThemeEditorSchema::tokenKeys() as $tokenKey) {
+        $customProperty = editorSchemaTokenCustomProperty($tokenKey);
+
+        expect(array_key_exists($customProperty, $producedTokens))->toBeTrue(
+            "Editor token [{$tokenKey}] has no runtime {$customProperty} producer.",
+        );
     }
 });
 

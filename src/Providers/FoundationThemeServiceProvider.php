@@ -7,6 +7,7 @@ namespace Capell\FoundationTheme\Providers;
 use Capell\Admin\Data\Extensions\ExtensionManagementSurfaceData;
 use Capell\Admin\Facades\CapellAdmin;
 use Capell\Core\Actions\RegisterBlazeOptimizedViewsAction;
+use Capell\Core\Contracts\ProjectBuild\ProjectBuildArtifactHandler;
 use Capell\Core\Data\RenderableDefinitionData;
 use Capell\Core\Data\VendorAssetData;
 use Capell\Core\Enums\BlueprintGroupEnum;
@@ -17,6 +18,7 @@ use Capell\Core\Events\PackageInstalled;
 use Capell\Core\Events\PackageUninstalled;
 use Capell\Core\Facades\CapellCore;
 use Capell\Core\Models\Language;
+use Capell\Core\Models\Layout;
 use Capell\Core\Models\Page;
 use Capell\Core\Models\Site;
 use Capell\Core\Models\Theme;
@@ -28,6 +30,7 @@ use Capell\Core\ThemeStudio\Data\ThemePresetData;
 use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
 use Capell\FoundationTheme\Actions\PrepareFoundationPageWidgetDataAction;
 use Capell\FoundationTheme\Actions\ResolveFoundationThemeTokensAction;
+use Capell\FoundationTheme\Actions\ResolveResultsListingAction;
 use Capell\FoundationTheme\Console\Commands\DemoCommand;
 use Capell\FoundationTheme\Console\Commands\GenerateTailwindAssetsCommand;
 use Capell\FoundationTheme\Console\Commands\MakeThemeCommand;
@@ -35,6 +38,7 @@ use Capell\FoundationTheme\Console\Commands\SetupCommand;
 use Capell\FoundationTheme\Console\Commands\ThemeCatalogueReportCommand;
 use Capell\FoundationTheme\Console\Commands\ValidateThemesCommand;
 use Capell\FoundationTheme\Contracts\OptionalExtensionAvailability;
+use Capell\FoundationTheme\Contracts\ResultsListingResolver;
 use Capell\FoundationTheme\Enums\FoundationSectionWidgetComponentEnum;
 use Capell\FoundationTheme\Enums\FoundationThemeAssetEnum;
 use Capell\FoundationTheme\Filament\Extenders\FoundationLayoutContainerSchemaExtender;
@@ -48,6 +52,7 @@ use Capell\FoundationTheme\Support\Assets\ThemeFrontendScriptContributor;
 use Capell\FoundationTheme\Support\Assets\ThemeFrontendScriptRegistry;
 use Capell\FoundationTheme\Support\Blade\BladeDirectives;
 use Capell\FoundationTheme\Support\CapellOptionalExtensionAvailability;
+use Capell\FoundationTheme\Support\DesignSpec\FoundationThemeProjectBuildArtifactHandler;
 use Capell\FoundationTheme\Support\FoundationLayoutContainerThemePresentationProjector;
 use Capell\FoundationTheme\Support\FoundationThemeRuntimeManifestContributor;
 use Capell\FoundationTheme\Support\Interceptors\Themes\FoundationThemeInterceptor;
@@ -205,6 +210,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
     public function packageRegistered(): void
     {
+        $this->app->tag([FoundationThemeProjectBuildArtifactHandler::class], ProjectBuildArtifactHandler::TAG);
         $this->app->scoped(FoundationThemeAssetContributor::class);
         $this->app->singleton(ThemeFrontendScriptRegistry::class);
         $this->app->scoped(ThemeFrontendScriptContributor::class);
@@ -213,6 +219,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
             OptionalExtensionAvailability::class,
             CapellOptionalExtensionAvailability::class,
         );
+        $this->app->scoped(ResultsListingResolver::class, ResolveResultsListingAction::class);
 
         $this->registerVendorNpmDependencies();
     }
@@ -343,15 +350,17 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
     {
         $site = $event->renderContext->site;
         $language = $event->renderContext->language;
+        $layout = $event->renderContext->layout;
         $page = $event->renderContext->page;
 
-        if (! $site instanceof Site || ! $language instanceof Language || ! $page instanceof Page) {
+        if (! $site instanceof Site || ! $language instanceof Language || ! $layout instanceof Layout || ! $page instanceof Page) {
             return;
         }
 
         PrepareFoundationPageWidgetDataAction::run(
             site: $site,
             language: $language,
+            layout: $layout,
             page: $page,
             setFrontendData: fn (string $key, mixed $value) => $event->context->setFrontendData($key, $value),
         );
@@ -641,10 +650,6 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
         CapellCore::registerVendorAsset(
             VendorAssetData::tailwindImport('resources/css/widgets/foundation-widgets.css', self::$packageName),
-        );
-
-        CapellCore::registerVendorAsset(
-            VendorAssetData::tailwindImport('tippy.js/dist/tippy.css', self::$packageName),
         );
 
         CapellCore::registerVendorAsset(

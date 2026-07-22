@@ -45,3 +45,40 @@ it('serializes form sections into a package-neutral demo payload', function (): 
         'success_message' => 'Thanks — we will reply shortly.',
     ]]);
 });
+
+it('serializes contact split form blueprints for layout-native contact pages', function (): void {
+    $definition = new ThemeDemoPageDefinition(
+        surface: 'contact',
+        name: 'Studio contact',
+        title: 'Start a project',
+        slug: 'theme-studio-contact',
+        content: '<p>Tell us about the work.</p>',
+        renderData: [
+            'sections' => [[
+                'type' => 'contact-split',
+                'form_handle' => 'studio-enquiry',
+                'form_name' => 'Studio enquiry',
+                'summary' => 'Share the brief.',
+                'fields' => [
+                    ['name' => 'email', 'label' => 'Email', 'type' => 'email', 'required' => true],
+                ],
+            ]],
+        ],
+    );
+
+    $payload = json_decode(
+        BuildThemeDemoFormsPayloadAction::run([$definition]),
+        true,
+        flags: JSON_THROW_ON_ERROR,
+    );
+
+    expect($payload)->toBe([[
+        'handle' => 'studio-enquiry',
+        'name' => 'Studio enquiry',
+        'description' => 'Share the brief.',
+        'fields' => [
+            ['name' => 'email', 'label' => 'Email', 'type' => 'email', 'required' => true],
+        ],
+        'success_message' => null,
+    ]]);
+});

@@ -67,6 +67,7 @@
             "encryptedFields": [],
             "hashedTokenFields": [],
             "redactedOutputClasses": [
+                "Capell\\FoundationTheme\\Actions\\DesignSpec\\CompileFoundationThemeArtifactAction",
                 "Capell\\FoundationTheme\\Actions\\MarkPrimaryHeadingRenderedAction"
             ],
             "plaintextJustifications": []

@@ -1,0 +1,91 @@
+{
+    "schemaVersion": 1,
+    "template": "foundation",
+    "display": {
+        "name": "Capell Studio",
+        "description": "A stable, accessible foundation design for the primary site."
+    },
+    "sites": [
+        {
+            "key": "primary",
+            "name": "Capell Studio",
+            "localeCodes": ["en-GB"],
+            "defaultLocale": "en-GB",
+            "fallbackLocaleCodes": ["en-GB"]
+        }
+    ],
+    "locales": [
+        {
+            "code": "en-GB",
+            "label": "English (United Kingdom)",
+            "direction": "ltr"
+        }
+    ],
+    "brand": {
+        "name": "Capell Studio",
+        "logoAssetId": "logo-foundation"
+    },
+    "palette": {
+        "light": {
+            "background": "#FFFFFF",
+            "surface": "#F5F5F5",
+            "text": "#111827",
+            "mutedText": "#4B5563",
+            "largeText": "#4B5563",
+            "primary": "#1D4ED8",
+            "onPrimary": "#FFFFFF",
+            "border": "#6B7280",
+            "focus": "#1D4ED8"
+        },
+        "dark": {
+            "background": "#0F172A",
+            "surface": "#1E293B",
+            "text": "#F8FAFC",
+            "mutedText": "#CBD5E1",
+            "largeText": "#CBD5E1",
+            "primary": "#93C5FD",
+            "onPrimary": "#0F172A",
+            "border": "#94A3B8",
+            "focus": "#FDE047"
+        }
+    },
+    "typography": {
+        "locales": [
+            {
+                "locale": "en-GB",
+                "heading": {
+                    "family": "serif",
+                    "style": "normal",
+                    "weight": 700,
+                    "fontAssetId": "font-serif-latin"
+                },
+                "body": {
+                    "family": "system",
+                    "style": "normal",
+                    "weight": 400,
+                    "fontAssetId": null
+                }
+            }
+        ]
+    },
+    "layout": {
+        "container": "standard",
+        "density": "comfortable",
+        "spacing": "normal",
+        "radius": "medium",
+        "darkMode": "system"
+    },
+    "components": {
+        "button": "solid",
+        "card": "bordered",
+        "navigation": "hybrid",
+        "hero": "split"
+    },
+    "accessibility": {
+        "reducedMotion": "respect",
+        "focusIndicator": "visible",
+        "landmarks": "semantic",
+        "headingHierarchy": "ordered"
+    },
+    "assets": [{ "id": "logo-foundation" }, { "id": "font-serif-latin" }]
+}

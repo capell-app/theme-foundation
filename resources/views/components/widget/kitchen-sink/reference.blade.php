@@ -86,7 +86,7 @@
                     @case ('tabs')
                         <div
                             role="tablist"
-                            aria-label="Demo tab set"
+                            aria-label="{{ __('capell-theme-foundation::generic.demo_tab_set') }}"
                         >
                             <button
                                 type="button"
@@ -127,11 +127,11 @@
                     @case ('carousel-slider')
                         <section
                             aria-roledescription="carousel"
-                            aria-label="Demo carousel"
+                            aria-label="{{ __('capell-theme-foundation::generic.demo_carousel') }}"
                         >
                             <button
                                 type="button"
-                                aria-label="Previous slide"
+                                aria-label="{{ __('capell-theme-foundation::generic.previous_slide') }}"
                             >
                                 Previous
                             </button>
@@ -141,7 +141,7 @@
                             </article>
                             <button
                                 type="button"
-                                aria-label="Next slide"
+                                aria-label="{{ __('capell-theme-foundation::generic.next_slide') }}"
                             >
                                 Next
                             </button>
@@ -174,32 +174,16 @@
                         @break
                     @case ('form-field-demo')
                     @case ('full-form')
-                        <form
-                            action="#"
-                            method="post"
-                        >
-                            <label for="{{ $key }}-email">Work email</label>
-                            <input
-                                id="{{ $key }}-email"
-                                name="email"
-                                type="email"
-                                aria-describedby="{{ $key }}-email-help {{ $key }}-email-error"
-                            />
-                            <p
-                                id="{{ $key }}-email-help"
-                            >Use a visible label and helper text.</p>
-                            <p
-                                id="{{ $key }}-email-error"
-                                role="alert"
-                            >Example validation message.</p>
-                            <button type="button">Submit demo form</button>
-                        </form>
+                        <x-capell::form-embed
+                            handle="foundation-enquiry"
+                            :instance-id="$key . '-form'"
+                        />
                         @break
                     @case ('video-embed')
                         <figure>
                             <video
                                 controls
-                                aria-label="Demo video embed"
+                                aria-label="{{ __('capell-theme-foundation::generic.demo_video_embed') }}"
                             ></video>
                             <figcaption>
                                 Video embeds include controls and an accessible
@@ -211,7 +195,7 @@
                         <figure>
                             <audio
                                 controls
-                                aria-label="Demo audio player"
+                                aria-label="{{ __('capell-theme-foundation::generic.demo_audio_player') }}"
                             ></audio>
                             <figcaption>
                                 Audio players include controls and a text

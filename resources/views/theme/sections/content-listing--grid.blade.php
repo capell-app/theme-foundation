@@ -26,8 +26,17 @@
             @endif
         </div>
 
+        @if (filled(data_get($section, 'resolvedResults.archiveUrl')))
+            <a
+                href="{{ data_get($section, 'resolvedResults.archiveUrl') }}"
+                class="mb-8 inline-flex font-semibold text-[var(--theme-primary)] underline-offset-4 hover:underline"
+            >
+                {{ __('capell-theme-foundation::results.archive') }}
+            </a>
+        @endif
+
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            @foreach ($section->items as $item)
+            @foreach (data_get($section, 'resolvedResults.items', data_get($section, 'items', [])) as $item)
                 <a
                     href="{{ $item['url'] ?? '#' }}"
                     class="group widget overflow-hidden rounded-[var(--theme-radius-value)] border border-slate-200 bg-white transition hover:border-slate-950"

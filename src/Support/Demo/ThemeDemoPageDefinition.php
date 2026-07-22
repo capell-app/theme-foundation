@@ -91,6 +91,7 @@ final class ThemeDemoPageDefinition
         string $title,
         string $slug,
         array $renderDataOverrides = [],
+        ?LayoutEnum $layout = null,
     ): self {
         return new self(
             surface: $surface,
@@ -100,7 +101,7 @@ final class ThemeDemoPageDefinition
             content: $this->content,
             renderData: array_replace($this->renderData, $renderDataOverrides),
             type: $this->type,
-            layout: $this->layout,
+            layout: $layout ?? $this->layout,
             containers: $this->containers,
             widgets: $this->widgets,
         );

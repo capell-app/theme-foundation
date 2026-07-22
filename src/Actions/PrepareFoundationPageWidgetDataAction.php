@@ -7,8 +7,10 @@ namespace Capell\FoundationTheme\Actions;
 use Capell\Core\Contracts\Pageable;
 use Capell\Core\Enums\PageOrderEnum;
 use Capell\Core\Models\Language;
+use Capell\Core\Models\Layout;
 use Capell\Core\Models\Page;
 use Capell\Core\Models\Site;
+use Capell\FoundationTheme\Support\ResultsSectionContributor;
 use Capell\Frontend\Support\Loader\PageLoader;
 use Capell\LayoutBuilder\Models\Widget;
 use Capell\LayoutBuilder\Support\CapellLayoutManager;
@@ -25,7 +27,10 @@ final class PrepareFoundationPageWidgetDataAction
     use AsFake;
     use AsObject;
 
-    public function __construct(private readonly Request $request) {}
+    public function __construct(
+        private readonly Request $request,
+        private readonly ResultsSectionContributor $resultsSectionContributor,
+    ) {}
 
     public static function frontendDataKey(Widget $widget): string
     {
@@ -33,7 +38,7 @@ final class PrepareFoundationPageWidgetDataAction
     }
 
     /** @param callable(string, mixed): mixed $setFrontendData */
-    public function handle(Site $site, Language $language, Page $page, callable $setFrontendData): void
+    public function handle(Site $site, Language $language, Layout $layout, Page $page, callable $setFrontendData): void
     {
         $widgets = CapellLayoutManager::getContainerWidgets()
             ->flatten(2)
@@ -41,6 +46,12 @@ final class PrepareFoundationPageWidgetDataAction
             ->unique(static fn (Widget $widget): int|string => self::widgetKey($widget));
 
         foreach ($widgets as $widget) {
+            $results = $this->resultsSectionContributor->contribute($widget, $layout, $site, $language, $page);
+
+            if ($results !== null) {
+                $setFrontendData('foundation.results-listing.' . self::widgetKey($widget), $results);
+            }
+
             $pages = match ($widget->key) {
                 'children' => $this->children($widget, $site, $language, $page),
                 'latest-pages' => $this->latest($widget, $site, $language, $page),

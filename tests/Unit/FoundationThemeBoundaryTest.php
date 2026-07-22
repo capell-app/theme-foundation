@@ -28,18 +28,34 @@ it('owns the foundation frontend javascript runtime', function (): void {
     $entrypoint = file_get_contents(dirname(__DIR__, 2) . '/resources/js/capell-frontend.js');
     $config = file_get_contents(dirname(__DIR__, 2) . '/config/capell-theme-foundation.php');
 
-    expect($entrypoint)->toContain('@ryangjchandler/alpine-tooltip')
-        ->and($entrypoint)->toContain('@awcodes/alpine-floating-ui')
-        ->and($entrypoint)->toContain('./utilities/lightbox')
-        ->and($config)->toContain('@ryangjchandler/alpine-tooltip')
-        ->and($config)->toContain('@awcodes/alpine-floating-ui');
+    expect($entrypoint)->not->toContain('@ryangjchandler/alpine-tooltip')
+        ->and($entrypoint)->not->toContain('@awcodes/alpine-floating-ui')
+        ->and($entrypoint)->toContain("import('./utilities/lightbox')")
+        ->and($entrypoint)->not->toContain("import './utilities/lightbox'")
+        ->and($config)->not->toContain('@ryangjchandler/alpine-tooltip')
+        ->and($config)->not->toContain('tippy.js')
+        ->and($config)->not->toContain('@awcodes/alpine-floating-ui');
 });
 
-it('bundles layout builder javascript into the foundation frontend runtime', function (): void {
+it('keeps admin tooltip dependencies out of public theme assets', function (): void {
+    $entrypoint = file_get_contents(dirname(__DIR__, 2) . '/resources/js/capell-frontend.js');
+    $config = file_get_contents(dirname(__DIR__, 2) . '/config/capell-theme-foundation.php');
+    $provider = file_get_contents(dirname(__DIR__, 2) . '/src/Providers/FoundationThemeServiceProvider.php');
+    $healthCheck = file_get_contents(dirname(__DIR__, 2) . '/src/Health/FoundationThemeHealthCheck.php');
+
+    expect($entrypoint)->not->toContain('alpine-tooltip', 'tippy.js')
+        ->and($config)->not->toContain('alpine-tooltip', 'tippy.js')
+        ->and($provider)->not->toContain('tippy.js')
+        ->and($healthCheck)->not->toContain('tippy.js');
+});
+
+it('loads optional layout builder javascript from the foundation frontend runtime on demand', function (): void {
     $contributor = file_get_contents(dirname(__DIR__, 2) . '/src/Support/Assets/FoundationThemeAssetContributor.php');
     $entrypoint = file_get_contents(dirname(__DIR__, 2) . '/resources/js/capell-frontend.js');
 
-    expect($entrypoint)->toContain('./widgets/widget/carousel')
+    expect($entrypoint)->toContain("selector: '.swiper'")
+        ->and($entrypoint)->toContain("import('./widgets/widget/carousel')")
+        ->and($entrypoint)->not->toContain("import './widgets/widget/carousel'")
         ->and($contributor)->toContain("new ViteResourceSourceData('resources/js/capell-frontend.js', 'vendor/capell-theme-foundation')")
         ->and($contributor)->toContain('theme-foundation:runtime')
         ->and($contributor)->not->toContain('LAYOUT_BUILDER_ASSETS_CONDITION');
@@ -121,10 +137,36 @@ it('publishes the foundation frontend runtime build during setup', function (): 
     throw_unless(is_string($runtimeFile), RuntimeException::class, 'Expected a Foundation frontend runtime asset.');
 
     $runtime = file_get_contents(dirname(__DIR__, 2) . '/publishes/build/' . $runtimeFile);
+    $javascriptAssets = [];
+
+    throw_unless(is_string($runtime), RuntimeException::class, 'Unable to read the Foundation frontend runtime asset.');
+
+    foreach ($manifest as $asset) {
+        $assetFile = is_array($asset) ? ($asset['file'] ?? null) : null;
+
+        if (! is_string($assetFile) || ! str_ends_with($assetFile, '.js')) {
+            continue;
+        }
+
+        $assetPath = dirname(__DIR__, 2) . '/publishes/build/' . $assetFile;
+
+        throw_unless(is_file($assetPath), RuntimeException::class, sprintf('Expected built asset %s.', $assetFile));
+
+        $javascriptAssets[] = $assetPath;
+    }
+
+    $compiledRuntime = implode('', array_map(
+        static fn (string $asset): string => (string) file_get_contents($asset),
+        $javascriptAssets,
+    ));
 
     expect($provider)->toContain('capell-theme-foundation-assets')
         ->and(file_exists(dirname(__DIR__, 2) . '/publishes/build/manifest.json'))->toBeTrue()
         ->and($runtime)->toBeString()
+        ->and(strlen(gzencode($runtime, 9)))->toBeLessThanOrEqual(5_000)
+        ->and(count($javascriptAssets))->toBeGreaterThan(1)
+        ->and($runtimeEntry['dynamicImports'] ?? [])->not->toBeEmpty()
+        ->and($compiledRuntime)->toBeString()
         ->toContain('tabs-change', 'alpine:init', '_x_dataStack')
         ->and($action)->toContain('vendor:publish')
         ->and($action)->toContain('capell-theme-foundation-assets');

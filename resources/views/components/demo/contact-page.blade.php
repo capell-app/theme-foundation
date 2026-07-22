@@ -274,11 +274,9 @@
                 </div>
             </div>
 
-            <form
+            <div
                 id="contact-form"
                 class="theme-demo-contact-form theme-demo-contact-form-panel"
-                method="post"
-                action="#"
             >
                 <div class="theme-demo-contact-form-header">
                     <p class="theme-demo-contact-eyebrow">Contact form</p>
@@ -286,47 +284,16 @@
                     <p>Share the context once. We will route it to the right delivery, support, migration, or partnership lead.</p>
                 </div>
 
-                @foreach ([['theme-demo-contact-name', 'name', 'text', 'Name', 'name'], ['theme-demo-contact-email', 'email', 'email', 'Work email', 'email'], ['theme-demo-contact-company', 'company', 'text', 'Company', 'organization']] as [$id, $name, $type, $label, $autocomplete])
-                    <div class="theme-demo-contact-field">
-                        <label for="{{ $id }}">{{ $label }}</label>
-                        <input
-                            id="{{ $id }}"
-                            name="{{ $name }}"
-                            type="{{ $type }}"
-                            autocomplete="{{ $autocomplete }}"
-                        />
-                    </div>
-                @endforeach
-
-                <div class="theme-demo-contact-field">
-                    <label for="theme-demo-contact-topic">Topic</label>
-                    <select
-                        id="theme-demo-contact-topic"
-                        name="topic"
-                    >
-                        <option>Project scoping</option>
-                        <option>Support</option>
-                        <option>Migration planning</option>
-                        <option>Partnerships</option>
-                    </select>
-                </div>
-
-                <div class="theme-demo-contact-field">
-                    <label for="theme-demo-contact-message">Message</label>
-                    <textarea
-                        id="theme-demo-contact-message"
-                        name="message"
-                        rows="5"
-                    ></textarea>
-                </div>
-
-                <button type="button">Send enquiry</button>
-            </form>
+                <x-capell::form-embed
+                    handle="foundation-enquiry"
+                    instance-id="theme-demo-contact-form"
+                />
+            </div>
         </div>
 
         <div
             class="theme-demo-contact-expectations"
-            aria-label="Contact expectations"
+            aria-label="{{ __('capell-theme-foundation::generic.contact_expectations') }}"
         >
             <p>
                 <strong>Response:</strong>
