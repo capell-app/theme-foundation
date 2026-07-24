@@ -8,21 +8,25 @@ use Capell\FoundationTheme\Support\DesignSpec\DesignSpecSchema;
 it('publishes a closed frozen foundation schema without defaults or launch controls', function (): void {
     $schema = DesignSpecSchema::toArray();
 
-    expect($schema['additionalProperties'])->toBeFalse()
-        ->and($schema['required'])->toBe(DesignSpecSchema::keys('root'))
-        ->and($schema['properties']['schemaVersion']['const'])->toBe(1)
-        ->and($schema['properties']['template']['const'])->toBe('foundation')
-        ->and($schema['properties']['sites']['maxItems'])->toBe(DesignSpecConstraints::MAX_SITES)
-        ->and($schema['properties']['locales']['maxItems'])->toBe(DesignSpecConstraints::MAX_LOCALES)
-        ->and($schema['properties']['assets']['maxItems'])->toBe(DesignSpecConstraints::MAX_ASSET_FILES);
+    expect(data_get($schema, 'additionalProperties'))->toBeFalse()
+        ->and(data_get($schema, 'required'))->toBe(DesignSpecSchema::keys('root'))
+        ->and(data_get($schema, 'properties.schemaVersion.const'))->toBe(1)
+        ->and(data_get($schema, 'properties.template.const'))->toBe('foundation')
+        ->and(data_get($schema, 'properties.sites.maxItems'))->toBe(DesignSpecConstraints::MAX_SITES)
+        ->and(data_get($schema, 'properties.locales.maxItems'))->toBe(DesignSpecConstraints::MAX_LOCALES)
+        ->and(data_get($schema, 'properties.assets.maxItems'))->toBe(DesignSpecConstraints::MAX_ASSET_FILES);
 
-    expect($schema['$defs']['components']['maxProperties'])->toBe(DesignSpecConstraints::MAX_COMPONENT_SELECTIONS)
-        ->and($schema['$defs']['colorMode']['maxProperties'])->toBe(DesignSpecConstraints::MAX_PALETTE_COLORS)
-        ->and($schema['$defs']['colorMode']['required'])->toContain('largeText');
+    expect(data_get($schema, '$defs.components.maxProperties'))->toBe(DesignSpecConstraints::MAX_COMPONENT_SELECTIONS)
+        ->and(data_get($schema, '$defs.colorMode.maxProperties'))->toBe(DesignSpecConstraints::MAX_PALETTE_COLORS)
+        ->and(data_get($schema, '$defs.colorMode.required'))->toContain('largeText');
 
-    foreach ($schema['$defs'] as $name => $definition) {
+    foreach (foundationThemeJsonObject(data_get($schema, '$defs')) as $name => $definition) {
+        if (! is_string($name) || ! is_array($definition)) {
+            throw new RuntimeException('Invalid DesignSpec schema definition.');
+        }
+
         if (($definition['type'] ?? null) === 'object') {
-            expect($definition['additionalProperties'] ?? null, "{$name} must be closed")->toBeFalse()
+            expect($definition['additionalProperties'] ?? null)->toBeFalse()
                 ->and($definition['required'] ?? null)->toBe(DesignSpecSchema::keys($name));
         }
     }

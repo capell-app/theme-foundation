@@ -23,6 +23,18 @@ it('declares foundation as the default theme package', function (): void {
         ->and($manifest['settings'])->toBe([FoundationThemeSettings::class]);
 });
 
+it('advertises the release-facing DesignSpec producer contract', function (): void {
+    $manifest = themePackageManifest('theme-foundation');
+
+    expect($manifest['capabilities'])->toContain(
+        'design-spec-v1',
+        'deterministic-theme-compiler',
+        'project-build-capell-theme-artifact',
+    )
+        ->and($manifest['description'])->toContain('DesignSpec')
+        ->and(data_get($manifest, 'marketplace.summary'))->toContain('DesignSpec');
+});
+
 it('registers only the shipped foundation theme service provider', function (): void {
     $manifest = themePackageManifest('theme-foundation');
     $composer = themePackageComposer('theme-foundation');
@@ -231,7 +243,7 @@ it('declares standalone theme packages as frontend themes', function (string $pa
 })->with('standalone theme packages');
 
 dataset('standalone theme packages', function (): array {
-    $packagesDirectory = dirname(__DIR__, 3);
+    $packagesDirectory = foundationThemePackagesDirectory();
     $themeManifests = glob($packagesDirectory . '/theme-*/capell.json') ?: [];
     $themeManifests = array_filter(
         $themeManifests,
@@ -239,6 +251,10 @@ dataset('standalone theme packages', function (): array {
     );
 
     sort($themeManifests);
+
+    if ($themeManifests === []) {
+        throw new RuntimeException("No standalone theme manifests were discovered in [{$packagesDirectory}].");
+    }
 
     $packages = [];
 
@@ -261,6 +277,10 @@ dataset('standalone theme packages', function (): array {
         ];
     }
 
+    if ($packages === []) {
+        throw new RuntimeException("No standalone theme package contracts were discovered in [{$packagesDirectory}].");
+    }
+
     return $packages;
 });
 
@@ -270,7 +290,7 @@ it('agrees with docs/themes.json and ThemeDefinitionData for each standalone the
     // extracted ValidateThemeCatalogueEntryAction, the same Action
     // `capell:validate-themes` and `scripts/validate-themes.php` use, so this
     // suite and the command stay in lock-step from one source of truth.
-    $packagesDirectory = dirname(__DIR__, 3);
+    $packagesDirectory = foundationThemePackagesDirectory();
 
     $result = ValidateThemeCatalogueEntryAction::run($packageDirectory, $packagesDirectory);
     $violations = themeCatalogueViolationsExcludingKnownScreenshotSurfaceGap($themeKey, $result->violations);
@@ -285,7 +305,7 @@ it('agrees with docs/themes.json and ThemeDefinitionData for each standalone the
 function themePackageManifest(string $packageDirectory): array
 {
     return foundationThemeManifestMap(json_decode(
-        (string) file_get_contents(dirname(__DIR__, 3) . '/' . $packageDirectory . '/capell.json'),
+        (string) file_get_contents(foundationThemePackagesDirectory() . '/' . $packageDirectory . '/capell.json'),
         true,
         flags: JSON_THROW_ON_ERROR,
     ));
@@ -309,10 +329,30 @@ function foundationThemeScreenshotsContract(): array
 function themePackageComposer(string $packageDirectory): array
 {
     return foundationThemeManifestMap(json_decode(
-        (string) file_get_contents(dirname(__DIR__, 3) . '/' . $packageDirectory . '/composer.json'),
+        (string) file_get_contents(foundationThemePackagesDirectory() . '/' . $packageDirectory . '/composer.json'),
         true,
         flags: JSON_THROW_ON_ERROR,
     ));
+}
+
+function foundationThemePackagesDirectory(): string
+{
+    $candidates = [
+        dirname(__DIR__, 3),
+        dirname(__DIR__, 5) . '/packages',
+    ];
+
+    foreach ($candidates as $candidate) {
+        if (is_file($candidate . '/theme-foundation/capell.json')) {
+            $packagesDirectory = realpath($candidate);
+
+            if (is_string($packagesDirectory)) {
+                return $packagesDirectory;
+            }
+        }
+    }
+
+    throw new RuntimeException('Unable to locate the Capell packages directory from the Foundation Theme test bootstrap.');
 }
 
 /**

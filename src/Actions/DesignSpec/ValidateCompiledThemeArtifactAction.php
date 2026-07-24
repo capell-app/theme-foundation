@@ -116,24 +116,25 @@ final class ValidateCompiledThemeArtifactAction
                 throw new InvalidArgumentException('design_spec.artifact.file_invalid');
             }
 
-            $this->exactKeys($entry, self::FILE_KEYS, 'design_spec.artifact.file_invalid');
-            $path = $entry['path'] ?? null;
+            $file = $this->objectValue($entry, 'design_spec.artifact.file_invalid');
+            $this->exactKeys($file, self::FILE_KEYS, 'design_spec.artifact.file_invalid');
+            $path = $file['path'] ?? null;
             if (! is_string($path)
                 || ! array_key_exists($path, CompileFoundationThemeArtifactAction::FILE_MEDIA_TYPES)
                 || array_key_exists($path, $files)) {
                 throw new InvalidArgumentException('design_spec.artifact.path_invalid');
             }
 
-            $contents = is_string($entry['contentsBase64'] ?? null) ? base64_decode($entry['contentsBase64'], true) : false;
+            $contents = is_string($file['contentsBase64'] ?? null) ? base64_decode($file['contentsBase64'], true) : false;
             if ($contents === false
-                || ($entry['mediaType'] ?? null) !== CompileFoundationThemeArtifactAction::FILE_MEDIA_TYPES[$path]
-                || ($entry['sizeBytes'] ?? null) !== strlen($contents)
-                || ! is_string($entry['sha256'] ?? null)
-                || ! hash_equals($entry['sha256'], hash('sha256', $contents))) {
+                || ($file['mediaType'] ?? null) !== CompileFoundationThemeArtifactAction::FILE_MEDIA_TYPES[$path]
+                || ($file['sizeBytes'] ?? null) !== strlen($contents)
+                || ! is_string($file['sha256'] ?? null)
+                || ! hash_equals($file['sha256'], hash('sha256', $contents))) {
                 throw new InvalidArgumentException('design_spec.artifact.file_integrity_invalid');
             }
 
-            $files[$path] = new CompiledThemeFileData($path, $entry['mediaType'], strlen($contents), $entry['sha256'], $contents);
+            $files[$path] = new CompiledThemeFileData($path, $file['mediaType'], strlen($contents), $file['sha256'], $contents);
         }
 
         $expectedPaths = array_keys(CompileFoundationThemeArtifactAction::FILE_MEDIA_TYPES);
@@ -158,16 +159,20 @@ final class ValidateCompiledThemeArtifactAction
 
         $manifest = $this->object($files['capell.json']->contents, 'design_spec.artifact.manifest_invalid');
         $composer = $this->object($files['composer.json']->contents, 'design_spec.artifact.composer_invalid');
+        $dependencies = $this->objectValue($manifest['dependencies'] ?? null, 'design_spec.artifact.package_contract_invalid');
+        $providers = $this->objectValue($manifest['providers'] ?? null, 'design_spec.artifact.package_contract_invalid');
+        $requirements = $this->objectValue($composer['require'] ?? null, 'design_spec.artifact.package_contract_invalid');
+        $autoload = $this->objectValue($composer['autoload'] ?? null, 'design_spec.artifact.package_contract_invalid');
         $expectedDependencies = ['capell-app/core', 'capell-app/frontend', 'capell-app/layout-builder', 'capell-app/theme-foundation'];
         if (($manifest['manifest-version'] ?? null) !== 3
             || ($manifest['name'] ?? null) !== 'capell-generated/foundation-theme'
             || ($manifest['kind'] ?? null) !== 'theme'
             || ($manifest['themeKey'] ?? null) !== 'generated-foundation'
             || ($manifest['extends'] ?? null) !== 'default'
-            || ($manifest['dependencies']['requires'] ?? null) !== $expectedDependencies
-            || ($manifest['providers']['runtime'] ?? null) !== ['Capell\\GeneratedFoundationTheme\\GeneratedFoundationThemeServiceProvider']
-            || array_keys($composer['require'] ?? []) !== ['php', 'capell-app/core', 'capell-app/frontend', 'capell-app/layout-builder', 'capell-app/theme-foundation']
-            || ($composer['autoload']['psr-4'] ?? null) !== ['Capell\\GeneratedFoundationTheme\\' => 'src/']) {
+            || ($dependencies['requires'] ?? null) !== $expectedDependencies
+            || ($providers['runtime'] ?? null) !== ['Capell\\GeneratedFoundationTheme\\GeneratedFoundationThemeServiceProvider']
+            || array_keys($requirements) !== ['php', 'capell-app/core', 'capell-app/frontend', 'capell-app/layout-builder', 'capell-app/theme-foundation']
+            || ($this->objectValue($autoload['psr-4'] ?? null, 'design_spec.artifact.package_contract_invalid')) !== ['Capell\\GeneratedFoundationTheme\\' => 'src/']) {
             throw new InvalidArgumentException('design_spec.artifact.package_contract_invalid');
         }
 
@@ -207,7 +212,28 @@ final class ValidateCompiledThemeArtifactAction
             throw new InvalidArgumentException($error);
         }
 
-        return is_array($value) && ! array_is_list($value) ? $value : throw new InvalidArgumentException($error);
+        return $this->objectValue($value, $error);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function objectValue(mixed $value, string $error): array
+    {
+        if (! is_array($value) || array_is_list($value)) {
+            throw new InvalidArgumentException($error);
+        }
+
+        $object = [];
+        foreach ($value as $key => $item) {
+            if (! is_string($key)) {
+                throw new InvalidArgumentException($error);
+            }
+
+            $object[$key] = $item;
+        }
+
+        return $object;
     }
 
     /** @return list<mixed> */
@@ -222,7 +248,10 @@ final class ValidateCompiledThemeArtifactAction
         return is_array($value) && array_is_list($value) ? $value : throw new InvalidArgumentException($error);
     }
 
-    /** @param array<string, mixed> $payload @param list<string> $keys */
+    /**
+     * @param  array<string, mixed>  $payload
+     * @param  list<string>  $keys
+     */
     private function exactKeys(array $payload, array $keys, string $error): void
     {
         $actual = array_keys($payload);

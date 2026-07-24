@@ -22,6 +22,7 @@ use Capell\FoundationTheme\Support\DesignSpec\DesignSpecConstraints;
 use Capell\FoundationTheme\Support\DesignSpec\DesignSpecSchema;
 use InvalidArgumentException;
 use JsonException;
+use LogicException;
 use Lorisleiva\Actions\Concerns\AsFake;
 use Lorisleiva\Actions\Concerns\AsObject;
 
@@ -30,6 +31,9 @@ final class ValidateDesignSpecAction
 {
     use AsFake;
     use AsObject;
+
+    /** @var array<string, array{kind: 'font'|'image', bytes: int}> */
+    private array $assetCatalogue = DesignSpecConstraints::ASSET_CATALOGUE;
 
     /** @param array<string, mixed>|string $specification */
     public function handle(array|string $specification): DesignSpecData
@@ -87,7 +91,16 @@ final class ValidateDesignSpecAction
                 $this->fail('type.object', '$');
             }
 
-            return $decoded;
+            $payload = [];
+            foreach ($decoded as $key => $value) {
+                if (! is_string($key)) {
+                    $this->fail('type.object', '$');
+                }
+
+                $payload[$key] = $value;
+            }
+
+            return $payload;
         }
 
         try {
@@ -268,7 +281,7 @@ final class ValidateDesignSpecAction
             if (isset($seen[$id])) {
                 $this->fail('asset.duplicate', $path . '.id');
             }
-            $catalogue = DesignSpecConstraints::ASSET_CATALOGUE[$id];
+            $catalogue = $this->assetCatalogue[$id];
             if ($catalogue['bytes'] > DesignSpecConstraints::MAX_ASSET_BYTES) {
                 $this->fail('asset.too_large', $path . '.id');
             }
@@ -454,8 +467,11 @@ final class ValidateDesignSpecAction
     private function schemaText(mixed $value, string $path, string $object, string $field): string
     {
         $definition = DesignSpecSchema::property($object, $field);
-        $minimumLength = (int) ($definition['minLength'] ?? 0);
-        $maximumLength = (int) ($definition['maxLength'] ?? PHP_INT_MAX);
+        $minimumLength = $definition['minLength'] ?? null;
+        $maximumLength = $definition['maxLength'] ?? null;
+        if (! is_int($minimumLength) || ! is_int($maximumLength)) {
+            throw new LogicException('DesignSpec text schema is invalid.');
+        }
         if (! is_string($value)
             || mb_strlen($value) < $minimumLength
             || mb_strlen($value) > $maximumLength

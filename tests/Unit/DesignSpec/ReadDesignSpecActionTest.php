@@ -29,7 +29,7 @@ it('reads the released v1 contract through its explicit registered reader', func
 });
 
 it('fails closed for legacy, future, missing, and non-integer schema versions', function (mixed $schemaVersion): void {
-    $payload = json_decode(designSpecReaderFixture('v1-canonical'), true, 64, JSON_THROW_ON_ERROR);
+    $payload = foundationThemeJsonObjectDocument(designSpecReaderFixture('v1-canonical'));
 
     if ($schemaVersion === null) {
         unset($payload['schemaVersion']);
@@ -46,7 +46,7 @@ it('fails closed for legacy, future, missing, and non-integer schema versions', 
 ])->throws(InvalidArgumentException::class);
 
 it('does not mutate caller-owned input while reading', function (): void {
-    $payload = json_decode(designSpecReaderFixture('v1-canonical'), true, 64, JSON_THROW_ON_ERROR);
+    $payload = foundationThemeJsonObjectDocument(designSpecReaderFixture('v1-canonical'));
     $before = serialize($payload);
 
     ReadDesignSpecAction::run($payload);

@@ -24,7 +24,7 @@ it('freezes canonical v1 bytes and their sha256 boundary', function (): void {
 });
 
 it('produces identical bytes for equivalent object key order and typed input', function (): void {
-    $payload = json_decode(canonicalDesignSpecFixture('v1-canonical'), true, 64, JSON_THROW_ON_ERROR);
+    $payload = foundationThemeJsonObjectDocument(canonicalDesignSpecFixture('v1-canonical'));
     $reordered = array_reverse($payload, true);
     $fromOriginal = CanonicalizeDesignSpecAction::run($payload);
     $fromReordered = CanonicalizeDesignSpecAction::run($reordered);
@@ -37,10 +37,10 @@ it('produces identical bytes for equivalent object key order and typed input', f
 });
 
 it('preserves list order as contract data and leaves input immutable', function (): void {
-    $payload = json_decode(canonicalDesignSpecFixture('v1-canonical'), true, 64, JSON_THROW_ON_ERROR);
+    $payload = foundationThemeJsonObjectDocument(canonicalDesignSpecFixture('v1-canonical'));
     $before = serialize($payload);
     $reorderedAssets = $payload;
-    $reorderedAssets['assets'] = array_reverse($reorderedAssets['assets']);
+    $reorderedAssets['assets'] = array_reverse(foundationThemeJsonList($reorderedAssets['assets'] ?? null));
 
     $canonical = CanonicalizeDesignSpecAction::run($payload);
     $differentOrder = CanonicalizeDesignSpecAction::run($reorderedAssets);

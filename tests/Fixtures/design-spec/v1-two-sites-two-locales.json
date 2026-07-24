@@ -22,90 +22,36 @@
         }
     ],
     "locales": [
-        {
-            "code": "en-GB",
-            "label": "English (United Kingdom)",
-            "direction": "ltr"
-        },
-        { "code": "fr-FR", "label": "Français (France)", "direction": "ltr" }
+        {"code": "en-GB", "label": "English (United Kingdom)", "direction": "ltr"},
+        {"code": "fr-FR", "label": "Français (France)", "direction": "ltr"}
     ],
-    "brand": { "name": "Capell Europe", "logoAssetId": null },
+    "brand": {"name": "Capell Europe", "logoAssetId": null},
     "palette": {
         "light": {
-            "background": "#FFFFFF",
-            "surface": "#F5F5F5",
-            "text": "#111827",
-            "mutedText": "#4B5563",
-            "largeText": "#4B5563",
-            "primary": "#1D4ED8",
-            "onPrimary": "#FFFFFF",
-            "border": "#6B7280",
-            "focus": "#1D4ED8"
+            "background": "#FFFFFF", "surface": "#F5F5F5", "text": "#111827", "mutedText": "#4B5563", "largeText": "#4B5563",
+            "primary": "#1D4ED8", "onPrimary": "#FFFFFF", "border": "#6B7280", "focus": "#1D4ED8"
         },
         "dark": {
-            "background": "#0F172A",
-            "surface": "#1E293B",
-            "text": "#F8FAFC",
-            "mutedText": "#CBD5E1",
-            "largeText": "#CBD5E1",
-            "primary": "#93C5FD",
-            "onPrimary": "#0F172A",
-            "border": "#94A3B8",
-            "focus": "#FDE047"
+            "background": "#0F172A", "surface": "#1E293B", "text": "#F8FAFC", "mutedText": "#CBD5E1", "largeText": "#CBD5E1",
+            "primary": "#93C5FD", "onPrimary": "#0F172A", "border": "#94A3B8", "focus": "#FDE047"
         }
     },
     "typography": {
         "locales": [
             {
                 "locale": "en-GB",
-                "heading": {
-                    "family": "serif",
-                    "style": "normal",
-                    "weight": 700,
-                    "fontAssetId": "font-serif-latin"
-                },
-                "body": {
-                    "family": "system",
-                    "style": "normal",
-                    "weight": 400,
-                    "fontAssetId": null
-                }
+                "heading": {"family": "serif", "style": "normal", "weight": 700, "fontAssetId": "font-serif-latin"},
+                "body": {"family": "system", "style": "normal", "weight": 400, "fontAssetId": null}
             },
             {
                 "locale": "fr-FR",
-                "heading": {
-                    "family": "serif",
-                    "style": "normal",
-                    "weight": 700,
-                    "fontAssetId": "font-serif-latin"
-                },
-                "body": {
-                    "family": "sans",
-                    "style": "normal",
-                    "weight": 400,
-                    "fontAssetId": null
-                }
+                "heading": {"family": "serif", "style": "normal", "weight": 700, "fontAssetId": "font-serif-latin"},
+                "body": {"family": "sans", "style": "normal", "weight": 400, "fontAssetId": null}
             }
         ]
     },
-    "layout": {
-        "container": "wide",
-        "density": "comfortable",
-        "spacing": "relaxed",
-        "radius": "large",
-        "darkMode": "system"
-    },
-    "components": {
-        "button": "solid",
-        "card": "elevated",
-        "navigation": "inline",
-        "hero": "centered"
-    },
-    "accessibility": {
-        "reducedMotion": "respect",
-        "focusIndicator": "visible",
-        "landmarks": "semantic",
-        "headingHierarchy": "ordered"
-    },
-    "assets": [{ "id": "font-serif-latin" }]
+    "layout": {"container": "wide", "density": "comfortable", "spacing": "relaxed", "radius": "large", "darkMode": "system"},
+    "components": {"button": "solid", "card": "elevated", "navigation": "inline", "hero": "centered"},
+    "accessibility": {"reducedMotion": "respect", "focusIndicator": "visible", "landmarks": "semantic", "headingHierarchy": "ordered"},
+    "assets": [{"id": "font-serif-latin"}]
 }

@@ -6,6 +6,8 @@
 
 Foundation Theme is the base runtime and visual system that Capell themes build on. It provides shared Blade layouts, public design tokens, media/SVG handling, the Tailwind asset pipeline, and the stable override contract for child themes. On its own it is a neutral starting point; vertical themes extend it with their own design and registered sections.
 
+It also owns DesignSpec v1 and the deterministic Foundation compiler used by Website Generator. The compiler accepts bounded structured design data and produces a validated `capell-theme` Project Build artifact from reviewed package templates; it does not execute generated code or accept model-selected dependencies and paths.
+
 ## How to use it
 
 1. Install and set up Foundation Theme, then select the `default` theme definition in the shared Theme Studio workflow for the intended site.
@@ -18,6 +20,7 @@ Foundation Theme is the base runtime and visual system that Capell themes build 
 - The base page layouts every Capell theme uses.
 - Extension settings for lazy loading, asset minification, light/dark colour tokens, image radius, section spacing, widget gaps, heading scale, motion intensity, and responsive repeatable layouts.
 - Shared Blade components, layout areas, media/SVG handling, and cache-safe public rendering for child themes.
+- A closed DesignSpec v1 schema, canonical reader, deterministic compiler, and `capell-theme` Project Build artifact handler.
 - Setup, demo, theme-validation, theme-catalogue, Tailwind-generation, and theme-scaffolding commands for maintainers.
 
 ## Good to know

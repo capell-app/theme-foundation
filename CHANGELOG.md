@@ -4,7 +4,10 @@ All notable changes to `capell-app/theme-foundation` will be documented in this 
 
 ## Unreleased
 
-- Prepared package metadata and documentation for ongoing Capell 0.0.x package work.
+- Added the closed, typed DesignSpec v1 contract with bounded validation, canonical JSON, and explicit compatibility readers.
+- Added deterministic Foundation theme artifact compilation and validation without model-selected paths, dependencies, commands, or network access.
+- Registered the `capell-theme` Project Build artifact handler through Core's public handler registry.
+- Advertised the DesignSpec, compiler, and Project Build artifact capabilities in package catalogue metadata.
 
 ## 2026-06-03
 

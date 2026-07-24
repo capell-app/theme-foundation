@@ -180,7 +180,11 @@ final class CompileFoundationThemeArtifactAction
     private function assets(DesignSpecData $specification): array
     {
         return array_map(
-            static fn (DesignSpecAssetData $asset): array => ['id' => $asset->id, ...DesignSpecConstraints::ASSET_CATALOGUE[$asset->id]],
+            static fn (DesignSpecAssetData $asset): array => [
+                'id' => $asset->id,
+                'kind' => DesignSpecConstraints::ASSET_CATALOGUE[$asset->id]['kind'],
+                'bytes' => DesignSpecConstraints::ASSET_CATALOGUE[$asset->id]['bytes'],
+            ],
             $specification->assets,
         );
     }

@@ -65,7 +65,7 @@ final class CanonicalizeDesignSpecAction
     /** @return array<string, mixed> */
     private function schemaArray(DesignSpecData $specification): array
     {
-        $schema = get_object_vars($specification);
+        $schema = $specification->toArray();
         $schema['assets'] = array_map(
             static fn (DesignSpecAssetData $asset): array => ['id' => $asset->id],
             $specification->assets,

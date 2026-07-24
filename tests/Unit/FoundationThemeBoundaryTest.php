@@ -159,11 +159,14 @@ it('publishes the foundation frontend runtime build during setup', function (): 
         static fn (string $asset): string => (string) file_get_contents($asset),
         $javascriptAssets,
     ));
+    $compressedRuntime = gzencode($runtime, 9);
+
+    throw_unless(is_string($compressedRuntime), RuntimeException::class, 'Unable to compress the Foundation frontend runtime asset.');
 
     expect($provider)->toContain('capell-theme-foundation-assets')
         ->and(file_exists(dirname(__DIR__, 2) . '/publishes/build/manifest.json'))->toBeTrue()
         ->and($runtime)->toBeString()
-        ->and(strlen(gzencode($runtime, 9)))->toBeLessThanOrEqual(5_000)
+        ->and(strlen($compressedRuntime))->toBeLessThanOrEqual(5_000)
         ->and(count($javascriptAssets))->toBeGreaterThan(1)
         ->and($runtimeEntry['dynamicImports'] ?? [])->not->toBeEmpty()
         ->and($compiledRuntime)->toBeString()

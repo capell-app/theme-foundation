@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 use Capell\Core\Facades\CapellCore;
 use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
+use Capell\Frontend\Facades\Frontend;
+use Capell\Socials\Data\PreparedSocialSiteData;
+use Capell\Socials\Support\SocialsFrontendRuntimeManifestContributor;
 use Capell\ThemeLiquidGlass\LiquidGlassThemeServiceProvider;
 
 use function Pest\Laravel\get;
@@ -59,6 +62,12 @@ it('renders real layout-builder widget content in the main landmark for a layout
     $response = get($pageUrl->full_url);
 
     $response->assertOk();
+
+    $preparedSocials = Frontend::getFrontendData(SocialsFrontendRuntimeManifestContributor::RENDER_DATA_KEY);
+
+    expect($preparedSocials)
+        ->toBeInstanceOf(PreparedSocialSiteData::class)
+        ->and(serialize($preparedSocials))->not->toContain('SocialNetworkRegistry');
 
     $html = $response->getContent();
 

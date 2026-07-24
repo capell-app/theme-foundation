@@ -10,6 +10,8 @@ Theme Foundation provides the shared public layouts, runtime design tokens, layo
 
 Sites can use Foundation directly or extend it with a child theme, while public pages share predictable layout and token rendering without frontend authoring state.
 
+Website Generator can use Foundation's closed DesignSpec v1 contract and deterministic compiler to produce a validated `capell-theme` Project Build artifact from reviewed package templates. Generated input cannot select executable code, dependencies, commands, paths, or outbound requests.
+
 Evidence: [`src/Providers/FoundationThemeServiceProvider.php`](src/Providers/FoundationThemeServiceProvider.php), [`src/Settings/FoundationThemeSettings.php`](src/Settings/FoundationThemeSettings.php), [`resources/views/app.blade.php`](resources/views/app.blade.php), [`resources/views/components/app/head/tokens.blade.php`](resources/views/components/app/head/tokens.blade.php), [`src/Support/Providers/RegistersLayoutNativeThemeDefaults.php`](src/Support/Providers/RegistersLayoutNativeThemeDefaults.php), [`tests/Feature/FleetPublicOutputSafetyTest.php`](tests/Feature/FleetPublicOutputSafetyTest.php), [`tests/Unit/ThemeRuntimeSettingsBindingTest.php`](tests/Unit/ThemeRuntimeSettingsBindingTest.php).
 
 Status details:
@@ -58,6 +60,7 @@ Desktop, tablet, and mobile variants remain defined in the screenshot contract; 
 - Extension contracts: `InstallsThemeDemo`, `OptionalExtensionAvailability`, `ProvidesThemeDemoContent`.
 - Listeners: `RunTailwindAssetsOnPackageChange`.
 - Actions: `BuildAssetBannerItemsAction`, `BuildBannerImageRenderDataAction`, `BuildHeroRailItemsRenderDataAction`, `BuildLayoutNeighborLinksDataAction`, `BuildPageContentRenderDataAction`, `BuildThemeDemoFormSectionAction`, `BuildThemeDemoFormsPayloadAction`, `BuildWidgetAssetRenderDataAction`, `GenerateThemeScaffoldAction`, `HasThemeIntegrationEvidenceAction`, `InstallFoundationThemeDemoAction`, `InstallFoundationThemeLayoutDefaultsAction`, `and 11 more`.
+- DesignSpec producer contract: closed schema v1, canonical reader, deterministic compiler, validated `capell-theme` Project Build artifact handler.
 - Data objects: `AssetBannerItemData`, `BannerImageRenderData`, `FoundationLayoutContainerPresentationData`, `FoundationThemeTokensData`, `LayoutNeighborLinksData`, `NewsletterFormData`, `PageContentRenderData`, `ThemeDemoInstallData`, `ThemeFormEmbedData`, `ThemeScaffoldRequestData`, `ThemeValidationResultData`, `WidgetAssetRenderData`.
 - Command signatures: `capell:theme-foundation-demo`, `capell:theme-foundation-setup`.
 - Manifest action API: `demo: Capell\FoundationTheme\Actions\InstallFoundationThemeDemoAction`, `setup: Capell\FoundationTheme\Actions\SetupFoundationThemePackageAction`.

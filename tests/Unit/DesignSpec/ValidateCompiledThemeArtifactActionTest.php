@@ -5,6 +5,17 @@ declare(strict_types=1);
 use Capell\FoundationTheme\Actions\DesignSpec\CompileFoundationThemeArtifactAction;
 use Capell\FoundationTheme\Actions\DesignSpec\ValidateCompiledThemeArtifactAction;
 
+/**
+ * @return array{
+ *     artifactType: string,
+ *     compilerVersion: string,
+ *     contentSha256: string,
+ *     designSpecSha256: string,
+ *     files: list<array<string, mixed>>,
+ *     schemaVersion: int,
+ *     templateVersion: string
+ * }
+ */
 function validCompiledThemeEnvelope(): array
 {
     $fixture = file_get_contents(dirname(__DIR__, 2) . '/Fixtures/design-spec/v1-canonical.json');
@@ -12,12 +23,41 @@ function validCompiledThemeEnvelope(): array
         throw new RuntimeException('Unable to load artifact validation fixture.');
     }
 
-    return json_decode(
+    $payload = foundationThemeJsonObject(json_decode(
         CompileFoundationThemeArtifactAction::run($fixture)->artifactBytes,
         true,
         64,
         JSON_THROW_ON_ERROR,
-    );
+    ));
+    $artifactType = $payload['artifactType'] ?? null;
+    $compilerVersion = $payload['compilerVersion'] ?? null;
+    $contentSha256 = $payload['contentSha256'] ?? null;
+    $designSpecSha256 = $payload['designSpecSha256'] ?? null;
+    $schemaVersion = $payload['schemaVersion'] ?? null;
+    $templateVersion = $payload['templateVersion'] ?? null;
+    if (! is_string($artifactType)
+        || ! is_string($compilerVersion)
+        || ! is_string($contentSha256)
+        || ! is_string($designSpecSha256)
+        || ! is_int($schemaVersion)
+        || ! is_string($templateVersion)) {
+        throw new RuntimeException('Compiled theme envelope is invalid.');
+    }
+
+    $files = [];
+    foreach (foundationThemeJsonList($payload['files'] ?? null) as $file) {
+        $files[] = foundationThemeJsonObject($file);
+    }
+
+    return [
+        'artifactType' => $artifactType,
+        'compilerVersion' => $compilerVersion,
+        'contentSha256' => $contentSha256,
+        'designSpecSha256' => $designSpecSha256,
+        'files' => $files,
+        'schemaVersion' => $schemaVersion,
+        'templateVersion' => $templateVersion,
+    ];
 }
 
 /** @param array<string, mixed> $payload */
@@ -34,6 +74,7 @@ it('rejects compatibility drift and unknown envelope fields', function (string $
         'template' => $payload['templateVersion'] = 'future',
         'schema' => $payload['schemaVersion'] = 2,
         'unknown' => $payload['model'] = 'private-model',
+        default => throw new LogicException('Unknown artifact tampering case.'),
     };
 
     ValidateCompiledThemeArtifactAction::run(encodedCompiledThemeEnvelope($payload));
@@ -52,6 +93,7 @@ it('rejects path, media type, contents, and file digest tampering', function (st
         'media-type' => $payload['files'][0]['mediaType'] = 'application/x-httpd-php',
         'contents' => $payload['files'][0]['contentsBase64'] = base64_encode('{}'),
         'digest' => $payload['files'][0]['sha256'] = str_repeat('0', 64),
+        default => throw new LogicException('Unknown artifact tampering case.'),
     };
 
     ValidateCompiledThemeArtifactAction::run(encodedCompiledThemeEnvelope($payload));
@@ -68,6 +110,7 @@ it('rejects DesignSpec, provider template, asset catalogue, and content digest t
         'css' => 'resources/css/design-tokens.css',
         'valid-css-token' => 'resources/css/design-tokens.css',
         'content-digest' => null,
+        default => throw new LogicException('Unknown artifact tampering case.'),
     };
 
     if ($path === null) {
@@ -75,7 +118,15 @@ it('rejects DesignSpec, provider template, asset catalogue, and content digest t
     } else {
         $index = array_search($path, array_column($payload['files'], 'path'), true);
         expect($index)->not->toBeFalse();
-        $contents = base64_decode($payload['files'][$index]['contentsBase64'], true);
+        $contentsBase64 = $payload['files'][$index]['contentsBase64'] ?? null;
+        if (! is_string($contentsBase64)) {
+            throw new RuntimeException('Compiled theme file contents are invalid.');
+        }
+
+        $contents = base64_decode($contentsBase64, true);
+        if ($contents === false) {
+            throw new RuntimeException('Compiled theme file contents are invalid.');
+        }
         $contents = match ($case) {
             'design-spec' => str_replace('"schemaVersion":1', '"schemaVersion":2', $contents),
             'provider' => $contents . "\n// changed\n",
@@ -84,6 +135,7 @@ it('rejects DesignSpec, provider template, asset catalogue, and content digest t
             'assets' => "[]\n",
             'css' => $contents . "@import url(https://attacker.test/x.css);\n",
             'valid-css-token' => str_replace('#1D4ED8', '#1D4ED9', $contents),
+            default => throw new LogicException('Unknown artifact tampering case.'),
         };
         $payload['files'][$index]['contentsBase64'] = base64_encode($contents);
         $payload['files'][$index]['sizeBytes'] = strlen($contents);

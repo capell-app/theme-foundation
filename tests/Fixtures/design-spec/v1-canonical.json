@@ -87,5 +87,8 @@
         "landmarks": "semantic",
         "headingHierarchy": "ordered"
     },
-    "assets": [{ "id": "logo-foundation" }, { "id": "font-serif-latin" }]
+    "assets": [
+        {"id": "logo-foundation"},
+        {"id": "font-serif-latin"}
+    ]
 }

@@ -27,7 +27,7 @@ function compiledThemeFilesByPath(string $fixture = 'v1-canonical'): array
 }
 
 it('compiles byte-identical ordinary theme artifacts for identical canonical inputs', function (): void {
-    $payload = json_decode(compilerDesignSpecFixture('v1-canonical'), true, 64, JSON_THROW_ON_ERROR);
+    $payload = foundationThemeJsonObjectDocument(compilerDesignSpecFixture('v1-canonical'));
     $first = CompileFoundationThemeArtifactAction::run($payload);
     $second = CompileFoundationThemeArtifactAction::run(array_reverse($payload, true));
 
@@ -42,7 +42,7 @@ it('compiles byte-identical ordinary theme artifacts for identical canonical inp
 
 it('emits only reviewed allowlisted package paths and server-owned asset selections', function (): void {
     $files = compiledThemeFilesByPath();
-    $assets = json_decode($files['resources/asset-selections.json']->contents, true, 64, JSON_THROW_ON_ERROR);
+    $assets = foundationThemeJsonList(json_decode($files['resources/asset-selections.json']->contents, true, 64, JSON_THROW_ON_ERROR));
 
     expect(array_keys($files))->toBe(array_keys(CompileFoundationThemeArtifactAction::FILE_MEDIA_TYPES))
         ->and(array_column($assets, 'id'))->toBe(['logo-foundation', 'font-serif-latin'])
@@ -86,14 +86,14 @@ it('produces a manifest and composer contract accepted as an ordinary package', 
     }
 
     require_once $directory . '/src/GeneratedFoundationThemeServiceProvider.php';
-    $manifest = json_decode($files['capell.json']->contents, true, 64, JSON_THROW_ON_ERROR);
-    $composer = json_decode($files['composer.json']->contents, true, 64, JSON_THROW_ON_ERROR);
+    $manifest = foundationThemeJsonObjectDocument($files['capell.json']->contents);
+    $composer = foundationThemeJsonObjectDocument($files['composer.json']->contents);
 
     (new ManifestValidator)->validate($manifest, $composer, 'capell-generated/foundation-theme', $directory . '/capell.json');
 
     expect($manifest['kind'])->toBe('theme')
-        ->and($manifest['security']['publicOutput']['forbidAuthoringSurface'])->toBeTrue()
-        ->and($manifest['dependencies']['requires'])->toBe(['capell-app/core', 'capell-app/frontend', 'capell-app/layout-builder', 'capell-app/theme-foundation']);
+        ->and(data_get($manifest, 'security.publicOutput.forbidAuthoringSurface'))->toBeTrue()
+        ->and(data_get($manifest, 'dependencies.requires'))->toBe(['capell-app/core', 'capell-app/frontend', 'capell-app/layout-builder', 'capell-app/theme-foundation']);
 });
 
 it('round trips the complete closed artifact through its validator', function (): void {

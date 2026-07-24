@@ -1,6 +1,6 @@
 {
     "name": "capell-app/theme-foundation",
-    "description": "Capell's foundation theme — base Blade layouts, runtime design tokens, the Tailwind asset pipeline, Blade directives, media/SVG handling, and the override contracts that all vertical Capell themes extend.",
+    "description": "Capell's foundation theme with shared Blade layouts, runtime design tokens, deterministic DesignSpec v1 compilation, and validated Project Build theme artifacts.",
     "type": "library",
     "license": "proprietary",
     "require": {

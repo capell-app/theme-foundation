@@ -66,6 +66,15 @@ final class ReadDesignSpecAction
             throw new InvalidArgumentException('design_spec.root.invalid');
         }
 
-        return $payload;
+        $object = [];
+        foreach ($payload as $key => $value) {
+            if (! is_string($key)) {
+                throw new InvalidArgumentException('design_spec.root.invalid');
+            }
+
+            $object[$key] = $value;
+        }
+
+        return $object;
     }
 }

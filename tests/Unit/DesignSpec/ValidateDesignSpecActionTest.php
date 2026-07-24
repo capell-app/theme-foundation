@@ -14,13 +14,74 @@ function designSpecFixture(string $name): string
     return $contents === false ? throw new RuntimeException('Unable to load DesignSpec fixture.') : $contents;
 }
 
-/** @return array<string, mixed> */
-function canonicalDesignSpec(): array
+/**
+ * @return array{schemaVersion: int, template: string, display: array<string, mixed>, sites: list<array<string, mixed>>, locales: list<array<string, mixed>>, brand: array<string, mixed>, palette: array{light: array<string, mixed>, dark: array<string, mixed>}, typography: array{locales: list<array{locale: mixed, heading: array<string, mixed>, body: array<string, mixed>, ...}>}, layout: array<string, mixed>, components: array<string, mixed>, accessibility: array<string, mixed>, assets: list<array<string, mixed>>, ...}
+ */
+function designSpecFixturePayload(string $name): array
 {
-    return json_decode(designSpecFixture('v1-canonical'), true, 64, JSON_THROW_ON_ERROR);
+    $payload = foundationThemeJsonObjectDocument(designSpecFixture($name));
+    $schemaVersion = $payload['schemaVersion'] ?? null;
+    $template = $payload['template'] ?? null;
+    if (! is_int($schemaVersion) || ! is_string($template)) {
+        throw new RuntimeException('DesignSpec fixture root is invalid.');
+    }
+
+    $typography = foundationThemeJsonObject($payload['typography'] ?? null);
+    $typographyLocales = [];
+    foreach (foundationThemeJsonList($typography['locales'] ?? null) as $locale) {
+        $localeObject = foundationThemeJsonObject($locale);
+        $typographyLocales[] = [
+            'locale' => $localeObject['locale'] ?? null,
+            'heading' => foundationThemeJsonObject($localeObject['heading'] ?? null),
+            'body' => foundationThemeJsonObject($localeObject['body'] ?? null),
+        ];
+    }
+
+    $sites = [];
+    foreach (foundationThemeJsonList($payload['sites'] ?? null) as $site) {
+        $sites[] = foundationThemeJsonObject($site);
+    }
+
+    $locales = [];
+    foreach (foundationThemeJsonList($payload['locales'] ?? null) as $locale) {
+        $locales[] = foundationThemeJsonObject($locale);
+    }
+
+    $assets = [];
+    foreach (foundationThemeJsonList($payload['assets'] ?? null) as $asset) {
+        $assets[] = foundationThemeJsonObject($asset);
+    }
+
+    return [
+        'schemaVersion' => $schemaVersion,
+        'template' => $template,
+        'display' => foundationThemeJsonObject($payload['display'] ?? null),
+        'sites' => $sites,
+        'locales' => $locales,
+        'brand' => foundationThemeJsonObject($payload['brand'] ?? null),
+        'palette' => [
+            'light' => foundationThemeJsonObject(foundationThemeJsonObject($payload['palette'] ?? null)['light'] ?? null),
+            'dark' => foundationThemeJsonObject(foundationThemeJsonObject($payload['palette'] ?? null)['dark'] ?? null),
+        ],
+        'typography' => ['locales' => $typographyLocales],
+        'layout' => foundationThemeJsonObject($payload['layout'] ?? null),
+        'components' => foundationThemeJsonObject($payload['components'] ?? null),
+        'accessibility' => foundationThemeJsonObject($payload['accessibility'] ?? null),
+        'assets' => $assets,
+    ];
 }
 
-/** @param array<string, mixed> $payload */
+/**
+ * @return array{schemaVersion: int, template: string, display: array<string, mixed>, sites: list<array<string, mixed>>, locales: list<array<string, mixed>>, brand: array<string, mixed>, palette: array{light: array<string, mixed>, dark: array<string, mixed>}, typography: array{locales: list<array{locale: mixed, heading: array<string, mixed>, body: array<string, mixed>, ...}>}, layout: array<string, mixed>, components: array<string, mixed>, accessibility: array<string, mixed>, assets: list<array<string, mixed>>, ...}
+ */
+function canonicalDesignSpec(): array
+{
+    return designSpecFixturePayload('v1-canonical');
+}
+
+/**
+ * @param  array{schemaVersion: int, template: string, display: array<string, mixed>, sites: list<array<string, mixed>>, locales: list<array<string, mixed>>, brand: array<string, mixed>, palette: array{light: array<string, mixed>, dark: array<string, mixed>}, typography: array{locales: list<array{locale: mixed, heading: array<string, mixed>, body: array<string, mixed>, ...}>}, layout: array<string, mixed>, components: array<string, mixed>, accessibility: array<string, mixed>, assets: list<array<string, mixed>>, ...}  $payload
+ */
 function applyDesignSpecThreatCase(array &$payload, string $case): void
 {
     match ($case) {
@@ -54,6 +115,7 @@ function applyDesignSpecThreatCase(array &$payload, string $case): void
         'billing-metadata' => $payload['billing'] = ['credits' => 100],
         'preview-metadata' => $payload['preview'] = ['url' => 'https://private.test'],
         'editor-metadata' => $payload['editor'] = ['selector' => '#private'],
+        default => throw new LogicException('Unknown DesignSpec threat case.'),
     };
 }
 
@@ -100,7 +162,7 @@ it('rejects legacy, non-foundation, missing display, and launch-bearing roots', 
 
 it('rejects incomplete or invalid accessibility policy', function (string $field, mixed $value): void {
     $payload = canonicalDesignSpec();
-    data_set($payload, 'accessibility.' . $field, $value);
+    $payload['accessibility'][$field] = $value;
 
     ValidateDesignSpecAction::run($payload);
 })->with([
@@ -112,7 +174,7 @@ it('rejects incomplete or invalid accessibility policy', function (string $field
 
 it('enforces text, UI, focus, and border contrast thresholds', function (string $field, string $value): void {
     $payload = canonicalDesignSpec();
-    data_set($payload, 'palette.light.' . $field, $value);
+    $payload['palette']['light'][$field] = $value;
 
     ValidateDesignSpecAction::run($payload);
 })->with([
@@ -125,22 +187,24 @@ it('enforces text, UI, focus, and border contrast thresholds', function (string 
 ])->throws(InvalidArgumentException::class, 'contrast.');
 
 it('requires every site fallback chain to be complete, unique, and default-first', function (string $case): void {
-    $payload = json_decode(designSpecFixture('v1-two-sites-two-locales'), true, 64, JSON_THROW_ON_ERROR);
+    $payload = designSpecFixturePayload('v1-two-sites-two-locales');
     $payload['sites'][0]['fallbackLocaleCodes'] = match ($case) {
         'incomplete' => ['en-GB'],
         'duplicate' => ['en-GB', 'en-GB'],
         'wrong-first' => ['fr-FR', 'en-GB'],
+        default => throw new LogicException('Unknown DesignSpec fallback case.'),
     };
 
     ValidateDesignSpecAction::run($payload);
 })->with(['incomplete', 'duplicate', 'wrong-first'])->throws(InvalidArgumentException::class);
 
 it('requires exactly one typography contract for every declared locale', function (string $case): void {
-    $payload = json_decode(designSpecFixture('v1-two-sites-two-locales'), true, 64, JSON_THROW_ON_ERROR);
+    $payload = designSpecFixturePayload('v1-two-sites-two-locales');
     match ($case) {
         'missing' => array_pop($payload['typography']['locales']),
         'duplicate' => $payload['typography']['locales'][1]['locale'] = 'en-GB',
         'undeclared' => $payload['typography']['locales'][1]['locale'] = 'de-DE',
+        default => throw new LogicException('Unknown DesignSpec typography case.'),
     };
 
     ValidateDesignSpecAction::run($payload);
@@ -170,6 +234,19 @@ it('rejects duplicate assets and wrong-kind logical references', function (strin
     ValidateDesignSpecAction::run($payload);
 })->with(['duplicate', 'wrong-kind'])->throws(InvalidArgumentException::class);
 
+it('rejects an oversized catalogue asset even when the aggregate byte limit would pass', function (): void {
+    $action = new ValidateDesignSpecAction;
+    $catalogue = DesignSpecConstraints::ASSET_CATALOGUE;
+    $catalogue['logo-foundation']['bytes'] = DesignSpecConstraints::MAX_ASSET_BYTES + 1;
+
+    expect($catalogue['logo-foundation']['bytes'])->toBeLessThanOrEqual(DesignSpecConstraints::MAX_TOTAL_ASSET_BYTES);
+
+    $catalogueProperty = new ReflectionProperty($action, 'assetCatalogue');
+    $catalogueProperty->setValue($action, $catalogue);
+
+    $action->handle(canonicalDesignSpec());
+})->throws(InvalidArgumentException::class, 'asset.too_large: $.assets[0].id');
+
 it('rejects executable, dependency, asset path or byte claims, unknown components, and excessive files', function (string $case): void {
     $payload = canonicalDesignSpec();
     match ($case) {
@@ -179,6 +256,7 @@ it('rejects executable, dependency, asset path or byte claims, unknown component
         'asset-bytes' => $payload['assets'][0]['bytes'] = PHP_INT_MAX,
         'component' => $payload['components']['carousel'] = 'animated',
         'files' => $payload['assets'] = array_fill(0, DesignSpecConstraints::MAX_ASSET_FILES + 1, ['id' => 'logo-foundation']),
+        default => throw new LogicException('Unknown DesignSpec executable case.'),
     };
 
     ValidateDesignSpecAction::run($payload);
@@ -212,6 +290,7 @@ it('rejects exact traversal, arbitrary font URL, and known component variant thr
         'dot-dot-traversal' => $payload['assets'][0]['id'] = '../logo-foundation',
         'arbitrary-font-url' => $payload['typography']['locales'][0]['heading']['fontAssetId'] = 'https://attacker.test/font.woff2',
         'known-component-invalid-variant' => $payload['components']['button'] = 'scripted',
+        default => throw new LogicException('Unknown DesignSpec traversal case.'),
     };
 
     ValidateDesignSpecAction::run($payload);
@@ -285,7 +364,11 @@ it('applies the same nesting limit to array and JSON documents', function (strin
 
 it('rejects rather than normalizes whitespace and lowercase colours', function (string $path, string $value): void {
     $payload = canonicalDesignSpec();
-    data_set($payload, $path, $value);
+    if ($path === 'display.name') {
+        $payload['display']['name'] = $value;
+    } else {
+        $payload['palette']['light']['primary'] = $value;
+    }
 
     ValidateDesignSpecAction::run($payload);
 })->with([

@@ -6,7 +6,7 @@
     "kind": "theme",
     "capellApiVersion": "^1.0",
     "version": "1.0.0",
-    "description": "Capell's foundation theme — base Blade layouts, runtime design tokens, the Tailwind asset pipeline, Blade directives, media/SVG handling, and the override contracts that all vertical Capell themes extend.",
+    "description": "Capell's foundation theme — base Blade layouts, runtime design tokens, a deterministic DesignSpec v1 compiler, Project Build theme artifacts, and the override contracts that all vertical Capell themes extend.",
     "product": {
         "group": "Capell Themes",
         "tier": "free",
@@ -51,7 +51,13 @@
     },
     "settings": ["Capell\\FoundationTheme\\Settings\\FoundationThemeSettings"],
     "permissions": [],
-    "capabilities": ["frontend-assets", "cache-blocking"],
+    "capabilities": [
+        "frontend-assets",
+        "cache-blocking",
+        "design-spec-v1",
+        "deterministic-theme-compiler",
+        "project-build-capell-theme-artifact"
+    ],
     "security": {
         "riskTier": "low",
         "publicSurface": {
@@ -120,7 +126,7 @@
         "privateDocsRequested": false
     },
     "marketplace": {
-        "summary": "The base theme every Capell site and child theme builds on: shared Blade layouts, a runtime design-token system (colours, spacing, radius), the Tailwind asset pipeline, an SVG sanitiser, and the section/area contracts that vertical themes override.",
+        "summary": "The base theme every Capell site and child theme builds on, with shared Blade layouts, runtime design tokens, and a deterministic DesignSpec v1 compiler that produces validated Project Build theme artifacts.",
         "screenshots": [
             {
                 "path": "docs/assets/marketplace/extension-card.jpg",

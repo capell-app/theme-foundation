@@ -64,18 +64,52 @@ final class DesignSpecSchema
     public static function enum(string $object, string $field): array
     {
         $property = self::property($object, $field);
+        $enum = $property['enum'] ?? null;
+        if (is_array($enum) && array_is_list($enum)) {
+            $values = [];
+            foreach ($enum as $value) {
+                if (! is_string($value) && ! is_int($value)) {
+                    throw new InvalidArgumentException('Invalid DesignSpec schema enum.');
+                }
 
-        return $property['enum'] ?? (isset($property['const']) ? [$property['const']] : []);
+                $values[] = $value;
+            }
+
+            return $values;
+        }
+
+        $constant = $property['const'] ?? null;
+        if (is_string($constant) || is_int($constant)) {
+            return [$constant];
+        }
+
+        return [];
     }
 
     /** @return array<string, mixed> */
     public static function property(string $object, string $field): array
     {
-        $properties = $object === 'root'
-            ? self::toArray()['properties']
-            : self::definitions()[$object]['properties'];
+        $schema = $object === 'root' ? self::toArray() : self::definitions()[$object] ?? null;
+        $properties = is_array($schema) ? $schema['properties'] ?? null : null;
+        if (! is_array($properties)) {
+            throw new InvalidArgumentException('Unknown DesignSpec schema field.');
+        }
 
-        return $properties[$field] ?? throw new InvalidArgumentException('Unknown DesignSpec schema field.');
+        $property = $properties[$field] ?? null;
+        if (! is_array($property)) {
+            throw new InvalidArgumentException('Unknown DesignSpec schema field.');
+        }
+
+        $normalized = [];
+        foreach ($property as $key => $value) {
+            if (! is_string($key)) {
+                throw new InvalidArgumentException('Unknown DesignSpec schema field.');
+            }
+
+            $normalized[$key] = $value;
+        }
+
+        return $normalized;
     }
 
     /** @return array<string, array<string, mixed>> */

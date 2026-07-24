@@ -6,6 +6,7 @@ namespace Capell\FoundationTheme\Actions\DesignSpec;
 
 use Capell\FoundationTheme\Data\DesignSpec\DesignSpecColorModeData;
 use Capell\FoundationTheme\Data\DesignSpec\DesignSpecData;
+use LogicException;
 use Lorisleiva\Actions\Concerns\AsFake;
 use Lorisleiva\Actions\Concerns\AsObject;
 
@@ -30,10 +31,15 @@ final class RenderFoundationDesignTokensAction
         $tokens = get_object_vars($colors);
         ksort($tokens, SORT_STRING);
 
-        return implode('', array_map(
-            static fn (string $name, string $value): string => "  --capell-color-{$name}:{$value};\n",
-            array_keys($tokens),
-            array_values($tokens),
-        ));
+        $output = '';
+        foreach ($tokens as $name => $value) {
+            if (! is_string($name) || ! is_string($value)) {
+                throw new LogicException('DesignSpec color tokens must be strings.');
+            }
+
+            $output .= "  --capell-color-{$name}:{$value};\n";
+        }
+
+        return $output;
     }
 }
