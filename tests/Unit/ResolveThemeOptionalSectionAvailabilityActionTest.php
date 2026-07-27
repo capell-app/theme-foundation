@@ -6,7 +6,10 @@ use Capell\Core\Facades\CapellCore;
 use Capell\FoundationTheme\Actions\ResolveThemeOptionalSectionAvailabilityAction;
 
 it('allows ordinary sections and gates optional sections through package availability', function (): void {
-    CapellCore::forcePackageInstalled('capell-app/newsletter', false);
+    CapellCore::shouldReceive('isPackageAvailable')
+        ->once()
+        ->with('capell-app/newsletter')
+        ->andReturnFalse();
 
     $packageBySection = ['newsletter' => 'capell-app/newsletter'];
 

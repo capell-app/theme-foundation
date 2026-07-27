@@ -17,7 +17,6 @@ use Capell\FoundationTheme\Contracts\ResultsListingResolver;
 use Capell\FoundationTheme\Data\ResultsListingData;
 use Capell\Frontend\Support\Loader\PageLoader;
 use DateTimeInterface;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -31,7 +30,10 @@ final readonly class ResolveResultsListingAction implements ResultsListingResolv
 
     private const string BLOG_PACKAGE = 'capell-app/blog';
 
-    public function __construct(private OptionalExtensionAvailability $availability) {}
+    public function __construct(
+        private OptionalExtensionAvailability $availability,
+        private ResolveResultsArchiveUrlAction $resolveArchiveUrl,
+    ) {}
 
     public function handle(Site $site, Language $language, Page $page): ResultsListingData
     {
@@ -46,7 +48,7 @@ final readonly class ResolveResultsListingAction implements ResultsListingResolv
                 ->map($this->toItem(...))
                 ->values()
                 ->all()),
-            archiveUrl: $articleResults->isNotEmpty() ? $this->blogArchiveUrl($site, $language) : null,
+            archiveUrl: $articleResults->isNotEmpty() ? $this->resolveArchiveUrl->handle($site, $language) : null,
         );
     }
 
@@ -126,28 +128,6 @@ final readonly class ResolveResultsListingAction implements ResultsListingResolv
             'image' => is_string(data_get($image, 'original_url')) ? data_get($image, 'original_url') : null,
             'publishedDate' => $publishedAt instanceof DateTimeInterface ? $publishedAt->format('Y-m-d') : null,
         ];
-    }
-
-    private function blogArchiveUrl(Site $site, Language $language): ?string
-    {
-        $archivePage = Page::query()
-            ->where('site_id', $site->getKey())
-            ->whereHas('layout', static fn (Builder $query): Builder => $query->where('key', 'archives'))
-            ->first();
-
-        if (! $archivePage instanceof Page) {
-            return null;
-        }
-
-        $archivePageUrl = PageUrl::query()
-            ->where('pageable_type', Relation::getMorphAlias(Page::class))
-            ->where('pageable_id', $archivePage->getKey())
-            ->where('language_id', $language->getKey())
-            ->first();
-
-        return $archivePageUrl instanceof PageUrl && is_string($archivePageUrl->full_url)
-            ? $archivePageUrl->full_url
-            : null;
     }
 
     private function resultKey(Pageable&Model $result): string

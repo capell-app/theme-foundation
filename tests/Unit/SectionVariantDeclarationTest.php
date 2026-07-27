@@ -35,7 +35,7 @@ function sectionVariantThemeProviders(): array
     $providers = [];
 
     foreach ($manifests as $entry) {
-        $providerClasses = capell_theme_manifest_provider_classes($entry['manifest']);
+        $providerClasses = capell_theme_manifest_provider_classes($entry['manifest'], $entry['directory']);
         $providerClass = $providerClasses[0] ?? null;
 
         if ($providerClass === null || ! method_exists($providerClass, 'definition')) {

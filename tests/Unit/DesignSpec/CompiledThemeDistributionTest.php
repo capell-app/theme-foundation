@@ -19,7 +19,10 @@ function compiledThemeDistributionFixture(): array
         compiledThemeDistributionDesignSpecFixture(),
     )->artifactBytes;
     $authority = new Ed25519CompiledThemeReceiptSigningAuthority;
-    $validator = new ValidateCompiledThemeDistributionAction($authority);
+    $validator = new ValidateCompiledThemeDistributionAction(
+        $authority,
+        static fn (): DateTimeImmutable => new DateTimeImmutable('2026-07-21T12:00:00Z'),
+    );
     $builder = new BuildCompiledThemeDistributionAction($authority, $validator);
     $distribution = $builder->handle(
         $sourceBytes,
@@ -148,6 +151,25 @@ it('rejects a caller-asserted package release identity', function (): void {
 
     expect(fn (): null => $validator->handle($altered, $sourceBytes))
         ->toThrow(InvalidArgumentException::class, 'source_identity_invalid');
+});
+
+it('rejects receipts outside the explicit clock skew window', function (): void {
+    [$distribution, $sourceBytes] = compiledThemeDistributionFixture();
+    $authority = new Ed25519CompiledThemeReceiptSigningAuthority;
+
+    $notYetValid = new ValidateCompiledThemeDistributionAction(
+        $authority,
+        static fn (): DateTimeImmutable => new DateTimeImmutable('2026-07-21T11:59:29Z'),
+    );
+    $expired = new ValidateCompiledThemeDistributionAction(
+        $authority,
+        static fn (): DateTimeImmutable => new DateTimeImmutable('2026-07-22T12:00:31Z'),
+    );
+
+    expect(fn (): null => $notYetValid->handle($distribution, $sourceBytes))
+        ->toThrow(InvalidArgumentException::class, 'signature_invalid')
+        ->and(fn (): null => $expired->handle($distribution, $sourceBytes))
+        ->toThrow(InvalidArgumentException::class, 'signature_invalid');
 });
 
 /**

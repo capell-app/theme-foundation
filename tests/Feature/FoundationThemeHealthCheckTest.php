@@ -15,7 +15,7 @@ beforeEach(function (): void {
     CapellCore::forcePackageInstalled('capell-app/navigation');
     foundationThemeRegisterInstalledHealthSurfaces();
 
-    $this->publishedManifestPath = public_path('vendor/capell-theme-foundation/manifest.json');
+    $this->publishedManifestPath = foundationThemeHealthManifestPath();
 
     if (! is_dir(dirname($this->publishedManifestPath))) {
         mkdir(dirname($this->publishedManifestPath), 0o775, true);
@@ -40,7 +40,7 @@ it('reports a compatible capell api version', function (): void {
 });
 
 it('runs real diagnostics returning check results', function (): void {
-    $results = FoundationThemeHealthCheck::runDiagnostics();
+    $results = FoundationThemeHealthCheck::runDiagnostics($this->publishedManifestPath);
 
     expect($results)->toHaveCount(10)
         ->and($results->every(static fn (mixed $result): bool => $result instanceof DoctorCheckResultData))->toBeTrue()
@@ -59,37 +59,37 @@ it('runs real diagnostics returning check results', function (): void {
 });
 
 it('passes when required package health surfaces are present', function (): void {
-    $results = FoundationThemeHealthCheck::runDiagnostics();
+    $results = FoundationThemeHealthCheck::runDiagnostics($this->publishedManifestPath);
 
-    expect(FoundationThemeHealthCheck::passed())->toBeTrue()
+    expect(FoundationThemeHealthCheck::passed($this->publishedManifestPath))->toBeTrue()
         ->and($results->every(static fn (DoctorCheckResultData $result): bool => $result->passed))->toBeTrue();
 });
 
 it('fails the theme definition check when the definition is not registered', function (): void {
     resolve(ThemeRegistry::class)->reset();
 
-    $check = new FoundationThemeHealthCheck;
+    $check = foundationThemeHealthCheck();
 
     expect($check->isThemeStudioDefinitionRegistered())->toBeFalse()
         ->and($check->themeStudioDefinitionCheck()->passed)->toBeFalse()
         ->and($check->themeStudioDefinitionIssues())->toContain('Foundation Theme Studio definition is not registered.')
-        ->and(FoundationThemeHealthCheck::passed())->toBeFalse();
+        ->and(FoundationThemeHealthCheck::passed($this->publishedManifestPath))->toBeFalse();
 });
 
 it('fails the package installation check when a dependency is missing', function (): void {
     CapellCore::forcePackageInstalled('capell-app/layout-builder', false);
 
-    $check = new FoundationThemeHealthCheck;
+    $check = foundationThemeHealthCheck();
 
     expect($check->missingInstalledPackages())->toContain('capell-app/layout-builder')
         ->and($check->packageInstallationCheck()->passed)->toBeFalse()
-        ->and(FoundationThemeHealthCheck::passed())->toBeFalse();
+        ->and(FoundationThemeHealthCheck::passed($this->publishedManifestPath))->toBeFalse();
 });
 
 it('fails the package installation check when navigation is missing', function (): void {
     CapellCore::forcePackageInstalled('capell-app/navigation', false);
 
-    $check = new FoundationThemeHealthCheck;
+    $check = foundationThemeHealthCheck();
 
     expect($check->missingInstalledPackages())->toContain('capell-app/navigation')
         ->and($check->packageInstallationCheck()->passed)->toBeFalse();
@@ -98,18 +98,18 @@ it('fails the package installation check when navigation is missing', function (
 it('fails the published assets check when the manifest is missing', function (): void {
     unlink($this->publishedManifestPath);
 
-    $check = new FoundationThemeHealthCheck;
+    $check = foundationThemeHealthCheck();
 
     expect($check->publishedAssetManifestExists())->toBeFalse()
         ->and($check->assetPipelineCheck()->passed)->toBeFalse()
-        ->and(FoundationThemeHealthCheck::passed())->toBeFalse();
+        ->and(FoundationThemeHealthCheck::passed($this->publishedManifestPath))->toBeFalse();
 });
 
 it('fails the manifest provider check when capell json is missing', function (): void {
     $packageRoot = foundationThemeTemporaryPackageRoot('manifest-missing');
     unlink($packageRoot . '/capell.json');
 
-    $check = new FoundationThemeHealthCheck($packageRoot);
+    $check = foundationThemeHealthCheck($packageRoot);
 
     expect($check->manifestProviderCheck()->passed)->toBeFalse()
         ->and($check->manifestProviderIssues())->toContain('capell.json is missing or invalid.');
@@ -118,7 +118,7 @@ it('fails the manifest provider check when capell json is missing', function ():
 it('fails the render views check when required views are not resolvable', function (): void {
     view()->replaceNamespace('capell-theme-foundation', sys_get_temp_dir());
 
-    $check = new FoundationThemeHealthCheck;
+    $check = foundationThemeHealthCheck();
 
     expect($check->themeViewsCheck()->passed)->toBeFalse()
         ->and($check->missingViews())->toContain('capell-theme-foundation::theme.page');
@@ -128,7 +128,7 @@ it('fails the asset pipeline check when a required package asset is missing', fu
     $packageRoot = foundationThemeTemporaryPackageRoot('asset-missing');
     unlink($packageRoot . '/resources/css/theme-foundation.css');
 
-    $check = new FoundationThemeHealthCheck($packageRoot);
+    $check = foundationThemeHealthCheck($packageRoot);
 
     expect($check->assetPipelineCheck()->passed)->toBeFalse()
         ->and($check->missingAssets())->toContain('resources/css/theme-foundation.css');
@@ -140,7 +140,7 @@ it('fails the config and token check when required config is absent', function (
         'capell-theme-foundation.tailwind' => [],
     ]);
 
-    $check = new FoundationThemeHealthCheck;
+    $check = foundationThemeHealthCheck();
 
     expect($check->configAndTokensCheck()->passed)->toBeFalse()
         ->and($check->configAndTokenIssues())->toContain('asset_build_tool config is missing.')
@@ -148,7 +148,7 @@ it('fails the config and token check when required config is absent', function (
 });
 
 it('passes the fleet catalogue coverage check against the real monorepo', function (): void {
-    $check = new FoundationThemeHealthCheck;
+    $check = foundationThemeHealthCheck();
 
     expect($check->themesMissingCatalogueEntries())->toBe([])
         ->and($check->fleetCatalogueCoverageCheck()->passed)->toBeTrue();
@@ -164,7 +164,7 @@ it('fails the fleet catalogue coverage check when a theme package has no catalog
     ]));
     file_put_contents(dirname($fleetRoot) . '/docs/themes.json', json_encode(['themes' => []]));
 
-    $check = new FoundationThemeHealthCheck($fleetRoot . '/theme-foundation');
+    $check = foundationThemeHealthCheck($fleetRoot . '/theme-foundation');
 
     expect($check->themesMissingCatalogueEntries())->toContain('theme-uncatalogued')
         ->and($check->fleetCatalogueCoverageCheck()->passed)->toBeFalse();
@@ -173,7 +173,7 @@ it('fails the fleet catalogue coverage check when a theme package has no catalog
 });
 
 it('passes the fleet demo content coverage check against the real monorepo', function (): void {
-    $check = new FoundationThemeHealthCheck;
+    $check = foundationThemeHealthCheck();
 
     expect($check->themesMissingDemoContent())->toBe([])
         ->and($check->fleetDemoContentCoverageCheck()->passed)->toBeTrue();
@@ -189,7 +189,7 @@ it('fails the fleet demo content coverage check when a theme has no ProvidesThem
     ]));
     file_put_contents($fleetRoot . '/theme-bare/src/Placeholder.php', "<?php\n\ndeclare(strict_types=1);\n\nfinal class Placeholder {}\n");
 
-    $check = new FoundationThemeHealthCheck($fleetRoot . '/theme-foundation');
+    $check = foundationThemeHealthCheck($fleetRoot . '/theme-foundation');
 
     expect($check->themesMissingDemoContent())->toContain('theme-bare')
         ->and($check->fleetDemoContentCoverageCheck()->passed)->toBeFalse();
@@ -198,7 +198,7 @@ it('fails the fleet demo content coverage check when a theme has no ProvidesThem
 });
 
 it('passes the fleet screenshot freshness check against the real monorepo', function (): void {
-    $check = new FoundationThemeHealthCheck;
+    $check = foundationThemeHealthCheck();
 
     expect($check->themesMissingScreenshots())->toBe([])
         ->and($check->fleetScreenshotFreshnessCheck()->passed)->toBeTrue();
@@ -213,7 +213,7 @@ it('fails the fleet screenshot freshness check when a theme has no screenshots m
         'themeKey' => 'unshot',
     ]));
 
-    $check = new FoundationThemeHealthCheck($fleetRoot . '/theme-foundation');
+    $check = foundationThemeHealthCheck($fleetRoot . '/theme-foundation');
 
     expect($check->themesMissingScreenshots())->toContain('theme-unshot')
         ->and($check->fleetScreenshotFreshnessCheck()->passed)->toBeFalse();
@@ -231,12 +231,25 @@ it('fails the fleet screenshot freshness check when the manifest entries list is
     ]));
     file_put_contents($fleetRoot . '/theme-unshot/docs/screenshots.json', json_encode(['entries' => []]));
 
-    $check = new FoundationThemeHealthCheck($fleetRoot . '/theme-foundation');
+    $check = foundationThemeHealthCheck($fleetRoot . '/theme-foundation');
 
     expect($check->themesMissingScreenshots())->toContain('theme-unshot');
 
     foundationThemeDeleteDirectory(dirname($fleetRoot));
 });
+
+function foundationThemeHealthManifestPath(): string
+{
+    return sys_get_temp_dir() . '/capell-theme-foundation-health-' . getmypid() . '/manifest.json';
+}
+
+function foundationThemeHealthCheck(?string $packageRoot = null): FoundationThemeHealthCheck
+{
+    return new FoundationThemeHealthCheck(
+        packageRoot: $packageRoot ?? dirname(__DIR__, 2),
+        publishedManifestPath: foundationThemeHealthManifestPath(),
+    );
+}
 
 function foundationThemeTemporaryFleetRoot(string $name): string
 {

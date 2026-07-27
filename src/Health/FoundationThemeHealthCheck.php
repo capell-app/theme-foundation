@@ -102,7 +102,10 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
         'swiper/css/navigation',
     ];
 
-    public function __construct(private readonly string $packageRoot = self::PACKAGE_ROOT) {}
+    public function __construct(
+        private readonly string $packageRoot = self::PACKAGE_ROOT,
+        private readonly ?string $publishedManifestPath = null,
+    ) {}
 
     public static function compatibleCapellApiVersion(): string
     {
@@ -112,9 +115,9 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
     /**
      * @return Collection<int, DoctorCheckResultData>
      */
-    public static function runDiagnostics(): Collection
+    public static function runDiagnostics(?string $publishedManifestPath = null): Collection
     {
-        $check = new self;
+        $check = new self(publishedManifestPath: $publishedManifestPath);
 
         return collect([
             $check->packageInstallationCheck(),
@@ -130,9 +133,9 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
         ]);
     }
 
-    public static function passed(): bool
+    public static function passed(?string $publishedManifestPath = null): bool
     {
-        return self::runDiagnostics()
+        return self::runDiagnostics($publishedManifestPath)
             ->every(static fn (DoctorCheckResultData $result): bool => $result->passed);
     }
 
@@ -436,7 +439,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
 
     public function publishedAssetManifestExists(): bool
     {
-        return is_file(public_path('vendor/capell-theme-foundation/manifest.json'));
+        return is_file($this->publishedManifestPath ?? public_path('vendor/capell-theme-foundation/manifest.json'));
     }
 
     /**

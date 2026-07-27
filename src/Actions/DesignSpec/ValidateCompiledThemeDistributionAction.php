@@ -8,6 +8,7 @@ use Capell\FoundationTheme\Contracts\CompiledThemeReceiptSigningAuthority;
 use Capell\FoundationTheme\Data\DesignSpec\CompiledThemeDistributionData;
 use Capell\FoundationTheme\Data\DesignSpec\CompiledThemeDistributionFileData;
 use Capell\FoundationTheme\Data\DesignSpec\CompiledThemeFileData;
+use Closure;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use RuntimeException;
@@ -15,7 +16,13 @@ use ZipArchive;
 
 final readonly class ValidateCompiledThemeDistributionAction
 {
-    public function __construct(private CompiledThemeReceiptSigningAuthority $signingAuthority) {}
+    public const int CLOCK_SKEW_SECONDS = 30;
+
+    /** @param Closure(): DateTimeImmutable|null $now */
+    public function __construct(
+        private CompiledThemeReceiptSigningAuthority $signingAuthority,
+        private ?Closure $now = null,
+    ) {}
 
     /**
      * @return array<string, string>
@@ -65,6 +72,9 @@ final readonly class ValidateCompiledThemeDistributionAction
         );
         $receipt = $distribution->receipt;
         $notAfter = $this->signingAuthority->notAfter();
+        $now = $this->now();
+        $earliestAcceptedTime = $now->modify('-' . self::CLOCK_SKEW_SECONDS . ' seconds');
+        $latestAcceptedTime = $now->modify('+' . self::CLOCK_SKEW_SECONDS . ' seconds');
         if ($receipt->issuer !== $this->signingAuthority->issuer()
             || $receipt->keyId !== $this->signingAuthority->keyId()
             || $receipt->artifactType !== 'compiled-theme-distribution'
@@ -72,9 +82,18 @@ final readonly class ValidateCompiledThemeDistributionAction
             || $receipt->bindings !== $expectedBindings
             || $receipt->issuedAt < $this->signingAuthority->notBefore()
             || ($notAfter instanceof DateTimeImmutable && $receipt->expiresAt > $notAfter)
+            || $receipt->issuedAt > $latestAcceptedTime
+            || $receipt->expiresAt < $earliestAcceptedTime
             || ! $this->signingAuthority->verify($receipt->signingMessage(), $receipt->signature)) {
             throw new InvalidArgumentException('design_spec.distribution.signature_invalid');
         }
+    }
+
+    private function now(): DateTimeImmutable
+    {
+        return $this->now instanceof Closure
+            ? ($this->now)()
+            : new DateTimeImmutable('now');
     }
 
     /** @param list<CompiledThemeDistributionFileData> $files */
