@@ -566,7 +566,7 @@ final class ThemeDemoPageInstaller
         $widgetCreator = resolve(WidgetCreator::class);
 
         foreach ($blueprints as $blueprint) {
-            $method = $blueprint['method'] ?? null;
+            $method = $blueprint['method'];
 
             if (! is_string($method) || $method === '' || ! method_exists($widgetCreator, $method)) {
                 throw new InvalidArgumentException(sprintf(

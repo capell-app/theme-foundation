@@ -11,6 +11,7 @@ use DOMNode;
 use DOMXPath;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
+use InvalidArgumentException;
 
 class Svg extends Component
 {
@@ -55,6 +56,10 @@ class Svg extends Component
         ?string $height = null,
         ?string $viewBox = null,
     ) {
+        if ($path === '') {
+            throw new InvalidArgumentException('SVG path must not be empty.');
+        }
+
         $dom = new DOMDocument('1.2', 'utf-8');
         $dom->load($path, LIBXML_NONET);
 

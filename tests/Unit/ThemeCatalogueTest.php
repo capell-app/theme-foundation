@@ -47,7 +47,7 @@ function themeCatalogueThemeEntries(): array
     foreach ($themes as $theme) {
         throw_unless(is_array($theme), RuntimeException::class, 'Each catalogue theme must be an object.');
 
-        $entries[] = $theme;
+        $entries[] = capell_string_keyed_array($theme);
     }
 
     return $entries;

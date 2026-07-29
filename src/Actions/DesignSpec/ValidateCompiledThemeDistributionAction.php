@@ -181,7 +181,7 @@ final readonly class ValidateCompiledThemeDistributionAction
                     || ! is_array($stat)
                     || isset($seen[$name])
                     || ! isset($declared[$name])
-                    || ($stat['size'] ?? null) !== $declared[$name]->sizeBytes) {
+                    || $stat['size'] !== $declared[$name]->sizeBytes) {
                     throw new InvalidArgumentException('design_spec.distribution.archive_file_map_invalid');
                 }
 
