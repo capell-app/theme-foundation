@@ -7,6 +7,7 @@ namespace Capell\FoundationTheme\View\Components\Widget\Page;
 use Capell\Core\Contracts\Pageable;
 use Capell\Core\Enums\PageOrderEnum;
 use Capell\Core\Models\Language;
+use Capell\Frontend\Data\PageListingRequestData;
 use Capell\Frontend\Facades\Frontend;
 use Capell\Frontend\Support\Loader\PageLoader;
 use Illuminate\Contracts\Database\Eloquent\Builder as BuilderContract;
@@ -41,22 +42,21 @@ class Siblings extends AbstractPagesWidget
             return;
         }
 
-        $this->pages = PageLoader::getPages(
+        $this->pages = PageLoader::list(new PageListingRequestData(
             language: $language,
             site: Frontend::site(),
             page: $page,
             type: 'siblings',
             ordering: PageOrderEnum::Alphabetical,
-            withChildrenCount: $this->widget->meta['with_children_count'] ?? false,
-            withImage: $this->widget->meta['with_image'] ?? false,
-            withParent: $this->widget->meta['with_parent'] ?? false,
-            withDate: $this->widget->meta['with_date'] ?? false,
-            cacheKeyPrepend: 'page-not-' . $page->getKey(),
+            withChildrenCount: (bool) ($this->widget->meta['with_children_count'] ?? false),
+            withImage: (bool) ($this->widget->meta['with_image'] ?? false),
+            withParent: (bool) ($this->widget->meta['with_parent'] ?? false),
+            withDate: (bool) ($this->widget->meta['with_date'] ?? false),
             useCache: false,
             modifyQuery: function (BuilderContract $query) use ($page): void {
                 $query->whereKeyNot($page->getKey());
             },
-        );
+        ));
 
         if ($this->pages->isEmpty()) {
             $this->skipRender = true;

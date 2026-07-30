@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 use Capell\Frontend\Facades\Frontend;
 
 $theme = Frontend::theme();
@@ -12,7 +14,7 @@ $theme = Frontend::theme();
     use Capell\Frontend\Contracts\AssetsRegistryInterface;
 @endphp
 
-@props ([
+@props([
     'assets',
     'color' => $widget->getMeta('color', 'dark'),
     'container',
@@ -72,7 +74,7 @@ $theme = Frontend::theme();
 
                 <div
                     style="--columns: {{ $columns ?: $total }}"
-                    @class ([
+                    @class([
                         'grid md:grid-cols-[repeat(var(--columns),minmax(0,1fr))]',
                         'gap-x-8 gap-y-6 lg:gap-x-10 lg:gap-y-10' => $spacing && $spacing !== 'none',
                         'sm:grid-cols-2' => $total >= 2 && $columns === 0,

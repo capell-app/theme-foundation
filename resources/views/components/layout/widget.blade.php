@@ -10,7 +10,7 @@
     use Livewire\Blaze\Blaze;
 @endphp
 
-@props ([
+@props([
     'component',
     'container',
     'containerColspan' => null,
@@ -109,9 +109,11 @@
         ]);
     @endphp
 
-    @livewire ($component,
+    @livewire(
+        $component,
         [
             'widgetReference' => $widgetReference,
         ],
-        key($containerKey . '-' . $widget->key . '-' . $occurrence))
+        key($containerKey . '-' . $widget->key . '-' . $occurrence),
+)
 @endif

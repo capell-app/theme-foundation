@@ -1,4 +1,4 @@
-@props ([
+@props([
     'title' => '',
     'keywords' => '',
     'description' => '',
@@ -15,38 +15,32 @@
 
 @if ($usesLivewire)
     <script>
-        ;(function () {
+        (function () {
             function setupTheme() {
-                const isDarkMode = localStorage.theme === 'dark'
+                const isDarkMode = localStorage.theme === 'dark';
 
-                document.documentElement.classList.toggle('dark', isDarkMode)
+                document.documentElement.classList.toggle('dark', isDarkMode);
             }
 
             function updateHeaderSticky() {
-                document.body.classList.toggle(
-                    'header-sticky',
-                    window.scrollY > 0,
-                )
+                document.body.classList.toggle('header-sticky', window.scrollY > 0);
             }
 
             function handleHeaderAndTheme() {
-                setupTheme()
+                setupTheme();
 
-                const header = document.getElementById('header')
-                if (!header) return
-                updateHeaderSticky()
+                const header = document.getElementById('header');
+                if (!header) return;
+                updateHeaderSticky();
             }
 
-            setupTheme()
+            setupTheme();
 
-            window.removeEventListener('scroll', updateHeaderSticky)
-            window.addEventListener('scroll', updateHeaderSticky)
+            window.removeEventListener('scroll', updateHeaderSticky);
+            window.addEventListener('scroll', updateHeaderSticky);
 
-            document.addEventListener('livewire:load', updateHeaderSticky)
-            document.addEventListener(
-                'livewire:navigated',
-                handleHeaderAndTheme,
-            )
-        })()
+            document.addEventListener('livewire:load', updateHeaderSticky);
+            document.addEventListener('livewire:navigated', handleHeaderAndTheme);
+        })();
     </script>
 @endif

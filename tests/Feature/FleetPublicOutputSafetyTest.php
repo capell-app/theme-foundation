@@ -2,9 +2,56 @@
 
 declare(strict_types=1);
 
+use Capell\FoundationTheme\Testing\AssertsPublicThemeAccessibility;
 use Capell\FoundationTheme\Testing\AssertsPublicThemeOutputSafety;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 
 uses(AssertsPublicThemeOutputSafety::class);
+
+/** @extends TestCase<MockObject> */
+final class FoundationAccessibilityContractHarness extends TestCase
+{
+    use AssertsPublicThemeAccessibility;
+
+    public function verifyRenderedDocument(string $html): void
+    {
+        $this->assertRenderedDocumentMeetsAccessibilityContract($html, 'Foundation public page shell');
+    }
+}
+
+it('keeps the rendered Foundation page shell within the shared accessibility contract', function (): void {
+    $page = view('capell-theme-foundation::theme.page', [
+        'brand' => new readonly class
+        {
+            /**
+             * @return array<string, string>
+             */
+            public function tokens(): array
+            {
+                return [
+                    '--theme-primary' => '#315f8f',
+                    '--theme-surface' => '#faf9f7',
+                    '--theme-foreground' => '#111827',
+                    '--theme-body-font' => 'Inter',
+                ];
+            }
+        },
+        'content' => '<article><h1>Foundation public page</h1><h2>Latest work</h2><p>Public content.</p></article>',
+    ])->render();
+
+    $document = sprintf(
+        '<!DOCTYPE html><html lang="en"><head><title>Foundation public page</title></head><body>%s</body></html>',
+        $page,
+    );
+
+    expect($page)
+        ->toContain('id="main-content"')
+        ->toContain('id="theme-status"')
+        ->toContain('Foundation public page');
+
+    new FoundationAccessibilityContractHarness('verifyRenderedDocument')->verifyRenderedDocument($document);
+});
 
 /*
  * Fleet backstop for Wave 1.1: every `packages/theme-*` directory

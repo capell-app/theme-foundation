@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 use Capell\Frontend\Facades\Frontend;
 
 $page = Frontend::page();
@@ -8,7 +10,7 @@ $theme = Frontend::theme();
 
 ?>
 
-@props ([
+@props([
     'linkClass' => 'dropdown-item hover:text-primary focus:text-primary widget w-full bg-transparent px-4 py-3 text-left text-base text-sm leading-none font-medium whitespace-nowrap',
     'name' => 'languages',
     'dropdownLabelClass' => '',
@@ -27,9 +29,9 @@ $theme = Frontend::theme();
 >
     <x-slot:trigger
         @class([
-            'hover:text-primary focus:text-primary focus:ring-primary/50 dark:focus:ring-primary cursor-pointer gap-2 rounded-md border border-white/10 px-4 py-1.5 focus:outline-none focus:ring-2',
-            'dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800' => $darkMode && $theme->withDarkMode,
-        ])
+        'hover:text-primary focus:text-primary focus:ring-primary/50 dark:focus:ring-primary cursor-pointer gap-2 rounded-md border border-white/10 px-4 py-1.5 focus:outline-none focus:ring-2',
+        'dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800' => $darkMode && $theme->withDarkMode,
+    ])
     >
         <img
             class="h-4 w-4"
@@ -41,7 +43,7 @@ $theme = Frontend::theme();
         />
         <span class="{{ $dropdownLabelClass }}">
             <span>{{ $language->name }}</span>
-            @svg ('heroicon-m-chevron-down', 'inline h-4 w-4')
+            @svg('heroicon-m-chevron-down', 'inline h-4 w-4')
         </span>
     </x-slot:trigger>
 
@@ -52,7 +54,7 @@ $theme = Frontend::theme();
     </div>
 
     @foreach ($languages as $siteLanguage)
-        @continue ($siteLanguage['id'] === $language->id)
+        @continue($siteLanguage['id'] === $language->id)
         <div>
             <a
                 href="{{ $siteLanguage['url'] }}"

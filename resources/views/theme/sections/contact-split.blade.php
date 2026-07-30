@@ -20,9 +20,7 @@
                 {{ $section->heading ?? __('capell-theme-foundation::generic.contact') }}
             </h1>
             @if (! empty($section->summary))
-                <p class="mt-4 max-w-2xl text-base leading-7 text-slate-600">
-                    {{ $section->summary }}
-                </p>
+                <p class="mt-4 max-w-2xl text-base leading-7 text-slate-600">{{ $section->summary }}</p>
             @endif
 
             <div class="mt-8">

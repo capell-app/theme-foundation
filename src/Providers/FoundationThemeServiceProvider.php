@@ -82,6 +82,7 @@ use Capell\Frontend\Contracts\FrontendResourceContributor;
 use Capell\Frontend\Contracts\FrontendRuntimeManifestContributor;
 use Capell\Frontend\Data\Assets\FrontendPackageDependencyData;
 use Capell\Frontend\Data\FrontendAssetData;
+use Capell\Frontend\Data\PageListingRequestData;
 use Capell\Frontend\Enums\FrontendPackageDependencyType;
 use Capell\Frontend\Events\FrontendContextResolved;
 use Capell\Frontend\Events\FrontendRenderPreparing;
@@ -477,13 +478,13 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
         );
         $setFrontendData(
             'foundation.footer.latest_pages',
-            PageLoader::getPages(
+            PageLoader::list(new PageListingRequestData(
                 language: $language,
                 site: $site,
                 limit: 4,
                 ordering: PageOrderEnum::Latest,
                 pageGroup: BlueprintGroupEnum::Default,
-            ),
+            )),
         );
         $setFrontendData(
             'foundation.footer.related_sites',

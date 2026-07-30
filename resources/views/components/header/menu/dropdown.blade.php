@@ -1,4 +1,4 @@
-@props ([
+@props([
     'id' => null,
     'itemClass',
     'dropdownItemClass' => 'text-secondary hover:bg-primary/10 focus-visible:bg-primary/10 focus-visible:ring-primary/40 dark:text-secondary dark:hover:bg-primary/20 dark:focus-visible:bg-primary/20 flex w-full items-center px-4 py-2 text-left text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 lg:px-3 lg:py-1.5',
@@ -35,11 +35,11 @@
 >
     <x-slot:trigger
         @class([
-            $itemClass,
-            'hover:text-primary focus:text-primary' => ! $item->active,
-            'active text-primary' => $item->active,
-            $item->data['class'] ?? '',
-        ])
+        $itemClass,
+        'hover:text-primary focus:text-primary' => ! $item->active,
+        'active text-primary' => $item->active,
+        $item->data['class'] ?? '',
+    ])
     >
         @if (! empty($item->data['icon']))
             <x-dynamic-component
@@ -49,14 +49,14 @@
         @endif
 
         <span
-            @class ([
-                'mr-1 lg:sr-only' => ! empty($item->data['hide_label']),
-            ])
+            @class([
+            'mr-1 lg:sr-only' => ! empty($item->data['hide_label']),
+        ])
         >
             {{ $item->label }}
         </span>
 
-        @svg ('heroicon-o-chevron-right', '-mr-2 ml-auto h-4 w-4 text-gray-400 group-hover:text-inherit group-focus:text-inherit lg:rotate-90')
+        @svg('heroicon-o-chevron-right', '-mr-2 ml-auto h-4 w-4 text-gray-400 group-hover:text-inherit group-focus:text-inherit lg:rotate-90')
     </x-slot:trigger>
 
     <li
@@ -64,20 +64,20 @@
     >
         <button
             type="button"
-            @class ([
+            @class([
                 $dropdownItemClass,
                 'hover:text-primary focus:text-primary font-semibold',
             ])
             x-on:click="close($refs['{{ $currentDropdownName }}_toggle'])"
         >
-            @svg ('heroicon-o-arrow-left', 'mr-1 h-5 w-5 stroke-current')
+            @svg('heroicon-o-arrow-left', 'mr-1 h-5 w-5 stroke-current')
             <span> {{ $item->label }} </span>
         </button>
     </li>
 
     @foreach ($item->children as $id => $child)
         @if ($child->children->count() > 0)
-            @include ('capell::components.header.menu.dropdown', [
+            @include('capell::components.header.menu.dropdown', [
                 'id' => $id,
                 'dropdownName' => $currentDropdownName,
                 'item' => $child,
@@ -88,9 +88,9 @@
             <li class="nav-item">
                 <a
                     href="{{ $child->data['url'] ?? '' }}"
-                    @if (!empty($child->data['target'])) target="{{ $child->data['target'] }}" @endif
+                    @if (! empty($child->data['target'])) target="{{ $child->data['target'] }}" @endif
                     @if ($usesWireNavigate) @wireNavigate @endif
-                    @class ([
+                    @class([
                         $dropdownItemClass,
                         'hover:text-primary focus:text-primary' => ! $child->active,
                         'active text-primary dark:text-primary' => $child->active,

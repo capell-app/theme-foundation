@@ -6,9 +6,7 @@
         <div>
             <p class="text-sm font-semibold">{{ $section->brandName }}</p>
             @if ($section->summary)
-                <p class="mt-3 max-w-sm text-sm leading-6 text-slate-400">
-                    {{ $section->summary }}
-                </p>
+                <p class="mt-3 max-w-sm text-sm leading-6 text-slate-400">{{ $section->summary }}</p>
             @endif
         </div>
         <div class="grid gap-6 sm:grid-cols-3">

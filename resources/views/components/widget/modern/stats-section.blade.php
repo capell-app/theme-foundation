@@ -1,4 +1,4 @@
-@props ([
+@props([
     'assetRenderDataItems',
     'layout' => $widget->getMeta('layout', 'horizontal'),
     'container',
@@ -32,19 +32,17 @@
                 @endif
 
                 @if ($widget->translation->content)
-                    <p class="text-lg text-gray-500">
-                        {{ strip_tags($widget->translation->content) }}
-                    </p>
+                    <p class="text-lg text-gray-500">{{ strip_tags($widget->translation->content) }}</p>
                 @endif
             </div>
         @endif
 
         <div
-            @class ([
-                'mx-auto',
-                'grid max-w-md grid-cols-1 gap-6' => $layout === 'vertical',
-                'max-w-5xl ' . $responsiveGrid . ' md:grid-cols-2 lg:grid-cols-4' => $layout !== 'vertical',
-            ])
+            @class([
+            'mx-auto',
+            'grid max-w-md grid-cols-1 gap-6' => $layout === 'vertical',
+            'max-w-5xl ' . $responsiveGrid . ' md:grid-cols-2 lg:grid-cols-4' => $layout !== 'vertical',
+        ])
         >
             @forelse ($assetRenderDataItems as $assetRenderDataItem)
                 @php
@@ -60,7 +58,7 @@
                             class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-50 text-blue-700"
                         >
                             @if (str_starts_with($icon, 'heroicon-'))
-                                @svg ($icon, 'h-6 w-6')
+                                @svg($icon, 'h-6 w-6')
                             @else
                                 <span class="text-3xl">{{ $icon }}</span>
                             @endif
@@ -68,24 +66,18 @@
                     @endif
 
                     @if ($assetRenderData->content)
-                        <p
-                            class="mb-1 text-3xl font-bold text-emerald-700 md:text-4xl"
-                        >
+                        <p class="mb-1 text-3xl font-bold text-emerald-700 md:text-4xl">
                             {{ strip_tags($assetRenderData->content) }}
                         </p>
                     @endif
 
                     @if ($assetRenderData->title)
-                        <p class="text-sm font-medium text-gray-500">
-                            {{ $assetRenderData->title }}
-                        </p>
+                        <p class="text-sm font-medium text-gray-500">{{ $assetRenderData->title }}</p>
                     @endif
                 </div>
             @empty
                 <div class="col-span-full py-12 text-center">
-                    <p class="text-gray-500">
-                        {{ __('capell-theme-foundation::generic.empty_stats') }}
-                    </p>
+                    <p class="text-gray-500">{{ __('capell-theme-foundation::generic.empty_stats') }}</p>
                 </div>
             @endforelse
         </div>

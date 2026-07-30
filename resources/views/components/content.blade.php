@@ -5,7 +5,7 @@
     use Capell\Frontend\Facades\Frontend;
 @endphp
 
-@props ([
+@props([
     'align' => '',
     'contentType' => ContentStructure::Html,
     'color' => '',
@@ -134,25 +134,25 @@
 
 <div
     {{
-        $attributes->class([
-            'content-component prose prose-h1:font-bold [&>:first-child]:mt-0 [&>:last-child]:mb-0',
-            'prose-invert' => $color === 'light' && ($theme?->withDarkMode ?? false),
-            'dark:prose-invert' => $color !== 'light' && ($theme?->withDarkMode ?? false),
-            'prose-muted' => $color === 'muted' || (! $color && $muted),
-            'max-w-none' => $width === 'full',
-            'mx-auto' => $align === 'center' || (! $align && $resolvedTextAlign === 'center'),
-            'prose-lg md:prose-xl lg:prose-2xl xl:prose-4xl' => $size === 'lg',
-            'prose-sm' => $size === 'sm',
-            'prose-compact' => $compact,
-            'prose-headings:text-balance' => $headingBalance,
-            'prose-headings:font-medium' => $headingWeight === 'medium',
-            'prose-headings:font-normal' => $headingWeight === 'normal',
-            'text-start' => $resolvedTextAlign === 'start',
-            'text-end' => $resolvedTextAlign === 'end',
-            'text-center' => $resolvedTextAlign === 'center',
-            'text-justify' => $resolvedTextAlign === 'justify',
-        ])
-    }}
+    $attributes->class([
+        'content-component prose prose-h1:font-bold [&>:first-child]:mt-0 [&>:last-child]:mb-0',
+        'prose-invert' => $color === 'light' && ($theme?->withDarkMode ?? false),
+        'dark:prose-invert' => $color !== 'light' && ($theme?->withDarkMode ?? false),
+        'prose-muted' => $color === 'muted' || (! $color && $muted),
+        'max-w-none' => $width === 'full',
+        'mx-auto' => $align === 'center' || (! $align && $resolvedTextAlign === 'center'),
+        'prose-lg md:prose-xl lg:prose-2xl xl:prose-4xl' => $size === 'lg',
+        'prose-sm' => $size === 'sm',
+        'prose-compact' => $compact,
+        'prose-headings:text-balance' => $headingBalance,
+        'prose-headings:font-medium' => $headingWeight === 'medium',
+        'prose-headings:font-normal' => $headingWeight === 'normal',
+        'text-start' => $resolvedTextAlign === 'start',
+        'text-end' => $resolvedTextAlign === 'end',
+        'text-center' => $resolvedTextAlign === 'center',
+        'text-justify' => $resolvedTextAlign === 'justify',
+    ])
+}}
 >
     @if ($image)
         {{-- format-ignore-start --}}

@@ -1,4 +1,4 @@
-@props ([
+@props([
     'url' => null,
     'count' => null,
     'size' => null,
@@ -17,18 +17,18 @@
 @endphp
 
 <li
-    @class ([
-        'capell-list-list-item',
-        '@container/item list-item',
-        'py-1.5' => $size === 'sm',
-        'py-2' => $size !== 'sm',
-        $attributes->get('class'),
-    ])
+    @class([
+    'capell-list-list-item',
+    '@container/item list-item',
+    'py-1.5' => $size === 'sm',
+    'py-2' => $size !== 'sm',
+    $attributes->get('class'),
+])
 >
     @if ($url && ! $active)
         <a
             href="{{ $url }}"
-            @class ([...$classes, 'hover:text-primary focus:text-primary'])
+            @class([...$classes, 'hover:text-primary focus:text-primary'])
             @wireNavigate
         >
             <span class="grow"> {{ $slot }} </span>
@@ -41,7 +41,7 @@
             @endif
         </a>
     @else
-        <div @class ($classes)>
+        <div @class($classes)>
             <span class="flex grow"> {{ $slot }} </span>
             @if ($count)
                 <span

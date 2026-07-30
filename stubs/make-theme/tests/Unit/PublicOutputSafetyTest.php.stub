@@ -2,9 +2,17 @@
 
 declare(strict_types=1);
 
+use Capell\FoundationTheme\Testing\AssertsPublicThemeAccessibility;
 use Capell\FoundationTheme\Testing\AssertsPublicThemeOutputSafety;
 
-uses(AssertsPublicThemeOutputSafety::class);
+uses(
+    AssertsPublicThemeAccessibility::class,
+    AssertsPublicThemeOutputSafety::class,
+);
+
+it('keeps public Blade within the shared accessibility contract', function (): void {
+    $this->assertThemeBladeMeetsAccessibilityContract(__DIR__ . '/../../resources/views');
+});
 
 it('keeps public Blade free of authoring or package metadata, and legacy sections free of database access', function (): void {
     $this->assertLayoutNativeThemeOutputIsSafe(__DIR__ . '/../../resources/views', '{{ composerPackageName }}');

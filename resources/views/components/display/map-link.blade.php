@@ -1,4 +1,4 @@
-@props ([
+@props([
     'latitude' => null,
     'longitude' => null,
     'label' => null,
@@ -35,18 +35,8 @@
             class="block aspect-video w-full"
         >
             <defs>
-                <pattern
-                    id="theme-map-grid"
-                    width="48"
-                    height="48"
-                    patternUnits="userSpaceOnUse"
-                >
-                    <path
-                        d="M 48 0 L 0 0 0 48"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-opacity="0.12"
-                    />
+                <pattern id="theme-map-grid" width="48" height="48" patternUnits="userSpaceOnUse">
+                    <path d="M 48 0 L 0 0 0 48" fill="none" stroke="currentColor" stroke-opacity="0.12" />
                 </pattern>
             </defs>
             <rect width="640" height="360" fill="var(--theme-surface, Canvas)" />

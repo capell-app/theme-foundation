@@ -1,4 +1,4 @@
-@props ([
+@props([
     'variant' => 'bordered',
     'hoverEffect' => 'none',
 ])

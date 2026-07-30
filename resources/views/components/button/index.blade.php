@@ -1,4 +1,4 @@
-@props ([
+@props([
     'ariaLabel' => null,
     'buttonIcon' => '',
     'class' => '',
@@ -51,7 +51,7 @@
 @endphp
 
 @if (! $buttonIcon && $icon)
-    @capellBuffer ($buttonIcon)
+    @capellBuffer($buttonIcon)
         <x-dynamic-component
             :component="$icon"
             @class([

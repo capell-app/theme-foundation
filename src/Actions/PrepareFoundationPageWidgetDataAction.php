@@ -11,6 +11,7 @@ use Capell\Core\Models\Layout;
 use Capell\Core\Models\Page;
 use Capell\Core\Models\Site;
 use Capell\FoundationTheme\Support\ResultsSectionContributor;
+use Capell\Frontend\Data\PageListingRequestData;
 use Capell\Frontend\Support\Loader\PageLoader;
 use Capell\LayoutBuilder\Models\Widget;
 use Capell\LayoutBuilder\Support\CapellLayoutManager;
@@ -79,7 +80,7 @@ final class PrepareFoundationPageWidgetDataAction
             return collect();
         }
 
-        return PageLoader::getPages(
+        return PageLoader::list(new PageListingRequestData(
             language: $language,
             site: $site,
             page: $page,
@@ -90,7 +91,7 @@ final class PrepareFoundationPageWidgetDataAction
             withParent: (bool) $widget->getMeta('with_parent', false),
             withDate: (bool) $widget->getMeta('with_date', false),
             useCache: false,
-        );
+        ));
     }
 
     private function latest(Widget $widget, Site $site, Language $language, Page $page): mixed
@@ -103,7 +104,7 @@ final class PrepareFoundationPageWidgetDataAction
         $modelClass = is_string($morphModel) ? Relation::getMorphedModel($morphModel) : null;
         $pageGroup = $widget->getMeta('page_group');
 
-        return PageLoader::getPages(
+        return PageLoader::list(new PageListingRequestData(
             language: $language,
             site: $site,
             page: $page,
@@ -117,12 +118,11 @@ final class PrepareFoundationPageWidgetDataAction
             withParent: (bool) $widget->getMeta('with_parent', false),
             withDate: (bool) $widget->getMeta('with_date', false),
             paginationKey: 'latest-pages',
-            cacheKeyPrepend: 'latest-widget-' . self::widgetKey($widget),
             morphModel: is_string($modelClass) && is_a($modelClass, Pageable::class, true) ? $modelClass : null,
             useCache: false,
             modifyQuery: static function (Builder $query) use ($page): void {
                 $query->whereKeyNot($page->getKey());
             },
-        );
+        ));
     }
 }

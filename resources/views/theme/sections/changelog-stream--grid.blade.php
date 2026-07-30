@@ -12,9 +12,7 @@
 >
     <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16">
         <div class="mb-8 max-w-2xl">
-            <p
-                class="mb-3 text-xs font-semibold tracking-[0.16em] text-[var(--theme-primary)] uppercase"
-            >
+            <p class="mb-3 text-xs font-semibold tracking-[0.16em] text-[var(--theme-primary)] uppercase">
                 {{ __('capell-theme-foundation::generic.changelog_stream') }}
             </p>
             <h2
@@ -23,9 +21,7 @@
                 {{ $section->heading ?? __('capell-theme-foundation::generic.changelog_stream') }}
             </h2>
             @if (! empty($section->summary))
-                <p class="mt-3 text-sm leading-7 text-slate-600 sm:text-base">
-                    {{ $section->summary }}
-                </p>
+                <p class="mt-3 text-sm leading-7 text-slate-600 sm:text-base">{{ $section->summary }}</p>
             @endif
         </div>
 
@@ -58,9 +54,7 @@
                         </h3>
 
                         @if (! empty($entry['summary']))
-                            <p class="mt-2 text-sm leading-6 text-slate-600">
-                                {{ $entry['summary'] }}
-                            </p>
+                            <p class="mt-2 text-sm leading-6 text-slate-600">{{ $entry['summary'] }}</p>
                         @endif
 
                         @if (! empty($entry['date']))
@@ -75,9 +69,7 @@
                 @endforeach
             </div>
         @else
-            <p class="text-slate-500">
-                {{ __('capell-theme-foundation::generic.empty_changelog') }}
-            </p>
+            <p class="text-slate-500">{{ __('capell-theme-foundation::generic.empty_changelog') }}</p>
         @endif
     </div>
 </section>

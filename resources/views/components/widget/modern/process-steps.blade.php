@@ -1,4 +1,4 @@
-@props ([
+@props([
     'assetRenderDataItems',
     'layout' => $widget->getMeta('layout', 'horizontal'),
     'container',
@@ -32,9 +32,7 @@
                 @endif
 
                 @if ($widget->translation->content)
-                    <p class="text-lg text-gray-500">
-                        {{ strip_tags($widget->translation->content) }}
-                    </p>
+                    <p class="text-lg text-gray-500">{{ strip_tags($widget->translation->content) }}</p>
                 @endif
             </div>
         @endif
@@ -62,7 +60,7 @@
                                     class="flex h-24 w-24 items-center justify-center rounded-full border-2 border-stone-200 bg-white text-blue-700 shadow-sm"
                                 >
                                     @if (str_starts_with($icon, 'heroicon-'))
-                                        @svg ($icon, 'h-8 w-8')
+                                        @svg($icon, 'h-8 w-8')
                                     @else
                                         <span class="text-4xl">
                                             {{ $icon }}
@@ -85,16 +83,12 @@
                             @endif
 
                             @if ($assetRenderData->content)
-                                <p class="text-sm text-gray-500">
-                                    {{ strip_tags($assetRenderData->content) }}
-                                </p>
+                                <p class="text-sm text-gray-500">{{ strip_tags($assetRenderData->content) }}</p>
                             @endif
                         </div>
                     @empty
                         <div class="col-span-full py-12 text-center">
-                            <p class="text-gray-500">
-                                {{ __('capell-theme-foundation::generic.empty_steps') }}
-                            </p>
+                            <p class="text-gray-500">{{ __('capell-theme-foundation::generic.empty_steps') }}</p>
                         </div>
                     @endforelse
                 </div>
@@ -112,7 +106,7 @@
                             class="relative flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full border-2 border-stone-200 bg-white text-blue-700 shadow-sm"
                         >
                             @if (str_starts_with($icon, 'heroicon-'))
-                                @svg ($icon, 'h-6 w-6')
+                                @svg($icon, 'h-6 w-6')
                             @else
                                 <span class="text-2xl">{{ $icon }}</span>
                             @endif
@@ -133,17 +127,13 @@
                             @endif
 
                             @if ($assetRenderData->content)
-                                <p class="text-gray-500">
-                                    {{ strip_tags($assetRenderData->content) }}
-                                </p>
+                                <p class="text-gray-500">{{ strip_tags($assetRenderData->content) }}</p>
                             @endif
                         </div>
                     </div>
                 @empty
                     <div class="py-12 text-center">
-                        <p class="text-gray-500">
-                            {{ __('capell-theme-foundation::generic.empty_steps') }}
-                        </p>
+                        <p class="text-gray-500">{{ __('capell-theme-foundation::generic.empty_steps') }}</p>
                     </div>
                 @endforelse
             </div>

@@ -17,7 +17,7 @@ abstract class AbstractPagesWidget extends AbstractWidget
     public ?string $componentItem = null;
 
     /**
-     * @var Collection<array-key, mixed>|LengthAwarePaginator<array-key, mixed>|null
+     * @var Collection<array-key, covariant mixed>|LengthAwarePaginator<array-key, covariant mixed>|null
      */
     public Collection|LengthAwarePaginator|null $pages = null;
 

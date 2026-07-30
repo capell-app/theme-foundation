@@ -52,7 +52,7 @@
 
 <main
     id="main"
-    @class ([
+    @class([
         'capell-layout-main',
         'relative z-0 flex min-h-full flex-1 flex-col overflow-x-hidden bg-[var(--bg-color-main)] lg:!min-h-0',
         $themeData['meta']['main_class'] ?? '',
@@ -60,12 +60,10 @@
     ])
 >
     {{-- format-ignore-start --}}
-    <div
-        @class([
-            'grow',
-            $mainContainerClass => (bool) $mainContainerClass,
-        ])
-    >
+    <div @class([
+        'grow',
+        $mainContainerClass => (bool) $mainContainerClass,
+    ])>
         @if ($mainContentHookOutput !== '')
             {!! $mainContentHookOutput !!}
         @else

@@ -1,4 +1,4 @@
-@props ([
+@props([
     'caption' => null,
     'emptyDescription' => null,
     'emptyTitle' => null,

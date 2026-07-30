@@ -1,4 +1,4 @@
-@props ([
+@props([
     'assetRenderDataItems',
     'columns' => $widget->getMeta('columns', 2),
     'displayMode' => $widget->getMeta('display_mode', 'grid'),
@@ -40,9 +40,7 @@
                 @endif
 
                 @if ($widget->translation->content)
-                    <p class="text-lg text-gray-500">
-                        {{ strip_tags($widget->translation->content) }}
-                    </p>
+                    <p class="text-lg text-gray-500">{{ strip_tags($widget->translation->content) }}</p>
                 @endif
             </div>
         @endif
@@ -74,9 +72,7 @@
 
                                     @if ($assetRenderData->content)
                                         <blockquote class="mb-6">
-                                            <p
-                                                class="text-lg leading-relaxed text-gray-700 italic"
-                                            >
+                                            <p class="text-lg leading-relaxed text-gray-700 italic">
                                                 {{ strip_tags($assetRenderData->content) }}
                                             </p>
                                         </blockquote>
@@ -90,7 +86,7 @@
                                                 class="flex h-11 w-11 items-center justify-center rounded-lg bg-blue-50 text-blue-700"
                                             >
                                                 @if (str_starts_with((string) $icon, 'heroicon-'))
-                                                    @svg ($icon, 'h-5 w-5')
+                                                    @svg($icon, 'h-5 w-5')
                                                 @else
                                                     <span class="text-3xl">
                                                         {{ $icon }}
@@ -101,19 +97,11 @@
 
                                         <div>
                                             @if ($assetRenderData->title)
-                                                <p
-                                                    class="font-bold text-gray-900"
-                                                >
-                                                    {{ $assetRenderData->title }}
-                                                </p>
+                                                <p class="font-bold text-gray-900">{{ $assetRenderData->title }}</p>
                                             @endif
 
                                             @if ($role)
-                                                <p
-                                                    class="text-sm text-gray-500"
-                                                >
-                                                    {{ $role }}
-                                                </p>
+                                                <p class="text-sm text-gray-500">{{ $role }}</p>
                                             @endif
                                         </div>
                                     </div>
@@ -173,9 +161,7 @@
 
                         @if ($assetRenderData->content)
                             <blockquote class="mb-6">
-                                <p
-                                    class="text-lg leading-relaxed text-gray-700 italic"
-                                >
+                                <p class="text-lg leading-relaxed text-gray-700 italic">
                                     {{ strip_tags($assetRenderData->content) }}
                                 </p>
                             </blockquote>
@@ -189,7 +175,7 @@
                                     class="flex h-11 w-11 items-center justify-center rounded-lg bg-blue-50 text-blue-700"
                                 >
                                     @if (str_starts_with((string) $icon, 'heroicon-'))
-                                        @svg ($icon, 'h-5 w-5')
+                                        @svg($icon, 'h-5 w-5')
                                     @else
                                         <span class="text-3xl">
                                             {{ $icon }}
@@ -200,24 +186,18 @@
 
                             <div>
                                 @if ($assetRenderData->title)
-                                    <p class="font-bold text-gray-900">
-                                        {{ $assetRenderData->title }}
-                                    </p>
+                                    <p class="font-bold text-gray-900">{{ $assetRenderData->title }}</p>
                                 @endif
 
                                 @if ($role)
-                                    <p class="text-sm text-gray-500">
-                                        {{ $role }}
-                                    </p>
+                                    <p class="text-sm text-gray-500">{{ $role }}</p>
                                 @endif
                             </div>
                         </div>
                     </div>
                 @empty
                     <div class="col-span-full py-12 text-center">
-                        <p class="text-gray-500">
-                            {{ __('capell-theme-foundation::generic.empty_testimonials') }}
-                        </p>
+                        <p class="text-gray-500">{{ __('capell-theme-foundation::generic.empty_testimonials') }}</p>
                     </div>
                 @endforelse
             </div>

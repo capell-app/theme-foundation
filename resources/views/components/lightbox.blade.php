@@ -17,7 +17,7 @@
         tabindex="-1"
         @click="
             if ($event.target == $el) {
-                close()
+                close();
             }
         "
     >
@@ -30,7 +30,7 @@
                 type="button"
                 @click="close()"
             >
-                @svg ('heroicon-s-x-mark', 'h-6 w-6 stroke-current')
+                @svg('heroicon-s-x-mark', 'h-6 w-6 stroke-current')
             </button>
 
             <div
@@ -44,9 +44,7 @@
                     xmlns:xlink="http://www.w3.org/1999/xlink"
                     viewBox="0 0 100 100"
                 >
-                    <path
-                        d="M73,50c0-12.7-10.3-23-23-23S27,37.3,27,50 M30.9,50c0-10.5,8.5-19.1,19.1-19.1S69.1,39.5,69.1,50"
-                    >
+                    <path d="M73,50c0-12.7-10.3-23-23-23S27,37.3,27,50 M30.9,50c0-10.5,8.5-19.1,19.1-19.1S69.1,39.5,69.1,50">
                         <animateTransform
                             type="rotate"
                             attributeName="transform"
@@ -93,7 +91,7 @@
                         aria-label="{{ __('capell-frontend::generic.previous') }}"
                         @click.prevent="loadPrevious"
                     >
-                        @svg ('heroicon-o-chevron-left', 'h-10 w-10 stroke-current')
+                        @svg('heroicon-o-chevron-left', 'h-10 w-10 stroke-current')
                     </button>
                     <span
                         class="grow text-center text-sm leading-tight tracking-wide text-gray-800"
@@ -105,7 +103,7 @@
                         aria-label="{{ __('capell-frontend::generic.next') }}"
                         @click.prevent="loadNext"
                     >
-                        @svg ('heroicon-o-chevron-right', 'h-10 w-10 stroke-current')
+                        @svg('heroicon-o-chevron-right', 'h-10 w-10 stroke-current')
                     </button>
                 </div>
             </div>

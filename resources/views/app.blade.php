@@ -44,13 +44,13 @@
     />
 
     <body
-        @class ([
-            'site-app-body',
-            'layout-' . $layout->key,
-            $layout->getMeta('body_class'),
-            $theme->getMeta('body_class'),
-            $bodyClass ?? 'min-h-screen min-w-[320px] overflow-x-hidden font-sans leading-normal font-normal text-gray-800 antialiased dark:bg-gray-950 dark:text-gray-100',
-        ])
+        @class([
+        'site-app-body',
+        'layout-' . $layout->key,
+        $layout->getMeta('body_class'),
+        $theme->getMeta('body_class'),
+        $bodyClass ?? 'min-h-screen min-w-[320px] overflow-x-hidden font-sans leading-normal font-normal text-gray-800 antialiased dark:bg-gray-950 dark:text-gray-100',
+    ])
     >
         {{ $slot }}
 
@@ -60,9 +60,9 @@
             <x-capell::page-data />
         @endif
 
-        @stack ('scripts')
+        @stack('scripts')
 
-        @yield ('scripts')
+        @yield('scripts')
 
         @if ($usesLivewire)
             @livewireScripts

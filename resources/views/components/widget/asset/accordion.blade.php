@@ -9,7 +9,7 @@
 @endphp
 {{-- format-ignore-end --}}
 
-@props ([
+@props([
     'assetRenderDataItems',
     'assets',
     'columns' => $container['meta']['override_columns'] ?? $widget->getMeta('columns', 3),
@@ -52,7 +52,7 @@
                 x-data="{
                     selected: 0,
                     isActive(index) {
-                        return this.selected === index
+                        return this.selected === index;
                     },
                 }"
                 class="flex w-full flex-col divide-y divide-gray-200 rounded-lg border border-gray-200 dark:divide-gray-600 dark:border-gray-600"
@@ -81,7 +81,7 @@
                             class="hover:text-primary focus:text-primary group flex cursor-pointer items-center"
                         >
                             <div class="ml-2 flex w-10 justify-center">
-                                @svg ('heroicon-o-chevron-right', [
+                                @svg('heroicon-o-chevron-right', [
                                     'class' => 'text-link group-hover:text-primary group-focus:text-primary h-6 w-6',
                                     ':class' => "{ 'rotate-90': isActive(" . $loop->iteration . "), 'rotate-0': !isActive(" . $loop->iteration . ') }',
                                 ])

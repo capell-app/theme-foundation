@@ -122,9 +122,10 @@ it('generates a complete theme scaffold with correct manifest, namespace, and pr
         $packageDirectory . '/tests/Unit/PublicOutputSafetyTest.php',
     );
 
-    expect($publicOutputSafetyTestContents)->toContain(
-        'Capell\\FoundationTheme\\Testing\\AssertsPublicThemeOutputSafety',
-    );
+    expect($publicOutputSafetyTestContents)
+        ->toContain('Capell\\FoundationTheme\\Testing\\AssertsPublicThemeAccessibility')
+        ->toContain('Capell\\FoundationTheme\\Testing\\AssertsPublicThemeOutputSafety')
+        ->toContain('assertThemeBladeMeetsAccessibilityContract');
 });
 
 it('rejects an invalid theme slug before writing anything', function (): void {

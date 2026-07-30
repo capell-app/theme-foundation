@@ -11,7 +11,7 @@
     use Capell\LayoutBuilder\Support\LayoutWidgetData;
 @endphp
 
-@props ([
+@props([
     'colspan' => 12,
     'columnStart' => 0,
     'container',
@@ -88,7 +88,7 @@
 
 <div
     id="layout-container-{{ $containerKey }}"
-    @class ([
+    @class([
         'layout-container',
         ...$presentation->classes(),
         $htmlClass => (bool) $htmlClass,

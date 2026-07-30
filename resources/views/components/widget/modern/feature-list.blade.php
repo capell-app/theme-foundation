@@ -1,4 +1,4 @@
-@props ([
+@props([
     'assetRenderDataItems',
     'layout' => $widget->getMeta('layout', 'grid'),
     'container',
@@ -34,9 +34,7 @@
                     @endif
 
                     @if ($widget->translation->content)
-                        <p
-                            class="ap-feature-list-description capell-showcase__copy"
-                        >
+                        <p class="ap-feature-list-description capell-showcase__copy">
                             {!! strip_tags($widget->translation->content) !!}
                         </p>
                     @endif
@@ -44,10 +42,10 @@
             @endif
 
             <div
-                @class ([
-                    'ap-feature-list' => $layout === 'vertical',
-                    'ap-feature-grid ' . $responsiveGrid => $layout !== 'vertical',
-                ])
+                @class([
+                'ap-feature-list' => $layout === 'vertical',
+                'ap-feature-grid ' . $responsiveGrid => $layout !== 'vertical',
+            ])
             >
                 @forelse ($assetRenderDataItems as $assetRenderDataItem)
                     @php
@@ -56,15 +54,15 @@
                     @endphp
 
                     <article
-                        @class ([
-                            'ap-feature-item layout-builder-card',
-                            $responsiveItem => $layout !== 'vertical',
-                        ])
+                        @class([
+                        'ap-feature-item layout-builder-card',
+                        $responsiveItem => $layout !== 'vertical',
+                    ])
                     >
                         @if ($icon !== '')
                             <span class="ap-feature-item__icon">
                                 @if (str_starts_with($icon, 'heroicon-'))
-                                    @svg ($icon, 'h-5 w-5')
+                                    @svg($icon, 'h-5 w-5')
                                 @else
                                     {{ $icon }}
                                 @endif
@@ -78,9 +76,7 @@
                         @endif
 
                         @if ($assetRenderData->content)
-                            <p
-                                class="ap-feature-description ap-feature-item__description"
-                            >
+                            <p class="ap-feature-description ap-feature-item__description">
                                 {{ strip_tags($assetRenderData->content) }}
                             </p>
                         @endif

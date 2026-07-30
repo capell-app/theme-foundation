@@ -1,4 +1,4 @@
-@props ([
+@props([
     'assetRenderDataItems',
     'currency' => $widget->getMeta('currency', '$'),
     'billingOptions' => $widget->getMeta('billing_options', 'monthly'),
@@ -22,9 +22,7 @@
             {{-- prettier-ignore --}}
             <div class="mx-auto mb-12 max-w-2xl text-center">
                 @if ($widget->translation->title)
-                    <h2
-                        class="text-3xl font-bold tracking-tight text-gray-900 md:text-4xl"
-                    >
+                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 md:text-4xl">
                         {{ $widget->translation->title }}
                     </h2>
                 @endif
@@ -99,9 +97,7 @@
                         @endif
 
                         @if ($assetRenderData->content)
-                            <p class="mb-6 text-sm text-stone-400">
-                                {{ strip_tags($assetRenderData->content) }}
-                            </p>
+                            <p class="mb-6 text-sm text-stone-400">{{ strip_tags($assetRenderData->content) }}</p>
                         @endif
 
                         <div class="price-container mb-6">
@@ -156,9 +152,7 @@
                         @endif
 
                         @if ($assetRenderData->content)
-                            <p class="mb-6 text-sm text-gray-500">
-                                {{ strip_tags($assetRenderData->content) }}
-                            </p>
+                            <p class="mb-6 text-sm text-gray-500">{{ strip_tags($assetRenderData->content) }}</p>
                         @endif
 
                         <div class="price-container mb-6">
@@ -201,9 +195,7 @@
                 @endif
             @empty
                 <div class="col-span-full py-12 text-center">
-                    <p class="text-gray-500">
-                        {{ __('capell-theme-foundation::generic.empty_pricing_plans') }}
-                    </p>
+                    <p class="text-gray-500">{{ __('capell-theme-foundation::generic.empty_pricing_plans') }}</p>
                 </div>
             @endforelse
         </div>

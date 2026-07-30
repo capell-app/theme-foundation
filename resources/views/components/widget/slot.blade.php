@@ -1,4 +1,4 @@
-@props (['pageSlot', 'container' => null, 'containerKey' => null, 'containerWidth' => null, 'loop' => null, 'widget' => null])
+@props(['pageSlot', 'container' => null, 'containerKey' => null, 'containerWidth' => null, 'loop' => null, 'widget' => null])
 
 <x-capell-theme-foundation::widget.wrapper
     class="capell-widget-slot widget-page-slot"

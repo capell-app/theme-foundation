@@ -15,6 +15,7 @@ use Capell\Core\Models\Translation;
 use Capell\FoundationTheme\Contracts\OptionalExtensionAvailability;
 use Capell\FoundationTheme\Contracts\ResultsListingResolver;
 use Capell\FoundationTheme\Data\ResultsListingData;
+use Capell\Frontend\Data\PageListingRequestData;
 use Capell\Frontend\Support\Loader\PageLoader;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -55,7 +56,7 @@ final readonly class ResolveResultsListingAction implements ResultsListingResolv
     /** @return EloquentCollection<int, Model&Pageable<Model>> */
     private function pageResults(Site $site, Language $language, Page $page): EloquentCollection
     {
-        $children = PageLoader::getPages(
+        $children = PageLoader::list(new PageListingRequestData(
             language: $language,
             site: $site,
             page: $page,
@@ -64,13 +65,13 @@ final readonly class ResolveResultsListingAction implements ResultsListingResolv
             withDate: true,
             withImage: true,
             useCache: false,
-        );
+        ));
 
         if ($children->isNotEmpty()) {
             return $children;
         }
 
-        return PageLoader::getPages(
+        return PageLoader::list(new PageListingRequestData(
             language: $language,
             site: $site,
             limit: 24,
@@ -78,7 +79,7 @@ final readonly class ResolveResultsListingAction implements ResultsListingResolv
             withDate: true,
             withImage: true,
             useCache: false,
-        )->reject(static fn (Pageable $result): bool => $result->getKey() === $page->getKey());
+        ))->reject(static fn (Pageable $result): bool => $result->getKey() === $page->getKey());
     }
 
     /** @return EloquentCollection<int, Model&Pageable<Model>> */
@@ -94,7 +95,7 @@ final readonly class ResolveResultsListingAction implements ResultsListingResolv
             return new EloquentCollection;
         }
 
-        return PageLoader::getPages(
+        return PageLoader::list(new PageListingRequestData(
             language: $language,
             site: $site,
             limit: 24,
@@ -103,7 +104,7 @@ final readonly class ResolveResultsListingAction implements ResultsListingResolv
             withImage: true,
             morphModel: $articleModel,
             useCache: false,
-        );
+        ));
     }
 
     /** @return array{title: string, summary: string|null, url: string, type: string|null, image: string|null, publishedDate: string|null} */

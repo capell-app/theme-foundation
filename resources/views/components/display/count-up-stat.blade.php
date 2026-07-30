@@ -1,4 +1,4 @@
-@props ([
+@props([
     'statValue' => null,
     'label' => null,
     'duration' => 1200,

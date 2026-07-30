@@ -1,13 +1,13 @@
-@props ([
+@props([
     'links',
     'size' => 'md',
 ])
 <div
     {{
-        $attributes->class([
-            'footer-social-links inline-flex flex-wrap items-center gap-2',
-        ])
-    }}
+    $attributes->class([
+        'footer-social-links inline-flex flex-wrap items-center gap-2',
+    ])
+}}
 >
     @foreach ($links as $link)
         @php
@@ -48,7 +48,7 @@
 
                 @if ($image)
                     <img
-                        @class ([
+                        @class([
                             'shrink-0 grow-0 overflow-hidden text-center leading-none brightness-0 contrast-[.5] invert sepia-0 filter group-hover/item:contrast-150 group-focus/item:contrast-150',
                             'h-6 w-6' => $size === 'xs',
                             'h-8 w-8' => $size === 'sm',

@@ -43,7 +43,7 @@
     $mainDarkBackgroundColor = $resolveOptionalHeaderColor($theme->getMeta('main_dark_background_color'));
 @endphp
 
-@props ([
+@props([
     'menuItemClass' => 'capell-product-nav-item nav-item font-heading group cursor-pointer',
 ])
 
@@ -80,43 +80,38 @@
             lastScrollY: 0,
             init() {
                 if (this.scrollUp) {
-                    this.lastScrollY = window.scrollY
+                    this.lastScrollY = window.scrollY;
                     window.addEventListener(
                         'scroll',
                         () => {
-                            const currentY = window.scrollY
-                            const delta = currentY - this.lastScrollY
+                            const currentY = window.scrollY;
+                            const delta = currentY - this.lastScrollY;
                             if (currentY <= 0) {
-                                this.isHidden = false
+                                this.isHidden = false;
                             } else if (delta > 4) {
-                                this.isHidden = true
+                                this.isHidden = true;
                             } else if (delta < -4) {
-                                this.isHidden = false
+                                this.isHidden = false;
                             }
-                            this.lastScrollY = currentY
+                            this.lastScrollY = currentY;
                         },
                         { passive: true },
-                    )
+                    );
                 }
 
                 this.$watch('isDarkMode', (value) => {
-                    document.documentElement.classList.toggle('dark', value)
-                    localStorage.theme = value ? 'dark' : 'light'
-                })
+                    document.documentElement.classList.toggle('dark', value);
+                    localStorage.theme = value ? 'dark' : 'light';
+                });
 
-                window.addEventListener(
-                    'capell-navigation-menu-open-changed',
-                    (event) => {
-                        this.isNavigationOverlayOpen = Boolean(
-                            event.detail?.open,
-                        )
-                    },
-                )
+                window.addEventListener('capell-navigation-menu-open-changed', (event) => {
+                    this.isNavigationOverlayOpen = Boolean(event.detail?.open);
+                });
             },
             toggleDarkMode() {
-                this.isDarkMode = !this.isDarkMode
+                this.isDarkMode = !this.isDarkMode;
             },
-        })
+        });
     </script>
 @endif
 
@@ -126,7 +121,7 @@
                 scrollUp: {{ $theme->scroll_up_header ? 'true' : 'false' }},
             })"
     @endif
-    @class ([
+    @class([
         'site-header',
         'capell-product-header transition-padding top-0 right-0 left-0 z-50 flex min-h-[var(--header-height)] w-full text-[var(--color-header)] transition-transform duration-300 ease-in-out motion-reduce:transition-none xl:h-auto',
         'border-b border-[var(--border-header)]' => $headerBorderColor,
@@ -140,21 +135,20 @@
     @if ($usesAlpine)
         x-bind:class="{
             'h-screen': isNavigationOverlayOpen,
-            '-translate-y-full':
-                scrollUp && isHidden && !isNavigationOverlayOpen,
+            '-translate-y-full': scrollUp && isHidden && ! isNavigationOverlayOpen,
         }"
     @endif
 >
     <div
-        @class ([
-            'capell-product-header__inner relative isolate w-full max-xl:px-0',
-            $containerWidth->getContainerClass(),
-        ])
+        @class([
+        'capell-product-header__inner relative isolate w-full max-xl:px-0',
+        $containerWidth->getContainerClass(),
+    ])
     >
         <div
-            @class ([
-                'capell-product-header__brand relative',
-            ])
+            @class([
+            'capell-product-header__brand relative',
+        ])
         >
             <div
                 class="max-w-[min(16rem,70vw)] min-w-0 xl:order-1 xl:w-full xl:max-w-[18rem]"

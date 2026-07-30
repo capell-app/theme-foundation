@@ -1,4 +1,4 @@
-@props ([
+@props([
     'count' => null,
     'size' => 'md',
     'url' => null,
@@ -17,7 +17,7 @@
     ];
 @endphp
 
-@capellBuffer ($content)
+@capellBuffer($content)
     <span class="capell-badge truncate"> {{ $slot }} </span>
     @if ($count)
         <span
@@ -39,11 +39,11 @@
 @if ($url)
     <a
         href="{{ $url }}"
-        @class ($classes)
+        @class($classes)
         @wireNavigate
     >
         {{ $content() }}
     </a>
 @else
-    <span @class ($classes)> {{ $content() }} </span>
+    <span @class($classes)> {{ $content() }} </span>
 @endif

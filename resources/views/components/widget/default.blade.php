@@ -1,11 +1,13 @@
 <?php
+
+declare(strict_types=1);
 use Capell\Frontend\Facades\Frontend;
 
 $theme = Frontend::theme();
 
 ?>
 
-@props ([
+@props([
     'align' => $widget->getMeta('align'),
     'headingSize' => $widget->getMeta('heading_size', 'h2'),
     'colorScheme' => $widget->getMeta('color_scheme'),
@@ -37,10 +39,10 @@ $theme = Frontend::theme();
     :$widget
 >
     <div
-        @class ([
-            '@container flex-1',
-            'my-auto py-4' => $widget->image,
-        ])
+        @class([
+        '@container flex-1',
+        'my-auto py-4' => $widget->image,
+    ])
     >
         @if ($content || $title)
             <x-capell::content
@@ -69,12 +71,12 @@ $theme = Frontend::theme();
 
     @if ($widget->image)
         <div
-            @class ([
-                match ($style) {
-                    'row' => 'flex-1 lg:max-w-[40%]',
-                    default => null,
-                },
-            ])
+            @class([
+            match ($style) {
+                'row' => 'flex-1 lg:max-w-[40%]',
+                default => null,
+            },
+        ])
         >
             <x-capell::media
                 :media="$widget->image"

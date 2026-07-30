@@ -1,4 +1,4 @@
-@props ([
+@props([
     'authorName',
     'authorAvatar' => null,
     'date' => null,
@@ -48,7 +48,7 @@
                 <span>{{ $readTime }}</span>
             @endif
 
-            @isset ($metadata)
+            @isset($metadata)
                 <span aria-hidden="true">&middot;</span>
                 {{ $metadata }}
             @endisset

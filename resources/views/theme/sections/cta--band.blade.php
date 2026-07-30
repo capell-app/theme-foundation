@@ -11,9 +11,7 @@
         </h2>
 
         @if ($section->summary)
-            <p class="max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
-                {{ $section->summary }}
-            </p>
+            <p class="max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">{{ $section->summary }}</p>
         @endif
 
         <div class="flex flex-wrap justify-center gap-3">

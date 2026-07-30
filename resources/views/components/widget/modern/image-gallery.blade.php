@@ -1,4 +1,4 @@
-@props ([
+@props([
     'assetRenderDataItems',
     'assets',
     'title' => $widget->translation?->title,
@@ -37,9 +37,7 @@
                     @endif
 
                     @if ($content)
-                        <p class="ap-gallery-description capell-showcase__copy">
-                            {!! strip_tags($content) !!}
-                        </p>
+                        <p class="ap-gallery-description capell-showcase__copy">{!! strip_tags($content) !!}</p>
                     @endif
                 </div>
             @endif
@@ -79,7 +77,7 @@
                                 />
                                 <figcaption class="ap-gallery-caption">
                                     <span>{{ $caption }}</span>
-                                    @svg ('heroicon-o-arrows-pointing-out', 'h-4 w-4 text-slate-400')
+                                    @svg('heroicon-o-arrows-pointing-out', 'h-4 w-4 text-slate-400')
                                 </figcaption>
                             </figure>
                         @else
@@ -94,7 +92,7 @@
                             >
                                 <div class="ap-gallery-placeholder">
                                     @if (str_starts_with((string) $icon, 'heroicon-'))
-                                        @svg ($icon, 'h-8 w-8')
+                                        @svg($icon, 'h-8 w-8')
                                     @else
                                         <span>{{ $icon }}</span>
                                     @endif
@@ -107,7 +105,7 @@
                                 </div>
                                 <figcaption class="ap-gallery-caption">
                                     <span>{{ $caption }}</span>
-                                    @svg ('heroicon-o-arrows-pointing-out', 'h-4 w-4 text-slate-400')
+                                    @svg('heroicon-o-arrows-pointing-out', 'h-4 w-4 text-slate-400')
                                 </figcaption>
                             </figure>
                         @endif
@@ -132,7 +130,7 @@
                         />
                         <figcaption class="ap-gallery-caption">
                             <span>{{ $widget->image->name }}</span>
-                            @svg ('heroicon-o-arrows-pointing-out', 'h-4 w-4 text-slate-400')
+                            @svg('heroicon-o-arrows-pointing-out', 'h-4 w-4 text-slate-400')
                         </figcaption>
                     </figure>
                 </div>

@@ -19,9 +19,7 @@
                 class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between"
             >
                 <div class="flex-1">
-                    <p
-                        class="mb-2 text-xs font-semibold tracking-[0.16em] text-[var(--theme-primary)] uppercase"
-                    >
+                    <p class="mb-2 text-xs font-semibold tracking-[0.16em] text-[var(--theme-primary)] uppercase">
                         {{ $section->heading ?? __('capell-theme-foundation::generic.pricing_value_spectrum') }}
                     </p>
 
@@ -48,7 +46,7 @@
                                     type="radio"
                                     name="pricing-spectrum-tier-compact"
                                     value="{{ $index }}"
-                                    @checked ($index === 0)
+                                    @checked($index === 0)
                                     class="pricing-spectrum-tier-radio sr-only"
                                 />
                                 {{ $tier['label'] ?? '' }}
@@ -80,9 +78,7 @@
                 </template>
             </div>
         @else
-            <p class="text-center text-slate-500">
-                {{ __('capell-theme-foundation::generic.empty_pricing_plans') }}
-            </p>
+            <p class="text-center text-slate-500">{{ __('capell-theme-foundation::generic.empty_pricing_plans') }}</p>
         @endif
     </div>
 </section>

@@ -34,9 +34,7 @@
                 class="space-y-4 border-t border-gray-200 pt-6"
             >
                 <header class="space-y-2">
-                    <p class="text-sm font-semibold text-gray-500 uppercase">
-                        {{ $family }}
-                    </p>
+                    <p class="text-sm font-semibold text-gray-500 uppercase">{{ $family }}</p>
                     <h2>{{ $heading }}</h2>
                     @if (isset($section['summary']))
                         <p>{{ $section['summary'] }}</p>
@@ -44,9 +42,7 @@
                 </header>
 
                 @if ($isInitialStructuredReference)
-                    <p>
-                        {{ $notes['Purpose'] ?? 'Use the default Foundation theme contract for this pattern.' }}
-                    </p>
+                    <p>{{ $notes['Purpose'] ?? 'Use the default Foundation theme contract for this pattern.' }}</p>
                 @else
                     <aside aria-label="{{ $heading }} reference notes">
                         <dl class="grid gap-3 md:grid-cols-2">

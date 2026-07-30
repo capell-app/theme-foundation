@@ -8,6 +8,7 @@ use Capell\Core\Contracts\Pageable;
 use Capell\Core\Enums\PageOrderEnum;
 use Capell\Core\Models\Language;
 use Capell\FoundationTheme\Actions\PrepareFoundationPageWidgetDataAction;
+use Capell\Frontend\Data\PageListingRequestData;
 use Capell\Frontend\Facades\Frontend;
 use Capell\Frontend\Support\Loader\PageLoader;
 use Capell\Frontend\Support\Logging\FrontendLogger;
@@ -58,18 +59,18 @@ class Children extends AbstractPagesWidget
             return;
         }
 
-        $this->pages = PageLoader::getPages(
+        $this->pages = PageLoader::list(new PageListingRequestData(
             language: $language,
             site: Frontend::site(),
             page: $page,
             type: 'children',
             ordering: PageOrderEnum::Alphabetical,
-            withChildrenCount: $this->widget->meta['with_children_count'] ?? false,
-            withImage: $this->widget->meta['with_image'] ?? false,
-            withParent: $this->widget->meta['with_parent'] ?? false,
-            withDate: $this->widget->meta['with_date'] ?? false,
+            withChildrenCount: (bool) ($this->widget->meta['with_children_count'] ?? false),
+            withImage: (bool) ($this->widget->meta['with_image'] ?? false),
+            withParent: (bool) ($this->widget->meta['with_parent'] ?? false),
+            withDate: (bool) ($this->widget->meta['with_date'] ?? false),
             useCache: false,
-        );
+        ));
 
         if ($this->pages->isEmpty()) {
             $this->skipRender = true;

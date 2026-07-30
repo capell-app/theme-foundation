@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 use Capell\Navigation\Data\NavigationItemData;
 
 /**
@@ -7,21 +9,21 @@ use Capell\Navigation\Data\NavigationItemData;
  */
 ?>
 
-@props ([
+@props([
     'item',
     'active' => $item->active,
 ])
 <li
     {{
-        $attributes->class([
-            'list-item',
-            'active' => $active,
-        ])
-    }}
+    $attributes->class([
+        'list-item',
+        'active' => $active,
+    ])
+}}
 >
     <a
         href="{{ $item->data['url'] ?? '' }}"
-        @class ([
+        @class([
             'inline-block py-1',
             'hover:text-primary focus:text-primary' => ! $active,
             'text-primary font-semibold' => $active,

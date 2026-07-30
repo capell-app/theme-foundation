@@ -1,4 +1,4 @@
-@props ([
+@props([
     'assetRenderDataItems',
     'assets',
     'columns' => (int) ($widget->getMeta('columns', 3)),
@@ -35,9 +35,7 @@
                     @endif
 
                     @if ($widget->translation->content)
-                        <p
-                            class="ap-card-grid-description capell-showcase__copy"
-                        >
+                        <p class="ap-card-grid-description capell-showcase__copy">
                             {!! strip_tags($widget->translation->content) !!}
                         </p>
                     @endif
@@ -66,7 +64,7 @@
                             @if ($icon !== '')
                                 <span class="ap-card__icon">
                                     @if (str_starts_with($icon, 'heroicon-'))
-                                        @svg ($icon, 'h-5 w-5')
+                                        @svg($icon, 'h-5 w-5')
                                     @else
                                         {{ $icon }}
                                     @endif
@@ -80,9 +78,7 @@
                             @endif
 
                             @if ($assetRenderData->content)
-                                <p
-                                    class="ap-card-description ap-card__description"
-                                >
+                                <p class="ap-card-description ap-card__description">
                                     {{ strip_tags($assetRenderData->content) }}
                                 </p>
                             @endif
@@ -95,7 +91,7 @@
                                     <span>
                                         {{ $assetRenderData->meta['link_text'] }}
                                     </span>
-                                    @svg ('heroicon-o-arrow-right', 'h-4 w-4')
+                                    @svg('heroicon-o-arrow-right', 'h-4 w-4')
                                 </a>
                             @endif
                         </article>
@@ -118,11 +114,7 @@
                             @endif
 
                             @if (! empty($card['description']))
-                                <p
-                                    class="ap-card-description ap-card__description"
-                                >
-                                    {{ $card['description'] }}
-                                </p>
+                                <p class="ap-card-description ap-card__description">{{ $card['description'] }}</p>
                             @endif
                         </article>
                     @endforeach

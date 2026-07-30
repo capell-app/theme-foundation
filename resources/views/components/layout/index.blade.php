@@ -1,4 +1,4 @@
-@props ([
+@props([
     'containerClass' => null,
     'footer' => null,
     'header' => null,
@@ -57,9 +57,9 @@
             already use around their own dynamic, hook-driven renders.
         --}}
     @php
-            $wasBlazeEnabledForMain = Blaze::isEnabled();
-            Blaze::disable();
-        @endphp
+        $wasBlazeEnabledForMain = Blaze::isEnabled();
+        Blaze::disable();
+    @endphp
     <x-capell::layout.main
         :$layout
         :$page
@@ -71,10 +71,10 @@
         :main-container-class="$mainContainerClass"
     />
     @php
-            if ($wasBlazeEnabledForMain) {
-                Blaze::enable();
-            }
-        @endphp
+        if ($wasBlazeEnabledForMain) {
+            Blaze::enable();
+        }
+    @endphp
 
     {{--
             Same Blaze static-tag desync as `<x-capell::layout.main>` above:
@@ -87,9 +87,9 @@
             way it's disabled around `layout.main`, fixes it.
         --}}
     @php
-            $wasBlazeEnabledForFooter = Blaze::isEnabled();
-            Blaze::disable();
-        @endphp
+        $wasBlazeEnabledForFooter = Blaze::isEnabled();
+        Blaze::disable();
+    @endphp
     @if ($footer)
         {{ $footer }}
     @elseif ($footer !== false && (! array_key_exists('footer', $themeMeta) || $themeMeta['footer'] !== false))
@@ -100,8 +100,8 @@
         @endif
     @endif
     @php
-            if ($wasBlazeEnabledForFooter) {
-                Blaze::enable();
-            }
-        @endphp
+        if ($wasBlazeEnabledForFooter) {
+            Blaze::enable();
+        }
+    @endphp
 </div>

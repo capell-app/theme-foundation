@@ -8,7 +8,7 @@
     $theme = Frontend::theme();
 @endphp
 
-@props ([
+@props([
     'assetRenderDataItems',
     'assets',
     'color' => $widget->getMeta('color', 'dark'),
@@ -58,10 +58,10 @@
 
         @if ($assets->isNotEmpty())
             <div
-                @class ([
-                    'grid grid-cols-1 items-start gap-x-10 gap-y-6 md:grid-cols-2',
-                    'lg:grid-cols-3' => $widget->image,
-                ])
+                @class([
+                'grid grid-cols-1 items-start gap-x-10 gap-y-6 md:grid-cols-2',
+                'lg:grid-cols-3' => $widget->image,
+            ])
             >
                 @if ($widget->image)
                     <div

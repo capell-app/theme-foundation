@@ -1,4 +1,4 @@
-@props ([
+@props([
     'site',
     'contactPage' => null,
 ])
@@ -40,11 +40,7 @@
     </a>
 
     @if ($tagline)
-        <p
-            class="footer-tagline max-w-prose text-sm leading-6 text-[var(--color-footer-muted)]"
-        >
-            {{ $tagline }}
-        </p>
+        <p class="footer-tagline max-w-prose text-sm leading-6 text-[var(--color-footer-muted)]">{{ $tagline }}</p>
     @endif
 
     @if ($businessName || $email || $phone || $contactPage?->pageUrl)

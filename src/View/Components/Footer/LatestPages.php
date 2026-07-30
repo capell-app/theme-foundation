@@ -7,6 +7,7 @@ namespace Capell\FoundationTheme\View\Components\Footer;
 use Capell\Core\Enums\BlueprintGroupEnum;
 use Capell\Core\Enums\PageOrderEnum;
 use Capell\Core\Models\Language;
+use Capell\Frontend\Data\PageListingRequestData;
 use Capell\Frontend\Facades\Frontend;
 use Capell\Frontend\Support\Loader\PageLoader;
 use Illuminate\Contracts\View\View as ViewContract;
@@ -27,13 +28,13 @@ class LatestPages extends Component
         $candidateLimit = max($this->limit, $this->limit * 4);
 
         $this->pages = $this->visibleFooterPages($pages ?? ($language instanceof Language
-            ? PageLoader::getPages(
+            ? PageLoader::list(new PageListingRequestData(
                 language: $language,
                 site: Frontend::site(),
                 limit: $candidateLimit,
                 ordering: PageOrderEnum::Latest,
                 pageGroup: BlueprintGroupEnum::Default,
-            )
+            ))
             : collect()))
             ->take($this->limit)
             ->values();

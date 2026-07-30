@@ -1,4 +1,4 @@
-@props ([
+@props([
     'backgroundColor' => $widget->getMeta('background_color'),
     'container',
     'containerKey',
@@ -14,13 +14,15 @@
 ])
 {{-- format-ignore-start --}}
 @php
-    use Capell\Core\Enums\ContainerWidthEnum;use Capell\FoundationTheme\Actions\BuildBannerImageRenderDataAction;use Capell\Frontend\Facades\Frontend;
+    use Capell\Core\Enums\ContainerWidthEnum;
+    use Capell\FoundationTheme\Actions\BuildBannerImageRenderDataAction;
+    use Capell\Frontend\Facades\Frontend;
 
     $theme = Frontend::theme();
 
     /**
-    * @var \Capell\LayoutBuilder\Models\Widget $widget
-    */
+     * @var \Capell\LayoutBuilder\Models\Widget $widget
+     */
     $renderData = BuildBannerImageRenderDataAction::run($widget, $content, $title, $rounded, $reverseOrder);
     $backgroundImage = $renderData->backgroundImage;
     $actions = $renderData->actions;
@@ -41,14 +43,14 @@
 >
     @if ($backgroundImage)
         <div
-            @class ([
-                'w-full',
-                'md:w-1/2' => $hasContent,
-                'md:absolute' => $hasContent,
-                'md:inset-y-0' => $hasContent,
-                'md:left-0' => $hasContent && $reverseOrder,
-                'md:right-0' => $hasContent && ! $reverseOrder,
-            ])
+            @class([
+            'w-full',
+            'md:w-1/2' => $hasContent,
+            'md:absolute' => $hasContent,
+            'md:inset-y-0' => $hasContent,
+            'md:left-0' => $hasContent && $reverseOrder,
+            'md:right-0' => $hasContent && ! $reverseOrder,
+        ])
         >
             <x-capell::media
                 :media="$backgroundImage"
@@ -63,32 +65,32 @@
 
     @if ($hasContent)
         <div
-            @class ([
-                'container',
-                'z-10',
-                'absolute inset-0 flex items-end' => $backgroundImage,
-                'relative flex flex-col' => ! $backgroundImage,
-                'md:relative md:flex md:flex-col md:items-center',
-                'gap-y-6',
-                'gap-x-6',
-                'py-10',
-                'md:flex-row-reverse' => $reverseOrder,
-                'md:flex-row' => ! $reverseOrder,
-            ])
+            @class([
+            'container',
+            'z-10',
+            'absolute inset-0 flex items-end' => $backgroundImage,
+            'relative flex flex-col' => ! $backgroundImage,
+            'md:relative md:flex md:flex-col md:items-center',
+            'gap-y-6',
+            'gap-x-6',
+            'py-10',
+            'md:flex-row-reverse' => $reverseOrder,
+            'md:flex-row' => ! $reverseOrder,
+        ])
         >
             <div
-                @class ([
-                    'w-full',
-                    'md:w-1/2' => $backgroundImage,
-                    'md:pl-10' => $backgroundImage && $reverseOrder,
-                    'md:pr-10' => $backgroundImage && ! $reverseOrder,
-                ])
+                @class([
+                'w-full',
+                'md:w-1/2' => $backgroundImage,
+                'md:pl-10' => $backgroundImage && $reverseOrder,
+                'md:pr-10' => $backgroundImage && ! $reverseOrder,
+            ])
             >
                 <div
-                    @class ([
-                        'rounded p-6' => $backgroundImage && $hasContent,
-                        'bg-white/90 shadow-sm backdrop-blur' => $backgroundImage && $hasContent,
-                    ])
+                    @class([
+                    'rounded p-6' => $backgroundImage && $hasContent,
+                    'bg-white/90 shadow-sm backdrop-blur' => $backgroundImage && $hasContent,
+                ])
                 >
                     @if ($content || $title)
                         <x-capell::content

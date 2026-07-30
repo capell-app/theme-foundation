@@ -1,4 +1,4 @@
-@props ([
+@props([
     'sources' => [],
     'src',
     'alt' => '',

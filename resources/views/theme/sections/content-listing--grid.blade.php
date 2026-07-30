@@ -6,9 +6,7 @@
             class="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between"
         >
             <div>
-                <p
-                    class="mb-3 text-xs font-semibold tracking-[0.16em] text-[var(--theme-primary)] uppercase"
-                >
+                <p class="mb-3 text-xs font-semibold tracking-[0.16em] text-[var(--theme-primary)] uppercase">
                     {{ __('capell-theme-foundation::generic.content') }}
                 </p>
                 <h2
@@ -18,11 +16,7 @@
                 </h2>
             </div>
             @if ($section->summary)
-                <p
-                    class="max-w-2xl text-sm leading-7 text-slate-600 sm:text-base"
-                >
-                    {{ $section->summary }}
-                </p>
+                <p class="max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">{{ $section->summary }}</p>
             @endif
         </div>
 

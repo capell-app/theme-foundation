@@ -22,9 +22,7 @@
 >
     <div class="mx-auto max-w-2xl px-4 py-12 sm:px-6 lg:py-16">
         <div class="mb-8">
-            <p
-                class="mb-3 text-xs font-semibold tracking-[0.16em] text-[var(--theme-primary)] uppercase"
-            >
+            <p class="mb-3 text-xs font-semibold tracking-[0.16em] text-[var(--theme-primary)] uppercase">
                 {{ __('capell-theme-foundation::generic.form') }}
             </p>
             <h2
@@ -33,9 +31,7 @@
                 {{ $section->heading ?? __('capell-theme-foundation::generic.form') }}
             </h2>
             @if (! empty($section->summary))
-                <p class="mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
-                    {{ $section->summary }}
-                </p>
+                <p class="mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">{{ $section->summary }}</p>
             @endif
         </div>
 
@@ -57,13 +53,13 @@
             >
                 @foreach ($formFields as $field)
                     @php
-                    $fieldType = $field['type'] ?? 'text';
-                    $fieldName = $field['name'] ?? 'field';
-                    $fieldId = 'theme-form-encouraging-' . $fieldName;
-                    $fieldLabel = $field['label'] ?? $fieldName;
-                    $fieldRequired = ! empty($field['required']);
-                    $fieldHint = $field['encouragement'] ?? null;
-                @endphp
+                        $fieldType = $field['type'] ?? 'text';
+                        $fieldName = $field['name'] ?? 'field';
+                        $fieldId = 'theme-form-encouraging-' . $fieldName;
+                        $fieldLabel = $field['label'] ?? $fieldName;
+                        $fieldRequired = ! empty($field['required']);
+                        $fieldHint = $field['encouragement'] ?? null;
+                    @endphp
 
                     <div class="grid gap-2">
                         @if ($fieldType !== 'checkbox')

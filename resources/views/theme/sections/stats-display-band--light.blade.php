@@ -11,9 +11,7 @@
 >
     <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:py-16">
         <div class="mx-auto mb-10 max-w-2xl text-center">
-            <p
-                class="mb-3 text-xs font-semibold tracking-[0.16em] text-[var(--theme-primary)] uppercase"
-            >
+            <p class="mb-3 text-xs font-semibold tracking-[0.16em] text-[var(--theme-primary)] uppercase">
                 {{ __('capell-theme-foundation::generic.stats_display_band') }}
             </p>
             @if (! empty($section->heading))
@@ -39,9 +37,7 @@
                 @endforeach
             </div>
         @else
-            <p class="text-center text-slate-500">
-                {{ __('capell-theme-foundation::generic.empty_stats') }}
-            </p>
+            <p class="text-center text-slate-500">{{ __('capell-theme-foundation::generic.empty_stats') }}</p>
         @endif
     </div>
 </section>

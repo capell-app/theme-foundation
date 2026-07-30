@@ -17,55 +17,23 @@
 <style>
     :root {
         --color-footer: {{ $resolveFooterColor('footer_color', '#244c43') }};
-        --color-footer-heading: color-mix(
-            in srgb,
-            var(--color-footer),
-            #020617 18%
-        );
-        --color-footer-muted: color-mix(
-            in srgb,
-            var(--color-footer),
-            var(--bg-color-footer) 28%
-        );
+        --color-footer-heading: color-mix(in srgb, var(--color-footer), #020617 18%);
+        --color-footer-muted: color-mix(in srgb, var(--color-footer), var(--bg-color-footer) 28%);
         --color-footer-link: color-mix(in srgb, var(--color-footer), #020617 8%);
         --bg-color-footer: {{ $resolveFooterColor('footer_background_color', '#edf2ee') }};
-        --bg-color-footer-panel: color-mix(
-            in srgb,
-            var(--bg-color-footer),
-            #020617 3%
-        );
-        --bg-color-footer-muted: color-mix(
-            in srgb,
-            var(--bg-color-footer),
-            #020617 6%
-        );
+        --bg-color-footer-panel: color-mix(in srgb, var(--bg-color-footer), #020617 3%);
+        --bg-color-footer-muted: color-mix(in srgb, var(--bg-color-footer), #020617 6%);
         --border-color-footer: {{ $resolveFooterColor('footer_border_color', '#cfd9d3') }};
     }
 
     .dark:root {
         --color-footer: {{ $resolveFooterColor('footer_dark_color', '#dceae5') }};
-        --color-footer-heading: color-mix(
-            in srgb,
-            var(--color-footer),
-            #ffffff 10%
-        );
-        --color-footer-muted: color-mix(
-            in srgb,
-            var(--color-footer),
-            var(--bg-color-footer) 24%
-        );
+        --color-footer-heading: color-mix(in srgb, var(--color-footer), #ffffff 10%);
+        --color-footer-muted: color-mix(in srgb, var(--color-footer), var(--bg-color-footer) 24%);
         --color-footer-link: color-mix(in srgb, var(--color-footer), #ffffff 6%);
         --bg-color-footer: {{ $resolveFooterColor('footer_dark_background_color', '#0b1716') }};
-        --bg-color-footer-panel: color-mix(
-            in srgb,
-            var(--bg-color-footer),
-            #ffffff 5%
-        );
-        --bg-color-footer-muted: color-mix(
-            in srgb,
-            var(--bg-color-footer),
-            #ffffff 8%
-        );
+        --bg-color-footer-panel: color-mix(in srgb, var(--bg-color-footer), #ffffff 5%);
+        --bg-color-footer-muted: color-mix(in srgb, var(--bg-color-footer), #ffffff 8%);
         --border-color-footer: {{ $resolveFooterColor('footer_dark_border_color', '#31423c') }};
     }
 </style>
@@ -78,18 +46,15 @@
     onclick="
         window.scrollTo({
             top: 0,
-            behavior: window.matchMedia('(prefers-reduced-motion: reduce)')
-                .matches
-                ? 'auto'
-                : 'smooth',
+            behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
         })
     "
 >
-    @svg ('heroicon-o-chevron-up', 'h-6 w-6', ['aria-hidden' => 'true'])
+    @svg('heroicon-o-chevron-up', 'h-6 w-6', ['aria-hidden' => 'true'])
 </button>
 <footer
     id="footer"
-    @class ([
+    @class([
         'capell-product-footer z-0 bg-[var(--bg-color-footer)] text-sm text-[var(--color-footer)]',
         'border-t border-[var(--border-color-footer)]' => $footerDividerColor,
     ])
@@ -97,22 +62,22 @@
     <h2 class="sr-only">{{ __('capell-theme-foundation::generic.footer') }}</h2>
 
     <div
-        @class ([
-            'capell-product-footer__inner @container flex-wrap px-6 sm:px-8',
-            'py-6 lg:py-7' => $footerSpacing === 'compact',
-            'py-8 lg:py-10' => $footerSpacing === 'default' && ! $hasFooterPrimaryContent,
-            'py-10 lg:py-12' => $footerSpacing === 'default' && $hasFooterPrimaryContent,
-            'py-12 lg:py-14' => $footerSpacing === 'comfortable' && ! $hasFooterPrimaryContent,
-            'py-14 lg:py-16' => $footerSpacing === 'comfortable' && $hasFooterPrimaryContent,
-            $containerWidth->getContainerClass(),
-        ])
+        @class([
+        'capell-product-footer__inner @container flex-wrap px-6 sm:px-8',
+        'py-6 lg:py-7' => $footerSpacing === 'compact',
+        'py-8 lg:py-10' => $footerSpacing === 'default' && ! $hasFooterPrimaryContent,
+        'py-10 lg:py-12' => $footerSpacing === 'default' && $hasFooterPrimaryContent,
+        'py-12 lg:py-14' => $footerSpacing === 'comfortable' && ! $hasFooterPrimaryContent,
+        'py-14 lg:py-16' => $footerSpacing === 'comfortable' && $hasFooterPrimaryContent,
+        $containerWidth->getContainerClass(),
+    ])
     >
         <div
-            @class ([
-                'capell-product-footer__primary px-0 py-0',
-                'flex justify-center' => ! $hasFooterPrimaryContent,
-                'grid gap-x-10 gap-y-10 lg:grid-cols-12' => $hasFooterPrimaryContent,
-            ])
+            @class([
+            'capell-product-footer__primary px-0 py-0',
+            'flex justify-center' => ! $hasFooterPrimaryContent,
+            'grid gap-x-10 gap-y-10 lg:grid-cols-12' => $hasFooterPrimaryContent,
+        ])
         >
             <x-capell::footer.site-info
                 :$site
@@ -151,10 +116,10 @@
 
     @if ($relatedSites->isNotEmpty())
         <div
-            @class ([
-                '@container px-8 pb-8 lg:pb-10',
-                $containerWidth->getContainerClass(),
-            ])
+            @class([
+            '@container px-8 pb-8 lg:pb-10',
+            $containerWidth->getContainerClass(),
+        ])
         >
             <x-capell::footer.related-sites :$relatedSites />
         </div>
@@ -178,4 +143,4 @@
     @endif
 </footer>
 
-@include ('capell::partials.svg-sprite')
+@include('capell::partials.svg-sprite')

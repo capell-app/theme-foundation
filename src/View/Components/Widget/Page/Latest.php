@@ -8,6 +8,7 @@ use Capell\Core\Contracts\Pageable;
 use Capell\Core\Enums\PageOrderEnum;
 use Capell\Core\Models\Language;
 use Capell\FoundationTheme\Actions\PrepareFoundationPageWidgetDataAction;
+use Capell\Frontend\Data\PageListingRequestData;
 use Capell\Frontend\Facades\Frontend;
 use Capell\Frontend\Support\Loader\PageLoader;
 use Illuminate\Database\Eloquent\Builder;
@@ -62,7 +63,7 @@ class Latest extends AbstractPagesWidget
 
         $modelClass = null;
 
-        if ($morphModel !== null) {
+        if (is_string($morphModel)) {
             $resolvedModelClass = Relation::getMorphedModel($morphModel);
 
             if (is_string($resolvedModelClass) && is_subclass_of($resolvedModelClass, Pageable::class)) {
@@ -71,27 +72,31 @@ class Latest extends AbstractPagesWidget
             }
         }
 
-        $this->pages = PageLoader::getPages(
+        $configuredLimit = $this->paginationLimit() ?? config('capell-frontend.pagination_limit', 12);
+        $limit = is_numeric($configuredLimit) ? (int) $configuredLimit : 12;
+
+        $this->pages = PageLoader::list(new PageListingRequestData(
             language: $language,
             site: Frontend::site(),
             page: $page,
-            limit: $this->paginationLimit() ?? config('capell-frontend.pagination_limit', 12),
+            limit: $limit,
             paginationPage: $this->paginationPage('latest-pages'),
             ordering: PageOrderEnum::Latest,
-            pageGroup: $this->widget->meta['page_group'] ?? null,
-            withChildrenCount: $this->widget->meta['with_children_count'] ?? false,
-            withImage: $this->widget->meta['with_image'] ?? false,
+            pageGroup: is_string($this->widget->meta['page_group'] ?? null)
+                ? $this->widget->meta['page_group']
+                : null,
+            withChildrenCount: (bool) ($this->widget->meta['with_children_count'] ?? false),
+            withImage: (bool) ($this->widget->meta['with_image'] ?? false),
             withPagination: $this->paginationEnabled(),
-            withParent: $this->widget->meta['with_parent'] ?? false,
-            withDate: $this->widget->meta['with_date'] ?? false,
+            withParent: (bool) ($this->widget->meta['with_parent'] ?? false),
+            withDate: (bool) ($this->widget->meta['with_date'] ?? false),
             paginationKey: 'latest-pages',
-            cacheKeyPrepend: 'latest-widget-' . $this->widget->id,
             morphModel: $modelClass,
             useCache: false,
             modifyQuery: function (Builder $query) use ($page): void {
                 $query->whereKeyNot($page->getKey());
             },
-        );
+        ));
 
         if ($this->pages->isEmpty() && config('capell-layout-builder.widget.skip_render_empty', true) === true) {
             $this->skipRender = true;

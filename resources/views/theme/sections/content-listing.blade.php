@@ -87,10 +87,7 @@
                 </h2>
             </div>
             @if ($section->summary)
-                <p
-                    class="max-w-2xl text-sm leading-7 text-slate-600 sm:text-base"
-                    data-theme-section-summary
-                >
+                <p class="max-w-2xl text-sm leading-7 text-slate-600 sm:text-base" data-theme-section-summary>
                     {{ $section->summary }}
                 </p>
             @endif
@@ -111,21 +108,15 @@
                 data-theme-spotlight
             >
                 <style>
-                    .theme-content-spotlight
-                        [data-spotlight-tab][data-active='true'] {
+                    .theme-content-spotlight [data-spotlight-tab][data-active='true'] {
                         background: #fff;
                         border-color: #0f172a;
                         box-shadow: 0 18px 48px rgba(15, 23, 42, 0.1);
                         color: #0f172a;
                     }
 
-                    .theme-content-spotlight
-                        [data-spotlight-tab][data-active='false'] {
-                        background: color-mix(
-                            in srgb,
-                            var(--theme-surface) 88%,
-                            white
-                        );
+                    .theme-content-spotlight [data-spotlight-tab][data-active='false'] {
+                        background: color-mix(in srgb, var(--theme-surface) 88%, white);
                         color: var(--theme-content-muted);
                     }
                 </style>
@@ -191,9 +182,7 @@
                             @endif
 
                             <div class="grid gap-4 p-6 sm:p-8">
-                                <p
-                                    class="text-xs font-semibold tracking-[0.14em] text-[var(--theme-primary)] uppercase"
-                                >
+                                <p class="text-xs font-semibold tracking-[0.14em] text-[var(--theme-primary)] uppercase">
                                     {{ $item['type'] ?? __('capell-theme-foundation::generic.spotlight') }}
                                 </p>
                                 <h3
@@ -202,11 +191,7 @@
                                     {{ $item['title'] }}
                                 </h3>
                                 @if (! empty($item['summary']))
-                                    <p
-                                        class="max-w-2xl text-base leading-7 text-slate-600"
-                                    >
-                                        {{ $item['summary'] }}
-                                    </p>
+                                    <p class="max-w-2xl text-base leading-7 text-slate-600">{{ $item['summary'] }}</p>
                                 @endif
 
                                 @if (! empty($item['url']))
@@ -229,9 +214,7 @@
             >
                 <style>
                     .theme-content-gallery .swiper-controls .swiper-button-prev,
-                    .theme-content-gallery
-                        .swiper-controls
-                        .swiper-button-next {
+                    .theme-content-gallery .swiper-controls .swiper-button-next {
                         bottom: auto;
                         color: #0f172a;
                         height: 2.5rem;
@@ -244,12 +227,8 @@
                         width: 2.5rem;
                     }
 
-                    .theme-content-gallery
-                        .swiper-controls
-                        .swiper-button-prev::after,
-                    .theme-content-gallery
-                        .swiper-controls
-                        .swiper-button-next::after {
+                    .theme-content-gallery .swiper-controls .swiper-button-prev::after,
+                    .theme-content-gallery .swiper-controls .swiper-button-next::after {
                         content: none;
                     }
 
@@ -332,12 +311,7 @@
                             class="swiper-button-prev relative inset-auto m-0 flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white text-slate-950 after:hidden hover:border-slate-950"
                             aria-label="{{ __('capell-theme-foundation::generic.previous') }}"
                         >
-                            <svg
-                                aria-hidden="true"
-                                class="h-4 w-4"
-                                viewBox="0 0 20 20"
-                                fill="none"
-                            >
+                            <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 20 20" fill="none">
                                 <path
                                     d="M12.5 4.5 7 10l5.5 5.5"
                                     stroke="currentColor"
@@ -352,12 +326,7 @@
                             class="swiper-button-next relative inset-auto m-0 flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white text-slate-950 after:hidden hover:border-slate-950"
                             aria-label="{{ __('capell-theme-foundation::generic.next') }}"
                         >
-                            <svg
-                                aria-hidden="true"
-                                class="h-4 w-4"
-                                viewBox="0 0 20 20"
-                                fill="none"
-                            >
+                            <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 20 20" fill="none">
                                 <path
                                     d="M7.5 4.5 13 10l-5.5 5.5"
                                     stroke="currentColor"
@@ -401,12 +370,7 @@
                             <span
                                 class="mt-1 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition group-open:rotate-45 group-open:border-slate-950 group-open:text-slate-950"
                             >
-                                <svg
-                                    aria-hidden="true"
-                                    class="h-4 w-4"
-                                    viewBox="0 0 20 20"
-                                    fill="none"
-                                >
+                                <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 20 20" fill="none">
                                     <path
                                         d="M10 4v12M4 10h12"
                                         stroke="currentColor"
@@ -417,11 +381,7 @@
                             </span>
                         </summary>
                         @if (! empty($item['summary']))
-                            <p
-                                class="mt-4 max-w-2xl text-sm leading-7 text-slate-600"
-                            >
-                                {{ $item['summary'] }}
-                            </p>
+                            <p class="mt-4 max-w-2xl text-sm leading-7 text-slate-600">{{ $item['summary'] }}</p>
                         @endif
                     </details>
                 @endforeach

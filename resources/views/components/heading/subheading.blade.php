@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 use Capell\Frontend\Facades\Frontend;
 
 $theme = Frontend::theme();
@@ -6,7 +8,7 @@ $page = Frontend::page();
 $site = Frontend::site();
 ?>
 
-@props ([
+@props([
     'color' => '',
     'tag' => 'div',
     'size' => null,

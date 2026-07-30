@@ -49,7 +49,7 @@
                                 type="radio"
                                 name="pricing-spectrum-tier"
                                 value="{{ $index }}"
-                                @checked ($index === 0)
+                                @checked($index === 0)
                                 class="pricing-spectrum-tier-radio"
                             />
                             <span class="font-semibold text-slate-900">

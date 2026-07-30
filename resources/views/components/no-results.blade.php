@@ -1,4 +1,4 @@
-@props ([
+@props([
     'actionLabel' => null,
     'actionUrl' => null,
     'description' => null,
@@ -19,13 +19,11 @@
         class="capell-no-results__icon"
         aria-hidden="true"
     >
-        @svg ('heroicon-o-magnifying-glass', 'h-6 w-6')
+        @svg('heroicon-o-magnifying-glass', 'h-6 w-6')
     </div>
 
     <div class="capell-no-results__content">
-        <p class="capell-no-results__title">
-            {{ $title ?: __('capell-frontend::generic.no_results') }}
-        </p>
+        <p class="capell-no-results__title">{{ $title ?: __('capell-frontend::generic.no_results') }}</p>
 
         @if ($slot->isNotEmpty())
             <div class="capell-no-results__description">{{ $slot }}</div>

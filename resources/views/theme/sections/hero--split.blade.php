@@ -6,9 +6,7 @@
     >
         <div class="space-y-5">
             @if ($section->eyebrow)
-                <p
-                    class="text-xs font-semibold tracking-[0.12em] text-[var(--theme-primary)] uppercase"
-                >
+                <p class="text-xs font-semibold tracking-[0.12em] text-[var(--theme-primary)] uppercase">
                     {{ $section->eyebrow }}
                 </p>
             @endif
@@ -20,11 +18,7 @@
             </h1>
 
             @if ($section->summary)
-                <p
-                    class="max-w-2xl text-base leading-8 text-slate-600 sm:text-lg"
-                >
-                    {{ $section->summary }}
-                </p>
+                <p class="max-w-2xl text-base leading-8 text-slate-600 sm:text-lg">{{ $section->summary }}</p>
             @endif
 
             @if ($section->actions !== [])

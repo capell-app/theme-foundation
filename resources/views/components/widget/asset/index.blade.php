@@ -13,7 +13,7 @@
     $preparedThemeTokens = Frontend::getFrontendData('foundation.theme.tokens');
 @endphp
 
-@props ([
+@props([
     'assets',
     'color' => $widget->getMeta('color', 'dark'),
     'container',
@@ -103,7 +103,7 @@
                     data-carousel-watch-overflow="1"
                     data-carousel-breakpoints="{{ $responsiveLayoutOptions->carouselBreakpointsJson() }}"
                     data-carousel-breakpoints-base="container"
-                    @class ([
+                    @class([
                         'widget-assets-carousel',
                         'md:hidden' => $responsiveLayoutPattern === ResponsiveLayoutPattern::DesktopGridMobileCarousel,
                         'swiper' => $total > 1,
@@ -153,7 +153,7 @@
                 <div
                     id="{{ $assetGridId }}"
                     style="{{ $responsiveLayoutOptions->shouldUseResponsiveGrid() ? $responsiveLayoutOptions->gridColumnsStyle($maxWidthStyle) : '--columns: ' . ($columns ?: $total) . ';' . $maxWidthStyle }}"
-                    @class ([
+                    @class([
                         'grid',
                         'md:grid-cols-[repeat(var(--columns),minmax(0,1fr))]' => ! $responsiveLayoutOptions->shouldUseResponsiveGrid(),
                         'sm:grid-cols-[repeat(var(--columns-sm),minmax(0,1fr))] md:grid-cols-[repeat(var(--columns-md),minmax(0,1fr))] lg:grid-cols-[repeat(var(--columns-lg),minmax(0,1fr))] xl:grid-cols-[repeat(var(--columns-xl),minmax(0,1fr))]' => $responsiveLayoutOptions->shouldUseResponsiveGrid(),

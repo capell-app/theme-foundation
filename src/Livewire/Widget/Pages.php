@@ -8,6 +8,7 @@ use Capell\Core\Contracts\Pageable;
 use Capell\Core\Enums\PageOrderEnum;
 use Capell\Core\Models\Language;
 use Capell\Core\Models\Site;
+use Capell\Frontend\Data\PageListingRequestData;
 use Capell\Frontend\Facades\Frontend;
 use Capell\Frontend\Support\Loader\PageLoader;
 use Closure;
@@ -27,7 +28,7 @@ class Pages extends AbstractWidget
     protected static string $defaultView = 'capell-theme-foundation::components.widget.asset.pages';
 
     /**
-     * @var Collection<int, mixed>|LengthAwarePaginator<int, mixed>
+     * @var Collection<int, covariant mixed>|LengthAwarePaginator<int, covariant mixed>
      */
     protected Collection|LengthAwarePaginator $pages;
 
@@ -58,7 +59,8 @@ class Pages extends AbstractWidget
             return;
         }
 
-        $limit = $widget->meta['limit'] ?? config('capell-frontend.pagination_limit', 12);
+        $configuredLimit = $widget->meta['limit'] ?? config('capell-frontend.pagination_limit', 12);
+        $limit = is_numeric($configuredLimit) ? (int) $configuredLimit : 12;
 
         $paginationKey = $this->containerKey . ucfirst((string) $widget->key) . $this->occurrence;
         $paginationPage = (int) $this->getPage($paginationKey);
@@ -69,7 +71,7 @@ class Pages extends AbstractWidget
 
         $modelClass = null;
 
-        if ($morphModel !== null) {
+        if (is_string($morphModel)) {
             $resolvedModelClass = Relation::getMorphedModel($morphModel);
 
             if (is_string($resolvedModelClass) && is_subclass_of($resolvedModelClass, Pageable::class)) {
@@ -78,26 +80,30 @@ class Pages extends AbstractWidget
             }
         }
 
-        $this->pages = PageLoader::getPages(
+        $this->pages = PageLoader::list(new PageListingRequestData(
             language: $language,
             site: $site,
             page: $page,
             limit: $limit,
             paginationPage: $paginationPage,
-            ordering: ($widget->meta['order'] ?? '') === '' ? null : PageOrderEnum::from($widget->meta['order']),
-            pageGroup: $widget->meta['page_group'] ?? null,
-            withChildrenCount: $widget->meta['with_children_count'] ?? false,
-            withImage: $widget->meta['with_image'] ?? false,
-            withPagination: $widget->meta['pagination'] ?? false,
-            withParent: $widget->meta['with_parent'] ?? false,
-            withDate: $widget->meta['with_date'] ?? false,
+            ordering: is_string($widget->meta['order'] ?? null)
+                ? PageOrderEnum::tryFrom($widget->meta['order'])
+                : null,
+            pageGroup: is_string($widget->meta['page_group'] ?? null)
+                ? $widget->meta['page_group']
+                : null,
+            withChildrenCount: (bool) ($widget->meta['with_children_count'] ?? false),
+            withImage: (bool) ($widget->meta['with_image'] ?? false),
+            withPagination: (bool) ($widget->meta['pagination'] ?? false),
+            withParent: (bool) ($widget->meta['with_parent'] ?? false),
+            withDate: (bool) ($widget->meta['with_date'] ?? false),
             paginationKey: $paginationKey,
-            cacheKeyPrepend: sprintf('page-%d-widget-%d-container-%s-%d', (int) $page->getKey(), $widget->id, $this->containerKey, $this->occurrence),
             morphModel: $modelClass,
+            useCache: false,
             modifyQuery: function (Builder $query) use ($selection): void {
                 $query->whereIn('id', $selection);
             },
-        );
+        ));
 
         if ($this->pages->isEmpty() && config('capell-layout-builder.widget.skip_render_empty', true) === true) {
             $this->skipRender = true;

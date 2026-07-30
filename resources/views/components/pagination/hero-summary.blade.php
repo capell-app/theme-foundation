@@ -1,4 +1,4 @@
-@props ([
+@props([
     'results' => '',
     'resultsFoundText' => __('capell-frontend::messages.results_found'),
 ])
@@ -15,16 +15,16 @@
 
 <div
     {{
-        $attributes
-            ->merge([
-                'aria-label' => __('capell-frontend::messages.pagination_info', [
-                    'from' => $from,
-                    'to' => $to,
-                    'total' => $results->total(),
-                ]),
-            ])
-            ->class('capell-pagination-hero-summary pagination-info tracking-loose text-sm leading-none font-normal text-gray-500 dark:text-gray-400')
-    }}
+    $attributes
+        ->merge([
+            'aria-label' => __('capell-frontend::messages.pagination_info', [
+                'from' => $from,
+                'to' => $to,
+                'total' => $results->total(),
+            ]),
+        ])
+        ->class('capell-pagination-hero-summary pagination-info tracking-loose text-sm leading-none font-normal text-gray-500 dark:text-gray-400')
+}}
 >
     @if ($isPaginated)
         {{ __('capell-frontend::messages.showing') }}

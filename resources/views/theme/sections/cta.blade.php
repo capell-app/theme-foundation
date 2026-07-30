@@ -10,9 +10,7 @@
             </h2>
             <div class="mt-5 lg:mt-0">
                 @if ($section->summary)
-                    <p class="text-sm leading-7 text-slate-300 sm:text-base">
-                        {{ $section->summary }}
-                    </p>
+                    <p class="text-sm leading-7 text-slate-300 sm:text-base">{{ $section->summary }}</p>
                 @endif
 
                 <div class="mt-6 flex flex-wrap gap-3">

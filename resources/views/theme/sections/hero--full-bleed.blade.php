@@ -19,11 +19,7 @@
         class="relative mx-auto flex min-h-[28rem] max-w-7xl flex-col justify-end gap-5 px-4 py-12 sm:px-6 lg:py-20"
     >
         @if ($section->eyebrow)
-            <p
-                class="text-xs font-semibold tracking-[0.12em] text-white uppercase"
-            >
-                {{ $section->eyebrow }}
-            </p>
+            <p class="text-xs font-semibold tracking-[0.12em] text-white uppercase">{{ $section->eyebrow }}</p>
         @endif
 
         <h1
@@ -33,9 +29,7 @@
         </h1>
 
         @if ($section->summary)
-            <p class="max-w-2xl text-base leading-8 text-slate-200 sm:text-lg">
-                {{ $section->summary }}
-            </p>
+            <p class="max-w-2xl text-base leading-8 text-slate-200 sm:text-lg">{{ $section->summary }}</p>
         @endif
 
         @if ($section->actions !== [])

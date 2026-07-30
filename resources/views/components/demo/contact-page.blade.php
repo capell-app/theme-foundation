@@ -1,17 +1,11 @@
-@props ([
+@props([
     'page',
     'site',
 ])
 
 <style>
     .theme-demo-contact-page {
-        background:
-            linear-gradient(
-                135deg,
-                rgba(15, 118, 110, 0.08),
-                transparent 34rem
-            ),
-            #faf8ff;
+        background: linear-gradient(135deg, rgba(15, 118, 110, 0.08), transparent 34rem), #faf8ff;
         color: #131b2e;
         min-height: 100vh;
         padding: clamp(48px, 8vw, 96px) clamp(20px, 6vw, 72px);
@@ -200,40 +194,40 @@
     .theme-demo-contact-expectations strong {
         color: #131b2e;
     }
+    @media(min-width: 760px)
+    {
+           .theme-demo-contact-routing article,
+           .theme-demo-contact-details {
+               grid-template-columns: minmax(10rem, 0.48fr) minmax(0, 1fr);
+           }
 
-    @media (min-width: 760px) {
-        .theme-demo-contact-routing article,
-        .theme-demo-contact-details {
-            grid-template-columns: minmax(10rem, 0.48fr) minmax(0, 1fr);
-        }
+           .theme-demo-contact-expectations {
+               grid-template-columns: repeat(3, minmax(0, 1fr));
+           }
 
-        .theme-demo-contact-expectations {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-        }
+           .theme-demo-contact-expectations p {
+               border-bottom: 0;
+               border-left: 1px solid rgba(148, 163, 184, 0.42);
+               padding: 0 20px;
+           }
 
-        .theme-demo-contact-expectations p {
-            border-bottom: 0;
-            border-left: 1px solid rgba(148, 163, 184, 0.42);
-            padding: 0 20px;
-        }
+           .theme-demo-contact-expectations p:first-child {
+               border-left: 0;
+               padding-left: 0;
+           }
+       }
+    @media(min-width: 1024px)
+    {
+           .theme-demo-contact-gateway {
+               align-items: start;
+               grid-template-columns: minmax(0, 1fr) minmax(22rem, 0.72fr);
+           }
 
-        .theme-demo-contact-expectations p:first-child {
-            border-left: 0;
-            padding-left: 0;
-        }
-    }
-
-    @media (min-width: 1024px) {
-        .theme-demo-contact-gateway {
-            align-items: start;
-            grid-template-columns: minmax(0, 1fr) minmax(22rem, 0.72fr);
-        }
-
-        .theme-demo-contact-form {
-            position: sticky;
-            top: 32px;
-        }
-    }
+           .theme-demo-contact-form {
+               position: sticky;
+               top: 32px;
+           }
+       }
 </style>
 
 <section

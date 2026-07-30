@@ -1,4 +1,4 @@
-@props ([
+@props([
     'assetRenderDataItems',
     'container',
     'containerKey',
@@ -39,9 +39,7 @@
                 @endif
 
                 @if ($widget->translation->content)
-                    <p class="mt-3 text-lg text-gray-500">
-                        {{ strip_tags($widget->translation->content) }}
-                    </p>
+                    <p class="mt-3 text-lg text-gray-500">{{ strip_tags($widget->translation->content) }}</p>
                 @endif
             </div>
         @endif
@@ -102,9 +100,7 @@
                 </details>
             @empty
                 <div class="py-12 text-center">
-                    <p class="text-gray-500">
-                        {{ __('capell-theme-foundation::generic.empty_faqs') }}
-                    </p>
+                    <p class="text-gray-500">{{ __('capell-theme-foundation::generic.empty_faqs') }}</p>
                 </div>
             @endforelse
         </div>

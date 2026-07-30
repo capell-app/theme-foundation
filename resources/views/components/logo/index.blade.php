@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 use Capell\Frontend\Facades\Frontend;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
@@ -7,7 +9,7 @@ $site = Frontend::site();
 /** @var Media $media */
 ?>
 
-@props ([
+@props([
     'media',
 ])
 

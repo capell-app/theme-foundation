@@ -1,4 +1,4 @@
-@props ([
+@props([
     'assetRenderDataItems',
     'columns' => $widget->getMeta('columns', 3),
     'container',
@@ -47,9 +47,7 @@
                 @endif
 
                 @if ($widget->translation->content)
-                    <p class="text-lg text-gray-500">
-                        {{ strip_tags($widget->translation->content) }}
-                    </p>
+                    <p class="text-lg text-gray-500">{{ strip_tags($widget->translation->content) }}</p>
                 @endif
             </div>
         @endif
@@ -83,7 +81,7 @@
                             class="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-lg bg-emerald-50 text-[#0f766e]"
                         >
                             @if (str_starts_with((string) $icon, 'heroicon-'))
-                                @svg ($icon, 'h-10 w-10')
+                                @svg($icon, 'h-10 w-10')
                             @else
                                 <span class="text-4xl">{{ $icon }}</span>
                             @endif
@@ -99,11 +97,7 @@
                     @endif
 
                     @if ($role)
-                        <p
-                            class="mb-3 text-sm font-semibold tracking-wide text-emerald-700 uppercase"
-                        >
-                            {{ $role }}
-                        </p>
+                        <p class="mb-3 text-sm font-semibold tracking-wide text-emerald-700 uppercase">{{ $role }}</p>
                     @endif
 
                     @if ($assetRenderData->content)
@@ -146,9 +140,7 @@
                 </div>
             @empty
                 <div class="col-span-full py-12 text-center">
-                    <p class="text-gray-500">
-                        {{ __('capell-theme-foundation::generic.empty_team_members') }}
-                    </p>
+                    <p class="text-gray-500">{{ __('capell-theme-foundation::generic.empty_team_members') }}</p>
                 </div>
             @endforelse
         </div>

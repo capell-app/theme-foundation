@@ -12,9 +12,7 @@
             </h2>
 
             @if ($section->summary)
-                <p
-                    class="mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base"
-                >
+                <p class="mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
                     {{ $section->summary }}
                 </p>
             @endif

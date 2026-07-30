@@ -1,4 +1,4 @@
-@props ([
+@props([
     'brand',
     'themePrefix',
     'chromeHeader' => null,

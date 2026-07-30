@@ -1,4 +1,4 @@
-@props ([
+@props([
     'breakpoints' => '{"320":{"slidesPerView":1.1,"spaceBetween":16},"520":{"slidesPerView":2,"spaceBetween":20},"760":{"slidesPerView":3,"spaceBetween":24}}',
     'carouselId',
     'enabled' => true,

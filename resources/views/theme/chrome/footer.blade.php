@@ -54,9 +54,7 @@
             </a>
 
             @if (filled($section->summary ?? null))
-                <p class="theme-chrome-footer__summary">
-                    {{ $section->summary }}
-                </p>
+                <p class="theme-chrome-footer__summary">{{ $section->summary }}</p>
             @endif
         </div>
 
@@ -93,11 +91,11 @@
         <p>
             {{
                 filled($footerLegal)
-                    ? $footerLegal
-                    : __('capell-theme-foundation::generic.copyright_notice', [
-                        'year' => date('Y'),
-                        'name' => $section->brandName,
-                    ])
+                ? $footerLegal
+                : __('capell-theme-foundation::generic.copyright_notice', [
+                    'year' => date('Y'),
+                    'name' => $section->brandName,
+                ])
             }}
         </p>
     </div>

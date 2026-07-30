@@ -1,9 +1,7 @@
 <section class="theme-features border-b border-slate-200/80 bg-white">
     <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16">
         <div class="mb-8 max-w-3xl">
-            <p
-                class="mb-3 text-xs font-semibold tracking-[0.16em] text-[var(--theme-primary)] uppercase"
-            >
+            <p class="mb-3 text-xs font-semibold tracking-[0.16em] text-[var(--theme-primary)] uppercase">
                 {{ __('capell-theme-foundation::generic.features') }}
             </p>
             <h2
@@ -12,9 +10,7 @@
                 {{ $section->heading }}
             </h2>
             @if ($section->summary)
-                <p class="mt-3 text-sm leading-7 text-slate-600 sm:text-base">
-                    {{ $section->summary }}
-                </p>
+                <p class="mt-3 text-sm leading-7 text-slate-600 sm:text-base">{{ $section->summary }}</p>
             @endif
         </div>
 
@@ -37,9 +33,7 @@
 
                     <div class="p-5">
                         @if (! empty($feature['type']))
-                            <p
-                                class="mb-3 text-xs font-semibold tracking-[0.12em] text-[var(--theme-primary)] uppercase"
-                            >
+                            <p class="mb-3 text-xs font-semibold tracking-[0.12em] text-[var(--theme-primary)] uppercase">
                                 {{ $feature['type'] }}
                             </p>
                         @endif
