@@ -10,8 +10,6 @@ Theme Foundation provides the shared public layouts, runtime design tokens, layo
 
 Sites can use Foundation directly or extend it with a child theme, while public pages share predictable layout and token rendering without frontend authoring state.
 
-Website Generator can use Foundation's closed DesignSpec v1 contract and deterministic compiler to produce a validated `capell-theme` Project Build artifact from reviewed package templates. Generated input cannot select executable code, dependencies, commands, paths, or outbound requests.
-
 Evidence: [`src/Providers/FoundationThemeServiceProvider.php`](src/Providers/FoundationThemeServiceProvider.php), [`src/Settings/FoundationThemeSettings.php`](src/Settings/FoundationThemeSettings.php), [`resources/views/app.blade.php`](resources/views/app.blade.php), [`resources/views/components/app/head/tokens.blade.php`](resources/views/components/app/head/tokens.blade.php), [`src/Support/Providers/RegistersLayoutNativeThemeDefaults.php`](src/Support/Providers/RegistersLayoutNativeThemeDefaults.php), [`tests/Feature/FleetPublicOutputSafetyTest.php`](tests/Feature/FleetPublicOutputSafetyTest.php), [`tests/Unit/ThemeRuntimeSettingsBindingTest.php`](tests/Unit/ThemeRuntimeSettingsBindingTest.php).
 
 Status details:
@@ -41,13 +39,13 @@ Screenshot contract: `docs/screenshots.json`.
 
 Desktop, tablet, and mobile variants remain defined in the screenshot contract; this list groups them by workflow.
 
-- Foundation Homepage (frontend, required).
-- Foundation Directory (frontend, required).
-- Foundation Detail Article (frontend, required).
-- Foundation Contact (frontend, required).
-- Foundation Empty State (frontend, required).
-- Foundation Page Not Found (frontend, required).
-- Foundation Call To Action (frontend, required).
+- Foundation Homepage (frontend, required evidence).
+- Foundation Directory (frontend, required evidence).
+- Foundation Detail Article (frontend, required evidence).
+- Foundation Contact (frontend, required evidence).
+- Foundation Empty State (frontend, required evidence).
+- Foundation Page Not Found (frontend, required evidence).
+- Foundation Call To Action (frontend, required evidence).
 
 ## Technical Shape
 
@@ -57,11 +55,10 @@ Desktop, tablet, and mobile variants remain defined in the screenshot contract; 
 - Settings classes: `FoundationThemeSettings`, `FoundationThemeSettingsMigrationProvider`.
 - Filament classes: `FoundationLayoutContainerSchemaExtender`, `FoundationThemeSettingsSchema`.
 - Livewire components: `AbstractAssets`, `PageAssets`, `AbstractWidget`, `Pages`.
-- Extension contracts: `InstallsThemeDemo`, `OptionalExtensionAvailability`, `ProvidesThemeDemoContent`.
+- Extension contracts: `CompiledThemeReceiptSigningAuthority`, `DesignSpecMigrationReader`, `InstallsThemeDemo`, `OptionalExtensionAvailability`, `ProvidesThemeDemoContent`, `ResultsListingResolver`.
 - Listeners: `RunTailwindAssetsOnPackageChange`.
-- Actions: `BuildAssetBannerItemsAction`, `BuildBannerImageRenderDataAction`, `BuildHeroRailItemsRenderDataAction`, `BuildLayoutNeighborLinksDataAction`, `BuildPageContentRenderDataAction`, `BuildThemeDemoFormSectionAction`, `BuildThemeDemoFormsPayloadAction`, `BuildWidgetAssetRenderDataAction`, `GenerateThemeScaffoldAction`, `HasThemeIntegrationEvidenceAction`, `InstallFoundationThemeDemoAction`, `InstallFoundationThemeLayoutDefaultsAction`, `and 11 more`.
-- DesignSpec producer contract: closed schema v1, canonical reader, deterministic compiler, validated `capell-theme` Project Build artifact handler.
-- Data objects: `AssetBannerItemData`, `BannerImageRenderData`, `FoundationLayoutContainerPresentationData`, `FoundationThemeTokensData`, `LayoutNeighborLinksData`, `NewsletterFormData`, `PageContentRenderData`, `ThemeDemoInstallData`, `ThemeFormEmbedData`, `ThemeScaffoldRequestData`, `ThemeValidationResultData`, `WidgetAssetRenderData`.
+- Actions: `BuildAssetBannerItemsAction`, `BuildBannerImageRenderDataAction`, `BuildHeroRailItemsRenderDataAction`, `BuildLayoutNeighborLinksDataAction`, `BuildPageContentRenderDataAction`, `BuildThemeDemoFormSectionAction`, `BuildThemeDemoFormsPayloadAction`, `BuildWidgetAssetRenderDataAction`, `BuildCompiledThemeDistributionAction`, `CanonicalizeDesignSpecAction`, `CompileFoundationThemeArtifactAction`, `ReadDesignSpecAction`, `and 24 more`.
+- Data objects: `AssetBannerItemData`, `BannerImageRenderData`, `CanonicalDesignSpecData`, `CompiledThemeArtifactData`, `CompiledThemeDistributionData`, `CompiledThemeDistributionFileData`, `CompiledThemeDistributionReceiptData`, `CompiledThemeFileData`, `DesignSpecAccessibilityData`, `DesignSpecAssetData`, `DesignSpecBrandData`, `DesignSpecColorModeData`, `and 22 more`.
 - Command signatures: `capell:theme-foundation-demo`, `capell:theme-foundation-setup`.
 - Manifest action API: `demo: Capell\FoundationTheme\Actions\InstallFoundationThemeDemoAction`, `setup: Capell\FoundationTheme\Actions\SetupFoundationThemePackageAction`.
 - Console command classes: `DemoCommand`, `GenerateTailwindAssetsCommand`, `MakeThemeCommand`, `SetupCommand`, `ThemeCatalogueReportCommand`, `ValidateThemesCommand`.
@@ -117,7 +114,7 @@ This theme has no schema impact. It relies on core Capell site, page, locale, an
 
 1. Install the package: `composer require capell-app/theme-foundation`.
 2. Run the required setup: `php artisan capell:theme-foundation-setup`.
-3. Open the Foundation Homepage and confirm the public output renders without admin state.
+3. Open `/theme-default` and confirm the public output renders without admin state.
 
 ## Next Steps
 
