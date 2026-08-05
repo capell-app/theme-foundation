@@ -1,4 +1,5 @@
 @php
+    use Capell\Core\Models\Language;
     use Capell\FoundationTheme\Actions\ResolveFoundationThemeTokensAction;
     use Capell\FoundationTheme\Data\FoundationThemeTokensData;
     use Capell\Frontend\Enums\RenderHookLocation;
@@ -18,8 +19,7 @@
     $customMetaSchema = data_get($siteMeta, 'custom_meta_schema');
     $language = Frontend::language();
     $languageCode = $language?->code ?: app()->getLocale();
-    $languageRoot = strtolower(strtok(str_replace('_', '-', (string) $languageCode), '-') ?: (string) $languageCode);
-    $textDirection = in_array($languageRoot, ['ar', 'arc', 'ckb', 'dv', 'fa', 'he', 'ks', 'ku', 'ps', 'sd', 'ug', 'ur', 'yi'], true) ? 'rtl' : 'ltr';
+    $textDirection = $language?->direction() ?? Language::directionForCode((string) $languageCode);
     $runtimeManifest ??= null;
     $usesLivewire = $runtimeManifest?->usesLivewire ?? ($livewireEnabled ?? false);
     $beaconRouteName = config('capell-page.frontend.route_name', 'capell-frontend.beacon');

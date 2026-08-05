@@ -130,6 +130,11 @@ it('keeps each theme package within its frozen @php block baseline', function ()
     // Route::has() for the frontend-authoring beacon route, and its content
     // component calls GetPageVariablesAction::run() to prep translation
     // variables — both pure, non-persisting reads, not database queries.
+    // app.blade.php also calls Language::directionForCode() to resolve the
+    // <html dir> attribute when no language is resolved. That static maps a
+    // language tag to 'rtl'/'ltr' from an in-class constant list: no database
+    // access, no container resolution, no persistence. The instance form
+    // ($language->direction()) reads only an already-hydrated meta attribute.
     // Every other theme keeps the base whitelist only.
     $additionalWhitelistedStaticCallPrefixesByTheme = [
         'foundation' => [
@@ -148,6 +153,7 @@ it('keeps each theme package within its frozen @php block baseline', function ()
             'GetPageVariablesAction',
             'GetWidgetContainerWidthAction',
             'Image',
+            'Language',
             'LayoutWidgetData',
             'MarkPrimaryHeadingRenderedAction',
             'OpaqueWidgetReference',
