@@ -1,7 +1,8 @@
 {
     "package": "theme-foundation",
     "composerName": "capell-app/theme-foundation",
-    "generatedFor": "deployment-screenshot-runner",
+    "generatedFor": "shared-capell-screenshot-runner",
+    "provenancePolicy": "runner-only-v1",
     "requiresInstalledPackage": true,
     "outputDirectory": "packages/theme-foundation/docs/screenshots",
     "entries": [
@@ -13,9 +14,9 @@
             "target": "/theme-default",
             "url": "/theme-default",
             "screenshotPath": "packages/theme-foundation/docs/screenshots/foundation-homepage.png",
-            "required": true,
+            "required": false,
             "user": false,
-            "notes": "Foundation Homepage seeded demo surface",
+            "notes": "Legacy base-palette reference retained for documentation only. The separately declared runner-receipted Foundation Chrome Homepage is the required release evidence for this public surface.",
             "useCase": "A buyer reviews the Foundation homepage surface before selecting theme-foundation.",
             "package": "theme-foundation",
             "scenario": "frontend-page",
@@ -403,6 +404,74 @@
             "colorSchemes": ["light"],
             "viewport": "mobile",
             "fullPage": true
+        },
+        {
+            "id": "foundation-chrome-homepage",
+            "title": "Foundation Chrome Homepage",
+            "surface": "frontend",
+            "targetType": "frontend-url",
+            "target": "/theme-default",
+            "url": "/theme-default",
+            "screenshotPath": "packages/theme-foundation/docs/screenshots/foundation-chrome-homepage.png",
+            "darkScreenshotPath": "packages/theme-foundation/docs/screenshots/foundation-chrome-homepage-dark.png",
+            "required": true,
+            "user": false,
+            "notes": "Runner-only proof of the real Foundation logo, shared header navigation, published homepage composition, and shared footer; separate from Core Default Theme base-palette evidence.",
+            "useCase": "A maintainer verifies the complete Foundation public chrome and published homepage at desktop size in both supported colour modes.",
+            "evidenceScope": "foundation-real-chrome",
+            "package": "theme-foundation",
+            "scenario": "frontend-page",
+            "waitFor": "body:has(#header .header-logo):has(#header nav):has(#main):has(#footer)",
+            "colorSchemes": ["light", "dark"],
+            "viewport": "desktop",
+            "fullPage": true,
+            "assertions": [
+                { "type": "visible", "selector": "#header nav" },
+                {
+                    "type": "no-horizontal-overflow",
+                    "selector": "html",
+                    "tolerance": 1
+                },
+                {
+                    "type": "no-horizontal-overflow",
+                    "selector": "#header",
+                    "tolerance": 1
+                }
+            ]
+        },
+        {
+            "id": "foundation-chrome-homepage-mobile",
+            "title": "Foundation Chrome Homepage — Mobile",
+            "surface": "frontend",
+            "targetType": "frontend-url",
+            "target": "/theme-default",
+            "url": "/theme-default",
+            "screenshotPath": "packages/theme-foundation/docs/screenshots/foundation-chrome-homepage-mobile.png",
+            "darkScreenshotPath": "packages/theme-foundation/docs/screenshots/foundation-chrome-homepage-mobile-dark.png",
+            "required": true,
+            "user": false,
+            "notes": "Runner-only proof of the real Foundation logo, responsive shared navigation, published homepage composition, and shared footer; separate from Core Default Theme base-palette evidence.",
+            "useCase": "A maintainer verifies the complete Foundation public chrome and published homepage at mobile size in both supported colour modes.",
+            "evidenceScope": "foundation-real-chrome",
+            "package": "theme-foundation",
+            "scenario": "frontend-page",
+            "waitFor": "body:has(#header .header-logo):has(#header nav):has(#main):has(#footer)",
+            "colorSchemes": ["light", "dark"],
+            "viewport": "mobile",
+            "fullPage": true,
+            "assertions": [
+                { "type": "visible", "selector": "#header" },
+                {
+                    "type": "no-horizontal-overflow",
+                    "selector": "html",
+                    "tolerance": 1
+                },
+                {
+                    "type": "no-horizontal-overflow",
+                    "selector": "#header",
+                    "tolerance": 1
+                }
+            ]
         }
     ]
 }

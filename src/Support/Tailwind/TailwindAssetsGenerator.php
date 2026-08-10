@@ -10,6 +10,7 @@ use Capell\Core\Enums\VendorAssetEnum;
 use Capell\Core\Facades\CapellCore;
 use Capell\Core\Support\Tailwind\TailwindAssetsRegistry;
 use Capell\FoundationTheme\Actions\ResolveFoundationThemeTokensAction;
+use Capell\Frontend\Support\Tailwind\TailwindAssetsGenerator as FrontendTailwindAssetsGenerator;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
@@ -35,7 +36,7 @@ use Throwable;
  * - Runtime Theme values are emitted by Foundation head tokens, not generated into this file.
  * - Optionally validates @source globs (capell-theme-foundation.tailwind.validate_sources).
  */
-class TailwindAssetsGenerator
+class TailwindAssetsGenerator extends FrontendTailwindAssetsGenerator
 {
     public function __construct(private readonly Filesystem $files) {}
 

@@ -5,7 +5,7 @@
 @endphp
 
 <section
-    class="theme-search border-b border-slate-200/80 bg-[var(--theme-surface)]"
+    class="theme-search border-b border-[var(--foundation-border)] bg-[var(--foundation-section-muted-bg)]"
 >
     <div class="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:py-16">
         <div class="mb-8">
@@ -13,12 +13,12 @@
                 {{ __('capell-theme-foundation::generic.search') }}
             </p>
             <h2
-                class="text-3xl leading-tight font-[var(--theme-heading-font)] font-semibold text-slate-950 sm:text-4xl"
+                class="text-3xl leading-tight font-[var(--theme-heading-font)] font-semibold text-[var(--foundation-heading-fg)] sm:text-4xl"
             >
                 {{ $section->heading ?? __('capell-theme-foundation::generic.search') }}
             </h2>
             @if (! empty($section->summary))
-                <p class="mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">{{ $section->summary }}</p>
+                <p class="mt-3 max-w-2xl text-sm leading-7 text-[var(--foundation-muted-fg)] sm:text-base">{{ $section->summary }}</p>
             @endif
         </div>
 
@@ -40,7 +40,7 @@
                 name="{{ $section->queryParameter ?? 'q' }}"
                 value="{{ $section->query ?? '' }}"
                 placeholder="{{ $section->placeholder ?? __('capell-theme-foundation::generic.search') }}"
-                class="w-full rounded-[var(--theme-radius-value)] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-950 placeholder:text-slate-400 focus:border-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:outline-none"
+                class="w-full rounded-[var(--theme-radius-value)] border border-[var(--foundation-border)] bg-[var(--foundation-card-bg)] px-4 py-3 text-sm text-[var(--foundation-body-fg)] placeholder:text-[var(--foundation-muted-fg)] focus:border-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:outline-none"
             />
             <button
                 type="submit"
@@ -51,7 +51,7 @@
         </form>
 
         @if ($query !== '' || $searchResults !== [])
-            <p class="mt-5 text-sm font-medium text-slate-600">
+            <p class="mt-5 text-sm font-medium text-[var(--foundation-muted-fg)]">
                 @if ($query !== '')
                     {{ __('capell-theme-foundation::generic.search_results_for_query', ['count' => $resultCount, 'query' => $query]) }}
                 @else
@@ -61,7 +61,7 @@
         @endif
 
         @if ($searchResults !== [])
-            <ul class="mt-8 divide-y divide-slate-200/80">
+            <ul class="mt-8 divide-y divide-[var(--foundation-border)]">
                 @foreach ($searchResults as $result)
                     <li class="py-5 first:pt-0 last:pb-0">
                         <a
@@ -69,13 +69,13 @@
                             class="group widget block"
                         >
                             <span
-                                class="widget block text-lg font-semibold text-slate-950 group-hover:underline"
+                                class="widget block text-lg font-semibold text-[var(--foundation-heading-fg)] group-hover:underline"
                             >
                                 {{ $result['title'] ?? '' }}
                             </span>
                             @if (! empty($result['summary']))
                                 <span
-                                    class="widget mt-1 block text-sm leading-6 text-slate-600"
+                                    class="widget mt-1 block text-sm leading-6 text-[var(--foundation-muted-fg)]"
                                 >
                                     {{ $result['summary'] }}
                                 </span>
@@ -86,12 +86,12 @@
             </ul>
         @else
             <div
-                class="mt-8 rounded-[var(--theme-radius-value)] border border-dashed border-slate-300 bg-white/70 p-6"
+                class="mt-8 rounded-[var(--theme-radius-value)] border border-dashed border-[var(--foundation-border-strong)] bg-[var(--foundation-card-bg)] p-6"
             >
-                <p class="text-base font-semibold text-slate-950">
+                <p class="text-base font-semibold text-[var(--foundation-heading-fg)]">
                     {{ $section->emptyTitle ?? __('capell-theme-foundation::generic.search_empty_title') }}
                 </p>
-                <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+                <p class="mt-2 max-w-2xl text-sm leading-6 text-[var(--foundation-muted-fg)]">
                     {{ $section->emptyBody ?? __('capell-theme-foundation::generic.search_empty_body') }}
                 </p>
             </div>

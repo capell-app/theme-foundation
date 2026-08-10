@@ -34,9 +34,10 @@ it('owns the frontend Tailwind command and generates conditioned theme CSS', fun
     ));
 
     $command = Artisan::all()['capell:frontend-tailwind-assets'] ?? null;
+    $generator = resolve('capell.tailwind.generator');
 
     expect($command)->toBeInstanceOf(GenerateTailwindAssetsCommand::class);
-
+    expect($generator)->toBe(resolve('capell.tailwind.generator'));
     $this->artisan('capell:frontend-tailwind-assets', ['--output-path' => $frontendPath])
         ->assertSuccessful()
         ->expectsOutputToContain('Generated Tailwind assets at ' . $frontendPath)

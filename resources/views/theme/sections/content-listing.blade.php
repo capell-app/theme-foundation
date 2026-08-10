@@ -25,20 +25,20 @@
 
 <section
     id="{{ $sectionId }}"
-    class="theme-content-listing border-b border-slate-200/80 bg-[var(--theme-surface)]"
+    class="theme-content-listing border-b border-[var(--foundation-border)] bg-[var(--foundation-section-muted-bg)]"
 >
     <style>
         .theme-content-listing {
             --theme-content-accent: color-mix(
                 in srgb,
                 var(--theme-primary, #2563eb) 54%,
-                var(--theme-foreground, #0f172a)
+                var(--foundation-body-fg, #0f172a)
             );
-            --theme-content-heading: var(--theme-foreground, #0f172a);
+            --theme-content-heading: var(--foundation-heading-fg, #0f172a);
             --theme-content-muted: color-mix(
                 in srgb,
-                var(--theme-foreground, #0f172a) 72%,
-                var(--theme-surface, #ffffff)
+                var(--foundation-body-fg, #0f172a) 72%,
+                var(--foundation-section-muted-bg, #ffffff)
             );
         }
 
@@ -391,7 +391,7 @@
                 @foreach ($listingItems as $item)
                     <a
                         href="{{ $item['url'] ?? '#' }}"
-                        class="group widget overflow-hidden rounded-[var(--theme-radius-value)] border border-slate-200 bg-white transition hover:border-slate-950"
+                        class="group widget overflow-hidden rounded-[var(--theme-radius-value)] border border-[var(--foundation-border)] bg-[var(--foundation-card-bg)] transition hover:border-[var(--foundation-border-strong)]"
                     >
                         @if (! empty($item['image']))
                             <img
@@ -408,17 +408,19 @@
                         @endif
 
                         <span class="widget p-5">
-                            <span class="text-xs font-medium text-slate-500">
+                            <span
+                                class="text-xs font-medium text-[var(--foundation-muted-fg)]"
+                            >
                                 {{ $item['type'] ?? $item['publishedDate'] ?? '' }}
                             </span>
                             <span
-                                class="widget mt-2 text-base font-semibold text-slate-950"
+                                class="widget mt-2 text-base font-semibold text-[var(--foundation-heading-fg)]"
                             >
                                 {{ $item['title'] }}
                             </span>
                             @if (! empty($item['summary']))
                                 <span
-                                    class="widget mt-2 text-sm leading-6 text-slate-600"
+                                    class="widget mt-2 text-sm leading-6 text-[var(--foundation-muted-fg)]"
                                 >
                                     {{ $item['summary'] }}
                                 </span>

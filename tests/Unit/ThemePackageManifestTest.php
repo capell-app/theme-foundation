@@ -136,7 +136,7 @@ it('declares committed marketplace screenshots', function (): void {
         ->and($paths->filter(fn (string $path): bool => str_starts_with($path, 'docs/screenshots/') && str_ends_with($path, '.png')))->toHaveCount(7)
         ->and($paths->filter(fn (string $path): bool => str_starts_with($path, 'docs/assets/marketplace/') && str_ends_with($path, '.svg')))->toHaveCount(0)
         ->and($paths)->toContain(
-            'docs/screenshots/foundation-homepage.png',
+            'docs/screenshots/foundation-chrome-homepage.png',
             'docs/screenshots/foundation-directory.png',
             'docs/screenshots/foundation-detail.png',
             'docs/screenshots/foundation-contact.png',
@@ -150,9 +150,11 @@ it('declares committed marketplace screenshots', function (): void {
     }
 });
 
-it('declares the standard light-only screenshot matrix', function (): void {
+it('keeps the canonical catalogue screenshot matrix light-only', function (): void {
     $screenshots = foundationThemeScreenshotsContract();
-    $entries = collect(foundationThemeManifestList($screenshots, 'entries'));
+    $entries = collect(foundationThemeManifestList($screenshots, 'entries'))
+        ->reject(fn (array $entry): bool => ($entry['evidenceScope'] ?? null) === 'foundation-real-chrome')
+        ->values();
     $surfaces = [
         'homepage',
         'directory',
@@ -212,6 +214,53 @@ it('declares the standard light-only screenshot matrix', function (): void {
             ->and($url)->not->toStartWith('/screenshot-fixtures/');
 
         expect(is_file(dirname(__DIR__, 2) . '/' . str_replace('packages/theme-foundation/', '', $screenshotPath)))->toBeTrue();
+    }
+});
+
+it('declares separate runner-only Foundation chrome proof at desktop and mobile sizes', function (): void {
+    $screenshots = foundationThemeScreenshotsContract();
+    $entries = collect(foundationThemeManifestList($screenshots, 'entries'))
+        ->filter(fn (array $entry): bool => ($entry['evidenceScope'] ?? null) === 'foundation-real-chrome')
+        ->keyBy('id');
+
+    expect($screenshots['generatedFor'] ?? null)->toBe('shared-capell-screenshot-runner')
+        ->and($screenshots['provenancePolicy'] ?? null)->toBe('runner-only-v1')
+        ->and($entries->keys()->sort()->values()->all())->toBe([
+            'foundation-chrome-homepage',
+            'foundation-chrome-homepage-mobile',
+        ]);
+
+    foreach ([
+        'foundation-chrome-homepage' => [
+            'viewport' => 'desktop',
+            'light' => 'packages/theme-foundation/docs/screenshots/foundation-chrome-homepage.png',
+            'dark' => 'packages/theme-foundation/docs/screenshots/foundation-chrome-homepage-dark.png',
+        ],
+        'foundation-chrome-homepage-mobile' => [
+            'viewport' => 'mobile',
+            'light' => 'packages/theme-foundation/docs/screenshots/foundation-chrome-homepage-mobile.png',
+            'dark' => 'packages/theme-foundation/docs/screenshots/foundation-chrome-homepage-mobile-dark.png',
+        ],
+    ] as $id => $contract) {
+        $entry = $entries->get($id);
+        throw_unless(is_array($entry), RuntimeException::class, 'Foundation chrome screenshot entry must be an array.');
+
+        $assertions = collect(foundationThemeManifestList($entry, 'assertions'));
+
+        expect($entry['target'] ?? null)->toBe('/theme-default')
+            ->and($entry['url'] ?? null)->toBe('/theme-default')
+            ->and($entry['scenario'] ?? null)->toBe('frontend-page')
+            ->and($entry['required'] ?? null)->toBeTrue()
+            ->and($entry['viewport'] ?? null)->toBe($contract['viewport'])
+            ->and($entry['colorSchemes'] ?? null)->toBe(['light', 'dark'])
+            ->and($entry['screenshotPath'] ?? null)->toBe($contract['light'])
+            ->and($entry['darkScreenshotPath'] ?? null)->toBe($contract['dark'])
+            ->and($entry['waitFor'] ?? null)->toContain('#header', '.header-logo', 'nav', '#main', '#footer')
+            ->and($entry['assertions'] ?? null)->toBeArray()
+            ->and($assertions->pluck('type')->all())
+            ->toContain('visible', 'no-horizontal-overflow')
+            ->and($assertions->where('type', 'no-horizontal-overflow')->pluck('selector')->all())
+            ->toContain('html', '#header');
     }
 });
 

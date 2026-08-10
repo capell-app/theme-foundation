@@ -179,6 +179,65 @@ it('keeps primary actions at WCAG AA contrast in both colour schemes', function 
         ->and(darkModeParityContrastRatio($darkPrimaryAction, $darkSurface))->toBeGreaterThanOrEqual(4.5);
 });
 
+it('binds the Foundation chrome evidence sections to light and dark runtime tokens', function (): void {
+    $sectionsPath = dirname(__DIR__, 2) . '/resources/views/theme/sections';
+    $contracts = [
+        'hero.blade.php' => [
+            'tokens' => [
+                'bg-[var(--foundation-section-bg)]',
+                'bg-[var(--foundation-card-bg)]',
+                'text-[var(--foundation-heading-fg)]',
+                'text-[var(--foundation-muted-fg)]',
+                'text-[var(--foundation-body-fg)]',
+            ],
+            'legacyRoot' => 'class="theme-hero border-b border-slate-200/80 bg-[var(--theme-surface)]"',
+        ],
+        'search.blade.php' => [
+            'tokens' => [
+                'bg-[var(--foundation-section-muted-bg)]',
+                'bg-[var(--foundation-card-bg)]',
+                'text-[var(--foundation-heading-fg)]',
+                'text-[var(--foundation-muted-fg)]',
+            ],
+            'legacyRoot' => 'class="theme-search border-b border-slate-200/80 bg-[var(--theme-surface)]"',
+        ],
+        'content-listing.blade.php' => [
+            'tokens' => [
+                'bg-[var(--foundation-section-muted-bg)]',
+                'bg-[var(--foundation-card-bg)]',
+                'text-[var(--foundation-heading-fg)]',
+                'text-[var(--foundation-muted-fg)]',
+            ],
+            'legacyRoot' => 'class="theme-content-listing border-b border-slate-200/80 bg-[var(--theme-surface)]"',
+        ],
+        'pagination.blade.php' => [
+            'tokens' => [
+                'bg-[var(--foundation-section-muted-bg)]',
+                'bg-[var(--foundation-card-bg)]',
+                'text-[var(--foundation-body-fg)]',
+                'text-[var(--foundation-muted-fg)]',
+            ],
+            'legacyRoot' => 'class="theme-pagination border-b border-slate-200/80 bg-[var(--theme-surface)]"',
+        ],
+    ];
+
+    foreach ($contracts as $filename => $contract) {
+        $view = file_get_contents($sectionsPath . '/' . $filename);
+
+        expect($view)->toBeString()
+            ->and($view)->toContain(...$contract['tokens'])
+            ->and($view)->not->toContain($contract['legacyRoot']);
+    }
+
+    $themeCss = file_get_contents(dirname(__DIR__, 2) . '/resources/css/theme/theme.css');
+
+    expect($themeCss)->toBeString()
+        ->and($themeCss)->toContain(
+            '.capell-product-menu-toggle {',
+            'color: var(--foundation-body-fg);',
+        );
+});
+
 /*
  * Fleet Blade scan: no blade file under any theme package's resources/views
  * directory may hardcode a hex colour literal outside a token-variable

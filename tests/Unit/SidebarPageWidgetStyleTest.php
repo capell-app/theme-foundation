@@ -8,6 +8,7 @@ use Capell\Core\Models\Language;
 use Capell\Core\Models\Layout;
 use Capell\Core\Models\Page;
 use Capell\Core\Models\Site;
+use Capell\Core\Models\SiteDomain;
 use Capell\Core\Models\Theme;
 use Capell\FoundationTheme\Actions\BuildAssetBannerItemsAction;
 use Capell\FoundationTheme\Actions\BuildBannerImageRenderDataAction;
@@ -26,6 +27,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Livewire\Blaze\Blaze;
 
 function sidebarPageWidgetStyleView(mixed $view): View
@@ -40,6 +42,19 @@ function sidebarPageWidgetStyleBindContext(FrontendContext $context): void
 {
     app()->instance(FrontendContextReader::class, $context);
     Frontend::clearResolvedInstance(FrontendContextReader::class);
+}
+
+function sidebarPageWidgetStyleSite(Language $language): Site
+{
+    return Site::factory()
+        ->has(
+            SiteDomain::factory()
+                ->default()
+                ->language($language)
+                ->state(['domain' => 'sidebar-page-widget-' . Str::uuid() . '.test']),
+            'siteDomains',
+        )
+        ->create(['language_id' => $language->getKey()]);
 }
 
 test('sidebar page widgets expose stable styling and current page hooks', function (): void {
@@ -202,7 +217,7 @@ test('opaque widget references do not expose raw public context', function (): v
 
 test('public livewire widgets resolve the scoped layout widget clone', function (): void {
     $language = Language::factory()->create();
-    $site = Site::factory()->create(['language_id' => $language->getKey()]);
+    $site = sidebarPageWidgetStyleSite($language);
     $widget = Widget::factory()->create(['key' => 'featured-pages']);
     $firstOccurrenceAsset = Page::factory()->site($site)->withTranslations($language)->create(['name' => 'First occurrence']);
     $secondOccurrenceAsset = Page::factory()->site($site)->withTranslations($language)->create(['name' => 'Second occurrence']);
@@ -313,7 +328,7 @@ test('public livewire widgets resolve the scoped layout widget clone', function 
 
 test('public livewire widgets reject references without scoped page and site ids', function (): void {
     $language = Language::factory()->create();
-    $site = Site::factory()->create(['language_id' => $language->getKey()]);
+    $site = sidebarPageWidgetStyleSite($language);
     $widget = Widget::factory()->create(['key' => 'legacy-featured-pages']);
     $layout = Layout::factory()->site($site)->create([
         'containers' => [
@@ -346,7 +361,7 @@ test('public livewire widgets reject references without scoped page and site ids
 
 test('public livewire widgets can hydrate widgets from global layouts', function (): void {
     $language = Language::factory()->create();
-    $site = Site::factory()->create(['language_id' => $language->getKey()]);
+    $site = sidebarPageWidgetStyleSite($language);
     $widget = Widget::factory()->create(['key' => 'global-featured-pages']);
     $layout = Layout::factory()->create([
         'site_id' => null,
@@ -404,8 +419,8 @@ test('public livewire widgets can hydrate widgets from global layouts', function
 
 test('public livewire widgets reject global layout references replayed under another site', function (): void {
     $language = Language::factory()->create();
-    $referenceSite = Site::factory()->create(['language_id' => $language->getKey()]);
-    $currentSite = Site::factory()->create(['language_id' => $language->getKey()]);
+    $referenceSite = sidebarPageWidgetStyleSite($language);
+    $currentSite = sidebarPageWidgetStyleSite($language);
     $widget = Widget::factory()->create(['key' => 'global-cross-site-pages']);
     $layout = Layout::factory()->create([
         'site_id' => null,
@@ -454,7 +469,7 @@ test('public livewire widgets reject global layout references replayed under ano
 
 test('public livewire page content widgets render from encrypted context without ambient frontend state', function (): void {
     $language = Language::factory()->create();
-    $site = Site::factory()->create(['language_id' => $language->getKey()]);
+    $site = sidebarPageWidgetStyleSite($language);
     $widget = Widget::factory()->create([
         'key' => 'page-content',
         'meta' => ['view_file' => 'capell-theme-foundation::components.widget.page.content'],
@@ -533,7 +548,7 @@ test('public livewire page content widgets render from encrypted context without
 
 test('asset page widget view does not query or lazy-load optional item parents', function (): void {
     $language = Language::factory()->create();
-    $site = Site::factory()->create(['language_id' => $language->getKey()]);
+    $site = sidebarPageWidgetStyleSite($language);
     $theme = Theme::factory()->make(['meta' => ['secondary_containers' => []]]);
     $currentPage = Page::factory()->site($site)->create();
     $parentPage = Page::factory()->site($site)->create();
@@ -590,7 +605,7 @@ test('asset page widget view does not query or lazy-load optional item parents',
 
 test('breadcrumbs render data does not lazy-load optional page and site relations', function (): void {
     $language = Language::factory()->create();
-    $site = Site::factory()->create(['language_id' => $language->getKey()]);
+    $site = sidebarPageWidgetStyleSite($language);
     $page = Page::factory()->site($site)->create();
     $widget = new Widget(['key' => 'breadcrumbs', 'name' => 'Breadcrumbs', 'meta' => ['view_file' => 'capell-theme-foundation::components.widget.page.breadcrumbs']]);
 
@@ -649,8 +664,8 @@ test('content page widget ignores contextless hydration when resolving next prev
 
 test('public livewire widgets reject references from another frontend site', function (): void {
     $language = Language::factory()->create();
-    $currentSite = Site::factory()->create(['language_id' => $language->getKey()]);
-    $otherSite = Site::factory()->create(['language_id' => $language->getKey()]);
+    $currentSite = sidebarPageWidgetStyleSite($language);
+    $otherSite = sidebarPageWidgetStyleSite($language);
     $widget = Widget::factory()->create(['key' => 'featured-pages']);
     $layout = Layout::factory()->site($otherSite)->create([
         'containers' => [

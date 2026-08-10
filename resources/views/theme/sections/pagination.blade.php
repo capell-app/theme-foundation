@@ -6,7 +6,7 @@
 @endphp
 
 <section
-    class="theme-pagination border-b border-slate-200/80 bg-[var(--theme-surface)]"
+    class="theme-pagination border-b border-[var(--foundation-border)] bg-[var(--foundation-section-muted-bg)]"
 >
     <nav
         class="mx-auto flex max-w-4xl items-center justify-between gap-4 px-4 py-8 sm:px-6"
@@ -16,13 +16,13 @@
             <a
                 href="{{ $pageUrl($currentPage - 1) }}"
                 rel="prev"
-                class="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-800 transition hover:border-slate-950"
+                class="rounded-full border border-[var(--foundation-border-strong)] px-4 py-2 text-sm font-semibold text-[var(--foundation-body-fg)] transition hover:bg-[var(--foundation-card-bg)]"
             >
                 {{ __('capell-theme-foundation::generic.previous') }}
             </a>
         @else
             <span
-                class="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-400"
+                class="rounded-full border border-[var(--foundation-border)] px-4 py-2 text-sm font-semibold text-[var(--foundation-muted-fg)]"
             >
                 {{ __('capell-theme-foundation::generic.previous') }}
             </span>
@@ -34,7 +34,7 @@
                     <a
                         href="{{ $pageUrl($page) }}"
                         @if ($page === $currentPage) aria-current="page" @endif
-                        class="{{ $page === $currentPage ? 'bg-[var(--theme-primary)] text-white' : 'text-slate-600 hover:bg-slate-100' }} flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold transition"
+                        class="{{ $page === $currentPage ? 'bg-[var(--theme-primary)] text-white' : 'text-[var(--foundation-body-fg)] hover:bg-[var(--foundation-card-bg)]' }} flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold transition"
                     >
                         {{ $page }}
                     </a>
@@ -46,13 +46,13 @@
             <a
                 href="{{ $pageUrl($currentPage + 1) }}"
                 rel="next"
-                class="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-800 transition hover:border-slate-950"
+                class="rounded-full border border-[var(--foundation-border-strong)] px-4 py-2 text-sm font-semibold text-[var(--foundation-body-fg)] transition hover:bg-[var(--foundation-card-bg)]"
             >
                 {{ __('capell-theme-foundation::generic.next') }}
             </a>
         @else
             <span
-                class="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-400"
+                class="rounded-full border border-[var(--foundation-border)] px-4 py-2 text-sm font-semibold text-[var(--foundation-muted-fg)]"
             >
                 {{ __('capell-theme-foundation::generic.next') }}
             </span>

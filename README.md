@@ -47,6 +47,13 @@ Desktop, tablet, and mobile variants remain defined in the screenshot contract; 
 - Foundation Page Not Found (frontend, required evidence).
 - Foundation Call To Action (frontend, required evidence).
 
+The separate Foundation chrome matrix proves the installed package's real public route rather than a page-content fixture. It records the Field Office logo, shared header navigation, normal published homepage composition, and shared footer at desktop and mobile sizes in both Foundation-supported colour modes. Each accepted image is bound to the shared runner receipt in `../../docs/screenshot-receipts/cap0133/theme-foundation-chrome-homepage-matrix.json`; Core Default Theme screenshots remain narrower base-palette regression evidence.
+
+| Viewport | Light | Dark |
+| --- | --- | --- |
+| Desktop | ![Foundation chrome homepage](docs/screenshots/foundation-chrome-homepage.png) | ![Foundation chrome homepage dark](docs/screenshots/foundation-chrome-homepage-dark.png) |
+| Mobile | ![Foundation chrome homepage mobile](docs/screenshots/foundation-chrome-homepage-mobile.png) | ![Foundation chrome homepage mobile dark](docs/screenshots/foundation-chrome-homepage-mobile-dark.png) |
+
 ## Technical Shape
 
 - Service providers: `Capell\FoundationTheme\Providers\FoundationThemeServiceProvider`, `FoundationThemeSiteSpecServiceProvider`.

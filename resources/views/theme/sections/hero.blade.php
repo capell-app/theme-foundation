@@ -1,5 +1,5 @@
 <section
-    class="theme-hero border-b border-slate-200/80 bg-[var(--theme-surface)]"
+    class="theme-hero border-b border-[var(--foundation-border)] bg-[var(--foundation-section-bg)]"
 >
     <div
         class="mx-auto grid max-w-7xl items-center gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:py-20"
@@ -12,13 +12,13 @@
             @endif
 
             <h1
-                class="max-w-4xl text-4xl leading-tight font-[var(--theme-heading-font)] font-semibold text-slate-950 sm:text-5xl lg:text-6xl"
+                class="max-w-4xl text-4xl leading-tight font-[var(--theme-heading-font)] font-semibold text-[var(--foundation-heading-fg)] sm:text-5xl lg:text-6xl"
             >
                 {{ $section->heading }}
             </h1>
 
             @if ($section->summary)
-                <p class="max-w-2xl text-base leading-8 text-slate-600 sm:text-lg">{{ $section->summary }}</p>
+                <p class="max-w-2xl text-base leading-8 text-[var(--foundation-muted-fg)] sm:text-lg">{{ $section->summary }}</p>
             @endif
 
             @if ($section->actions !== [])
@@ -26,7 +26,7 @@
                     @foreach ($section->actions as $action)
                         <a
                             href="{{ $action['url'] }}"
-                            class="{{ ($action['style'] ?? 'primary') === 'secondary' ? 'border border-slate-300 text-slate-800 hover:border-slate-950' : 'bg-[var(--theme-primary)] text-white hover:opacity-90' }} rounded-full px-5 py-3 text-sm font-semibold transition"
+                            class="{{ ($action['style'] ?? 'primary') === 'secondary' ? 'border border-[var(--foundation-border-strong)] text-[var(--foundation-body-fg)] hover:border-[var(--foundation-primary-action)]' : 'bg-[var(--theme-primary)] text-white hover:opacity-90' }} rounded-full px-5 py-3 text-sm font-semibold transition"
                         >
                             {{ $action['label'] }}
                         </a>
@@ -37,7 +37,7 @@
 
         @if ($section->mediaUrl)
             <figure
-                class="overflow-hidden rounded-[var(--theme-radius-value)] border border-slate-200 bg-white shadow-sm"
+                class="overflow-hidden rounded-[var(--theme-radius-value)] border border-[var(--foundation-border)] bg-[var(--foundation-card-bg)] shadow-sm"
             >
                 <img
                     src="{{ $section->mediaUrl }}"

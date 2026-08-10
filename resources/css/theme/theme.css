@@ -753,7 +753,7 @@
         border: 1px solid var(--foundation-border);
         border-radius: var(--foundation-radius);
         box-shadow: 0 10px 24px rgb(15 23 42 / 10%);
-        color: rgb(15 23 42);
+        color: var(--foundation-body-fg);
         display: flex;
         height: 2.75rem;
         justify-content: center;
