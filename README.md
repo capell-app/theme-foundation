@@ -33,26 +33,20 @@ Evidence: [`src/Providers/FoundationThemeServiceProvider.php`](src/Providers/Fou
 
 Screenshot contract: `docs/screenshots.json`.
 
-![Foundation Homepage](docs/screenshots/foundation-homepage.png)
-
 ![Foundation Directory](docs/screenshots/foundation-directory.png)
+
+![Foundation Detail Article](docs/screenshots/foundation-detail.png)
 
 Desktop, tablet, and mobile variants remain defined in the screenshot contract; this list groups them by workflow.
 
-- Foundation Homepage (frontend, required evidence).
+- Foundation Homepage (frontend, supplementary evidence).
 - Foundation Directory (frontend, required evidence).
 - Foundation Detail Article (frontend, required evidence).
 - Foundation Contact (frontend, required evidence).
 - Foundation Empty State (frontend, required evidence).
 - Foundation Page Not Found (frontend, required evidence).
 - Foundation Call To Action (frontend, required evidence).
-
-The separate Foundation chrome matrix proves the installed package's real public route rather than a page-content fixture. It records the Field Office logo, shared header navigation, normal published homepage composition, and shared footer at desktop and mobile sizes in both Foundation-supported colour modes. Each accepted image is bound to the shared runner receipt in `../../docs/screenshot-receipts/cap0133/theme-foundation-chrome-homepage-matrix.json`; Core Default Theme screenshots remain narrower base-palette regression evidence.
-
-| Viewport | Light | Dark |
-| --- | --- | --- |
-| Desktop | ![Foundation chrome homepage](docs/screenshots/foundation-chrome-homepage.png) | ![Foundation chrome homepage dark](docs/screenshots/foundation-chrome-homepage-dark.png) |
-| Mobile | ![Foundation chrome homepage mobile](docs/screenshots/foundation-chrome-homepage-mobile.png) | ![Foundation chrome homepage mobile dark](docs/screenshots/foundation-chrome-homepage-mobile-dark.png) |
+- Foundation Chrome Homepage (frontend, required evidence).
 
 ## Technical Shape
 
@@ -121,7 +115,7 @@ This theme has no schema impact. It relies on core Capell site, page, locale, an
 
 1. Install the package: `composer require capell-app/theme-foundation`.
 2. Run the required setup: `php artisan capell:theme-foundation-setup`.
-3. Open `/theme-default` and confirm the public output renders without admin state.
+3. Open `/theme-default-directory` and confirm the public output renders without admin state.
 
 ## Next Steps
 

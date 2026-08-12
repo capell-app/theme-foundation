@@ -30,12 +30,6 @@ It also owns DesignSpec v1 and the deterministic Foundation compiler used by Web
 - `capell:theme-foundation-demo` installs Foundation demo pages; `capell:theme-foundation-setup` provides the package setup command.
 - Activating a vertical theme keeps Foundation's behaviour and changes the design on top of it.
 
-## Screenshot evidence scopes
-
-The canonical seven-surface gallery stays a light-only catalogue matrix across desktop, tablet, and mobile. A separate runner-only Foundation chrome matrix exercises `/theme-default` at desktop and mobile sizes in light and dark mode. That focused matrix requires the real Field Office logo, shared header navigation, normal published homepage composition, and shared footer; it does not use the page-content-only screenshot fixture. Its receipt is stored at `../../../docs/screenshot-receipts/cap0133/theme-foundation-chrome-homepage-matrix.json`.
-
-Core Default Theme screenshots have a different scope: they are narrow base-palette rendering regressions, not evidence of Foundation package chrome.
-
 ## Child Theme Override Contract
 
 Foundation Theme owns the stable child theme override surface for Capell themes. Child themes should declare `extends: 'default'` and override documented sections, views, tokens, and chrome areas instead of replacing the whole public rendering path.
