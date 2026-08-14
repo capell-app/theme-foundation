@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 use Capell\Core\Facades\CapellCore;
 use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
+use Capell\Frontend\Enums\RenderHookLocation;
 use Capell\Frontend\Facades\Frontend;
+use Capell\Frontend\Support\Render\RenderHookRegistry;
 use Capell\Socials\Data\PreparedSocialSiteData;
 use Capell\Socials\Support\SocialsFrontendRuntimeManifestContributor;
 use Capell\ThemeLiquidGlass\LiquidGlassThemeServiceProvider;
@@ -57,6 +59,13 @@ it('renders real layout-builder widget content in the main landmark for a layout
 
     [$pageUrl, $pageTitle] = layoutNativeThemeCreatePage(LiquidGlassThemeServiceProvider::THEME_KEY, 'Main Content Regression');
 
+    resolve(RenderHookRegistry::class)->registerCallable(
+        location: RenderHookLocation::AfterContent,
+        extension: static fn (): string => '<aside data-after-content-hook="visible">Recovery suggestions</aside>',
+        scenario: 'frontend-main-layout',
+        target: 'capell::layout.main',
+    );
+
     expect($registry->has(LiquidGlassThemeServiceProvider::THEME_KEY))->toBeTrue();
 
     $response = get($pageUrl->full_url);
@@ -75,6 +84,7 @@ it('renders real layout-builder widget content in the main landmark for a layout
 
     expect($html)
         ->toContain('id="main"')
+        ->toContain('data-after-content-hook="visible"')
         ->toContain(e($pageTitle))
         ->toContain('Teams that ship on the glass')
         ->toContain('One glass system, three token-driven presets');

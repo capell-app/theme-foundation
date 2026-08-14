@@ -136,5 +136,12 @@
             </section>
         @endif
     </div>
+
+    {!! app(RenderHookRegistry::class)->renderAll(
+        RenderHookLocation::AfterContent,
+        $mainContentHookData,
+        scenario: 'frontend-main-layout',
+        target: 'capell::layout.main',
+    ) !!}
     {{-- format-ignore-end --}}
 </main>

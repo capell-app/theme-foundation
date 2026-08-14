@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Capell\Core\Models\Theme;
+use Capell\Core\ThemeStudio\Preview\ThemePreviewContext;
 use Capell\FoundationTheme\Support\Assets\FoundationThemeAssetContributor;
 use Capell\Frontend\Data\Assets\ViteResourceSourceData;
 use Capell\Frontend\Data\FrontendResourceContextData;
@@ -56,6 +57,7 @@ it('contributes the active split theme stylesheet', function (): void {
     $directory = storage_path('framework/testing/capell-theme-foundation-split-' . uniqid());
     $filesystem->ensureDirectoryExists($directory);
     $filesystem->put($directory . '/showreel.css', '.showreel {}');
+
     config()->set('capell-theme-foundation.tailwind.split_theme_css', true);
     config()->set('capell-theme-foundation.tailwind.theme_css_output_directory', $directory);
 
@@ -73,6 +75,49 @@ it('contributes the active split theme stylesheet', function (): void {
 
         expect(collect($resources)->pluck('resource.handle')->all())
             ->toContain('capell-app/theme-foundation:theme-showreel');
+    } finally {
+        $filesystem->deleteDirectory($directory);
+    }
+});
+
+it('uses the current preview stylesheet when the contributor outlives a synthetic request', function (): void {
+    $filesystem = resolve(Filesystem::class);
+    $directory = storage_path('framework/testing/capell-theme-foundation-preview-' . uniqid());
+    $filesystem->ensureDirectoryExists($directory);
+    $filesystem->put($directory . '/brutalist.css', '.brutalist {}');
+    $filesystem->put($directory . '/showreel.css', '.showreel {}');
+
+    config()->set('capell-theme-foundation.tailwind.split_theme_css', true);
+    config()->set('capell-theme-foundation.tailwind.theme_css_output_directory', $directory);
+
+    app()->instance(ThemePreviewContext::class, new ThemePreviewContext(
+        themeKey: 'default',
+        presetKey: 'default',
+        previewing: true,
+    ));
+    $contributor = resolve(FoundationThemeAssetContributor::class);
+
+    app()->instance(ThemePreviewContext::class, new ThemePreviewContext(
+        themeKey: 'brutalist',
+        presetKey: 'brutalist',
+        previewing: true,
+    ));
+
+    try {
+        $theme = Theme::factory()->create(['key' => 'showreel']);
+        $context = new FrontendResourceContextData(
+            null,
+            null,
+            null,
+            null,
+            $theme,
+            FrontendRuntimeManifestData::forRenderingStrategy(RenderingStrategyEnum::BladeOnly),
+        );
+        $resources = $contributor->resources($context);
+
+        expect(collect($resources)->pluck('resource.handle')->all())
+            ->toContain('capell-app/theme-foundation:theme-brutalist')
+            ->not->toContain('capell-app/theme-foundation:theme-showreel');
     } finally {
         $filesystem->deleteDirectory($directory);
     }

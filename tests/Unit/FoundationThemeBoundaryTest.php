@@ -428,6 +428,7 @@ it('delegates main layout container rendering to the shared frontend hook', func
     $main = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/layout/main.blade.php');
 
     expect($main)->toContain('RenderHookLocation::MainContent')
+        ->and($main)->toContain('RenderHookLocation::AfterContent')
         ->and($main)->toContain("scenario: 'frontend-main-layout'")
         ->and($main)->toContain("target: 'capell::layout.main'")
         ->and($main)->toContain('$mainContentHookOutput !==')

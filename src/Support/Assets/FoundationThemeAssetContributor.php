@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Capell\FoundationTheme\Support\Assets;
 
+use Capell\Core\ThemeStudio\Preview\ThemePreviewContext;
 use Capell\FoundationTheme\Providers\FoundationThemeServiceProvider;
 use Capell\Frontend\Contracts\FrontendResourceContributor;
 use Capell\Frontend\Data\Assets\FrontendResourceContributionData;
@@ -78,7 +79,7 @@ final class FoundationThemeAssetContributor implements FrontendResourceContribut
 
     private function themeCssResource(FrontendResourceContextData $context, string $buildDirectory): ?FrontendResourceData
     {
-        $themeKey = $context->theme?->key;
+        $themeKey = $this->activeThemeKey($context);
 
         if (! is_string($themeKey)
             || $themeKey === ''
@@ -89,6 +90,7 @@ final class FoundationThemeAssetContributor implements FrontendResourceContribut
 
         $directory = config('capell-theme-foundation.tailwind.theme_css_output_directory', 'resources/css/capell/themes');
         $directory = is_string($directory) && $directory !== '' ? $directory : 'resources/css/capell/themes';
+
         $source = $this->projectRelativeThemeCssSource($directory, $themeKey);
 
         if ($source === null) {
@@ -101,6 +103,19 @@ final class FoundationThemeAssetContributor implements FrontendResourceContribut
             source: new ViteResourceSourceData($source, $buildDirectory),
             criticalCssEligible: true,
         );
+    }
+
+    private function activeThemeKey(FrontendResourceContextData $context): ?string
+    {
+        $previewContext = resolve(ThemePreviewContext::class);
+
+        if ($previewContext->previewing
+            && is_string($previewContext->themeKey)
+            && $previewContext->themeKey !== '') {
+            return $previewContext->themeKey;
+        }
+
+        return $context->theme?->key;
     }
 
     private function projectRelativeThemeCssSource(string $directory, string $themeKey): ?string
