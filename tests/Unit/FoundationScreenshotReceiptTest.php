@@ -53,7 +53,11 @@ it('binds the runner receipt to every Foundation chrome artifact', function (): 
         }
 
         expect($artifactPackage)->toBe('theme-foundation')
-            ->and($artifactOutput)->toEndWith('/' . $relativePath)
+            // Receipt outputs are normalised to repository-relative paths by
+            // scripts/screenshots/relativise-evidence-paths.mjs, so this asserts
+            // exact equality rather than a suffix: an absolute machine-local
+            // path must not satisfy it.
+            ->and($artifactOutput)->toBe($relativePath)
             ->and($artifactHash)->toMatch('/\A[a-f0-9]{64}\z/')
             ->and(is_file($artifactPath))->toBeTrue()
             ->and(hash_file('sha256', $artifactPath))->toBe($artifactHash);
