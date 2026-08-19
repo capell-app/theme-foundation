@@ -95,6 +95,13 @@ class ThemeCatalogueReportCommand extends Command
                 continue;
             }
 
+            // A theme-* directory is not proof of a theme: the manifest kind
+            // is the authority, so a package that merely keeps a theme-shaped
+            // directory name cannot report as catalogue drift.
+            if (! $this->isThemePackage($packagesRoot . '/' . $packageDirectory)) {
+                continue;
+            }
+
             $contents = file_get_contents($stylesheetFile);
 
             if (! is_string($contents)) {
@@ -126,6 +133,23 @@ class ThemeCatalogueReportCommand extends Command
         $sectionBlades = glob($sectionsDirectory . '/*.blade.php') ?: [];
 
         return count($sectionBlades);
+    }
+
+    private function isThemePackage(string $packagePath): bool
+    {
+        $manifestPath = $packagePath . '/capell.json';
+
+        if (! is_file($manifestPath)) {
+            return true;
+        }
+
+        $manifest = json_decode((string) file_get_contents($manifestPath), true);
+
+        if (! is_array($manifest) || ! isset($manifest['kind']) || ! is_string($manifest['kind'])) {
+            return true;
+        }
+
+        return $manifest['kind'] === 'theme';
     }
 
     /**

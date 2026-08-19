@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Capell\FoundationTheme\Actions\BuildFooterLatestPageLinksAction;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Blade;
 
@@ -27,9 +28,14 @@ it('renders latest pages from the provided page collection', function (): void {
         }
     };
 
+    $pages = new Collection([$page]);
+
     test()->blade(
-        '<x-capell::footer.latest-pages heading-class="footer-heading" :pages="$pages" />',
-        ['pages' => new Collection([$page])],
+        '<x-capell::footer.latest-pages heading-class="footer-heading" :pages="$pages" :linked-pages="$linkedPages" />',
+        [
+            'pages' => $pages,
+            'linkedPages' => BuildFooterLatestPageLinksAction::run($pages),
+        ],
     )
         ->assertSee('Latest Pages')
         ->assertElementExists('a[href="https://example.test/resources"]')
@@ -38,8 +44,11 @@ it('renders latest pages from the provided page collection', function (): void {
 
 it('does not render latest pages when the provided page collection is empty', function (): void {
     test()->blade(
-        '<x-capell::footer.latest-pages heading-class="footer-heading" :pages="$pages" />',
-        ['pages' => new Collection],
+        '<x-capell::footer.latest-pages heading-class="footer-heading" :pages="$pages" :linked-pages="$linkedPages" />',
+        [
+            'pages' => new Collection,
+            'linkedPages' => collect(),
+        ],
     )
         ->assertDontSee('Latest Pages');
 });

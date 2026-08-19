@@ -1,10 +1,11 @@
 {
     "resources/js/capell-frontend.js": {
-        "file": "assets/capell-frontend-BzOE2qRN.js",
+        "file": "assets/capell-frontend-DPTSU2S5.js",
         "name": "capell-frontend",
         "src": "resources/js/capell-frontend.js",
         "isEntry": true,
         "dynamicImports": [
+            "resources/js/widgets/widget/auth-menu-refresh.js",
             "resources/js/utilities/lightbox.js",
             "resources/js/widgets/widget/carousel.js",
             "resources/js/widgets/widget/faq-search.js",
@@ -19,7 +20,7 @@
         ]
     },
     "resources/js/utilities/lightbox.js": {
-        "file": "assets/lightbox-wYALEF-H.js",
+        "file": "assets/lightbox-BE8RJ-hI.js",
         "name": "lightbox",
         "src": "resources/js/utilities/lightbox.js",
         "isDynamicEntry": true
@@ -30,8 +31,14 @@
         "src": "resources/js/widgets/widget/accordion-toggle.js",
         "isDynamicEntry": true
     },
+    "resources/js/widgets/widget/auth-menu-refresh.js": {
+        "file": "assets/auth-menu-refresh-Cb0hkpom.js",
+        "name": "auth-menu-refresh",
+        "src": "resources/js/widgets/widget/auth-menu-refresh.js",
+        "isDynamicEntry": true
+    },
     "resources/js/widgets/widget/carousel.js": {
-        "file": "assets/carousel-DCJnNnBe.js",
+        "file": "assets/carousel-DQLbyIcI.js",
         "name": "carousel",
         "src": "resources/js/widgets/widget/carousel.js",
         "isDynamicEntry": true

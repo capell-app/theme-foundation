@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Capell\Core\Models\Theme;
 use Capell\Core\ThemeStudio\Preview\ThemePreviewContext;
 use Capell\FoundationTheme\Support\Assets\FoundationThemeAssetContributor;
+use Capell\FoundationTheme\Support\Tailwind\TailwindAssetsGenerator;
 use Capell\Frontend\Data\Assets\ViteResourceSourceData;
 use Capell\Frontend\Data\FrontendResourceContextData;
 use Capell\Frontend\Data\FrontendRuntimeManifestData;
@@ -142,4 +143,116 @@ it('omits an active split theme stylesheet that has not been generated', functio
 
     expect(collect($resources)->pluck('resource.handle')->all())
         ->not->toContain('capell-app/theme-foundation:theme-not-generated');
+});
+
+it('keeps a previously generated split stylesheet live during a rollback transition', function (): void {
+    $filesystem = resolve(Filesystem::class);
+    $directory = storage_path('framework/testing/capell-theme-foundation-rollback-' . uniqid());
+    $frontendPath = $directory . '/frontend.css';
+    $relativeFrontendPath = str_replace(base_path() . '/', '', $frontendPath);
+
+    $filesystem->ensureDirectoryExists($directory);
+    $filesystem->put($frontendPath, '@import "tailwindcss";' . PHP_EOL);
+    $filesystem->put($directory . '/showreel.css', '.showreel {}');
+
+    config()->set('capell-theme-foundation.tailwind.split_theme_css', false);
+    config()->set('capell-theme-foundation.tailwind.output_css', $relativeFrontendPath);
+    config()->set('capell-theme-foundation.tailwind.theme_css_output_directory', $directory);
+
+    try {
+        $theme = Theme::factory()->create(['key' => 'showreel']);
+        $context = new FrontendResourceContextData(
+            null,
+            null,
+            null,
+            null,
+            $theme,
+            FrontendRuntimeManifestData::forRenderingStrategy(RenderingStrategyEnum::BladeOnly),
+        );
+        $contributor = resolve(FoundationThemeAssetContributor::class);
+
+        expect(collect($contributor->resources($context))->pluck('resource.handle')->all())
+            ->toContain('capell-app/theme-foundation:theme-showreel');
+
+        $filesystem->put(
+            $frontendPath,
+            '/* ' . TailwindAssetsGenerator::COMBINED_GENERATION_MARKER . ' */' . PHP_EOL
+                . '@import "tailwindcss";' . PHP_EOL,
+        );
+
+        expect(collect($contributor->resources($context))->pluck('resource.handle')->all())
+            ->not->toContain('capell-app/theme-foundation:theme-showreel');
+    } finally {
+        $filesystem->deleteDirectory($directory);
+    }
+});
+
+it('recognizes an unmarked legacy combined bundle during rollback', function (): void {
+    $filesystem = resolve(Filesystem::class);
+    $directory = storage_path('framework/testing/capell-theme-foundation-rollback-legacy-' . uniqid());
+    $frontendPath = $directory . '/frontend.css';
+    $relativeFrontendPath = str_replace(base_path() . '/', '', $frontendPath);
+
+    $filesystem->ensureDirectoryExists($directory);
+    $filesystem->put(
+        $frontendPath,
+        '@import "resources/css/theme-foundation.css";' . PHP_EOL
+            . '@import "resources/css/theme-showreel.css";' . PHP_EOL,
+    );
+    $filesystem->put($directory . '/showreel.css', '.showreel {}');
+
+    config()->set('capell-theme-foundation.tailwind.split_theme_css', false);
+    config()->set('capell-theme-foundation.tailwind.output_css', $relativeFrontendPath);
+    config()->set('capell-theme-foundation.tailwind.theme_css_output_directory', $directory);
+
+    try {
+        $theme = Theme::factory()->create(['key' => 'showreel']);
+        $context = new FrontendResourceContextData(
+            null,
+            null,
+            null,
+            null,
+            $theme,
+            FrontendRuntimeManifestData::forRenderingStrategy(RenderingStrategyEnum::BladeOnly),
+        );
+
+        expect(collect(resolve(FoundationThemeAssetContributor::class)->resources($context))
+            ->pluck('resource.handle')->all())
+            ->not->toContain('capell-app/theme-foundation:theme-showreel');
+    } finally {
+        $filesystem->deleteDirectory($directory);
+    }
+});
+
+it('keeps split output for an unmarked legacy split bundle with Foundation CSS only', function (): void {
+    $filesystem = resolve(Filesystem::class);
+    $directory = storage_path('framework/testing/capell-theme-foundation-rollback-foundation-' . uniqid());
+    $frontendPath = $directory . '/frontend.css';
+    $relativeFrontendPath = str_replace(base_path() . '/', '', $frontendPath);
+
+    $filesystem->ensureDirectoryExists($directory);
+    $filesystem->put($frontendPath, '@import "resources/css/theme-foundation.css";' . PHP_EOL);
+    $filesystem->put($directory . '/showreel.css', '.showreel {}');
+
+    config()->set('capell-theme-foundation.tailwind.split_theme_css', false);
+    config()->set('capell-theme-foundation.tailwind.output_css', $relativeFrontendPath);
+    config()->set('capell-theme-foundation.tailwind.theme_css_output_directory', $directory);
+
+    try {
+        $theme = Theme::factory()->create(['key' => 'showreel']);
+        $context = new FrontendResourceContextData(
+            null,
+            null,
+            null,
+            null,
+            $theme,
+            FrontendRuntimeManifestData::forRenderingStrategy(RenderingStrategyEnum::BladeOnly),
+        );
+
+        expect(collect(resolve(FoundationThemeAssetContributor::class)->resources($context))
+            ->pluck('resource.handle')->all())
+            ->toContain('capell-app/theme-foundation:theme-showreel');
+    } finally {
+        $filesystem->deleteDirectory($directory);
+    }
 });

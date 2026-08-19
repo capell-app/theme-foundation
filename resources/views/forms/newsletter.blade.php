@@ -28,6 +28,9 @@
             disabled
             aria-disabled="true"
         >
+            <legend class="sr-only">
+                {{ __('capell-theme-foundation::generic.newsletter_controls') }}
+            </legend>
             {{ $slot }}
         </fieldset>
     </div>

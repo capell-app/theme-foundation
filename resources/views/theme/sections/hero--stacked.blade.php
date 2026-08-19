@@ -11,11 +11,11 @@
                 </p>
             @endif
 
-            <h1
+            <h2
                 class="mx-auto max-w-3xl text-4xl leading-tight font-[var(--theme-heading-font)] font-semibold text-slate-950 sm:text-5xl lg:text-6xl"
             >
                 {{ $section->heading }}
-            </h1>
+            </h2>
 
             @if ($section->summary)
                 <p class="mx-auto max-w-2xl text-base leading-8 text-slate-600 sm:text-lg">{{ $section->summary }}</p>

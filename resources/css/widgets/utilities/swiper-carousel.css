@@ -10,6 +10,17 @@
     background-color: var(--color-primary);
 }
 
+.swiper-autoplay-toggle {
+    min-height: 2.75rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid currentColor;
+    border-radius: 9999px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    pointer-events: auto;
+}
+
 .widget-assets-carousel[data-carousel-highlight-active='1'] .swiper-slide {
     opacity: 0.72;
     transform: scale(0.96);

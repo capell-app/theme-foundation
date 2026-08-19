@@ -238,6 +238,35 @@ it('fails the fleet screenshot freshness check when the manifest entries list is
     foundationThemeDeleteDirectory(dirname($fleetRoot));
 });
 
+it('accepts explicit not-captured screenshot records in the fleet manifest', function (): void {
+    $fleetRoot = foundationThemeTemporaryFleetRoot('screenshots-not-captured');
+
+    mkdir($fleetRoot . '/theme-foundation/docs', 0o775, true);
+    file_put_contents($fleetRoot . '/theme-foundation/docs/screenshots.json', json_encode([
+        'entries' => [['id' => 'foundation-homepage']],
+    ]));
+
+    mkdir($fleetRoot . '/theme-unshot/docs', 0o775, true);
+    file_put_contents($fleetRoot . '/theme-unshot/capell.json', json_encode([
+        'kind' => 'theme',
+        'themeKey' => 'unshot',
+    ]));
+    file_put_contents($fleetRoot . '/theme-unshot/docs/screenshots.json', json_encode([
+        'entries' => [],
+        'notCaptured' => [[
+            'id' => 'unshot-homepage',
+            'reason' => 'The authentic demo surface is unavailable.',
+        ]],
+    ]));
+
+    $check = foundationThemeHealthCheck($fleetRoot . '/theme-foundation');
+
+    expect($check->themesMissingScreenshots())->not->toContain('theme-unshot')
+        ->and($check->fleetScreenshotFreshnessCheck()->passed)->toBeTrue();
+
+    foundationThemeDeleteDirectory(dirname($fleetRoot));
+});
+
 function foundationThemeHealthManifestPath(): string
 {
     return sys_get_temp_dir() . '/capell-theme-foundation-health-' . getmypid() . '/manifest.json';

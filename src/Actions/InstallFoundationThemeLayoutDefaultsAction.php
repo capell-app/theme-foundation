@@ -9,6 +9,7 @@ use Capell\Core\Enums\LayoutEnum;
 use Capell\Core\Enums\LayoutGroupEnum;
 use Capell\Core\Models\Layout;
 use Capell\Core\Support\Creator\LayoutCreator;
+use Capell\FoundationTheme\Support\AuthMenuWidget;
 use Capell\LayoutBuilder\Actions\ApplyLayoutSidebarWidgetContributionsAction;
 use Capell\LayoutBuilder\Support\Creator\WidgetCreator;
 use Capell\LayoutBuilder\Support\LayoutModelRegistrar;
@@ -63,7 +64,7 @@ final class InstallFoundationThemeLayoutDefaultsAction
             if ($hadContainers && $existedBeforeInstall && ! $force) {
                 $layout->forceFill(['containers' => $existingContainers])->save();
 
-                if ($this->ensurePageContentWidget($layout)) {
+                if ($this->ensureLayoutRequirements($layout)) {
                     $result['updated']++;
                 } else {
                     $result['skipped']++;
@@ -81,7 +82,7 @@ final class InstallFoundationThemeLayoutDefaultsAction
             $result[$existedBeforeInstall ? 'updated' : 'created']++;
         }
 
-        $result['updated'] += $this->ensureAdditionalPageLayoutsHavePageContent(array_keys($this->layoutDefaults()));
+        $result['updated'] += $this->ensureAdditionalPageLayoutsMeetRequirements(array_keys($this->layoutDefaults()));
 
         return $result;
     }
@@ -94,7 +95,7 @@ final class InstallFoundationThemeLayoutDefaultsAction
     /**
      * @param  list<string>  $managedLayoutKeys
      */
-    private function ensureAdditionalPageLayoutsHavePageContent(array $managedLayoutKeys): int
+    private function ensureAdditionalPageLayoutsMeetRequirements(array $managedLayoutKeys): int
     {
         return Layout::query()
             ->whereNotIn('key', $managedLayoutKeys)
@@ -103,8 +104,15 @@ final class InstallFoundationThemeLayoutDefaultsAction
                     ->orWhere('group', '!=', LayoutGroupEnum::System->value);
             })
             ->get()
-            ->filter(fn (Layout $layout): bool => $this->ensurePageContentWidget($layout))
+            ->filter(fn (Layout $layout): bool => $this->ensureLayoutRequirements($layout))
             ->count();
+    }
+
+    private function ensureLayoutRequirements(Layout $layout): bool
+    {
+        $pageContentChanged = $this->ensurePageContentWidget($layout);
+
+        return $this->ensureHeaderAuthMenu($layout) || $pageContentChanged;
     }
 
     private function ensurePageContentWidget(Layout $layout): bool
@@ -141,6 +149,73 @@ final class InstallFoundationThemeLayoutDefaultsAction
         ]);
 
         return true;
+    }
+
+    private function ensureHeaderAuthMenu(Layout $layout): bool
+    {
+        $containers = is_array($layout->containers) ? $layout->containers : [];
+        $headerKey = $this->headerContainerKey($containers);
+
+        if ($headerKey === null) {
+            $headerKey = array_key_exists('header', $containers) ? 'auth-menu' : 'header';
+            $containers[$headerKey] = $this->headerContainer();
+            $layout->update(['containers' => $containers]);
+
+            return true;
+        }
+
+        $header = $containers[$headerKey];
+        if (! is_array($header)) {
+            return false;
+        }
+
+        $widgets = is_array($header['widgets'] ?? null) ? $header['widgets'] : [];
+        if ($this->hasHeaderAuthMenu($widgets)) {
+            return false;
+        }
+
+        $header['widgets'] = [...$widgets, AuthMenuWidget::block()];
+        $containers[$headerKey] = $header;
+        $layout->update(['containers' => $containers]);
+
+        return true;
+    }
+
+    /**
+     * @param  array<string, mixed>  $containers
+     */
+    private function headerContainerKey(array $containers): ?string
+    {
+        foreach ($containers as $key => $container) {
+            if (! is_string($key) || ! is_array($container)) {
+                continue;
+            }
+
+            if (($container['meta']['area'] ?? null) === 'header') {
+                return $key;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param  array<int, mixed>  $widgets
+     */
+    private function hasHeaderAuthMenu(array $widgets): bool
+    {
+        foreach ($widgets as $widget) {
+            if (! is_array($widget)) {
+                continue;
+            }
+
+            if (($widget['type'] ?? null) === AuthMenuWidget::KEY
+                && data_get($widget, 'data.__capell.instance_id') === AuthMenuWidget::INSTANCE_ID) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -232,11 +307,13 @@ final class InstallFoundationThemeLayoutDefaultsAction
     {
         return [
             LayoutEnum::Home->value => [
+                'header' => $this->headerContainer(),
                 'main' => $this->mainContainer([
                     ['widget_key' => 'page-content'],
                 ], 12),
             ],
             LayoutEnum::Default->value => [
+                'header' => $this->headerContainer(),
                 'main' => $this->mainContainer([
                     ['widget_key' => 'breadcrumbs'],
                     ['widget_key' => 'page-content'],
@@ -251,7 +328,23 @@ final class InstallFoundationThemeLayoutDefaultsAction
     }
 
     /**
-     * @param  array<int, array<string, string>>  $widgets
+     * @return array<string, mixed>
+     */
+    private function headerContainer(): array
+    {
+        return [
+            'meta' => [
+                'area' => 'header',
+                'alignment' => 'end',
+                'colspan' => 12,
+                'html_class' => 'ml-auto flex w-auto items-center',
+            ],
+            'widgets' => [AuthMenuWidget::block()],
+        ];
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $widgets
      * @return array<string, mixed>
      */
     private function sidebarContainer(array $widgets): array
@@ -270,7 +363,7 @@ final class InstallFoundationThemeLayoutDefaultsAction
     }
 
     /**
-     * @param  array<int, array<string, string>>  $widgets
+     * @param  array<int, array<string, mixed>>  $widgets
      * @return array<string, mixed>
      */
     private function mainContainer(array $widgets, int $colspan = 9): array

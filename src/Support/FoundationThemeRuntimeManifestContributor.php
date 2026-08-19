@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Capell\FoundationTheme\Support;
 
 use Capell\Core\Contracts\Pageable;
+use Capell\Core\Models\Layout;
 use Capell\Core\Models\Site;
 use Capell\Frontend\Contracts\FrontendContextReader;
 use Capell\Frontend\Contracts\FrontendRuntimeManifestContributor;
@@ -41,5 +42,34 @@ final class FoundationThemeRuntimeManifestContributor implements FrontendRuntime
 
             $page->loadMissing($relations);
         }
+
+        if ($this->usesAuthMenu($context->layout())) {
+            $manifest->modules['theme-foundation-runtime'] = true;
+        }
+    }
+
+    private function usesAuthMenu(?Layout $layout): bool
+    {
+        return $this->containsAuthMenu($layout?->containers);
+    }
+
+    private function containsAuthMenu(mixed $value): bool
+    {
+        if (! is_array($value)) {
+            return false;
+        }
+
+        if (($value['type'] ?? null) === AuthMenuWidget::KEY
+            && data_get($value, 'data.__capell.instance_id') === AuthMenuWidget::INSTANCE_ID) {
+            return true;
+        }
+
+        foreach ($value as $child) {
+            if ($this->containsAuthMenu($child)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

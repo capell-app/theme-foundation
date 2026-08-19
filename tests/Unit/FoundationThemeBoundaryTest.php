@@ -30,6 +30,7 @@ it('owns the foundation frontend javascript runtime', function (): void {
 
     expect($entrypoint)->not->toContain('@ryangjchandler/alpine-tooltip')
         ->and($entrypoint)->not->toContain('@awcodes/alpine-floating-ui')
+        ->and($entrypoint)->toContain("import('./widgets/widget/auth-menu-refresh')")
         ->and($entrypoint)->toContain("import('./utilities/lightbox')")
         ->and($entrypoint)->not->toContain("import './utilities/lightbox'")
         ->and($config)->not->toContain('@ryangjchandler/alpine-tooltip')
@@ -169,6 +170,7 @@ it('publishes the foundation frontend runtime build during setup', function (): 
         ->and(strlen($compressedRuntime))->toBeLessThanOrEqual(5_000)
         ->and(count($javascriptAssets))->toBeGreaterThan(1)
         ->and($runtimeEntry['dynamicImports'] ?? [])->not->toBeEmpty()
+        ->toContain('resources/js/widgets/widget/auth-menu-refresh.js')
         ->and($compiledRuntime)->toBeString()
         ->toContain('tabs-change', 'alpine:init', '_x_dataStack')
         ->and($action)->toContain('vendor:publish')
@@ -184,12 +186,14 @@ it('owns the default body content and layout component files', function (): void
         ->and(file_exists(dirname(__DIR__, 2) . '/resources/views/components/content.blade.php'))->toBeTrue()
         ->and(file_exists(dirname(__DIR__, 2) . '/resources/views/components/layout/index.blade.php'))->toBeTrue()
         ->and($layout)->toContain('$themeMeta = is_array($theme?->meta ?? null) ? $theme->meta : []')
+        ->and($layout)->toContain("\$themeData = ['meta' => \$themeMeta];")
         ->and($layout)->not->toContain('$theme[\'meta\']')
         ->and($layout)->toContain('$layoutMeta = is_array($layout?->meta ?? null) ? $layout->meta : []')
         ->and($layout)->toContain("\$header ??= array_key_exists('header', \$layoutMeta) ? \$layoutMeta['header'] : null")
         ->and($layout)->toContain("\$footer ??= array_key_exists('footer', \$layoutMeta) ? \$layoutMeta['footer'] : null")
         ->and($layout)->toContain('<x-capell::header.index />')
         ->and($layout)->toContain('<x-capell::layout.main')
+        ->and($layout)->toContain(':theme="$themeData"')
         ->and($layout)->toContain("\$themeMeta['footer_file'] ?? 'capell::footer'");
 
     expect($layout)
@@ -340,7 +344,8 @@ it('ships a stable premium default footer shell', function (): void {
         ->toContain('capell-product-footer__inner')
         ->toContain("resolveFooterColor('footer_background_color', '#edf2ee')")
         ->toContain("resolveFooterColor('footer_dark_background_color', '#0b1716')")
-        ->toContain("__('capell-theme-foundation::generic.footer')");
+        ->toContain("__('capell-theme-foundation::generic.footer')")
+        ->toContain('<x-capell::layout.area area="footer" />');
 });
 
 it('uses complete shared navigation disclosure below the wide desktop breakpoint', function (): void {
@@ -363,6 +368,15 @@ it('uses complete shared navigation disclosure below the wide desktop breakpoint
         ->and($chromeStyles)->toMatch('/\.theme-chrome-nav__links\s*{[^}]*white-space: nowrap;/s')
         ->and($chromeStyles)->toMatch('/\.theme-chrome-nav__mobile:not\(\[open\]\) \.theme-chrome-nav__mobile-panel\s*{\s*display: none;/')
         ->and($chromeStyles)->toContain('@media (prefers-reduced-motion: reduce)');
+});
+
+it('keeps the shared chrome blur desktop-only with an opaque narrow-screen fallback', function (): void {
+    $chromeStyles = file_get_contents(dirname(__DIR__, 2) . '/resources/css/theme/chrome.css');
+
+    expect($chromeStyles)
+        ->toMatch('/@supports \(backdrop-filter: blur\(1rem\)\)\s*\{[^}]*\.theme-chrome-nav\s*\{[^}]*backdrop-filter:\s*blur\(8px\);/s')
+        ->not->toContain('saturate(')
+        ->toMatch('/@media \(max-width: 767px\)\s*\{\s*\.theme-chrome-nav\s*\{\s*backdrop-filter:\s*none;\s*background:\s*var\(--theme-surface, #fcfffb\);/s');
 });
 
 it('renders shared navigation disclosure for menu items or a complete cta', function (): void {

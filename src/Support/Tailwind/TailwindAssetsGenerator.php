@@ -38,6 +38,10 @@ use Throwable;
  */
 class TailwindAssetsGenerator extends FrontendTailwindAssetsGenerator
 {
+    public const string SPLIT_GENERATION_MARKER = 'capell-theme-foundation: split-theme-css=split';
+
+    public const string COMBINED_GENERATION_MARKER = 'capell-theme-foundation: split-theme-css=combined';
+
     public function __construct(private readonly Filesystem $files) {}
 
     /** Build and return the aggregated registry without writing files, using the default theme for colors. */
@@ -77,7 +81,12 @@ class TailwindAssetsGenerator extends FrontendTailwindAssetsGenerator
     {
         $registry = $this->collectWithTarget($targetPath);
 
-        $content = $this->renderCss($registry);
+        $content = sprintf(
+            '/* %s */%s%s',
+            $this->shouldSplitThemeCss() ? self::SPLIT_GENERATION_MARKER : self::COMBINED_GENERATION_MARKER,
+            PHP_EOL,
+            $this->renderCss($registry),
+        );
 
         $this->files->ensureDirectoryExists(dirname($targetPath));
         $this->files->put($targetPath, $content);
@@ -104,7 +113,10 @@ class TailwindAssetsGenerator extends FrontendTailwindAssetsGenerator
             }
 
             $this->files->ensureDirectoryExists(dirname($targetPath));
-            $this->files->put($targetPath, $this->renderCss($registry));
+            // The shared entrypoint owns Tailwind's framework base/theme/
+            // utilities defaults. Re-importing the framework here duplicates
+            // that output for every active theme and can change the cascade.
+            $this->files->put($targetPath, $this->renderCss($registry, includeTailwindCore: false));
 
             $paths[] = $targetPath;
         }
@@ -293,9 +305,9 @@ class TailwindAssetsGenerator extends FrontendTailwindAssetsGenerator
         }
     }
 
-    private function renderCss(TailwindAssetsRegistry $registry): string
+    private function renderCss(TailwindAssetsRegistry $registry, bool $includeTailwindCore = true): string
     {
-        $lines = collect(['@import "tailwindcss";']);
+        $lines = collect($includeTailwindCore ? ['@import "tailwindcss";'] : []);
 
         $lines = $lines->merge($registry->imports()->map(fn (string $import): string => sprintf('@import "%s";', $import)));
 

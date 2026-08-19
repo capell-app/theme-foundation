@@ -13,34 +13,34 @@
 
 <x-capell::app.head.tokens />
 
-@if ($usesLivewire)
-    <script>
-        (function () {
-            function setupTheme() {
-                const isDarkMode = localStorage.theme === 'dark';
+<script>
+    (function () {
+        function setupTheme() {
+            const isDarkMode = localStorage.theme === 'dark';
 
-                document.documentElement.classList.toggle('dark', isDarkMode);
-            }
+            document.documentElement.classList.toggle('dark', isDarkMode);
+        }
 
-            function updateHeaderSticky() {
-                document.body.classList.toggle('header-sticky', window.scrollY > 0);
-            }
+        function updateHeaderSticky() {
+            document.body.classList.toggle('header-sticky', window.scrollY > 0);
+        }
 
-            function handleHeaderAndTheme() {
-                setupTheme();
-
-                const header = document.getElementById('header');
-                if (!header) return;
-                updateHeaderSticky();
-            }
-
+        function handleHeaderAndTheme() {
             setupTheme();
 
+            const header = document.getElementById('header');
+            if (!header) return;
+            updateHeaderSticky();
+        }
+
+        setupTheme();
+
+        @if ($usesLivewire)
             window.removeEventListener('scroll', updateHeaderSticky);
-            window.addEventListener('scroll', updateHeaderSticky);
+            window.addEventListener('scroll', updateHeaderSticky, { passive: true });
 
             document.addEventListener('livewire:load', updateHeaderSticky);
             document.addEventListener('livewire:navigated', handleHeaderAndTheme);
-        })();
-    </script>
-@endif
+        @endif
+    })();
+</script>

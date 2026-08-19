@@ -11,6 +11,10 @@
 >
     @foreach ($links as $link)
         @php
+            // Author-supplied. Blade escaping does not neutralise a
+            // `javascript:` scheme in href context, so allowlist the scheme
+            // before rendering and drop the link entirely when it fails.
+            $safeUrl = $link['safe_url'] ?? null;
             $icon = null;
             $label = $link['title'] ?? $link['type'] ?? parse_url((string) ($link['url'] ?? ''), PHP_URL_HOST) ?? __('capell-theme-foundation::generic.social_link');
             $iconClass = 'shrink-0 grow-0 opacity-50 group-hover/item:opacity-100' . match ($size) {
@@ -31,9 +35,11 @@
             }
         @endphp
 
+        @continue($safeUrl === null)
+
         <a
             class="hover:text-primary focus:text-primary group/item flex items-center gap-x-1"
-            href="{{ $link['url'] }}"
+            href="{{ $safeUrl }}"
             aria-label="{{ $label }}"
             target="_blank"
             rel="nofollow noopener"

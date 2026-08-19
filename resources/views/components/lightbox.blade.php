@@ -15,6 +15,7 @@
         aria-modal="true"
         aria-label="{{ __('capell-frontend::generic.image_gallery') }}"
         tabindex="-1"
+        @keydown.tab="trapFocus($event)"
         @click="
             if ($event.target == $el) {
                 close();

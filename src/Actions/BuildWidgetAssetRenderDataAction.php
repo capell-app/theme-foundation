@@ -11,6 +11,7 @@ use Capell\Core\Data\ImageSourceData;
 use Capell\Core\Enums\ContentStructure;
 use Capell\Core\Enums\MediaCollectionEnum;
 use Capell\Core\Facades\CapellCore;
+use Capell\Core\Support\Security\PublicUrlSanitizer;
 use Capell\FoundationTheme\Data\WidgetAssetRenderData;
 use Capell\LayoutBuilder\Models\WidgetAsset;
 use Illuminate\Database\Eloquent\Model;
@@ -28,7 +29,7 @@ final class BuildWidgetAssetRenderDataAction
         $asset = $this->loadedRelation($widgetAsset, 'asset');
         $translation = $asset instanceof Model ? $this->loadedRelation($asset, 'translation') : null;
         $blueprint = $asset instanceof Model ? $this->loadedRelation($asset, 'blueprint') : null;
-        $meta = is_array(data_get($asset, 'meta')) ? data_get($asset, 'meta') : [];
+        $meta = $this->publicMeta($asset);
         $title = $this->stringValue($translation, 'title');
         $placementTitle = $this->metaString($widgetAsset, 'title') ?? $this->metaString($widgetAsset, 'caption');
         $placementContent = $this->metaString($widgetAsset, 'content');
@@ -166,6 +167,22 @@ final class BuildWidgetAssetRenderDataAction
         $value = $asset->getMeta($key);
 
         return is_string($value) && $value !== '' ? $value : null;
+    }
+
+    /** @return array<string, mixed> */
+    private function publicMeta(mixed $asset): array
+    {
+        $meta = is_array(data_get($asset, 'meta')) ? data_get($asset, 'meta') : [];
+
+        if (array_key_exists('link_url', $meta)) {
+            $meta['link_url'] = PublicUrlSanitizer::sanitize($meta['link_url']);
+        }
+
+        if (array_key_exists('cta_url', $meta)) {
+            $meta['cta_url'] = PublicUrlSanitizer::sanitize($meta['cta_url']) ?? '#';
+        }
+
+        return $meta;
     }
 
     /**

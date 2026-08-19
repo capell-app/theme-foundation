@@ -17,10 +17,53 @@ namespace Capell\FoundationTheme\Support\Editor;
  *
  * The default token set is exactly the six that ThemeTokenConsumptionTest
  * proves every theme consumes, so a theme adopting this schema stays within
- * the token-consumption contract by construction.
+ * the token-consumption contract by construction. Themes can opt into extra
+ * controls with withExtraTokens().
  */
 final class StandardThemeEditorSchema
 {
+    /**
+     * Broad motion-intensity values observed in existing theme presets.
+     *
+     * The Foundation settings surface intentionally only offers a smaller
+     * subset. These options are therefore exposed as Theme Studio controls for
+     * themes that opt in via withExtraTokens().
+     *
+     * @var list<string>
+     */
+    public const array MOTION_INTENSITY_OPTIONS = [
+        'none',
+        'minimal',
+        'subtle',
+        'energetic',
+        'expressive',
+        'lively',
+        'balanced',
+    ];
+
+    /**
+     * Media-treatment values already emitted by theme presets.
+     *
+     * @var list<string>
+     */
+    public const array MEDIA_TREATMENT_OPTIONS = [
+        'curation-feed',
+        'duotone',
+        'feature-slab',
+        'framed',
+        'illustrated',
+        'irregular-index',
+        'motion-preview',
+        'natural',
+        'photographic',
+        'quiet-image-grid',
+        'rounded-screenshot',
+        'score-media',
+        'standard',
+        'technical',
+        'thumbnail-grid',
+    ];
+
     /**
      * @return array{groups: array<string, list<string>>, tokens: array<string, array{options: list<string>}>}
      */
@@ -62,6 +105,27 @@ final class StandardThemeEditorSchema
         $schema['tokens'] = [...$schema['tokens'], ...$tokens];
 
         return $schema;
+    }
+
+    /**
+     * Shared extension for the missing Theme Studio controls currently present
+     * in theme presets (`motionIntensity`, `mediaTreatment`) but absent from the
+     * core schema.
+     *
+     * @return array{groups: array<string, list<string>>, tokens: array<string, array{options: list<string>}>}
+     */
+    public static function withMotionAndMediaControls(): array
+    {
+        return self::withExtraTokens(
+            groups: [
+                'motion' => ['motionIntensity'],
+                'media' => [...self::definition()['groups']['media'], 'mediaTreatment'],
+            ],
+            tokens: [
+                'motionIntensity' => ['options' => self::MOTION_INTENSITY_OPTIONS],
+                'mediaTreatment' => ['options' => self::MEDIA_TREATMENT_OPTIONS],
+            ],
+        );
     }
 
     /**

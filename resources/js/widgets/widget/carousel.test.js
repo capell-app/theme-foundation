@@ -46,8 +46,10 @@ vi.mock('swiper', () => {
 vi.mock('swiper/modules', () => {
     return {
         Autoplay: Symbol('Autoplay'),
+        A11y: Symbol('A11y'),
         EffectFade: Symbol('EffectFade'),
         Grid: Symbol('Grid'),
+        Keyboard: Symbol('Keyboard'),
         Mousewheel: Symbol('Mousewheel'),
         Navigation: Symbol('Navigation'),
         Pagination: Symbol('Pagination'),
@@ -91,6 +93,16 @@ function createCarouselMarkup(attributes = '') {
 describe('carousel runtime', () => {
     beforeEach(() => {
         document.body.innerHTML = ''
+        document.documentElement.dataset.carouselLabelCarousel = 'Carousel'
+        document.documentElement.dataset.carouselLabelGoToSlide =
+            'Go to slide :number'
+        document.documentElement.dataset.carouselLabelNextSlide = 'Next slide'
+        document.documentElement.dataset.carouselLabelPause = 'Pause carousel'
+        document.documentElement.dataset.carouselLabelPlay = 'Play carousel'
+        document.documentElement.dataset.carouselLabelPreviousSlide =
+            'Previous slide'
+        document.documentElement.dataset.carouselLabelSlide =
+            'Slide {{index}} of {{slidesLength}}'
         swiperInstances.length = 0
         intersectionObserverInstances.length = 0
         vi.clearAllMocks()
@@ -121,6 +133,45 @@ describe('carousel runtime', () => {
         expect(options.fadeEnabled).toBe(true)
         expect(options.interactionEnabled).toBe(true)
         expect(options.grabCursor).toBe(true)
+    })
+
+    it('does not enable autoplay when the visitor prefers reduced motion', () => {
+        const originalMatchMedia = window.matchMedia
+        window.matchMedia = vi.fn(() => ({ matches: true }))
+
+        try {
+            document.body.innerHTML = createCarouselMarkup(
+                'data-carousel-autoplay="1" data-carousel-id="reduced-motion-carousel"',
+            )
+
+            const swiperNode = document.querySelector('.swiper')
+            const options = parseCarouselOptions(swiperNode)
+
+            expect(options.autoplayRequested).toBe(true)
+            expect(options.autoplayEnabled).toBe(false)
+
+            const controls = resolveCarouselControls(swiperNode, options)
+            const settings = buildSwiperSettings(
+                swiperNode,
+                options,
+                controls,
+                new AbortController().signal,
+            )
+
+            expect(settings.autoplay).toBeUndefined()
+            expect(settings.modules.map(String)).not.toContain(
+                'Symbol(Autoplay)',
+            )
+
+            const swiper = initCarousel(swiperNode)
+
+            expect(swiper.settings.autoplay).toBeUndefined()
+            expect(
+                document.querySelector('[data-carousel-autoplay-toggle]'),
+            ).toBeNull()
+        } finally {
+            window.matchMedia = originalMatchMedia
+        }
     })
 
     it('passes container-based breakpoints through to Swiper', () => {
@@ -322,5 +373,73 @@ describe('carousel runtime', () => {
 
         abortController.abort()
         vi.useRealTimers()
+    })
+
+    it('uses localized A11y labels, keyboard navigation, and a pause control', () => {
+        document.documentElement.dataset.carouselLabelGoToSlide =
+            'Aller "à" la diapositive :number & confirmer'
+        document.documentElement.dataset.carouselLabelPause =
+            'Mettre le carrousel en pause'
+        document.documentElement.dataset.carouselLabelPlay = 'Lire le carrousel'
+        document.body.innerHTML = createCarouselMarkup(
+            [
+                'data-carousel-id="accessible-carousel"',
+                'data-carousel-autoplay="1"',
+                'data-carousel-pagination="1"',
+            ].join(' '),
+        )
+
+        const swiperNode = document.querySelector('.swiper')
+        const swiperInstance = initCarousel(swiperNode)
+        const toggle = document.querySelector('[data-carousel-autoplay-toggle]')
+
+        expect(swiperInstance.settings.modules).not.toHaveLength(0)
+        expect(swiperInstance.settings.keyboard).toEqual({
+            enabled: true,
+            onlyInViewport: true,
+            pageUpDown: false,
+        })
+        expect(swiperInstance.settings.a11y).toMatchObject({
+            containerMessage: 'Carousel',
+            nextSlideMessage: 'Next slide',
+            prevSlideMessage: 'Previous slide',
+            slideLabelMessage: 'Slide {{index}} of {{slidesLength}}',
+        })
+        expect(
+            swiperInstance.settings.pagination.renderBullet(1, 'bullet'),
+        ).toContain(
+            'aria-label="Aller &quot;à&quot; la diapositive 2 &amp; confirmer"',
+        )
+        expect(toggle).not.toBeNull()
+        expect(toggle.getAttribute('aria-label')).toBe(
+            'Mettre le carrousel en pause',
+        )
+
+        toggle.click()
+
+        expect(swiperNode.dataset.carouselAutoplayPaused).toBe('true')
+        expect(swiperInstance.autoplay.stop).toHaveBeenCalled()
+        expect(toggle.getAttribute('aria-label')).toBe('Lire le carrousel')
+    })
+
+    it('keeps a user-paused carousel paused when Livewire re-initializes it', () => {
+        document.body.innerHTML = createCarouselMarkup(
+            [
+                'data-carousel-id="persistent-pause-carousel"',
+                'data-carousel-autoplay="1"',
+            ].join(' '),
+        )
+
+        const swiperNode = document.querySelector('.swiper')
+        initCarousel(swiperNode)
+
+        document.querySelector('[data-carousel-autoplay-toggle]').click()
+        destroyCarousel(swiperNode)
+        const reinitializedSwiper = initCarousel(swiperNode)
+        const toggle = document.querySelector('[data-carousel-autoplay-toggle]')
+
+        expect(swiperNode.dataset.carouselAutoplayPaused).toBe('true')
+        expect(toggle.getAttribute('aria-label')).toBe('Play carousel')
+        expect(reinitializedSwiper.autoplay.stop).toHaveBeenCalled()
     })
 })

@@ -2,6 +2,7 @@
     'relatedSites' => collect(),
 ])
 @php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
     use Capell\FoundationTheme\Actions\ResolveSafeCssColorTokenAction;
 @endphp
 
@@ -15,10 +16,18 @@
                     $relatedSitePrimaryColor = filled($relatedSite['primaryColor'] ?? null)
                         ? ResolveSafeCssColorTokenAction::run($relatedSite['primaryColor'], 'transparent')
                         : null;
+
+                    // The colour above was already sanitised; the URL was not,
+                    // and Blade escaping does not neutralise a `javascript:`
+                    // scheme in href context.
+                    $relatedSiteUrl = PublicUrlSanitizer::sanitize($relatedSite['url'] ?? null);
                 @endphp
+
+                @continue($relatedSiteUrl === null)
+
                 <a
                     class="group grid gap-2 rounded-lg border border-[var(--border-color-footer)] bg-[var(--bg-color-footer-panel)] p-4 text-[var(--color-footer)] transition-colors hover:border-[var(--color-footer-muted)] focus-visible:border-[var(--color-footer-muted)] focus-visible:ring-2 focus-visible:ring-[var(--color-footer-muted)] focus-visible:outline-none"
-                    href="{{ $relatedSite['url'] }}"
+                    href="{{ $relatedSiteUrl }}"
                     @wireNavigate
                 >
                     <span

@@ -104,7 +104,7 @@ it('resolves every declared section variant to a real Blade view file', function
     expect($checked)->toBeGreaterThan(0);
 });
 
-it('ships every Foundation hero variant with stable media and premium interaction states', function (): void {
+it('ships every Foundation hero variant as a subordinate heading with stable media and premium interaction states', function (): void {
     $themeRoot = dirname(__DIR__, 2);
     $heroViews = [
         'hero.blade.php',
@@ -117,7 +117,8 @@ it('ships every Foundation hero variant with stable media and premium interactio
         $source = file_get_contents($themeRoot . '/resources/views/theme/sections/' . $heroView);
 
         expect($source)
-            ->toContain('<h1')
+            ->toContain('<h2')
+            ->not->toContain('<h1')
             ->toContain('width="')
             ->toContain('height="')
             ->toContain('loading="eager"')

@@ -5,6 +5,7 @@
     $fallbackMessage = (string) ($section->fallback_message ?? '');
     $fallbackLabel = (string) ($section->fallback_label ?? '');
     $fallbackUrl = (string) ($section->fallback_url ?? '');
+    $formDeliveryFragmentUrl ??= null;
 @endphp
 
 {{--
@@ -45,107 +46,25 @@
                 :fallback-url="$fallbackUrl"
                 class="grid gap-5"
             />
-        @else
-            <form
-                method="post"
-                action="{{ $section->action ?? '' }}"
-                class="grid gap-5"
-            >
-                @foreach ($formFields as $field)
-                    @php
-                    $fieldType = $field['type'] ?? 'text';
-                    $fieldName = $field['name'] ?? 'field';
-                    $fieldId = 'theme-form-' . $fieldName;
-                    $fieldLabel = $field['label'] ?? $fieldName;
-                    $fieldRequired = ! empty($field['required']);
-                @endphp
-
-                    <div class="grid gap-2">
-                        @if ($fieldType !== 'checkbox')
-                            <label
-                                for="{{ $fieldId }}"
-                                class="text-sm font-semibold text-slate-800"
-                            >
-                                {{ $fieldLabel }}
-                                @if ($fieldRequired)
-                                    <span aria-hidden="true">*</span>
-                                @endif
-                            </label>
-                        @endif
-
-                        @switch ($fieldType)
-                            @case ('textarea')
-                                <textarea
-                                    id="{{ $fieldId }}"
-                                    name="{{ $fieldName }}"
-                                    rows="5"
-                                    @if ($fieldRequired) required @endif
-                                    class="rounded-[var(--theme-radius-value)] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-950 focus:border-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:outline-none"
-                                ></textarea>
-                                @break
-                            @case ('select')
-                                <select
-                                    id="{{ $fieldId }}"
-                                    name="{{ $fieldName }}"
-                                    @if ($fieldRequired) required @endif
-                                    class="rounded-[var(--theme-radius-value)] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-950 focus:border-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:outline-none"
-                                >
-                                    @foreach (($field['options'] ?? []) as $option)
-                                        <option
-                                            value="{{ $option['value'] ?? $option }}"
-                                        >
-                                            {{ $option['label'] ?? $option }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @break
-                            @case ('checkbox')
-                                <label
-                                    for="{{ $fieldId }}"
-                                    class="flex items-center gap-2 text-sm text-slate-800"
-                                >
-                                    <input
-                                        type="checkbox"
-                                        id="{{ $fieldId }}"
-                                        name="{{ $fieldName }}"
-                                        value="1"
-                                        @if ($fieldRequired) required @endif
-                                        class="h-4 w-4 rounded border-slate-300 text-[var(--theme-primary)] focus:ring-[var(--theme-primary)]"
-                                    />
-                                    {{ $fieldLabel }}
-                                    @if ($fieldRequired)
-                                        <span aria-hidden="true">*</span>
-                                    @endif
-                                </label>
-                                @break
-                            @case ('email')
-                                <input
-                                    type="email"
-                                    id="{{ $fieldId }}"
-                                    name="{{ $fieldName }}"
-                                    @if ($fieldRequired) required @endif
-                                    class="rounded-[var(--theme-radius-value)] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-950 focus:border-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:outline-none"
-                                />
-                                @break
-                            @default
-                                <input
-                                    type="text"
-                                    id="{{ $fieldId }}"
-                                    name="{{ $fieldName }}"
-                                    @if ($fieldRequired) required @endif
-                                    class="rounded-[var(--theme-radius-value)] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-950 focus:border-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:outline-none"
-                                />
-                        @endswitch
-                    </div>
-                @endforeach
-
-                <button
-                    type="submit"
-                    class="w-fit rounded-full bg-[var(--theme-primary)] px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90"
-                >
-                    {{ $section->submitLabel ?? __('capell-theme-foundation::generic.form_submit') }}
-                </button>
-            </form>
+        @elseif ($formDeliveryFragmentUrl)
+            {{--
+                CAP-0233: a real `<form>@csrf</form>` here would be a
+                literal, session-bound CSRF token baked into HTML that the
+                shared full-page HTML cache can serve to every later
+                visitor. This section renders synchronously as part of the
+                normal page response and has no delivery-mode veto, so the
+                form is instead delivered dynamically: this placeholder is
+                the same contract layout-builder's own generic widget
+                wrapper emits for a lazy fragment, and the real form
+                (including a fresh, per-visitor @csrf token) is served by
+                FoundationSectionPublicLayoutWidgetPayloadContributor when
+                the browser fetches the fragment URL.
+            --}}
+            <div
+                data-deferred-fragment
+                data-deferred-fragment-url="{{ $formDeliveryFragmentUrl }}"
+                class="deferred-fragment"
+            ></div>
         @endif
     </div>
 </section>

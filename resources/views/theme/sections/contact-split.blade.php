@@ -2,6 +2,7 @@
     $addressLines = is_array($section->address_lines ?? null) ? $section->address_lines : [];
     $formHandle = $section->form_handle ?? null;
     $formInstanceId = (string) ($section->form_instance_id ?? 'theme-contact-form');
+    $formDeliveryFragmentUrl ??= null;
 @endphp
 
 <section
@@ -14,11 +15,11 @@
             <p class="mb-3 text-xs font-semibold tracking-[0.16em] text-[var(--theme-primary)] uppercase">
                 {{ __('capell-theme-foundation::generic.contact') }}
             </p>
-            <h1
+        <h2
                 class="text-4xl leading-tight font-[var(--theme-heading-font)] font-semibold text-slate-950 sm:text-5xl"
             >
                 {{ $section->heading ?? __('capell-theme-foundation::generic.contact') }}
-            </h1>
+        </h2>
             @if (! empty($section->summary))
                 <p class="mt-4 max-w-2xl text-base leading-7 text-slate-600">{{ $section->summary }}</p>
             @endif
@@ -32,54 +33,18 @@
                         :fallback-label="$section->fallback_label ?? null"
                         :fallback-url="$section->fallback_url ?? null"
                     />
-                @else
-                    <form
-                        class="grid gap-4"
-                        method="post"
-                        action="{{ $section->action ?? '' }}"
-                    >
-                        <label
-                            class="grid gap-2 text-sm font-semibold text-slate-800"
-                        >
-                            {{ __('capell-theme-foundation::generic.name') }}
-                            <input
-                                class="rounded-[var(--theme-radius-value)] border border-slate-300 bg-white px-4 py-3"
-                                name="name"
-                                type="text"
-                                autocomplete="name"
-                                required
-                            />
-                        </label>
-                        <label
-                            class="grid gap-2 text-sm font-semibold text-slate-800"
-                        >
-                            {{ __('capell-theme-foundation::generic.email') }}
-                            <input
-                                class="rounded-[var(--theme-radius-value)] border border-slate-300 bg-white px-4 py-3"
-                                name="email"
-                                type="email"
-                                autocomplete="email"
-                                required
-                            />
-                        </label>
-                        <label
-                            class="grid gap-2 text-sm font-semibold text-slate-800"
-                        >
-                            {{ __('capell-theme-foundation::generic.message') }}
-                            <textarea
-                                class="rounded-[var(--theme-radius-value)] border border-slate-300 bg-white px-4 py-3"
-                                name="message"
-                                rows="5"
-                                required
-                            ></textarea>
-                        </label>
-                        <button
-                            class="w-fit rounded-full bg-[var(--theme-primary)] px-6 py-3 text-sm font-semibold text-white"
-                            type="submit"
-                        >
-                            {{ $section->submit_label ?? __('capell-theme-foundation::generic.form_submit') }}
-                        </button>
-                    </form>
+                @elseif ($formDeliveryFragmentUrl)
+                    {{--
+                        CAP-0233: see theme.sections.form.blade.php for why
+                        the real @csrf-bearing <form> is delivered via this
+                        deferred-fragment placeholder instead of rendering
+                        synchronously into the cached page response.
+                    --}}
+                    <div
+                        data-deferred-fragment
+                        data-deferred-fragment-url="{{ $formDeliveryFragmentUrl }}"
+                        class="deferred-fragment"
+                    ></div>
                 @endif
             </div>
         </div>

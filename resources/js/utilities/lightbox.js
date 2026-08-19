@@ -19,7 +19,8 @@
  * Opening a lightbox dispatches a `disable-carousel` event at every
  * `.swiper` node so background carousels stop autoplaying underneath the
  * dialog; closing dispatches `enable-carousel` to resume them. Focus is
- * restored to the triggering element on close.
+ * trapped inside the dialog while it is open and restored to the triggering
+ * element on close.
  *
  * The Alpine component (`lightbox`) exposes `load(group, index)`,
  * `close()`, `loadPrevious()`, `loadNext()`, a `lightbox(event)` handler for
@@ -145,6 +146,96 @@
                 this.$nextTick(() => {
                     this.$refs.lightboxDialog?.focus()
                 })
+            },
+
+            focusableElements() {
+                const dialog = this.$refs.lightboxDialog
+
+                if (!(dialog instanceof HTMLElement)) {
+                    return []
+                }
+
+                const selector = [
+                    'a[href]',
+                    'area[href]',
+                    'button:not([disabled])',
+                    'input:not([disabled]):not([type="hidden"])',
+                    'select:not([disabled])',
+                    'textarea:not([disabled])',
+                    'video[controls]',
+                    'audio[controls]',
+                    'iframe',
+                    'object',
+                    'embed',
+                    '[contenteditable="true"]',
+                    '[tabindex]:not([tabindex="-1"])',
+                ].join(',')
+
+                return [...dialog.querySelectorAll(selector)].filter(
+                    (element) => {
+                        if (!(element instanceof HTMLElement)) {
+                            return false
+                        }
+
+                        for (
+                            let current = element;
+                            current && current !== dialog;
+                            current = current.parentElement
+                        ) {
+                            const style = window.getComputedStyle(current)
+
+                            if (
+                                current.hidden ||
+                                style.display === 'none' ||
+                                style.visibility === 'hidden'
+                            ) {
+                                return false
+                            }
+                        }
+
+                        return true
+                    },
+                )
+            },
+
+            trapFocus(event) {
+                if (event.key !== 'Tab') {
+                    return
+                }
+
+                const dialog = this.$refs.lightboxDialog
+
+                if (!(dialog instanceof HTMLElement)) {
+                    return
+                }
+
+                const focusable = this.focusableElements()
+                const activeElement = document.activeElement
+
+                if (focusable.length === 0) {
+                    event.preventDefault()
+                    dialog.focus()
+
+                    return
+                }
+
+                const first = focusable[0]
+                const last = focusable[focusable.length - 1]
+                const focusOutsideDialog = !dialog.contains(activeElement)
+                const tabbingBackward = event.shiftKey
+                const tabbingForward = !tabbingBackward
+
+                if (
+                    focusOutsideDialog ||
+                    (tabbingBackward &&
+                        (activeElement === first ||
+                            activeElement === dialog)) ||
+                    (tabbingForward &&
+                        (activeElement === last || activeElement === dialog))
+                ) {
+                    event.preventDefault()
+                    ;(tabbingBackward ? last : first).focus()
+                }
             },
 
             close: function () {

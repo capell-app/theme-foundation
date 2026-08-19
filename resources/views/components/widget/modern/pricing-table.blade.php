@@ -8,7 +8,6 @@
     'loop',
     'widget',
 ])
-
 <x-capell-theme-foundation::widget.wrapper
     class="capell-modern-pricing-table widget-ap-pricing-table"
     :$container
@@ -70,7 +69,9 @@
                     $priceAnnual = $asset?->getMeta('price_annual', $price) ?? $price;
                     $featured = (bool) ($asset?->getMeta('featured', false) ?? false);
                     $ctaLabel = $asset?->getMeta('cta_label', 'Get Started') ?? 'Get Started';
-                    $ctaUrl = $asset?->getMeta('cta_url', '#') ?? '#';
+                    // Author-supplied. Blade escaping does not neutralise a `javascript:`
+                    // scheme in href context; '#' is an allowed fallback.
+                    $ctaUrl = $assetRenderData->meta['cta_url'] ?? '#';
                     $features = $asset?->getMeta('features', []) ?? [];
                 @endphp
 

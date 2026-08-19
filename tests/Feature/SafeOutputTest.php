@@ -53,6 +53,18 @@ test('layout native foundation sections expose stable buyer journey anchors', fu
         ->and($sectionRenderer)->toContain('id="{{ $sectionAnchor }}"');
 });
 
+test('the outer Foundation section forwards cache-unsafe form delivery URLs to its selected section view', function (): void {
+    $sectionRenderer = file_get_contents(
+        dirname(__DIR__, 2) . '/resources/views/components/widget/foundation-section.blade.php',
+    );
+
+    if (! is_string($sectionRenderer)) {
+        throw new RuntimeException('Unable to read the Foundation section component view.');
+    }
+
+    expect(substr_count($sectionRenderer, "'formDeliveryFragmentUrl' => \$formDeliveryFragmentUrl"))->toBe(2);
+});
+
 test('the public skip link keeps an explicit high contrast focus indicator', function (): void {
     $layout = file_get_contents(
         dirname(__DIR__, 2) . '/resources/views/components/layout/index.blade.php',

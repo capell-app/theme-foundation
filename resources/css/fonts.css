@@ -1,0 +1,144 @@
+/*
+ * Foundation's local font bundle.
+ *
+ * These files are converted from the official Google Fonts source files and
+ * remain under the SIL Open Font License. Keep this bundle local: themes must
+ * never depend on a third-party font request during public rendering.
+ */
+
+@font-face {
+    font-display: swap;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 100 900;
+    src: url('/vendor/capell-theme-foundation/fonts/Inter-Variable.woff2')
+        format('woff2');
+}
+
+@font-face {
+    font-display: swap;
+    font-family: 'Sora';
+    font-style: normal;
+    font-weight: 100 800;
+    src: url('/vendor/capell-theme-foundation/fonts/Sora-Variable.woff2')
+        format('woff2');
+}
+
+@font-face {
+    font-display: swap;
+    font-family: 'Playfair Display';
+    font-style: normal;
+    font-weight: 400 900;
+    src: url('/vendor/capell-theme-foundation/fonts/PlayfairDisplay-Variable.woff2')
+        format('woff2');
+}
+
+@font-face {
+    font-display: swap;
+    font-family: 'Newsreader';
+    font-style: normal;
+    font-weight: 200 800;
+    src: url('/vendor/capell-theme-foundation/fonts/Newsreader-Variable.woff2')
+        format('woff2');
+}
+
+@font-face {
+    font-display: swap;
+    font-family: 'Source Serif 4';
+    font-style: normal;
+    font-weight: 200 900;
+    src: url('/vendor/capell-theme-foundation/fonts/SourceSerif4-Variable.woff2')
+        format('woff2');
+}
+
+@font-face {
+    font-display: swap;
+    font-family: 'Manrope';
+    font-style: normal;
+    font-weight: 200 800;
+    src: url('/vendor/capell-theme-foundation/fonts/Manrope-Variable.woff2')
+        format('woff2');
+}
+
+@font-face {
+    font-display: swap;
+    font-family: 'Fraunces';
+    font-style: normal;
+    font-weight: 100 900;
+    src: url('/vendor/capell-theme-foundation/fonts/Fraunces-Variable.woff2')
+        format('woff2');
+}
+
+@font-face {
+    font-display: swap;
+    font-family: 'Space Grotesk';
+    font-style: normal;
+    font-weight: 300 700;
+    src: url('/vendor/capell-theme-foundation/fonts/SpaceGrotesk-Variable.woff2')
+        format('woff2');
+}
+
+@font-face {
+    font-display: swap;
+    font-family: 'IBM Plex Mono';
+    font-style: normal;
+    font-weight: 400;
+    src: url('/vendor/capell-theme-foundation/fonts/IBMPlexMono-Regular.woff2')
+        format('woff2');
+}
+
+@font-face {
+    font-display: swap;
+    font-family: 'IBM Plex Mono';
+    font-style: normal;
+    font-weight: 600;
+    src: url('/vendor/capell-theme-foundation/fonts/IBMPlexMono-SemiBold.woff2')
+        format('woff2');
+}
+
+@font-face {
+    font-display: swap;
+    font-family: 'IBM Plex Mono';
+    font-style: normal;
+    font-weight: 700;
+    src: url('/vendor/capell-theme-foundation/fonts/IBMPlexMono-Bold.woff2')
+        format('woff2');
+}
+
+@font-face {
+    font-display: swap;
+    font-family: 'IBM Plex Sans';
+    font-stretch: 75% 100%;
+    font-style: normal;
+    font-weight: 100 700;
+    src: url('/vendor/capell-theme-foundation/fonts/IBMPlexSans-Variable.woff2')
+        format('woff2');
+}
+
+@font-face {
+    font-display: swap;
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    font-weight: 100 800;
+    src: url('/vendor/capell-theme-foundation/fonts/JetBrainsMono-Variable.woff2')
+        format('woff2');
+}
+
+@font-face {
+    font-display: swap;
+    font-family: 'Archivo';
+    font-stretch: 62% 125%;
+    font-style: normal;
+    font-weight: 100 900;
+    src: url('/vendor/capell-theme-foundation/fonts/Archivo-Variable.woff2')
+        format('woff2');
+}
+
+@font-face {
+    font-display: swap;
+    font-family: 'Source Sans 3';
+    font-style: normal;
+    font-weight: 200 900;
+    src: url('/vendor/capell-theme-foundation/fonts/SourceSans3-Variable.woff2')
+        format('woff2');
+}

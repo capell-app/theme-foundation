@@ -49,4 +49,10 @@ it('renders visibly unavailable controls without a submitting fallback form', fu
         ->toContain('Newsletter signup is temporarily unavailable.')
         ->not->toContain('<form')
         ->not->toContain('method="get"');
+
+    $document = new DOMDocument;
+    $document->loadHTML($html, LIBXML_NOERROR | LIBXML_NOWARNING);
+    $xpath = new DOMXPath($document);
+
+    expect($xpath->query('//fieldset[@disabled and .//input[@type="email"]]/legend[normalize-space()]'))->toHaveCount(1);
 });

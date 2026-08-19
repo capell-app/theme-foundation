@@ -3,15 +3,16 @@
     'content' => $widget->translation?->content,
     'primaryButtonText' => $widget->getMeta('primary_button_text'),
     'primaryButtonUrl' => $widget->getMeta('primary_button_url', '#'),
+    'safePrimaryButtonUrl' => '#',
     'secondaryButtonText' => $widget->getMeta('secondary_button_text'),
     'secondaryButtonUrl' => $widget->getMeta('secondary_button_url', '#'),
+    'safeSecondaryButtonUrl' => '#',
     'container',
     'containerKey',
     'containerWidth' => null,
     'loop',
     'widget',
 ])
-
 <x-capell-theme-foundation::widget.wrapper
     class="capell-modern-cta-section widget-ap-cta-section"
     :$container
@@ -37,7 +38,7 @@
                     <div class="flex flex-wrap gap-3 pt-2">
                         @if ($primaryButtonText)
                             <a
-                                href="{{ $primaryButtonUrl }}"
+                                href="{{ $safePrimaryButtonUrl }}"
                                 class="ap-showcase-button ap-showcase-button--primary ap-cta-primary-btn"
                             >
                                 <span>{{ $primaryButtonText }}</span>
@@ -47,7 +48,7 @@
 
                         @if ($secondaryButtonText)
                             <a
-                                href="{{ $secondaryButtonUrl }}"
+                                href="{{ $safeSecondaryButtonUrl }}"
                                 class="ap-showcase-button ap-showcase-button--secondary ap-cta-secondary-btn"
                             >
                                 <span>{{ $secondaryButtonText }}</span>

@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use Capell\Frontend\Facades\Frontend;
+use Illuminate\Support\Facades\Blade;
+
 it('owns the opinionated public head behavior', function (): void {
     $component = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/app/head/custom.blade.php');
     $tokens = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/app/head/tokens.blade.php');
@@ -33,6 +36,40 @@ it('owns the opinionated public head behavior', function (): void {
         ->and($tokens)->toContain('--foundation-widget-gap')
         ->and($tokens)->toContain('--foundation-heading-size-h1')
         ->and($tokens)->toContain('--foundation-heading-line-height');
+});
+
+it('boots dark-theme script on all pages but keeps Livewire header sticky wiring gated', function (): void {
+    Frontend::setFrontendData('runtimeManifest', (object) ['usesLivewire' => false]);
+
+    $lightDom = Blade::render('<x-capell::app.head.custom />');
+
+    expect($lightDom)->toContain('function setupTheme()')
+        ->and($lightDom)->toContain("localStorage.theme === 'dark'")
+        ->and($lightDom)->toContain("document.documentElement.classList.toggle('dark', isDarkMode)")
+        ->and($lightDom)->not->toContain("document.addEventListener('livewire:load')")
+        ->and($lightDom)->not->toContain("document.addEventListener('livewire:navigated'")
+        ->and($lightDom)->not->toContain('window.addEventListener(\'scroll\', updateHeaderSticky);');
+
+    Frontend::setFrontendData('runtimeManifest', (object) ['usesLivewire' => true]);
+    $livewireDom = Blade::render('<x-capell::app.head.custom />');
+
+    expect($livewireDom)->toContain("document.addEventListener('livewire:load', updateHeaderSticky)")
+        ->and($livewireDom)->toContain('document.addEventListener(\'livewire:navigated\', handleHeaderAndTheme)')
+        ->and($livewireDom)->toContain('window.addEventListener(\'scroll\', updateHeaderSticky, { passive: true })')
+        ->and($livewireDom)->not->toContain('window.addEventListener(\'scroll\', updateHeaderSticky);');
+});
+
+it('renders structured data as inert, script-safe JSON', function (): void {
+    $html = Blade::render(
+        '<x-capell-theme-foundation::structured-data :schema="$schema" />',
+        ['schema' => ['@context' => 'https://schema.org', '@type' => 'Thing', 'name' => '</script><img src=x onerror=alert(1)>']],
+    );
+
+    expect($html)
+        ->toContain('type="application/ld+json"')
+        ->toContain('https://schema.org')
+        ->toContain('\\u003C/script\\u003E')
+        ->not->toContain('</script><img');
 });
 
 it('maps foundation design settings into public CSS hooks', function (): void {

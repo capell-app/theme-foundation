@@ -1,22 +1,23 @@
-@php
-    $hasPages = $pages?->isNotEmpty() === true;
-@endphp
+@props([
+    'pages',
+    'linkedPages' => collect(),
+])
 
-@if ($hasPages)
+@if ($pages?->isNotEmpty() === true)
     <div {{ $attributes->class(['footer-latest-pages xl:w-[22%]']) }}>
         <div class="{{ $headingClass }} mb-4">
             {{ __('capell-theme-foundation::generic.latest_pages') }}
         </div>
 
         <ul class="space-y-2">
-            @foreach ($pages as $page)
+            @foreach ($linkedPages as $linkedPage)
                 <li>
                     <a
-                        href="{{ $page->pageUrl->full_url }}"
+                        href="{{ $linkedPage->url }}"
                         class="focus:text-primary hover:text-primary widget text-sm leading-tight font-medium text-[var(--color-footer-link)]"
                         wire:navigate
                     >
-                        {{ $page->getTranslation('label') ?? $page->getTranslation('title') ?? $page->name }}
+                        {{ $linkedPage->page->getTranslation('label') ?? $linkedPage->page->getTranslation('title') ?? $linkedPage->page->name }}
                     </a>
                 </li>
             @endforeach

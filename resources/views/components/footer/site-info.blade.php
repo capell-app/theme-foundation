@@ -11,6 +11,7 @@
     $siteTranslation = $siteRelations['translation'] ?? null;
     $siteTitle = data_get($siteTranslation, 'title', $site->name);
     $tagline = data_get($siteTranslation, 'meta.tagline');
+    $contactUrl = $contactPage?->pageUrl?->full_url;
 @endphp
 
 <div {{ $attributes->merge(['class' => 'footer-site-info space-y-4']) }}>
@@ -43,7 +44,7 @@
         <p class="footer-tagline max-w-prose text-sm leading-6 text-[var(--color-footer-muted)]">{{ $tagline }}</p>
     @endif
 
-    @if ($businessName || $email || $phone || $contactPage?->pageUrl)
+    @if ($businessName || $email || $phone || $contactUrl)
         <address
             class="footer-contact text-sm leading-6 text-[var(--color-footer-muted)] not-italic"
         >
@@ -73,10 +74,10 @@
                 </div>
             @endif
 
-            @if ($contactPage?->pageUrl)
+            @if ($contactUrl)
                 <div>
                     <a
-                        href="{{ $contactPage->pageUrl->full_url }}"
+                        href="{{ $contactUrl }}"
                         class="hover:text-primary focus:text-primary font-medium text-[var(--color-footer-link)]"
                         wire:navigate
                     >

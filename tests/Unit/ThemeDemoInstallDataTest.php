@@ -39,12 +39,27 @@ it('resolves every first-party non-foundation theme to a deliberate media pool',
         'agency', 'awards', 'blog', 'brutalist', 'business', 'catalogue',
         'curated', 'directory', 'editorial', 'events', 'knowledge',
         'liquid-glass', 'magazine', 'minimalist', 'onepage', 'photography',
-        'platform', 'portfolio', 'saas', 'showreel', 'submissions',
+        'platform', 'portfolio', 'saas', 'showreel', 'submissions', 'bistro',
     ];
 
     foreach ($themeKeys as $themeKey) {
         expect(ThemeDemoMedia::groupedForTheme($themeKey))
             ->not->toBe($defaultMedia, "Theme [{$themeKey}] must not inherit Foundation's default media pool.");
+    }
+});
+
+it('keeps Bistro preview media relevant to hospitality', function (): void {
+    $media = ThemeDemoMedia::groupedForTheme('bistro');
+
+    expect($media)->not->toBe(ThemeDemoMedia::groupedForTheme('default'));
+
+    foreach ($media as $urls) {
+        foreach ($urls as $url) {
+            expect($url)
+                ->not->toContain('photo-1497366754035-f200968a6e72')
+                ->not->toContain('photo-1497215842964-222b430dc094')
+                ->not->toContain('photo-1497366811353-6870744d04b2');
+        }
     }
 });
 

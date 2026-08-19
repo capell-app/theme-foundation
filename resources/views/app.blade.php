@@ -35,6 +35,13 @@
     class="h-full"
     lang="{{ str_replace('_', '-', (string) $languageCode) }}"
     dir="{{ $textDirection }}"
+    data-carousel-label-carousel="{{ __('capell-theme-foundation::generic.carousel') }}"
+    data-carousel-label-go-to-slide="{{ __('capell-theme-foundation::generic.carousel_go_to_slide') }}"
+    data-carousel-label-next-slide="{{ __('capell-theme-foundation::generic.next_slide') }}"
+    data-carousel-label-pause="{{ __('capell-theme-foundation::generic.pause_carousel') }}"
+    data-carousel-label-play="{{ __('capell-theme-foundation::generic.play_carousel') }}"
+    data-carousel-label-previous-slide="{{ __('capell-theme-foundation::generic.previous_slide') }}"
+    data-carousel-label-slide="{{ __('capell-theme-foundation::generic.carousel_slide') }}"
     data-motion-intensity="{{ $themeTokens->motionIntensity }}"
 >
     <x-capell::app.head

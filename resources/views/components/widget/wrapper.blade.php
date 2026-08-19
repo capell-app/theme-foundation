@@ -3,12 +3,12 @@
     use Capell\Core\Enums\DefaultColorEnum;
     use Capell\Core\Enums\MediaConversionEnum;
     use Capell\FoundationTheme\Actions\ResolveLoadedWidgetBackgroundImageAction;
+    use Capell\FoundationTheme\Actions\ResolveSafeCssColorTokenAction;
     use Capell\Frontend\Facades\Frontend;
     use Capell\LayoutBuilder\Actions\GetWidgetContainerWidthAction;
     use Illuminate\Support\Arr;
 
     $theme = Frontend::theme();
-    $widget ??= $widget ?? null;
 @endphp
 
 @props([
@@ -32,7 +32,15 @@
     'widget' => null,
 ])
 @php
-    $isDefaultColor = in_array($backgroundColor, DefaultColorEnum::cases(), true);
+    // DefaultColorEnum::cases() yields enum instances, so a strict in_array()
+    // against the string meta value never matched and every author-supplied
+    // colour reached the style attribute unvalidated. Compare against the
+    // backing values, and resolve anything free-form through the shared colour
+    // sanitiser so a value carrying `;` cannot append further declarations.
+    $isDefaultColor = in_array($backgroundColor, array_column(DefaultColorEnum::cases(), 'value'), true);
+    $safeBackgroundColor = $backgroundColor && ! $isDefaultColor
+        ? ResolveSafeCssColorTokenAction::run($backgroundColor, 'transparent')
+        : null;
 
     if ($widget->getMeta('container') !== null || ! $containerWidth instanceof ContainerWidthEnum) {
         $containerWidth = GetWidgetContainerWidthAction::run($widget);
@@ -102,8 +110,8 @@
             'relative overflow-hidden' => $backgroundOverlay,
         ])
     }}
-    @if ($backgroundColor && ! $isDefaultColor || $backgroundImage)
-        style="{{ $backgroundColor && ! $isDefaultColor ? 'background-color:' . $backgroundColor . ';' : '' }}{{ $backgroundImage ? 'background-image:url(' . $backgroundImage->getAvailableUrl([MediaConversionEnum::Large->value]) . ');' : '' }}"
+    @if ($safeBackgroundColor || $backgroundImage)
+        style="{{ $safeBackgroundColor ? 'background-color:' . $safeBackgroundColor . ';' : '' }}{{ $backgroundImage ? 'background-image:url(' . $backgroundImage->getAvailableUrl([MediaConversionEnum::Large->value]) . ');' : '' }}"
     @endif
 >
     @if ($backgroundOverlay)

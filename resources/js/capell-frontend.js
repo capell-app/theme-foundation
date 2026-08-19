@@ -1,5 +1,11 @@
 const optionalFrontendModules = [
     {
+        key: 'auth-menu-refresh',
+        selector:
+            '[data-auth-menu-placeholder][data-deferred-fragment-refresh="pageshow"]',
+        load: () => import('./widgets/widget/auth-menu-refresh'),
+    },
+    {
         key: 'lightbox',
         selector: '[data-lightbox], .lightbox, [x-data="lightbox"]',
         load: () => import('./utilities/lightbox'),

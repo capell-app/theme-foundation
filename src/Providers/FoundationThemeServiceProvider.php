@@ -14,6 +14,7 @@ use Capell\Core\Enums\BlueprintGroupEnum;
 use Capell\Core\Enums\FrontendRuntime;
 use Capell\Core\Enums\PackageTypeEnum;
 use Capell\Core\Enums\PageOrderEnum;
+use Capell\Core\Enums\PresentationLoadingStrategy;
 use Capell\Core\Events\PackageInstalled;
 use Capell\Core\Events\PackageUninstalled;
 use Capell\Core\Facades\CapellCore;
@@ -29,6 +30,7 @@ use Capell\Core\ThemeStudio\Data\ThemeDefinitionData;
 use Capell\Core\ThemeStudio\Data\ThemePresetData;
 use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
 use Capell\FoundationTheme\Actions\PrepareFoundationPageWidgetDataAction;
+use Capell\FoundationTheme\Actions\ResolveAuthMenuPayloadsAction;
 use Capell\FoundationTheme\Actions\ResolveFoundationThemeTokensAction;
 use Capell\FoundationTheme\Actions\ResolveResultsListingAction;
 use Capell\FoundationTheme\Console\Commands\DemoCommand;
@@ -39,10 +41,14 @@ use Capell\FoundationTheme\Console\Commands\ThemeCatalogueReportCommand;
 use Capell\FoundationTheme\Console\Commands\ValidateThemesCommand;
 use Capell\FoundationTheme\Contracts\OptionalExtensionAvailability;
 use Capell\FoundationTheme\Contracts\ResultsListingResolver;
+use Capell\FoundationTheme\Data\AuthMenuInputData;
+use Capell\FoundationTheme\Data\AuthMenuRenderData;
 use Capell\FoundationTheme\Enums\FoundationSectionWidgetComponentEnum;
 use Capell\FoundationTheme\Enums\FoundationThemeAssetEnum;
+use Capell\FoundationTheme\Filament\AuthMenuWidget;
 use Capell\FoundationTheme\Filament\Extenders\FoundationLayoutContainerSchemaExtender;
 use Capell\FoundationTheme\Filament\Settings\FoundationThemeSettingsSchema;
+use Capell\FoundationTheme\Http\Controllers\FoundationDynamicFormFragmentController;
 use Capell\FoundationTheme\Listeners\RunTailwindAssetsOnPackageChange;
 use Capell\FoundationTheme\Livewire\Assets\Table\PageAssets;
 use Capell\FoundationTheme\Livewire\Widget\Pages;
@@ -50,17 +56,21 @@ use Capell\FoundationTheme\Settings\FoundationThemeSettings;
 use Capell\FoundationTheme\Support\Assets\FoundationThemeAssetContributor;
 use Capell\FoundationTheme\Support\Assets\ThemeFrontendScriptContributor;
 use Capell\FoundationTheme\Support\Assets\ThemeFrontendScriptRegistry;
+use Capell\FoundationTheme\Support\AuthMenuWidget as AuthMenuWidgetDefinition;
 use Capell\FoundationTheme\Support\Blade\BladeDirectives;
 use Capell\FoundationTheme\Support\CapellOptionalExtensionAvailability;
 use Capell\FoundationTheme\Support\DesignSpec\FoundationThemeProjectBuildArtifactHandler;
 use Capell\FoundationTheme\Support\FoundationLayoutContainerThemePresentationProjector;
 use Capell\FoundationTheme\Support\FoundationThemeRuntimeManifestContributor;
+use Capell\FoundationTheme\Support\Fragments\FoundationSectionPublicLayoutWidgetPayloadContributor;
 use Capell\FoundationTheme\Support\Interceptors\Themes\FoundationThemeInterceptor;
 use Capell\FoundationTheme\Support\Media\CapellUrlGenerator;
 use Capell\FoundationTheme\Support\Tailwind\TailwindAssetsGenerator;
+use Capell\FoundationTheme\Support\View\FoundationThemePublicUrlViewComposer;
 use Capell\FoundationTheme\View\Components\Actions as ActionsComponent;
 use Capell\FoundationTheme\View\Components\App\Body as AppBodyComponent;
 use Capell\FoundationTheme\View\Components\Footer\Index as FooterIndexComponent;
+use Capell\FoundationTheme\View\Components\Footer\SocialLinks as FooterSocialLinksComponent;
 use Capell\FoundationTheme\View\Components\Layout\Index as LayoutIndexComponent;
 use Capell\FoundationTheme\View\Components\Layout\Main as LayoutMainComponent;
 use Capell\FoundationTheme\View\Components\Media\Svg;
@@ -89,14 +99,21 @@ use Capell\Frontend\Events\FrontendRenderPreparing;
 use Capell\Frontend\Support\Assets\FrontendPackageDependencyRegistry;
 use Capell\Frontend\Support\Loader\PageLoader;
 use Capell\Frontend\Support\Loader\SiteLoader;
+use Capell\Frontend\Support\Routing\ReservedFrontendPathRegistry;
 use Capell\LayoutBuilder\Contracts\Extenders\LayoutContainerSchemaExtender;
 use Capell\LayoutBuilder\Contracts\LayoutContainerThemePresentationProjector;
+use Capell\LayoutBuilder\Contracts\PublicLayoutWidgetPayloadContributor;
+use Capell\LayoutBuilder\Data\WidgetExtensions\WidgetExtensionCapabilitiesData;
+use Capell\LayoutBuilder\Data\WidgetExtensions\WidgetExtensionDefinitionData;
 use Capell\LayoutBuilder\Enums\FrontendComponentKeyEnum;
 use Capell\LayoutBuilder\Support\LayoutAreas\LayoutAreaRegistry;
+use Capell\LayoutBuilder\Support\WidgetExtensions\WidgetExtensionRegistrar;
 use Illuminate\Contracts\View\Factory as ViewFactory;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\View as ViewFacade;
 use Livewire\Livewire;
 use Override;
 use Spatie\LaravelPackageTools\Package;
@@ -184,6 +201,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
     {
         $this->registerBladeDirectives();
         $this->registerBladeComponents();
+        $this->registerPublicViewDataComposers();
         $this->registerLayoutBuilderRendering();
         $this->registerMediaBladeComponents();
         $this->registerBlazeComponents();
@@ -203,6 +221,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
         $this->registerSettingsSchemas();
         $this->registerPublicRuntimeData();
         $this->registerLayoutAreas();
+        $this->registerAuthMenuWidgetExtension();
         $this->registerLayoutContainerSchemaExtenders();
         $this->registerLayoutContainerThemePresentationProjectors();
         $this->registerThemeChromeComponents();
@@ -309,10 +328,27 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
         Blade::anonymousComponentPath(__DIR__ . '/../../resources/views/components', 'capell');
         Blade::component(AppBodyComponent::class, 'capell::app.body');
         Blade::component(FooterIndexComponent::class, 'capell::footer.index');
+        Blade::component(FooterSocialLinksComponent::class, 'capell::footer.social-links');
         Blade::component(LayoutIndexComponent::class, 'capell::layout.index');
         Blade::component(LayoutMainComponent::class, 'capell::layout.main');
         Blade::component(NewsletterForm::class, 'capell::newsletter-form');
         Blade::component(ThemeFormEmbed::class, 'capell::form-embed');
+    }
+
+    private function registerPublicViewDataComposers(): void
+    {
+        ViewFacade::composer([
+            'capell::widgets.auth-menu',
+            'capell-theme-foundation::widgets.auth-menu',
+            'capell::widget.modern.cta-section',
+            'capell-theme-foundation::widget.modern.cta-section',
+            'capell::components.widget.modern.cta-section',
+            'capell-theme-foundation::components.widget.modern.cta-section',
+            'capell::widget.modern.hero-banner',
+            'capell-theme-foundation::widget.modern.hero-banner',
+            'capell::components.widget.modern.hero-banner',
+            'capell-theme-foundation::components.widget.modern.hero-banner',
+        ], FoundationThemePublicUrlViewComposer::class);
     }
 
     private function registerSettingsSchemas(): void
@@ -674,6 +710,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
     {
         $this->publishes([
             __DIR__ . '/../../publishes/build' => public_path('vendor/capell-theme-foundation'),
+            __DIR__ . '/../../resources/fonts' => public_path('vendor/capell-theme-foundation/fonts'),
         ], 'capell-theme-foundation-assets');
 
         $previewImages = [];
@@ -738,6 +775,9 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
         Blade::component(PageSiblingsComponent::class, 'capell::widget.page.siblings');
 
         $this->registerFoundationSectionWidgetRenderables();
+        $this->registerPublicLayoutWidgetPayloadContributors();
+        $this->registerDynamicFormFragmentRoute();
+        $this->reserveDynamicFormFragmentPath();
 
         $registerLivewireComponents = function (): void {
             Livewire::component('capell::widget.pages', Pages::class);
@@ -825,5 +865,73 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
                 ));
             }
         });
+    }
+
+    private function registerAuthMenuWidgetExtension(): void
+    {
+        resolve(WidgetExtensionRegistrar::class)->register(new WidgetExtensionDefinitionData(
+            key: AuthMenuWidgetDefinition::KEY,
+            packageName: self::$packageName,
+            stateVersion: 1,
+            filamentWidget: AuthMenuWidget::class,
+            inputData: AuthMenuInputData::class,
+            renderData: AuthMenuRenderData::class,
+            fallbackView: 'capell-theme-foundation::widgets.auth-menu',
+            components: ['blade' => 'capell::widgets.' . AuthMenuWidgetDefinition::KEY],
+            defaultResourceLoadingStrategy: PresentationLoadingStrategy::Eager,
+            capabilities: new WidgetExtensionCapabilitiesData(requiresInstanceIdentity: true),
+            batchPayloadResolver: ResolveAuthMenuPayloadsAction::class,
+        ));
+    }
+
+    /**
+     * Lets the CAP-0233 dynamic-form-delivery route (registered below) serve
+     * the real, session-bound form markup for the Foundation section types
+     * FoundationSection delivers dynamically — see
+     * FoundationSectionPublicLayoutWidgetPayloadContributor.
+     */
+    private function registerPublicLayoutWidgetPayloadContributors(): void
+    {
+        if (! interface_exists(PublicLayoutWidgetPayloadContributor::class)) {
+            return;
+        }
+
+        $this->app->tag([FoundationSectionPublicLayoutWidgetPayloadContributor::class], PublicLayoutWidgetPayloadContributor::TAG);
+    }
+
+    /**
+     * A theme-foundation-owned route for the CAP-0233 deferred-fragment
+     * placeholder, deliberately separate from layout-builder's shared
+     * `/_fragments/{reference}` route. That route unconditionally strips
+     * `Set-Cookie` and forces `Cache-Control: public, max-age=300,
+     * stale-while-revalidate=60` on every response under `_fragments/*` (see
+     * LayoutBuilderServiceProvider's RequestHandled listener) and carries no
+     * session middleware — architecturally correct for the stateless,
+     * visitor-independent content it was built for, but unsafe for a form
+     * that must mint a fresh, working, session-bound CSRF token per visitor:
+     * baking one into a response cacheable for five minutes would reproduce
+     * CAP-0216's bug one layer down. `web` middleware here (matching
+     * registerLazyLayoutWidgetRoute()'s own `_capell/` convention) gives the
+     * real session access `@csrf` needs; FoundationDynamicFormFragmentController
+     * answers with `private, no-store` instead.
+     */
+    private function registerDynamicFormFragmentRoute(): void
+    {
+        Route::middleware('web')
+            ->name('capell-theme-foundation.dynamic-form-fragments.')
+            ->group(function (): void {
+                Route::get('/_capell/foundation-dynamic-form/{reference}', FoundationDynamicFormFragmentController::class)
+                    ->where('reference', '.*')
+                    ->name('show');
+            });
+    }
+
+    private function reserveDynamicFormFragmentPath(): void
+    {
+        if (! class_exists(ReservedFrontendPathRegistry::class) || ! $this->app->bound(ReservedFrontendPathRegistry::class)) {
+            return;
+        }
+
+        $this->app->make(ReservedFrontendPathRegistry::class)->reservePrefix('_capell/foundation-dynamic-form');
     }
 }

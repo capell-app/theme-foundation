@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Capell\FoundationTheme\Tests\Feature;
 
+use Capell\FoundationTheme\View\Components\Footer\SocialLinks;
 use Capell\Tests\AbstractTestCase;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Blade;
@@ -17,6 +18,7 @@ final class FooterSocialLinksTest extends AbstractTestCase
         parent::setUp();
 
         Blade::anonymousComponentPath(__DIR__ . '/../../resources/views/components', 'capell');
+        Blade::component(SocialLinks::class, 'capell::footer.social-links');
     }
 
     public function test_it_does_not_fail_when_a_saved_social_icon_is_unavailable(): void

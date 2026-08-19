@@ -3,8 +3,10 @@
     'content' => $widget->translation?->content,
     'primaryButtonText' => $widget->getMeta('primary_button_text'),
     'primaryButtonUrl' => $widget->getMeta('primary_button_url', '#'),
+    'safePrimaryButtonUrl' => '#',
     'secondaryButtonText' => $widget->getMeta('secondary_button_text'),
     'secondaryButtonUrl' => $widget->getMeta('secondary_button_url', '#'),
+    'safeSecondaryButtonUrl' => '#',
     'container',
     'containerKey',
     'containerWidth' => null,
@@ -12,7 +14,6 @@
     'loop',
     'widget',
 ])
-
 @php
     use Capell\FoundationTheme\Actions\BuildHeroRailItemsRenderDataAction;
     use Capell\FoundationTheme\Actions\MarkPrimaryHeadingRenderedAction;
@@ -87,7 +88,7 @@
                     <div class="ap-hero__actions">
                         @if ($primaryButtonText)
                             <a
-                                href="{{ $primaryButtonUrl }}"
+                                href="{{ $safePrimaryButtonUrl }}"
                                 class="ap-hero__button ap-hero__button--primary ap-cta-primary"
                             >
                                 <span>{{ $primaryButtonText }}</span>
@@ -97,7 +98,7 @@
 
                         @if ($secondaryButtonText)
                             <a
-                                href="{{ $secondaryButtonUrl }}"
+                                href="{{ $safeSecondaryButtonUrl }}"
                                 class="ap-hero__button ap-hero__button--secondary ap-cta-secondary"
                             >
                                 <span>{{ $secondaryButtonText }}</span>

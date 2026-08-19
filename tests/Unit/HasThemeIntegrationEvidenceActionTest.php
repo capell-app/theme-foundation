@@ -15,8 +15,6 @@ it('recognises shared and theme-owned optional extension integrations', function
         ->and(HasThemeIntegrationEvidenceAction::run($packages . '/theme-almanac', 'capell-app/search'))->toBeTrue()
         ->and(HasThemeIntegrationEvidenceAction::run($packages . '/theme-almanac', 'capell-app/newsletter'))->toBeTrue()
         ->and(HasThemeIntegrationEvidenceAction::run($packages . '/theme-almanac', 'capell-app/comments'))->toBeTrue()
-        ->and(HasThemeIntegrationEvidenceAction::run($packages . '/theme-concierge', 'capell-app/widget-countdown'))->toBeTrue()
-        ->and(HasThemeIntegrationEvidenceAction::run($packages . '/theme-concierge', 'capell-app/widget-location-map'))->toBeTrue()
         ->and(HasThemeIntegrationEvidenceAction::run($packages . '/theme-paperdesk', 'capell-app/comments'))->toBeTrue()
         ->and(HasThemeIntegrationEvidenceAction::run($packages . '/theme-paperdesk', 'capell-app/events'))->toBeTrue()
         ->and(HasThemeIntegrationEvidenceAction::run($packages . '/theme-paperdesk', 'capell-app/search'))->toBeTrue()

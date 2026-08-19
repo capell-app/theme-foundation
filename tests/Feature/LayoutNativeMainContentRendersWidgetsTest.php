@@ -89,6 +89,12 @@ it('renders real layout-builder widget content in the main landmark for a layout
         ->toContain('Teams that ship on the glass')
         ->toContain('One glass system, three token-driven presets');
 
+    $document = new DOMDocument;
+    $document->loadHTML($html, LIBXML_NOERROR | LIBXML_NOWARNING);
+    $xpath = new DOMXPath($document);
+
+    expect($xpath->query('//main//h1'))->toHaveCount(1);
+
     $registry->reset();
     CapellCore::clearPackages();
 });

@@ -32,6 +32,10 @@
         color: var(--foundation-body-fg);
     }
 
+    .site-theme-shell {
+        overflow-wrap: break-word;
+    }
+
     /* Reserve space so the fixed consent banner never covers the sticky footer. */
     body:has([data-capell-insights-consent-banner]:not([hidden]))
         .site-theme-shell {
@@ -739,6 +743,9 @@
             var(--foundation-primary-action) 10%,
             transparent
         );
+        box-shadow:
+            0 0 0 3px var(--foundation-surface-bg),
+            0 0 0 6px var(--foundation-focus-ring);
         color: var(--foundation-primary-action);
         outline: none;
     }
@@ -772,6 +779,9 @@
             var(--foundation-primary-action) 36%,
             var(--foundation-border)
         );
+        box-shadow:
+            0 0 0 3px var(--foundation-surface-bg),
+            0 0 0 6px var(--foundation-focus-ring);
         color: var(--foundation-primary-action);
         outline: none;
     }

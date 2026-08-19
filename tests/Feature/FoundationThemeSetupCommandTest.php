@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Capell\Core\Enums\LayoutEnum;
 use Capell\Core\Models\Layout;
 use Capell\Core\Support\Creator\LayoutCreator;
+use Capell\FoundationTheme\Support\AuthMenuWidget;
 use Capell\LayoutBuilder\Models\Widget;
 
 /**
@@ -68,10 +69,13 @@ it('keeps home page content defaults stable on repeated setup', function (): voi
 
     expect($containers)->toHaveKey('hero')
         ->and($containers)->toHaveKey('main')
-        ->and(array_keys($containers))->toBe(['hero', 'main'])
+        ->and(array_keys($containers))->toBe(['hero', 'main', 'header'])
         ->and($mainContainer['meta']['colspan'] ?? null)->toBe(12)
         ->and($mainContainer['widgets'])->toBe([
             ['widget_key' => 'page-content'],
+        ])
+        ->and(data_get($containers, 'header.widgets'))->toBe([
+            AuthMenuWidget::block(),
         ])
         ->and($homeLayout->widgets)->toBe(['hero', 'page-content']);
 });
@@ -103,10 +107,13 @@ it('repairs custom page layouts that are missing page content without inserting 
     $layout = Layout::query()->where('key', 'landing-page')->firstOrFail();
     $containers = $layout->containers ?? [];
 
-    expect(array_keys($containers))->toBe(['hero', 'main'])
+    expect(array_keys($containers))->toBe(['hero', 'main', 'header'])
         ->and(data_get($containers, 'main.widgets'))->toBe([
             ['widget_key' => 'page-content'],
             ['widget_key' => 'custom-feature'],
+        ])
+        ->and(data_get($containers, 'header.widgets'))->toBe([
+            AuthMenuWidget::block(),
         ])
         ->and($layout->widgets)->toBe(['hero', 'page-content', 'custom-feature'])
         ->and(Widget::query()->where('key', 'kitchen-sink-rich-text')->exists())->toBeFalse();

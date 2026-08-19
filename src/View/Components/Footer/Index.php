@@ -9,6 +9,8 @@ use Capell\Core\Models\Language;
 use Capell\Core\Models\Site;
 use Capell\Core\Models\SiteDomain;
 use Capell\Core\Models\Theme;
+use Capell\FoundationTheme\Actions\BuildFooterLatestPageLinksAction;
+use Capell\FoundationTheme\Data\FooterLatestPageLinkData;
 use Capell\FoundationTheme\Support\NavigationAvailability;
 use Capell\Frontend\Actions\GetLayoutContainerWidthAction;
 use Capell\Frontend\Enums\RenderHookLocation;
@@ -52,6 +54,11 @@ final class Index extends Component
     public Collection $latestFooterPages;
 
     /**
+     * @var Collection<array-key, FooterLatestPageLinkData>
+     */
+    public Collection $latestFooterPageLinks;
+
+    /**
      * @var Collection<array-key, array{description: mixed, primaryColor: mixed, title: mixed, url: mixed}>
      */
     public Collection $relatedSites;
@@ -93,6 +100,7 @@ final class Index extends Component
             $this->footerSpacing = 'default';
             $this->footerDividerColor = null;
             $this->latestFooterPages = collect();
+            $this->latestFooterPageLinks = collect();
             $this->relatedSites = collect();
             $this->hasFooterMenu = false;
             $this->hasLatestFooterPages = false;
@@ -121,6 +129,7 @@ final class Index extends Component
         $this->latestFooterPages = ($frontendData['foundation.footer.latest_pages'] ?? null) instanceof Collection
             ? $frontendData['foundation.footer.latest_pages']
             : collect();
+        $this->latestFooterPageLinks = BuildFooterLatestPageLinksAction::run($this->latestFooterPages);
         $this->relatedSites = ($frontendData['foundation.footer.related_sites'] ?? null) instanceof Collection
             ? $frontendData['foundation.footer.related_sites']
             : collect();

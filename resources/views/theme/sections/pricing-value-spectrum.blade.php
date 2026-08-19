@@ -36,10 +36,13 @@
         </div>
 
         @if ($tierCount > 0)
-            <div
+            <fieldset
                 class="pricing-spectrum-fallback grid gap-2"
                 style="--pricing-spectrum-tier-count: {{ $tierCount }}"
             >
+                <legend class="sr-only">
+                    {{ __('capell-theme-foundation::generic.pricing_tier_legend') }}
+                </legend>
                 @foreach ($tiers as $index => $tier)
                     <label
                         class="pricing-spectrum-tier-option flex cursor-pointer items-center justify-between rounded-[var(--theme-radius-value)] border border-slate-200 px-4 py-2 text-sm has-[:checked]:border-[var(--theme-primary)] has-[:checked]:bg-[var(--theme-primary)]/5"
@@ -61,7 +64,7 @@
                         </span>
                     </label>
                 @endforeach
-            </div>
+            </fieldset>
 
             <div class="pricing-spectrum-slider-panel mt-8">
                 <input

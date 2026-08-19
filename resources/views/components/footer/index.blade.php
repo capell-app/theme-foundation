@@ -105,6 +105,7 @@
                         <x-capell::footer.latest-pages
                             :$headingClass
                             :pages="$latestFooterPages"
+                            :linked-pages="$latestFooterPageLinks"
                         />
                     @endif
 
@@ -112,6 +113,8 @@
                 </div>
             @endif
         </div>
+
+        <x-capell::layout.area area="footer" />
     </div>
 
     @if ($relatedSites->isNotEmpty())

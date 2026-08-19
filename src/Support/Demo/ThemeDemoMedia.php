@@ -11,6 +11,7 @@ final class ThemeDemoMedia
         'agency' => 'agency',
         'awards' => 'corporate',
         'blog' => 'knowledge',
+        'bistro' => 'bistro',
         'brutalist' => 'corporate',
         'business' => 'local-services',
         'catalogue' => 'portfolio',
@@ -100,6 +101,26 @@ final class ThemeDemoMedia
                 ],
                 'cta' => [
                     'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1400&q=80',
+                ],
+            ],
+            'bistro' => [
+                'hero' => [
+                    'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1800&q=80',
+                ],
+                'listing' => [
+                    'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80',
+                ],
+                'detail' => [
+                    'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=80',
+                ],
+                'proof' => [
+                    'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=1200&q=80',
+                ],
+                'contact' => [
+                    'https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=1200&q=80',
+                ],
+                'cta' => [
+                    'https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=1400&q=80',
                 ],
             ],
             'agency' => [

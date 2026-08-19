@@ -5,6 +5,7 @@
     $fallbackMessage = (string) ($section->fallback_message ?? '');
     $fallbackLabel = (string) ($section->fallback_label ?? '');
     $fallbackUrl = (string) ($section->fallback_url ?? '');
+    $formDeliveryFragmentUrl ??= null;
 @endphp
 
 {{--
@@ -44,88 +45,18 @@
                 :fallback-url="$fallbackUrl"
                 class="grid gap-5"
             />
-        @else
-            <form
-                method="post"
-                action="{{ $section->action ?? '' }}"
-                class="grid gap-5"
-                novalidate
-            >
-                @foreach ($formFields as $field)
-                    @php
-                        $fieldType = $field['type'] ?? 'text';
-                        $fieldName = $field['name'] ?? 'field';
-                        $fieldId = 'theme-form-encouraging-' . $fieldName;
-                        $fieldLabel = $field['label'] ?? $fieldName;
-                        $fieldRequired = ! empty($field['required']);
-                        $fieldHint = $field['encouragement'] ?? null;
-                    @endphp
-
-                    <div class="grid gap-2">
-                        @if ($fieldType !== 'checkbox')
-                            <label
-                                for="{{ $fieldId }}"
-                                class="text-sm font-semibold text-slate-800"
-                            >
-                                {{ $fieldLabel }}
-                                @if ($fieldRequired)
-                                    <span aria-hidden="true">*</span>
-                                @endif
-                            </label>
-                        @endif
-
-                        @switch ($fieldType)
-                            @case ('textarea')
-                                <textarea
-                                    id="{{ $fieldId }}"
-                                    name="{{ $fieldName }}"
-                                    rows="5"
-                                    @if ($fieldRequired) required @endif
-                                    class="rounded-[var(--theme-radius-value)] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-950 focus:border-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:outline-none"
-                                    data-form-hint-field
-                                    data-form-hint-encouragement="{{ $fieldHint }}"
-                                ></textarea>
-                                @break
-                            @case ('email')
-                                <input
-                                    type="email"
-                                    id="{{ $fieldId }}"
-                                    name="{{ $fieldName }}"
-                                    @if ($fieldRequired) required @endif
-                                    class="rounded-[var(--theme-radius-value)] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-950 focus:border-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:outline-none"
-                                    data-form-hint-field
-                                    data-form-hint-encouragement="{{ $fieldHint }}"
-                                />
-                                @break
-                            @default
-                                <input
-                                    type="text"
-                                    id="{{ $fieldId }}"
-                                    name="{{ $fieldName }}"
-                                    @if ($fieldRequired) required @endif
-                                    class="rounded-[var(--theme-radius-value)] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-950 focus:border-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:outline-none"
-                                    data-form-hint-field
-                                    data-form-hint-encouragement="{{ $fieldHint }}"
-                                />
-                        @endswitch
-
-                        <p
-                            class="form-hint-message text-xs text-emerald-700"
-                            role="status"
-                            aria-live="polite"
-                            data-form-hint-message
-                            data-form-hint-message-for="{{ $fieldId }}"
-                        ></p>
-                    </div>
-                @endforeach
-
-                <button
-                    type="submit"
-                    class="w-fit rounded-full bg-[var(--theme-primary)] px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90"
-                >
-                    {{ $section->submitLabel ?? __('capell-theme-foundation::generic.form_submit') }}
-                </button>
-            </form>
+        @elseif ($formDeliveryFragmentUrl)
+            {{--
+                CAP-0233: see theme.sections.form.blade.php for why the real
+                @csrf-bearing <form> is delivered via this deferred-fragment
+                placeholder instead of rendering synchronously into the
+                cached page response.
+            --}}
+            <div
+                data-deferred-fragment
+                data-deferred-fragment-url="{{ $formDeliveryFragmentUrl }}"
+                class="deferred-fragment"
+            ></div>
         @endif
     </div>
 </section>

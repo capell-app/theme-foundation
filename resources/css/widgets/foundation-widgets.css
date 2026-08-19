@@ -408,6 +408,20 @@
     }
 
     .deferred-fragment {
+        position: relative;
+    }
+
+    /*
+     * Shimmer skeleton for the idle deferred-fragment placeholder. Scoped to
+     * :not([data-deferred-fragment-loaded="true"]) rather than the bare
+     * .deferred-fragment class: that attribute flips to "true" when fetch()
+     * starts (see widget-runtime.js loadFragment()), and content (e.g. a live
+     * form) is injected via innerHTML without ever removing the
+     * .deferred-fragment class from the outer element. Without this scoping
+     * the shimmer, and its absolutely-positioned pseudo-elements, would sit
+     * permanently on top of the delivered content and intercept clicks.
+     */
+    .deferred-fragment:not([data-deferred-fragment-loaded='true']) {
         background:
             linear-gradient(
                 90deg,
@@ -421,10 +435,9 @@
         border-block: 1px solid rgb(203 213 225 / 60%);
         display: block;
         min-height: clamp(8rem, 16vw, 13rem);
-        position: relative;
     }
 
-    .deferred-fragment::before {
+    .deferred-fragment:not([data-deferred-fragment-loaded='true'])::before {
         animation: kitchenSinkFragmentShimmer 1.35s ease-in-out infinite;
         background: linear-gradient(
             90deg,
@@ -434,10 +447,11 @@
         );
         content: '';
         inset: 0;
+        pointer-events: none;
         position: absolute;
     }
 
-    .deferred-fragment::after {
+    .deferred-fragment:not([data-deferred-fragment-loaded='true'])::after {
         background:
             linear-gradient(rgb(15 23 42 / 10%) 1px, transparent 1px),
             linear-gradient(90deg, rgb(15 23 42 / 10%) 1px, transparent 1px);
@@ -445,6 +459,7 @@
         content: '';
         inset: 1rem;
         opacity: 0.38;
+        pointer-events: none;
         position: absolute;
     }
 

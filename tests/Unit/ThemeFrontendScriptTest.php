@@ -28,14 +28,14 @@ it('resolves a safe Vite theme frontend entry', function (): void {
         ->and($script->publicDirectory)->toBe('vendor/capell/themes/example');
 });
 
-it('contributes only the active themes registered module script', function (): void {
+it('contributes only the active registered theme module script', function (): void {
     $registry = new ThemeFrontendScriptRegistry;
     $registry->register(new ThemeFrontendScriptData(
-        themeKey: 'concierge',
-        handle: 'capell-app/theme-concierge:frontend-runtime',
-        packageName: 'capell-app/theme-concierge',
-        entry: 'resources/js/concierge-frontend.js',
-        publicDirectory: 'vendor/capell/themes/concierge',
+        themeKey: 'example',
+        handle: 'capell-app/theme-example:frontend-runtime',
+        packageName: 'capell-app/theme-example',
+        entry: 'resources/js/example.js',
+        publicDirectory: 'vendor/capell/themes/example',
     ));
 
     $runtime = FrontendRuntimeManifestData::forRenderingStrategy(RenderingStrategyEnum::BladeOnly);
@@ -44,7 +44,7 @@ it('contributes only the active themes registered module script', function (): v
         site: null,
         language: null,
         layout: null,
-        theme: new Theme(['key' => 'concierge']),
+        theme: new Theme(['key' => 'example']),
         runtime: $runtime,
     );
 
@@ -62,15 +62,15 @@ it('contributes only the active themes registered module script', function (): v
     }
 
     expect($resources)->toHaveCount(1)
-        ->and($source->entry)->toBe('resources/js/concierge-frontend.js')
-        ->and($source->buildDirectory)->toBe('vendor/capell/themes/concierge');
+        ->and($source->entry)->toBe('resources/js/example.js')
+        ->and($source->buildDirectory)->toBe('vendor/capell/themes/example');
 
     $otherContext = new FrontendResourceContextData(
         page: null,
         site: null,
         language: null,
         layout: null,
-        theme: new Theme(['key' => 'business']),
+        theme: new Theme(['key' => 'another-theme']),
         runtime: $runtime,
     );
 

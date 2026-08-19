@@ -56,6 +56,8 @@ import {
     Navigation,
     Pagination,
     Autoplay,
+    A11y,
+    Keyboard,
     EffectFade,
     Mousewheel,
     Grid,
@@ -167,6 +169,34 @@ function resolveCarouselId(swiperNode) {
     return generatedCarouselId
 }
 
+function readCarouselLabel(swiperNode, name) {
+    const attributeName = `data-carousel-label-${name}`
+
+    return (
+        readAttribute(swiperNode, [attributeName]) ??
+        swiperNode.ownerDocument.documentElement?.getAttribute(attributeName) ??
+        ''
+    )
+}
+
+function resolveCarouselLabels(swiperNode) {
+    return {
+        carousel: readCarouselLabel(swiperNode, 'carousel'),
+        goToSlide: readCarouselLabel(swiperNode, 'go-to-slide'),
+        nextSlide: readCarouselLabel(swiperNode, 'next-slide'),
+        pause: readCarouselLabel(swiperNode, 'pause'),
+        play: readCarouselLabel(swiperNode, 'play'),
+        previousSlide: readCarouselLabel(swiperNode, 'previous-slide'),
+        slide: readCarouselLabel(swiperNode, 'slide'),
+    }
+}
+
+function prefersReducedMotion() {
+    return (
+        window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+    )
+}
+
 export function parseCarouselOptions(swiperNode) {
     const effect =
         readAttribute(swiperNode, ['data-carousel-effect']) ??
@@ -181,7 +211,7 @@ export function parseCarouselOptions(swiperNode) {
     const loop =
         readBooleanAttribute(swiperNode, ['data-carousel-loop', 'data-loop']) ??
         false
-    const autoplayEnabled =
+    const autoplayRequested =
         readBooleanAttribute(swiperNode, [
             'data-carousel-autoplay',
             'data-auto',
@@ -220,10 +250,12 @@ export function parseCarouselOptions(swiperNode) {
             readBooleanAttribute(swiperNode, [
                 'data-carousel-disable-on-interaction',
             ]) ?? true,
-        autoplayEnabled,
+        autoplayEnabled: autoplayRequested && !prefersReducedMotion(),
+        autoplayRequested,
         breakpoints: parseBreakpoints(swiperNode),
         breakpointsBase: readBreakpointsBase(swiperNode),
         carouselId: resolveCarouselId(swiperNode),
+        labels: resolveCarouselLabels(swiperNode),
         effect: effectIsFade ? 'fade' : effect,
         fadeEnabled: effectIsFade,
         grabCursor: interactionEnabled,
@@ -276,9 +308,31 @@ export function resolveCarouselControls(
     }
 }
 
-function buildPaginationRenderer() {
+function formatSlideNumberLabel(template, index) {
+    return template
+        .replace(':number', String(index + 1))
+        .replace('{{index}}', String(index + 1))
+}
+
+function escapeAttribute(value) {
+    return value.replace(/[&<>"']/g, (character) => {
+        return {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;',
+        }[character]
+    })
+}
+
+function buildPaginationRenderer(labels) {
     return function renderBullet(index, className) {
-        return `<button type="button" class="${className}" data-carousel-bullet-index="${index}" aria-label="Go to slide ${index + 1}"></button>`
+        const ariaLabel = escapeAttribute(
+            formatSlideNumberLabel(labels.goToSlide, index),
+        )
+
+        return `<button type="button" class="${className}" data-carousel-bullet-index="${index}" aria-label="${ariaLabel}"></button>`
     }
 }
 
@@ -350,7 +404,7 @@ function toggleCarousel(swiperNode, swiperInstance, enabled) {
         return
     }
 
-    if (enabled) {
+    if (enabled && swiperNode.dataset.carouselAutoplayPaused !== 'true') {
         swiperInstance.autoplay.start()
 
         return
@@ -364,6 +418,7 @@ function keepCarouselAutoplayRunning(swiperNode, swiperInstance, options) {
         !options.autoplayEnabled ||
         swiperInstance.destroyed ||
         swiperNode.classList.contains('swiper-disabled') ||
+        swiperNode.dataset.carouselAutoplayPaused === 'true' ||
         !swiperInstance.autoplay
     ) {
         return
@@ -372,13 +427,76 @@ function keepCarouselAutoplayRunning(swiperNode, swiperInstance, options) {
     window.setTimeout(() => {
         if (
             swiperInstance.destroyed ||
-            swiperNode.classList.contains('swiper-disabled')
+            swiperNode.classList.contains('swiper-disabled') ||
+            swiperNode.dataset.carouselAutoplayPaused === 'true'
         ) {
             return
         }
 
         swiperInstance.autoplay.start()
     }, 0)
+}
+
+function updateAutoplayControl(toggle, labels, paused) {
+    toggle.setAttribute('aria-pressed', paused ? 'true' : 'false')
+    toggle.setAttribute('aria-label', paused ? labels.play : labels.pause)
+    toggle.textContent = paused ? labels.play : labels.pause
+}
+
+function bindAutoplayControl(
+    swiperNode,
+    swiperInstance,
+    controls,
+    options,
+    signal,
+) {
+    if (!options.autoplayEnabled || !swiperInstance.autoplay) {
+        return
+    }
+
+    const host = controls.controls ?? swiperNode.parentElement ?? swiperNode
+    const toggleSelector = `[data-carousel-autoplay-toggle="${options.carouselId}"]`
+    const toggle =
+        host.querySelector(toggleSelector) ??
+        swiperNode.ownerDocument.createElement('button')
+
+    if (!toggle.isConnected) {
+        toggle.className = 'swiper-autoplay-toggle'
+        toggle.setAttribute('data-carousel-autoplay-toggle', options.carouselId)
+        toggle.setAttribute('type', 'button')
+        host.append(toggle)
+    }
+
+    const paused = swiperNode.dataset.carouselAutoplayPaused === 'true'
+
+    updateAutoplayControl(toggle, options.labels, paused)
+
+    if (paused) {
+        swiperInstance.autoplay.stop()
+    }
+
+    toggle.addEventListener(
+        'click',
+        () => {
+            const paused = swiperNode.dataset.carouselAutoplayPaused !== 'true'
+
+            swiperNode.dataset.carouselAutoplayPaused = paused
+                ? 'true'
+                : 'false'
+            updateAutoplayControl(toggle, options.labels, paused)
+
+            if (paused) {
+                swiperInstance.autoplay.stop()
+
+                return
+            }
+
+            if (!swiperNode.classList.contains('swiper-disabled')) {
+                swiperInstance.autoplay.start()
+            }
+        },
+        { signal },
+    )
 }
 
 function createVisibilityObserver(swiperNode, swiperInstance) {
@@ -409,12 +527,26 @@ function bindImageRefresh(swiperNode, swiperInstance, signal) {
 }
 
 export function buildSwiperSettings(swiperNode, options, controls, signal) {
-    const modules = []
+    const modules = [A11y, Keyboard]
     const settings = {
+        a11y: {
+            containerMessage: options.labels.carousel,
+            containerRole: 'region',
+            containerRoleDescriptionMessage: options.labels.carousel,
+            enabled: true,
+            nextSlideMessage: options.labels.nextSlide,
+            prevSlideMessage: options.labels.previousSlide,
+            slideLabelMessage: options.labels.slide,
+        },
         allowTouchMove: options.interactionEnabled,
         centeredSlides: options.align === 'center',
         grabCursor: options.grabCursor,
         initialSlide: options.initialSlide,
+        keyboard: {
+            enabled: true,
+            onlyInViewport: true,
+            pageUpDown: false,
+        },
         loop: options.rows > 1 ? false : options.loop,
         observeParents: true,
         observer: true,
@@ -464,7 +596,7 @@ export function buildSwiperSettings(swiperNode, options, controls, signal) {
             bulletClass: 'swiper-pagination-bullet',
             clickable: false,
             el: controls.dotsNode,
-            renderBullet: buildPaginationRenderer(),
+            renderBullet: buildPaginationRenderer(options.labels),
         }
     }
 
@@ -501,6 +633,7 @@ export function buildSwiperSettings(swiperNode, options, controls, signal) {
             swiperNode.classList.add('swiper-ready')
             updateActiveSlides(swiperNode, this)
             bindPaginationBullets(this, controls, options, signal)
+            bindAutoplayControl(swiperNode, this, controls, options, signal)
             keepCarouselAutoplayRunning(swiperNode, this, options)
         },
         autoplayStop() {

@@ -16,6 +16,7 @@
     $site ??= Frontend::site();
     $layoutMeta = is_array($layout?->meta ?? null) ? $layout->meta : [];
     $themeMeta = is_array($theme?->meta ?? null) ? $theme->meta : [];
+    $themeData = ['meta' => $themeMeta];
     $header ??= array_key_exists('header', $layoutMeta) ? $layoutMeta['header'] : null;
     $footer ??= array_key_exists('footer', $layoutMeta) ? $layoutMeta['footer'] : null;
     $layoutNeighborLinks ??= null;
@@ -63,7 +64,7 @@
     <x-capell::layout.main
         :$layout
         :$page
-        :theme="$themeMeta"
+        :theme="$themeData"
         :layout-neighbor-links="$layoutNeighborLinks"
         :page-slot="$pageSlot ?? $slot"
         :container-class="$containerClass"

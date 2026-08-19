@@ -35,9 +35,12 @@
                         data-pricing-spectrum-tier-count="{{ $tierCount }}"
                     />
 
-                    <div
+                    <fieldset
                         class="pricing-spectrum-fallback mt-3 flex flex-wrap gap-2"
                     >
+                        <legend class="sr-only">
+                            {{ __('capell-theme-foundation::generic.pricing_tier_legend') }}
+                        </legend>
                         @foreach ($tiers as $index => $tier)
                             <label
                                 class="pricing-spectrum-tier-option cursor-pointer rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-700 has-[:checked]:border-[var(--theme-primary)] has-[:checked]:bg-[var(--theme-primary)] has-[:checked]:text-white"
@@ -52,7 +55,7 @@
                                 {{ $tier['label'] ?? '' }}
                             </label>
                         @endforeach
-                    </div>
+                    </fieldset>
                 </div>
 
                 <div

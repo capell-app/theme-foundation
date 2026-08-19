@@ -4,6 +4,7 @@ All notable changes to `capell-app/theme-foundation` will be documented in this 
 
 ## Unreleased
 
+- **Important upgrade behaviour — footer containers become public:** the Foundation fallback footer, the affected legacy theme footer sections, and the Grounds and Switchboard custom footers now render the shared Layout Builder `footer` area. Editors who previously assigned a container to that area on any of the 23 affected themes will see its content become live immediately after upgrading. This is deliberate: existing containers are not hidden, unpublished, or gated behind a new setting.
 - Added the closed, typed DesignSpec v1 contract with bounded validation, canonical JSON, and explicit compatibility readers.
 - Added deterministic Foundation theme artifact compilation and validation without model-selected paths, dependencies, commands, or network access.
 - Registered the `capell-theme` Project Build artifact handler through Core's public handler registry.

@@ -22,11 +22,11 @@
             <p class="text-xs font-semibold tracking-[0.12em] text-white uppercase">{{ $section->eyebrow }}</p>
         @endif
 
-        <h1
+        <h2
             class="max-w-4xl text-4xl leading-tight font-[var(--theme-heading-font)] font-semibold text-white sm:text-5xl lg:text-6xl"
         >
             {{ $section->heading }}
-        </h1>
+        </h2>
 
         @if ($section->summary)
             <p class="max-w-2xl text-base leading-8 text-slate-200 sm:text-lg">{{ $section->summary }}</p>

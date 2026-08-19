@@ -61,7 +61,9 @@
     "security": {
         "riskTier": "low",
         "publicSurface": {
-            "routeNames": [],
+            "routeNames": [
+                "capell-theme-foundation.dynamic-form-fragments.show"
+            ],
             "auth": "none",
             "csrfExemptRoutes": [],
             "signedRoutes": [],

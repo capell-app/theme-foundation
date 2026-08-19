@@ -33,12 +33,19 @@
 
 @supports (backdrop-filter: blur(1rem)) {
     .theme-chrome-nav {
-        backdrop-filter: blur(1rem) saturate(135%);
+        backdrop-filter: blur(8px);
         background: color-mix(
             in srgb,
             var(--theme-surface, #fcfffb) 88%,
             transparent
         );
+    }
+}
+
+@media (max-width: 767px) {
+    .theme-chrome-nav {
+        backdrop-filter: none;
+        background: var(--theme-surface, #fcfffb);
     }
 }
 
@@ -58,7 +65,8 @@
     color: var(--theme-foreground, #101715);
     display: inline-flex;
     flex: 0 1 auto;
-    font-family: var(--theme-heading-font, Sora), system-ui, sans-serif;
+    font-family:
+        var(--theme-heading-font, 'Sora'), 'Inter', system-ui, sans-serif;
     font-size: 0.9375rem;
     font-weight: 750;
     gap: 0.7rem;
@@ -356,7 +364,8 @@
     align-items: center;
     color: var(--theme-footer-ink);
     display: inline-flex;
-    font-family: var(--theme-heading-font, Sora), system-ui, sans-serif;
+    font-family:
+        var(--theme-heading-font, 'Sora'), 'Inter', system-ui, sans-serif;
     font-size: 1rem;
     font-weight: 760;
     gap: 0.75rem;
@@ -385,7 +394,8 @@
 
 .theme-chrome-footer__heading {
     color: var(--theme-footer-ink);
-    font-family: var(--theme-heading-font, Sora), system-ui, sans-serif;
+    font-family:
+        var(--theme-heading-font, 'Sora'), 'Inter', system-ui, sans-serif;
     font-size: 0.75rem;
     font-weight: 760;
     letter-spacing: 0.11em;

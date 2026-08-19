@@ -94,8 +94,8 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
     }
 
     /**
-     * Keep portable semantic page copy visible without repeating the title
-     * already owned by Foundation's hero section.
+     * Keep the semantic page title and portable page copy visible alongside
+     * Foundation's subordinate hero heading.
      *
      * @return array{widget_key: string, occurrence: int, meta: array{page_content: list<string>}}
      */
@@ -104,7 +104,7 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
         return [
             'widget_key' => 'page-content',
             'occurrence' => 1,
-            'meta' => ['page_content' => ['content']],
+            'meta' => ['page_content' => ['title', 'content']],
         ];
     }
 

@@ -297,8 +297,8 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
 
     /**
      * Wave 2.8 — flags theme packages with no `docs/screenshots.json`
-     * manifest, or one whose `entries` list is empty, meaning the theme has
-     * no fresh screenshot evidence for the marketplace.
+     * manifest, or one with neither captured entries nor explicit `notCaptured`
+     * records documenting why authentic evidence is currently unavailable.
      */
     public function fleetScreenshotFreshnessCheck(): DoctorCheckResultData
     {
@@ -408,8 +408,11 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
 
             $manifest = $this->readJsonFile($screenshotManifestPath);
             $entries = $manifest['entries'] ?? null;
+            $notCaptured = $manifest['notCaptured'] ?? null;
+            $hasEntries = is_array($entries) && $entries !== [];
+            $hasNotCapturedRecords = is_array($notCaptured) && $notCaptured !== [];
 
-            if (! is_array($entries) || $entries === []) {
+            if (! $hasEntries && ! $hasNotCapturedRecords) {
                 $missing[] = $packageDirectory;
             }
         }

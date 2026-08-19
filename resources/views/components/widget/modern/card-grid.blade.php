@@ -8,7 +8,6 @@
     'loop',
     'widget',
 ])
-
 @php
     $responsiveGrid = '!flex snap-x [scrollbar-width:none] gap-4 !overflow-x-auto pb-3 md:!grid md:!overflow-visible md:pb-0 [&::-webkit-scrollbar]:hidden';
     $responsiveItem = 'min-w-full snap-start md:min-w-0';

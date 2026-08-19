@@ -106,8 +106,21 @@ class Breadcrumbs extends AbstractWidget
         }
 
         return $ancestors
-            ->filter(fn (mixed $ancestor): bool => $ancestor instanceof Page && ! (bool) ($ancestor->getAttributes()['home'] ?? false))
+            ->filter(fn (mixed $ancestor): bool => $ancestor instanceof Page
+                && ! (bool) ($ancestor->getAttributes()['home'] ?? false)
+                && $this->hasLoadedPublicUrl($ancestor))
             ->values();
+    }
+
+    private function hasLoadedPublicUrl(Page $page): bool
+    {
+        if (! $page->relationLoaded('pageUrl')) {
+            return false;
+        }
+
+        $url = data_get($page->getRelation('pageUrl'), 'full_url');
+
+        return is_string($url) && $url !== '';
     }
 
     /**

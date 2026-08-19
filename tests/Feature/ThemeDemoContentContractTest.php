@@ -271,7 +271,7 @@ it('foundation demonstrates a credible site instead of describing its implementa
         ->not->toContain('·');
 });
 
-it('foundation keeps portable page copy without repeating the hero title', function (): void {
+it('foundation keeps a semantic page title and portable page copy after a subordinate hero', function (): void {
     $definitions = (new FoundationDemoContent)->definitions(
         themeKey: 'default',
         themeName: 'Foundation',
@@ -307,8 +307,8 @@ it('foundation keeps portable page copy without repeating the hero title', funct
         }
 
         expect($widgetMeta['page_content'] ?? null)->toBe(
-            ['content'],
-            "Foundation surface [{$definition->surface}] must omit the duplicated page title from its page-content widget.",
+            ['title', 'content'],
+            "Foundation surface [{$definition->surface}] must include the semantic page title and portable page copy in its page-content widget.",
         );
     }
 });
