@@ -10,7 +10,7 @@ final class ThemePhpBlockBaselineCounts
     public const array FROZEN_BASELINE_COUNTS = [
         'photography' => 19,
         'business' => 10,
-        'directory' => 36,
+        'directory' => 31,
         'magazine' => 35,
         'catalogue' => 29,
         'curated' => 25,

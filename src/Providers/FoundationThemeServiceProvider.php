@@ -47,6 +47,7 @@ use Capell\FoundationTheme\Enums\FoundationSectionWidgetComponentEnum;
 use Capell\FoundationTheme\Enums\FoundationThemeAssetEnum;
 use Capell\FoundationTheme\Filament\AuthMenuWidget;
 use Capell\FoundationTheme\Filament\Extenders\FoundationLayoutContainerSchemaExtender;
+use Capell\FoundationTheme\Filament\Extenders\SectionVariantSchemaExtender;
 use Capell\FoundationTheme\Filament\Settings\FoundationThemeSettingsSchema;
 use Capell\FoundationTheme\Http\Controllers\FoundationDynamicFormFragmentController;
 use Capell\FoundationTheme\Listeners\RunTailwindAssetsOnPackageChange;
@@ -101,6 +102,7 @@ use Capell\Frontend\Support\Loader\PageLoader;
 use Capell\Frontend\Support\Loader\SiteLoader;
 use Capell\Frontend\Support\Routing\ReservedFrontendPathRegistry;
 use Capell\LayoutBuilder\Contracts\Extenders\LayoutContainerSchemaExtender;
+use Capell\LayoutBuilder\Contracts\Extenders\WidgetSchemaExtender;
 use Capell\LayoutBuilder\Contracts\LayoutContainerThemePresentationProjector;
 use Capell\LayoutBuilder\Contracts\PublicLayoutWidgetPayloadContributor;
 use Capell\LayoutBuilder\Data\WidgetExtensions\WidgetExtensionCapabilitiesData;
@@ -223,6 +225,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
         $this->registerLayoutAreas();
         $this->registerAuthMenuWidgetExtension();
         $this->registerLayoutContainerSchemaExtenders();
+        $this->registerWidgetSchemaExtenders();
         $this->registerLayoutContainerThemePresentationProjectors();
         $this->registerThemeChromeComponents();
         $this->registerThemeStudioDefinition();
@@ -598,6 +601,23 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
         $this->app->singleton(FoundationLayoutContainerSchemaExtender::class);
         $this->app->tag(FoundationLayoutContainerSchemaExtender::class, LayoutContainerSchemaExtender::TAG);
+    }
+
+    private function registerWidgetSchemaExtenders(): void
+    {
+        if (! interface_exists(WidgetSchemaExtender::class)) {
+            return;
+        }
+
+        $alreadyTagged = collect($this->app->tagged(WidgetSchemaExtender::TAG))
+            ->contains(fn (object $extender): bool => $extender instanceof SectionVariantSchemaExtender);
+
+        if ($alreadyTagged) {
+            return;
+        }
+
+        $this->app->singleton(SectionVariantSchemaExtender::class);
+        $this->app->tag(SectionVariantSchemaExtender::class, WidgetSchemaExtender::TAG);
     }
 
     private function registerLayoutContainerThemePresentationProjectors(): void

@@ -69,6 +69,8 @@ return [
         'relaxed' => 'Relaxed',
         'spacious' => 'Spacious',
     ],
+    'section_variant' => 'Section variant',
+    'section_variant_helper' => 'Choose an alternative layout for this section. Options come from the active theme.',
     'surface_background_color' => 'Surface background colour',
     'widget_gap' => 'Widget gap',
     'widget_gap_options' => [

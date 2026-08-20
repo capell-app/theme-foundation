@@ -114,9 +114,13 @@ uses(AssertsPublicThemeOutputSafety::class);
  * pass then added nine reviewed preparation-only blocks across shared chrome,
  * component states, URL sanitisation, and widget render data. That moved
  * Foundation from 116 to 125 and the current fleet baseline from 676 to 685.
+ * CAP-0247's directory widget-parity pass then ratcheted directory DOWN from
+ * 36 to 31: its generic widget shim moved to a typed resolver action, and the
+ * duplicated role-filters-toolbar markup collapsed into one shared Blade
+ * component. That moves the fleet baseline from 685 to 680.
  */
-it('confirms the frozen baseline snapshot sums to the programme-verified total of 685', function (): void {
-    expect(array_sum(ThemePhpBlockBaselineCounts::FROZEN_BASELINE_COUNTS))->toBe(685);
+it('confirms the frozen baseline snapshot sums to the programme-verified total of 680', function (): void {
+    expect(array_sum(ThemePhpBlockBaselineCounts::FROZEN_BASELINE_COUNTS))->toBe(680);
 });
 
 it('keeps each theme package within its frozen @php block baseline', function (): void {

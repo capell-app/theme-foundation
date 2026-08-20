@@ -63,28 +63,95 @@ function themeContractThemeSheets(): array
     return $stylesheets;
 }
 
+/**
+ * Return the source of the balanced `[...]` array passed as the named argument `$argument`.
+ *
+ * A non-greedy regex cannot be used here: it stops at the first `]`, which is the closing
+ * bracket of the FIRST token's nested option list, silently hiding every later token.
+ */
+function themeContractExtractNamedArrayArgument(string $source, string $argument): ?string
+{
+    if (! preg_match('/\b' . preg_quote($argument, '/') . '\s*:\s*\[/', $source, $match, PREG_OFFSET_CAPTURE)) {
+        return null;
+    }
+
+    $start = $match[0][1] + strlen($match[0][0]);
+    $depth = 1;
+    $length = strlen($source);
+
+    for ($offset = $start; $offset < $length; $offset++) {
+        $character = $source[$offset];
+
+        if ($character === '[') {
+            $depth++;
+        } elseif ($character === ']') {
+            $depth--;
+
+            if ($depth === 0) {
+                return substr($source, $start, $offset - $start);
+            }
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Keys declared at the top level of an array literal, ignoring keys of nested arrays
+ * (so a token's own `'options' => [...]` is not mistaken for another token).
+ *
+ * @return list<string>
+ */
+function themeContractTopLevelArrayKeys(string $arrayBody): array
+{
+    preg_match_all('/[\'\"]([a-zA-Z0-9_]+)[\'\"]\s*=>\s*\[/', $arrayBody, $matches, PREG_OFFSET_CAPTURE);
+
+    $keys = [];
+
+    foreach ($matches[1] as $index => $capture) {
+        $prefix = substr($arrayBody, 0, (int) $matches[0][$index][1]);
+
+        if (substr_count($prefix, '[') === substr_count($prefix, ']')) {
+            $keys[] = (string) $capture[0];
+        }
+    }
+
+    return $keys;
+}
+
 /** @return list<string> */
 function themeContractThemeEditorExtraTokens(): array
 {
     $packagesRoot = dirname(__DIR__, 3);
-    $providerFiles = glob($packagesRoot . '/theme-*/src/*ThemeServiceProvider.php') ?: [];
+    // Not `*ThemeServiceProvider.php`: theme-bistro names its provider `ThemeBistroServiceProvider`,
+    // so the narrower glob skipped it entirely and lost its declared editor tokens.
+    $providerFiles = glob($packagesRoot . '/theme-*/src/*ServiceProvider.php') ?: [];
 
     $tokens = [];
 
     foreach ($providerFiles as $providerFile) {
         $contents = file_get_contents($providerFile);
 
-        if (! is_string($contents) || ! str_contains($contents, 'withExtraTokens')) {
+        if (! is_string($contents)) {
             continue;
         }
 
-        if (! preg_match('/tokens\s*:\s*\[(.*?)\]/s', $contents, $tokenMatch)) {
-            continue;
+        $tokenNames = [];
+
+        // Idiom 1: StandardThemeEditorSchema::withExtraTokens(tokens: [...]).
+        if (str_contains($contents, 'withExtraTokens')) {
+            $tokenBlock = themeContractExtractNamedArrayArgument($contents, 'tokens');
+
+            if ($tokenBlock !== null) {
+                $tokenNames = themeContractTopLevelArrayKeys($tokenBlock);
+            }
         }
 
-        preg_match_all('/[\'\"]([a-zA-Z0-9_]+)[\'\"]\s*=>\s*\[/m', $tokenMatch[1], $tokenKeys);
+        // Idiom 2: mutating the resolved schema directly, e.g. $schema['tokens']['deskScatter'] = [...].
+        preg_match_all('/\[\s*[\'\"]tokens[\'\"]\s*\]\s*\[\s*[\'\"]([a-zA-Z0-9_]+)[\'\"]\s*\]\s*=/', $contents, $assigned);
+        $tokenNames = [...$tokenNames, ...$assigned[1]];
 
-        foreach ($tokenKeys[1] as $tokenName) {
+        foreach ($tokenNames as $tokenName) {
             $kebab = strtolower((string) preg_replace('/(?<!^)([A-Z])/', '-$1', $tokenName));
             $tokens[] = "--theme-{$kebab}";
         }
@@ -133,7 +200,11 @@ it('only consumes emitted theme custom properties', function (): void {
     $themeStylesheets = themeContractThemeSheets();
 
     expect($themeStylesheets)->not->toBeEmpty();
-    expect($themeStylesheets)->toHaveLength(30);
+    // Census of shipped theme stylesheets. This literal is deliberate: it fails loudly when a
+    // theme stylesheet silently disappears (a deleted/renamed package, or a moved CSS path).
+    // Update the number only when a theme is intentionally added or removed — never delete
+    // this assertion to make the suite green.
+    expect($themeStylesheets)->toHaveLength(29);
 
     foreach ($themeStylesheets as $themeDirectory => $themeStylesheet) {
         $consumedTokens = themeContractExtractCustomProperties($themeStylesheet);
