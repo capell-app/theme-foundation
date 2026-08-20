@@ -80,8 +80,11 @@ function editorSchemaProviderPresetValues(): array
 {
     $packagesRoot = dirname(__DIR__, 3);
     $providerFiles = array_merge(
-        glob($packagesRoot . '/theme-*/src/*ThemeServiceProvider.php') ?: [],
-        glob($packagesRoot . '/theme-*/src/Providers/*ThemeServiceProvider.php') ?: [],
+        // Not *ThemeServiceProvider.php: theme-bistro names its provider
+        // ThemeBistroServiceProvider, so the narrower glob silently skipped it
+        // and its presets were never checked against the editor vocabulary.
+        glob($packagesRoot . '/theme-*/src/*ServiceProvider.php') ?: [],
+        glob($packagesRoot . '/theme-*/src/Providers/*ServiceProvider.php') ?: [],
     );
     $values = [];
 

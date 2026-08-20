@@ -123,7 +123,7 @@
 
                             if ($assetRenderData->hasTranslations) {
                                 $title = $assetRenderData->title;
-                                $content = $assetRenderData->content;
+                                $content = $assetRenderData->safeContentHtml();
                             }
                         @endphp
                         {{-- format-ignore-end --}}

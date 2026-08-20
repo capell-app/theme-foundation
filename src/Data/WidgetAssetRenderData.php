@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Capell\FoundationTheme\Data;
 
 use Capell\Core\Enums\ContentStructure;
+use Capell\Core\Support\Security\PublicHtmlSanitizer;
 use Spatie\LaravelData\Data;
 
 final class WidgetAssetRenderData extends Data
@@ -42,4 +43,16 @@ final class WidgetAssetRenderData extends Data
         public readonly ?string $textAlign,
         public readonly ?string $title,
     ) {}
+
+    /**
+     * Author-supplied rich text, sanitised for anonymous public output.
+     */
+    public function safeContentHtml(): string
+    {
+        if ($this->content === null || trim($this->content) === '') {
+            return '';
+        }
+
+        return resolve(PublicHtmlSanitizer::class)->sanitize($this->content);
+    }
 }

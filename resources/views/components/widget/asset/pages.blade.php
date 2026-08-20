@@ -3,6 +3,7 @@
     use Capell\Core\Enums\AssetComponentEnum;
     use Capell\Core\Enums\RenderableTypeEnum;
     use Capell\Core\Facades\CapellCore;
+    use Capell\Core\Support\Security\PublicHtmlSanitizer;
     use Capell\Frontend\Facades\Frontend;
     use Capell\Frontend\Support\View\PublicModelMeta;
 
@@ -83,7 +84,7 @@
 
             @if (! $pages || $pages->isEmpty())
                 <x-capell::no-results>
-                    {!! $widget->translation?->getMeta('no_results') ?: __('capell-layout-builder::generic.no_pages_found') !!}
+                    {!! resolve(PublicHtmlSanitizer::class)->sanitize((string) ($widget->translation?->getMeta('no_results') ?: __('capell-layout-builder::generic.no_pages_found'))) !!}
                 </x-capell::no-results>
             @else
                 <div
