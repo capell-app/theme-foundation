@@ -2,43 +2,49 @@
 
 declare(strict_types=1);
 
-use Capell\Core\Enums\FrontendRuntime;
+use Awcodes\Curator\CuratorServiceProvider;
+use Capell\Admin\Enums\CapellPermission;
+use Capell\Core\Facades\CapellCore;
 use Capell\Core\Models\Blueprint;
 use Capell\Core\Models\Theme;
-use Capell\Core\ThemeStudio\Data\ThemeDefinitionData;
 use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
 use Capell\FoundationTheme\Filament\Extenders\SectionVariantSchemaExtender;
 use Capell\FoundationTheme\Providers\FoundationThemeServiceProvider;
 use Capell\LayoutBuilder\Contracts\Extenders\WidgetSchemaExtender;
+use Capell\LayoutBuilder\Filament\Resources\Widgets\Pages\EditWidget;
+use Capell\LayoutBuilder\Models\Widget;
+use Capell\LayoutBuilder\Support\LayoutBuilderAdminRegistrar;
+use Capell\Tests\Support\Concerns\CreatesAdminUser;
+use Capell\ThemeEditorial\EditorialThemeServiceProvider;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Schema;
+use Livewire\Livewire;
+use Spatie\Permission\Models\Permission;
 
-/**
- * @param  array<string, array<int, string>>  $sectionVariants
- */
-function registerActiveVariantTheme(array $sectionVariants): void
+uses(CreatesAdminUser::class);
+
+function bootEditorialSectionVariantLifecycle(): void
 {
-    $registry = resolve(ThemeRegistry::class);
+    CapellCore::forcePackageInstalled(FoundationThemeServiceProvider::$packageName);
+    CapellCore::forcePackageInstalled(EditorialThemeServiceProvider::$packageName);
 
-    $registry->register(new ThemeDefinitionData(
-        key: 'variant-fixture',
-        name: 'Variant Fixture',
-        description: 'Fixture theme declaring section variants.',
-        package: 'capell-app/theme-foundation',
-        previewImage: '',
-        tags: [],
-        bestFit: [],
-        presets: [],
-        runtime: FrontendRuntime::Blade,
-        frontend: ['sectionVariants' => $sectionVariants],
-    ));
+    $foundationProvider = new FoundationThemeServiceProvider(app());
+    $foundationProvider->register();
+    $foundationProvider->boot();
 
+    $editorialProvider = new EditorialThemeServiceProvider(app());
+    $editorialProvider->register();
+    $editorialProvider->boot(resolve(ThemeRegistry::class));
+}
+
+function activateEditorialTheme(): Theme
+{
     Theme::query()->update(['default' => false]);
 
-    Theme::query()->updateOrCreate(
-        ['key' => 'variant-fixture'],
+    return Theme::query()->updateOrCreate(
+        ['key' => EditorialThemeServiceProvider::THEME_KEY],
         [
-            'name' => 'Variant Fixture',
+            'name' => EditorialThemeServiceProvider::definition()->name,
             'blueprint_id' => Blueprint::factory()->theme()->create()->getKey(),
             'default' => true,
             'status' => true,
@@ -47,12 +53,7 @@ function registerActiveVariantTheme(array $sectionVariants): void
 }
 
 it('is tagged as a widget schema extender once the theme is installed', function (): void {
-    $provider = app()->getProvider(FoundationThemeServiceProvider::class);
-
-    expect($provider)->toBeInstanceOf(FoundationThemeServiceProvider::class);
-
-    $register = new ReflectionMethod($provider, 'registerWidgetSchemaExtenders');
-    $register->invoke($provider);
+    bootEditorialSectionVariantLifecycle();
 
     $extenders = collect(app()->tagged(WidgetSchemaExtender::TAG));
 
@@ -70,18 +71,16 @@ it('appends a variant select bound to the meta state path', function (): void {
 });
 
 it('offers the active theme declared variants for the edited section type', function (): void {
-    registerActiveVariantTheme([
-        'breaking-news-ribbon' => ['default', 'compact'],
-    ]);
+    bootEditorialSectionVariantLifecycle();
+    activateEditorialTheme();
 
     expect(SectionVariantSchemaExtender::optionsFor('breaking-news-ribbon'))
         ->toBe(['default' => 'Default', 'compact' => 'Compact']);
 });
 
 it('offers nothing for a section type the active theme does not declare', function (): void {
-    registerActiveVariantTheme([
-        'breaking-news-ribbon' => ['default', 'compact'],
-    ]);
+    bootEditorialSectionVariantLifecycle();
+    activateEditorialTheme();
 
     expect(SectionVariantSchemaExtender::optionsFor('hero'))->toBe([])
         ->and(SectionVariantSchemaExtender::optionsFor(null))->toBe([])
@@ -89,7 +88,57 @@ it('offers nothing for a section type the active theme does not declare', functi
 });
 
 it('offers nothing when the active theme declares no section variants', function (): void {
-    registerActiveVariantTheme([]);
+    bootEditorialSectionVariantLifecycle();
+    Theme::query()->update(['default' => false]);
 
     expect(SectionVariantSchemaExtender::optionsFor('breaking-news-ribbon'))->toBe([]);
+});
+
+it('persists the selected variant under the widget meta state path', function (): void {
+    bootEditorialSectionVariantLifecycle();
+    activateEditorialTheme();
+
+    $this->app->register(CuratorServiceProvider::class);
+    resolve(LayoutBuilderAdminRegistrar::class)->register();
+
+    test()->actingAsAdmin();
+
+    $permission = Permission::findOrCreate(
+        CapellPermission::ManageAdvancedPresentationSettings->name(),
+        'web',
+    );
+    auth()->user()?->givePermissionTo($permission);
+
+    $type = Blueprint::factory()->create([
+        'type' => 'widget',
+        'admin' => [
+            'type_configurator' => 'Widget',
+            'configurator' => 'Default',
+        ],
+    ]);
+    $widget = Widget::factory()->create([
+        'blueprint_id' => $type->getKey(),
+        'meta' => [
+            'type' => 'breaking-news-ribbon',
+        ],
+    ]);
+
+    Livewire::test(EditWidget::class, ['record' => $widget->getRouteKey()])
+        ->assertFormFieldVisible('meta.variant')
+        ->assertFormFieldExists('meta.variant', fn (Select $field): bool => $field->getOptions() === [
+            'default' => 'Default',
+            'compact' => 'Compact',
+        ])
+        ->fillForm([
+            'meta' => [
+                'variant' => 'compact',
+            ],
+        ])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($widget->refresh()->meta)->toMatchArray([
+        'type' => 'breaking-news-ribbon',
+        'variant' => 'compact',
+    ]);
 });
