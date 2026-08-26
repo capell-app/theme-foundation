@@ -70,8 +70,12 @@
                     $featured = (bool) ($asset?->getMeta('featured', false) ?? false);
                     $ctaLabel = $asset?->getMeta('cta_label', 'Get Started') ?? 'Get Started';
                     // Author-supplied. Blade escaping does not neutralise a `javascript:`
-                    // scheme in href context; '#' is an allowed fallback.
-                    $ctaUrl = $assetRenderData->meta['cta_url'] ?? '#';
+                    // scheme in href context, so the URL is passed through
+                    // PublicUrlSanitizer, which rejects anything outside the allowed
+                    // schemes; a rejected URL falls back to '#'.
+                    $ctaUrl = \Capell\Core\Support\Security\PublicUrlSanitizer::sanitize(
+                        $assetRenderData->meta['cta_url'] ?? null,
+                    ) ?? '#';
                     $features = $asset?->getMeta('features', []) ?? [];
                 @endphp
 

@@ -6,13 +6,16 @@
 ])
 
 @php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
+
+    $safeUrl = PublicUrlSanitizer::sanitize($url);
     $classes = [
         'group inline-flex items-center justify-between gap-2 rounded-full pr-2 pl-3',
         'py-1 text-xs' => $size === 'sm',
         'py-1.5 text-sm' => $size === 'md',
         'py-2 text-base' => $size === 'lg',
         'bg-gray-100 font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-200',
-        'hover:text-primary focus:text-primary cursor-pointer transition hover:bg-gray-200 dark:hover:bg-gray-900' => $url,
+        'hover:text-primary focus:text-primary cursor-pointer transition hover:bg-gray-200 dark:hover:bg-gray-900' => $safeUrl,
         'ring-primary-500 ring-2' => $active,
     ];
 @endphp
@@ -36,9 +39,9 @@
     @endif
 @endcapellBuffer
 
-@if ($url)
+@if ($safeUrl)
     <a
-        href="{{ $url }}"
+        href="{{ $safeUrl }}"
         @class($classes)
         @wireNavigate
     >

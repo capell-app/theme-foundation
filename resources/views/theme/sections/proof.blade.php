@@ -1,3 +1,6 @@
+@php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
+@endphp
 <section
     class="theme-proof border-b border-slate-200/80 bg-slate-950 text-white"
 >
@@ -20,12 +23,15 @@
 
         <div class="grid gap-4 sm:grid-cols-2">
             @foreach ($section->items as $item)
+                @php
+                    $safeItemImage = PublicUrlSanitizer::sanitize($item['image'] ?? null);
+                @endphp
                 <figure
                     class="overflow-hidden rounded-[var(--theme-radius-value)] border border-white/10 bg-white/[0.04]"
                 >
-                    @if (! empty($item['image']))
+                    @if (! empty($safeItemImage))
                         <img
-                            src="{{ $item['image'] }}"
+                            src="{{ $safeItemImage }}"
                             alt="{{ $item['image_alt'] ?? $item['title'] ?? $item['name'] ?? '' }}"
                             width="800"
                             height="320"

@@ -5,6 +5,7 @@
     'menuSubItemClass' => 'focus:text-primary hover:text-primary py-1 text-xs leading-tight font-medium text-[var(--color-footer-muted)] xl:text-sm',
 ])
 @php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
     use Illuminate\Support\Collection;
 
     /**
@@ -35,6 +36,9 @@
         @foreach ($chunks as $chunk)
             <ul class="flex flex-col gap-y-1">
                 @foreach ($chunk as $id => $item)
+                    @php
+                        $safeItemUrl = PublicUrlSanitizer::sanitize($item->data['url'] ?? null) ?? '';
+                    @endphp
                     <li
                         @class([
                         'nav-item',
@@ -42,7 +46,7 @@
                     ])
                     >
                         <a
-                            href="{{ $item->data['url'] ?? '' }}"
+                            href="{{ $safeItemUrl }}"
                             @wireNavigate
                             class="{{ $menuItemClass }}"
                         >
@@ -53,9 +57,12 @@
                                 class="mt-1 flex flex-col gap-y-1 border-s border-[var(--border-color-footer)] ps-3"
                             >
                                 @foreach ($item->children as $child)
+                                    @php
+                                        $safeChildUrl = PublicUrlSanitizer::sanitize($child->data['url'] ?? null) ?? '';
+                                    @endphp
                                     <li class="nav-child-item">
                                         <a
-                                            href="{{ $child->data['url'] ?? '' }}"
+                                            href="{{ $safeChildUrl }}"
                                             @wireNavigate
                                             @class([
                                                 $menuSubItemClass,

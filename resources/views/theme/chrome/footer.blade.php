@@ -8,9 +8,17 @@
     columns[{heading,links[{label,url}]}], legal?.
 --}}
 @php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
+
     $footerColumns = collect($section->columns ?? [])
         ->map(static function (mixed $column): array {
             $links = collect(data_get($column, 'links', []))
+                ->map(static function (mixed $link): array {
+                    $link = (array) $link;
+                    $link['url'] = PublicUrlSanitizer::sanitize($link['url'] ?? null);
+
+                    return $link;
+                })
                 ->filter(
                     static fn (mixed $link): bool => filled(data_get($link, 'label'))
                         && filled(data_get($link, 'url')),

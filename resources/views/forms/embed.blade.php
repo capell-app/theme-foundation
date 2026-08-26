@@ -1,3 +1,8 @@
+@php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
+
+    $safeFallbackUrl = PublicUrlSanitizer::sanitize(data_get($formEmbed->widgetData, 'fallback_url'));
+@endphp
 <div {{ $attributes }}>
     @if ($formEmbed->available)
         @livewire($formEmbed->componentName, ['handle' => $formEmbed->handle, 'widgetData' => $formEmbed->widgetData], key($formEmbed->instanceId))
@@ -22,9 +27,9 @@
                 {{ data_get($formEmbed->widgetData, 'fallback_message', __('capell-theme-foundation::generic.form_unavailable')) }}
             </p>
 
-            @if (data_get($formEmbed->widgetData, 'fallback_url'))
+            @if ($safeFallbackUrl !== null)
                 <a
-                    href="{{ data_get($formEmbed->widgetData, 'fallback_url') }}"
+                    href="{{ $safeFallbackUrl }}"
                     class="theme-form-fallback__link"
                 >
                     {{ data_get($formEmbed->widgetData, 'fallback_label', __('capell-theme-foundation::generic.form_contact_instead')) }}

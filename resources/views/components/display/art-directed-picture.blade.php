@@ -21,6 +21,12 @@
     own `--foundation-*` custom properties for border/radius styling.
 --}}
 
+@php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
+
+    $safeSrc = PublicUrlSanitizer::sanitize($src);
+@endphp
+
 <picture
     {{ $attributes->except(['style'])->merge(['class' => 'block overflow-hidden']) }}
     style="aspect-ratio: {{ $aspectRatio }}; {{ $attributes->get('style') }}"
@@ -34,7 +40,7 @@
     @endforeach
 
     <img
-        src="{{ $src }}"
+        src="{{ $safeSrc }}"
         alt="{{ $alt }}"
         loading="{{ $loading }}"
         class="h-full w-full object-cover"

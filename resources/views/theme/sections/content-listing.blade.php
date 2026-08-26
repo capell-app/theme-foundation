@@ -1,5 +1,16 @@
 @php
-    $listingItems = data_get($section, 'resolvedResults.items', data_get($section, 'items', []));
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
+
+    $listingItems = collect(data_get($section, 'resolvedResults.items', data_get($section, 'items', [])))
+        ->map(static function (mixed $item): array {
+            $item = (array) $item;
+            $item['url'] = PublicUrlSanitizer::sanitize($item['url'] ?? null);
+            $item['image'] = PublicUrlSanitizer::sanitize($item['image'] ?? null);
+
+            return $item;
+        })
+        ->all();
+    $safeArchiveUrl = PublicUrlSanitizer::sanitize(data_get($section, 'resolvedResults.archiveUrl'));
     $isGallery = ($section->variant ?? null) === 'gallery';
     $isPathways = ($section->variant ?? null) === 'pathways';
     $isSpotlight = ($section->variant ?? null) === 'spotlight';
@@ -93,9 +104,9 @@
             @endif
         </div>
 
-        @if (filled(data_get($section, 'resolvedResults.archiveUrl')))
+        @if (filled($safeArchiveUrl))
             <a
-                href="{{ data_get($section, 'resolvedResults.archiveUrl') }}"
+                href="{{ $safeArchiveUrl }}"
                 class="mb-8 inline-flex font-semibold text-[var(--theme-primary)] underline-offset-4 hover:underline"
             >
                 {{ __('capell-theme-foundation::results.archive') }}

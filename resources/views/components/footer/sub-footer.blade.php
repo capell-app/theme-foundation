@@ -1,4 +1,5 @@
 @php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
     use Capell\Frontend\Actions\GetLayoutContainerWidthAction;
 
     $containerWidth = GetLayoutContainerWidthAction::run();
@@ -24,8 +25,11 @@
             aria-label="{{ __('capell-theme-foundation::generic.sub_footer_navigation') }}"
         >
             @foreach ($items as $id => $item)
+                @php
+                    $safeItemUrl = PublicUrlSanitizer::sanitize($item->data['url'] ?? null) ?? '';
+                @endphp
                 <a
-                    href="{{ $item->data['url'] ?? '' }}"
+                    href="{{ $safeItemUrl }}"
                     @wireNavigate
                     @class([
                         'nav-item hover:text-primary flex min-h-11 items-center text-sm font-medium text-[var(--color-footer-link)]',

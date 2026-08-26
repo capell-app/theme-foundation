@@ -12,12 +12,18 @@
     token-skinned via `--foundation-*` properties.
 --}}
 
+@php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
+
+    $safeAuthorAvatar = PublicUrlSanitizer::sanitize($authorAvatar);
+@endphp
+
 <div
     {{ $attributes->merge(['class' => 'byline-with-metadata flex items-center gap-3']) }}
 >
-    @if ($authorAvatar)
+    @if ($safeAuthorAvatar !== null)
         <img
-            src="{{ $authorAvatar }}"
+            src="{{ $safeAuthorAvatar }}"
             alt="{{ $authorName }}"
             loading="lazy"
             class="h-10 w-10 rounded-full object-cover"

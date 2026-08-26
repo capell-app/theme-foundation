@@ -1,7 +1,10 @@
 @php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
+
     $searchResults = is_array($section->results ?? null) ? $section->results : [];
     $query = trim((string) ($section->query ?? ''));
     $resultCount = count($searchResults);
+    $safeAction = PublicUrlSanitizer::sanitize($section->action ?? '') ?? '';
 @endphp
 
 <section
@@ -24,7 +27,7 @@
 
         <form
             method="get"
-            action="{{ $section->action ?? '' }}"
+            action="{{ $safeAction }}"
             class="flex flex-col gap-3 sm:flex-row"
             role="search"
         >
@@ -63,9 +66,12 @@
         @if ($searchResults !== [])
             <ul class="mt-8 divide-y divide-[var(--foundation-border)]">
                 @foreach ($searchResults as $result)
+                    @php
+                        $safeResultUrl = PublicUrlSanitizer::sanitize($result['url'] ?? null) ?? '#';
+                    @endphp
                     <li class="py-5 first:pt-0 last:pb-0">
                         <a
-                            href="{{ $result['url'] ?? '#' }}"
+                            href="{{ $safeResultUrl }}"
                             class="group widget block"
                         >
                             <span

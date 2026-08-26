@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+use Capell\Core\Support\Security\PublicUrlSanitizer;
 use Capell\Navigation\Data\NavigationItemData;
 
 /**
@@ -13,6 +14,9 @@ use Capell\Navigation\Data\NavigationItemData;
     'item',
     'active' => $item->active,
 ])
+@php
+    $safeItemUrl = PublicUrlSanitizer::sanitize($item->data['url'] ?? null) ?? '';
+@endphp
 <li
     {{
     $attributes->class([
@@ -22,7 +26,7 @@ use Capell\Navigation\Data\NavigationItemData;
 }}
 >
     <a
-        href="{{ $item->data['url'] ?? '' }}"
+        href="{{ $safeItemUrl }}"
         @class([
             'inline-block py-1',
             'hover:text-primary focus:text-primary' => ! $active,

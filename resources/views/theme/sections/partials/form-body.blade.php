@@ -7,9 +7,14 @@
     only by FoundationSectionPublicLayoutWidgetPayloadContributor, once per
     visitor, when the browser fetches the placeholder's fragment URL.
 --}}
+@php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
+
+    $safeAction = PublicUrlSanitizer::sanitize($section->action ?? '') ?? '';
+@endphp
 <form
     method="post"
-    action="{{ $section->action ?? '' }}"
+    action="{{ $safeAction }}"
     class="grid gap-5"
 >
     @csrf
@@ -53,9 +58,7 @@
                         class="rounded-[var(--theme-radius-value)] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-950 focus:border-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:outline-none"
                     >
                         @foreach (($field['options'] ?? []) as $option)
-                            <option
-                                value="{{ $option['value'] ?? $option }}"
-                            >
+                            <option value="{{ $option['value'] ?? $option }}">
                                 {{ $option['label'] ?? $option }}
                             </option>
                         @endforeach

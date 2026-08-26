@@ -1,4 +1,5 @@
 @php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
     use Capell\FoundationTheme\Actions\BuildAssetBannerItemsAction;
     use Capell\Frontend\Facades\Frontend;
 
@@ -49,6 +50,7 @@
                 @foreach ($bannerItems as $bannerItem)
                     @php
                         $hasImage = (bool) $bannerItem->image;
+                        $safeBannerUrl = PublicUrlSanitizer::sanitize($bannerItem->url);
                     @endphp
 
                     <div
@@ -91,9 +93,9 @@
                                         'text-gray-900 dark:text-gray-50' => ! $hasImage,
                                     ])
                                     >
-                                        @if ($bannerItem->url)
+                                        @if (filled($safeBannerUrl))
                                             <a
-                                                href="{{ $bannerItem->url }}"
+                                                href="{{ $safeBannerUrl }}"
                                                 class="hover:underline"
                                             >
                                                 {{ $bannerItem->title }}

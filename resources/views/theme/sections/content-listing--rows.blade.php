@@ -1,3 +1,8 @@
+@php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
+
+    $safeArchiveUrl = PublicUrlSanitizer::sanitize(data_get($section, 'resolvedResults.archiveUrl'));
+@endphp
 <section
     class="theme-content-listing theme-content-listing--rows border-b border-slate-200/80 bg-[var(--theme-surface)]"
 >
@@ -16,9 +21,9 @@
             @endif
         </div>
 
-        @if (filled(data_get($section, 'resolvedResults.archiveUrl')))
+        @if (filled($safeArchiveUrl))
             <a
-                href="{{ data_get($section, 'resolvedResults.archiveUrl') }}"
+                href="{{ $safeArchiveUrl }}"
                 class="mb-8 inline-flex font-semibold text-[var(--theme-primary)] underline-offset-4 hover:underline"
             >
                 {{ __('capell-theme-foundation::results.archive') }}
@@ -27,13 +32,17 @@
 
         <div class="divide-y divide-slate-200/80">
             @foreach (data_get($section, 'resolvedResults.items', data_get($section, 'items', [])) as $item)
+                @php
+                    $safeItemUrl = PublicUrlSanitizer::sanitize($item['url'] ?? null) ?? '#';
+                    $safeItemImage = PublicUrlSanitizer::sanitize($item['image'] ?? null);
+                @endphp
                 <a
-                    href="{{ $item['url'] ?? '#' }}"
+                    href="{{ $safeItemUrl }}"
                     class="group widget flex items-center gap-5 py-5 transition first:pt-0 last:pb-0"
                 >
-                    @if (! empty($item['image']))
+                    @if (! empty($safeItemImage))
                         <img
-                            src="{{ $item['image'] }}"
+                            src="{{ $safeItemImage }}"
                             alt=""
                             width="160"
                             height="120"

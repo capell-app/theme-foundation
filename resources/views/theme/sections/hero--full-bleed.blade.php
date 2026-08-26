@@ -1,9 +1,14 @@
+@php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
+
+    $safeMediaUrl = PublicUrlSanitizer::sanitize($section->mediaUrl ?? null);
+@endphp
 <section
     class="theme-hero theme-hero--full-bleed relative border-b border-slate-200/80 bg-slate-950"
 >
-    @if ($section->mediaUrl)
+    @if ($safeMediaUrl)
         <img
-            src="{{ $section->mediaUrl }}"
+            src="{{ $safeMediaUrl }}"
             alt="{{ $section->mediaAlt ?? '' }}"
             width="1920"
             height="960"
@@ -35,8 +40,11 @@
         @if ($section->actions !== [])
             <div class="flex flex-wrap gap-3">
                 @foreach ($section->actions as $action)
+                    @php
+                        $safeActionUrl = PublicUrlSanitizer::sanitize($action['url'] ?? null) ?? '#';
+                    @endphp
                     <a
-                        href="{{ $action['url'] }}"
+                        href="{{ $safeActionUrl }}"
                         class="{{ ($action['style'] ?? 'primary') === 'secondary' ? 'border border-white/60 text-white hover:border-white' : 'bg-white text-slate-950 hover:opacity-90' }} rounded-full px-5 py-3 text-sm font-semibold transition"
                     >
                         {{ $action['label'] }}

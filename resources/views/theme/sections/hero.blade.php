@@ -1,3 +1,8 @@
+@php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
+
+    $safeMediaUrl = PublicUrlSanitizer::sanitize($section->mediaUrl ?? null);
+@endphp
 <section
     class="theme-hero border-b border-[var(--foundation-border)] bg-[var(--foundation-section-bg)]"
 >
@@ -24,8 +29,11 @@
             @if ($section->actions !== [])
                 <div class="flex flex-wrap gap-3">
                     @foreach ($section->actions as $action)
+                        @php
+                            $safeActionUrl = PublicUrlSanitizer::sanitize($action['url'] ?? null) ?? '#';
+                        @endphp
                         <a
-                            href="{{ $action['url'] }}"
+                            href="{{ $safeActionUrl }}"
                             class="{{ ($action['style'] ?? 'primary') === 'secondary' ? 'border border-[var(--foundation-border-strong)] text-[var(--foundation-body-fg)] hover:border-[var(--foundation-primary-action)]' : 'bg-[var(--theme-primary)] text-white hover:opacity-90' }} rounded-full px-5 py-3 text-sm font-semibold transition"
                         >
                             {{ $action['label'] }}
@@ -35,12 +43,12 @@
             @endif
         </div>
 
-        @if ($section->mediaUrl)
+        @if ($safeMediaUrl)
             <figure
                 class="overflow-hidden rounded-[var(--theme-radius-value)] border border-[var(--foundation-border)] bg-[var(--foundation-card-bg)] shadow-sm"
             >
                 <img
-                    src="{{ $section->mediaUrl }}"
+                    src="{{ $safeMediaUrl }}"
                     alt="{{ $section->mediaAlt ?? '' }}"
                     width="1200"
                     height="750"

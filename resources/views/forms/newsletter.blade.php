@@ -1,7 +1,12 @@
+@php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
+
+    $safeAction = PublicUrlSanitizer::sanitize($form->action) ?? '';
+@endphp
 @if ($form->wired)
     <form
         method="{{ $form->method }}"
-        action="{{ $form->action }}"
+        action="{{ $safeAction }}"
         data-newsletter-form
         {{ $attributes }}
     >

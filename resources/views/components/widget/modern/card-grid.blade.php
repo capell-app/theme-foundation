@@ -9,6 +9,8 @@
     'widget',
 ])
 @php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
+
     $responsiveGrid = '!flex snap-x [scrollbar-width:none] gap-4 !overflow-x-auto pb-3 md:!grid md:!overflow-visible md:pb-0 [&::-webkit-scrollbar]:hidden';
     $responsiveItem = 'min-w-full snap-start md:min-w-0';
 @endphp
@@ -53,6 +55,7 @@
                             $accent = $assetRenderData->accent ?? 'teal';
                             $role = $assetRenderData->role ?? 'card';
                             $cardTitle = $assetRenderData->caption ?? $assetRenderData->title;
+                            $safeLinkUrl = PublicUrlSanitizer::sanitize($assetRenderData->meta['link_url'] ?? null);
                         @endphp
 
                         <article
@@ -82,9 +85,9 @@
                                 </p>
                             @endif
 
-                            @if (($assetRenderData->meta['link_text'] ?? null) && ($assetRenderData->meta['link_url'] ?? null))
+                            @if (filled($assetRenderData->meta['link_text'] ?? null) && filled($safeLinkUrl))
                                 <a
-                                    href="{{ $assetRenderData->meta['link_url'] }}"
+                                    href="{{ $safeLinkUrl }}"
                                     class="ap-card-link ap-card__link"
                                 >
                                     <span>

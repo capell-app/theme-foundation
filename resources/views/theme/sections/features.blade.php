@@ -1,3 +1,6 @@
+@php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
+@endphp
 <section class="theme-features border-b border-slate-200/80 bg-white">
     <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16">
         <div class="mb-8 max-w-3xl">
@@ -16,12 +19,15 @@
 
         <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             @foreach ($section->features as $feature)
+                @php
+                    $safeFeatureImage = PublicUrlSanitizer::sanitize($feature['image'] ?? null);
+                @endphp
                 <article
                     class="overflow-hidden rounded-[var(--theme-radius-value)] border border-slate-200 bg-[var(--theme-surface)]"
                 >
-                    @if (! empty($feature['image']))
+                    @if (! empty($safeFeatureImage))
                         <img
-                            src="{{ $feature['image'] }}"
+                            src="{{ $safeFeatureImage }}"
                             alt="{{ $feature['image_alt'] ?? $feature['title'] }}"
                             width="800"
                             height="480"

@@ -1,5 +1,6 @@
 @php
     use Capell\Core\Contracts\Pageable;
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
     use Capell\FoundationTheme\Actions\BuildPageContentRenderDataAction;
     use Capell\FoundationTheme\Actions\ResolveSafeCssColorTokenAction;
     use Capell\Frontend\Data\MainContentRenderHookData;
@@ -12,6 +13,7 @@
     $previousPage ??= $layoutNeighborLinks?->previousPage;
     $nextPage ??= $layoutNeighborLinks?->nextPage;
     $finalCta ??= $page->getMeta('final_cta');
+    $safeFinalCtaUrl = is_array($finalCta) ? PublicUrlSanitizer::sanitize($finalCta['url'] ?? null) : null;
     $pageContentRenderData ??= BuildPageContentRenderDataAction::run(
         page: $page,
         pageContents: ['title', 'content'],
@@ -123,9 +125,9 @@
                         @endif
                     </div>
 
-                    @if (filled($finalCta['url'] ?? null) && filled($finalCta['label'] ?? null))
+                    @if (filled($safeFinalCtaUrl) && filled($finalCta['label'] ?? null))
                         <a
-                            href="{{ $finalCta['url'] }}"
+                            href="{{ $safeFinalCtaUrl }}"
                             class="capell-final-cta-link"
                             @wireNavigate
                         >

@@ -8,15 +8,18 @@
     once per visitor, when the browser fetches the placeholder's fragment
     URL.
 --}}
+@php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
+
+    $safeAction = PublicUrlSanitizer::sanitize($section->action ?? '') ?? '';
+@endphp
 <form
     class="grid gap-4"
     method="post"
-    action="{{ $section->action ?? '' }}"
+    action="{{ $safeAction }}"
 >
     @csrf
-    <label
-        class="grid gap-2 text-sm font-semibold text-slate-800"
-    >
+    <label class="grid gap-2 text-sm font-semibold text-slate-800">
         {{ __('capell-theme-foundation::generic.name') }}
         <input
             class="rounded-[var(--theme-radius-value)] border border-slate-300 bg-white px-4 py-3"
@@ -26,9 +29,7 @@
             required
         />
     </label>
-    <label
-        class="grid gap-2 text-sm font-semibold text-slate-800"
-    >
+    <label class="grid gap-2 text-sm font-semibold text-slate-800">
         {{ __('capell-theme-foundation::generic.email') }}
         <input
             class="rounded-[var(--theme-radius-value)] border border-slate-300 bg-white px-4 py-3"
@@ -38,9 +39,7 @@
             required
         />
     </label>
-    <label
-        class="grid gap-2 text-sm font-semibold text-slate-800"
-    >
+    <label class="grid gap-2 text-sm font-semibold text-slate-800">
         {{ __('capell-theme-foundation::generic.message') }}
         <textarea
             class="rounded-[var(--theme-radius-value)] border border-slate-300 bg-white px-4 py-3"

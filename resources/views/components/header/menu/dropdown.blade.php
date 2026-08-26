@@ -7,6 +7,7 @@
     'item',
 ])
 @php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
     use Capell\Frontend\Facades\Frontend;
     use Capell\Navigation\Data\NavigationItemData;
 
@@ -85,9 +86,12 @@
                 'index' => $loop->index,
             ])
         @else
+            @php
+                $safeChildUrl = PublicUrlSanitizer::sanitize($child->data['url'] ?? null) ?? '';
+            @endphp
             <li class="nav-item">
                 <a
-                    href="{{ $child->data['url'] ?? '' }}"
+                    href="{{ $safeChildUrl }}"
                     @if (! empty($child->data['target'])) target="{{ $child->data['target'] }}" @endif
                     @if ($usesWireNavigate) @wireNavigate @endif
                     @class([

@@ -20,13 +20,20 @@
     accident.
 --}}
 
+@php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
+
+    $safePoster = PublicUrlSanitizer::sanitize($poster);
+    $safeVideoSrc = PublicUrlSanitizer::sanitize($videoSrc);
+@endphp
+
 <div
     {{ $attributes->merge(['class' => 'group relative isolate overflow-hidden']) }}
     style="aspect-ratio: {{ $aspectRatio }};"
     data-hover-video-poster
 >
     <img
-        src="{{ $poster }}"
+        src="{{ $safePoster }}"
         alt="{{ $alt }}"
         loading="lazy"
         class="absolute inset-0 h-full w-full object-cover"
@@ -40,7 +47,7 @@
         preload="none"
         data-hover-video-poster-video
     >
-        <source src="{{ $videoSrc }}" />
+        <source src="{{ $safeVideoSrc }}" />
     </video>
 
     <button

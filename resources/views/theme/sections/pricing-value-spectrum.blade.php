@@ -1,7 +1,10 @@
 @php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
+
     $tiers = is_array($section->tiers ?? null) ? $section->tiers : [];
     $tierCount = count($tiers);
     $activeTier = $tiers[0] ?? null;
+    $safeActiveTierCtaUrl = PublicUrlSanitizer::sanitize($activeTier['ctaUrl'] ?? null) ?? '#';
 @endphp
 
 {{--
@@ -114,7 +117,7 @@
 
                     @if (! empty($activeTier['ctaLabel']))
                         <a
-                            href="{{ $activeTier['ctaUrl'] ?? '#' }}"
+                            href="{{ $safeActiveTierCtaUrl }}"
                             class="pricing-spectrum-cta mt-6 inline-block rounded-full bg-[var(--theme-primary)] px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90"
                             data-pricing-spectrum-cta
                         >

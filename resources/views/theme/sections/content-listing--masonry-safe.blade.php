@@ -6,6 +6,11 @@
     which reads visually similar to masonry while staying a fully
     supported, gap-safe CSS Grid layout in every browser.
 --}}
+@php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
+
+    $safeArchiveUrl = PublicUrlSanitizer::sanitize(data_get($section, 'resolvedResults.archiveUrl'));
+@endphp
 <section
     class="theme-content-listing theme-content-listing--masonry-safe border-b border-slate-200/80 bg-[var(--theme-surface)]"
 >
@@ -28,9 +33,9 @@
             @endif
         </div>
 
-        @if (filled(data_get($section, 'resolvedResults.archiveUrl')))
+        @if (filled($safeArchiveUrl))
             <a
-                href="{{ data_get($section, 'resolvedResults.archiveUrl') }}"
+                href="{{ $safeArchiveUrl }}"
                 class="mb-8 inline-flex font-semibold text-[var(--theme-primary)] underline-offset-4 hover:underline"
             >
                 {{ __('capell-theme-foundation::results.archive') }}
@@ -46,13 +51,17 @@
             @endphp
 
             @foreach (data_get($section, 'resolvedResults.items', data_get($section, 'items', [])) as $item)
+                @php
+                    $safeItemUrl = PublicUrlSanitizer::sanitize($item['url'] ?? null) ?? '#';
+                    $safeItemImage = PublicUrlSanitizer::sanitize($item['image'] ?? null);
+                @endphp
                 <a
-                    href="{{ $item['url'] ?? '#' }}"
+                    href="{{ $safeItemUrl }}"
                     class="group widget {{ $masonrySafeRowSpanClasses[$loop->index % 3] }} overflow-hidden rounded-[var(--theme-radius-value)] border border-slate-200 bg-white transition hover:border-slate-950"
                 >
-                    @if (! empty($item['image']))
+                    @if (! empty($safeItemImage))
                         <img
-                            src="{{ $item['image'] }}"
+                            src="{{ $safeItemImage }}"
                             alt=""
                             width="900"
                             height="{{ $masonrySafeImageHeights[$loop->index % 3] }}"

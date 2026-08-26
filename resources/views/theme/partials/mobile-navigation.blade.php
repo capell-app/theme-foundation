@@ -32,8 +32,11 @@
             aria-label="{{ __('capell-theme-foundation::generic.mobile_navigation') }}"
         >
             @foreach ($mobileLinks as $link)
+                @continue(! filled($safeMobileLinkUrl = \Capell\Core\Support\Security\PublicUrlSanitizer::sanitize(
+                    data_get($link, 'url', data_get($link, 'href')),
+                )))
                 <a
-                    href="{{ data_get($link, 'url', data_get($link, 'href')) }}"
+                    href="{{ $safeMobileLinkUrl }}"
                     @if ((bool) data_get($link, 'active', false)) aria-current="page" @endif
                 >
                     {{ data_get($link, 'label', data_get($link, 'title', '')) }}

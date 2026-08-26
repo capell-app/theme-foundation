@@ -1,3 +1,6 @@
+@php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
+@endphp
 <section class="theme-cta border-b border-slate-200/80 bg-white">
     <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16">
         <div
@@ -15,8 +18,11 @@
 
                 <div class="mt-6 flex flex-wrap gap-3">
                     @foreach ($section->actions as $action)
+                        @php
+                            $safeActionUrl = PublicUrlSanitizer::sanitize($action['url'] ?? null) ?? '#';
+                        @endphp
                         <a
-                            href="{{ $action['url'] }}"
+                            href="{{ $safeActionUrl }}"
                             class="rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-[var(--theme-accent)]"
                         >
                             {{ $action['label'] }}

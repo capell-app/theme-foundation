@@ -12,9 +12,14 @@
     SECTION_VIEWS map — see the CAP-0233 handoff notes — so this partial is
     prepared, matching the base `form` treatment, for when that wiring lands.)
 --}}
+@php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
+
+    $safeAction = PublicUrlSanitizer::sanitize($section->action ?? '') ?? '';
+@endphp
 <form
     method="post"
-    action="{{ $section->action ?? '' }}"
+    action="{{ $safeAction }}"
     class="grid gap-5"
     novalidate
 >

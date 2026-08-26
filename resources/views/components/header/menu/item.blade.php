@@ -3,6 +3,7 @@
     'itemClass',
 ])
 @php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
     use Capell\Frontend\Facades\Frontend;
     use Capell\Navigation\Data\NavigationItemData;
 
@@ -11,11 +12,12 @@
      */
     $runtimeManifest = Frontend::getFrontendData('runtimeManifest');
     $usesWireNavigate = $runtimeManifest?->usesWireNavigate ?? false;
+    $safeItemUrl = PublicUrlSanitizer::sanitize($item->data['url'] ?? null) ?? '';
 @endphp
 
 <li class="site-menu-item flex">
     <a
-        href="{{ $item->data['url'] ?? '' }}"
+        href="{{ $safeItemUrl }}"
         @if ($usesWireNavigate) @wireNavigate @endif
         @class([
             $itemClass,

@@ -1,3 +1,6 @@
+@php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
+@endphp
 <footer class="theme-footer mt-auto bg-slate-950 text-white">
     <h2 class="sr-only">{{ __('capell-theme-foundation::generic.footer') }}</h2>
     <div
@@ -17,9 +20,12 @@
                     </h3>
                     <ul class="mt-3 space-y-2 text-sm text-slate-400">
                         @foreach ($column['links'] as $link)
+                            @php
+                                $safeLinkUrl = PublicUrlSanitizer::sanitize($link['url'] ?? null) ?? '#';
+                            @endphp
                             <li>
                                 <a
-                                    href="{{ $link['url'] }}"
+                                    href="{{ $safeLinkUrl }}"
                                     class="transition hover:text-white"
                                 >
                                     {{ $link['label'] }}

@@ -9,13 +9,22 @@
     ctaLabel, ctaUrl.
 --}}
 @php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
+
     $navigationItems = collect($section->items ?? [])
+        ->map(static function (mixed $item): array {
+            $item = (array) $item;
+            $item['url'] = PublicUrlSanitizer::sanitize($item['url'] ?? null);
+
+            return $item;
+        })
         ->filter(
-            static fn (mixed $item): bool => filled(data_get($item, 'label'))
+            static fn (array $item): bool => filled(data_get($item, 'label'))
                 && filled(data_get($item, 'url')),
         )
         ->values();
-    $hasNavigationCta = filled($section->ctaLabel ?? null) && filled($section->ctaUrl ?? null);
+    $safeCtaUrl = PublicUrlSanitizer::sanitize($section->ctaUrl ?? null);
+    $hasNavigationCta = filled($section->ctaLabel ?? null) && filled($safeCtaUrl);
 @endphp
 
 <nav
@@ -80,7 +89,7 @@
 
                     @if ($hasNavigationCta)
                         <a
-                            href="{{ $section->ctaUrl }}"
+                            href="{{ $safeCtaUrl }}"
                             class="theme-chrome-nav__cta theme-chrome-nav__mobile-cta"
                         >
                             {{ $section->ctaLabel }}
@@ -92,7 +101,7 @@
 
         @if ($hasNavigationCta)
             <a
-                href="{{ $section->ctaUrl }}"
+                href="{{ $safeCtaUrl }}"
                 class="theme-chrome-nav__cta"
             >
                 {{ $section->ctaLabel }}

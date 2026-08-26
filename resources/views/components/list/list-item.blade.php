@@ -6,6 +6,9 @@
 ])
 
 @php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
+
+    $safeUrl = PublicUrlSanitizer::sanitize($url);
     $classes = [
         'group flex items-center justify-between gap-3',
         'text-sm @md/item:text-base' => $size === 'sm',
@@ -25,9 +28,9 @@
     $attributes->get('class'),
 ])
 >
-    @if ($url && ! $active)
+    @if ($safeUrl && ! $active)
         <a
-            href="{{ $url }}"
+            href="{{ $safeUrl }}"
             @class([...$classes, 'hover:text-primary focus:text-primary'])
             @wireNavigate
         >

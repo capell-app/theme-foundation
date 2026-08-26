@@ -9,6 +9,8 @@
 ])
 
 @php
+    use Capell\Core\Support\Security\PublicUrlSanitizer;
+
     $gridClasses = [
         2 => 'grid-cols-1 md:grid-cols-2',
         3 => 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
@@ -123,9 +125,12 @@
                             class="flex justify-center gap-3 border-t border-stone-100 pt-4"
                         >
                             @foreach ($social as $platform => $url)
-                                @if ($url && isset($socialIcons[$platform]))
+                                @php
+                                    $safeSocialUrl = PublicUrlSanitizer::sanitize($url);
+                                @endphp
+                                @if ($safeSocialUrl !== null && isset($socialIcons[$platform]))
                                     <a
-                                        href="{{ $url }}"
+                                        href="{{ $safeSocialUrl }}"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         title="{{ ucfirst($platform) }}"
