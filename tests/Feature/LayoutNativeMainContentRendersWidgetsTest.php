@@ -82,6 +82,10 @@ it('renders real layout-builder widget content in the main landmark for a layout
 
     expect($html)->toBeString();
 
+    if ($html === '') {
+        throw new RuntimeException('Expected the layout-native page to render HTML.');
+    }
+
     expect($html)
         ->toContain('id="main"')
         ->toContain('data-after-content-hook="visible"')

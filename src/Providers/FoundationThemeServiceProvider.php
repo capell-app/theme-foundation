@@ -271,7 +271,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
             return;
         }
 
-        $registry = resolve(AssetsRegistryInterface::class);
+        $registry = $this->app->make(AssetsRegistryInterface::class);
 
         foreach (FoundationThemeAssetEnum::cases() as $asset) {
             $registry->registerAsset(
@@ -312,10 +312,6 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
     private function registerFrontendRuntimeManifestContributors(): void
     {
-        if (! interface_exists(FrontendRuntimeManifestContributor::class)) {
-            return;
-        }
-
         $this->app->tag([FoundationThemeRuntimeManifestContributor::class], FrontendRuntimeManifestContributor::TAG);
     }
 
@@ -326,7 +322,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
     private function registerBladeComponents(): void
     {
-        resolve(ViewFactory::class)->prependNamespace('capell', __DIR__ . '/../../resources/views');
+        $this->app->make(ViewFactory::class)->prependNamespace('capell', __DIR__ . '/../../resources/views');
 
         Blade::anonymousComponentPath(__DIR__ . '/../../resources/views/components', 'capell');
         Blade::component(AppBodyComponent::class, 'capell::app.body');
@@ -588,10 +584,6 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
     private function registerLayoutContainerSchemaExtenders(): void
     {
-        if (! interface_exists(LayoutContainerSchemaExtender::class)) {
-            return;
-        }
-
         $alreadyTagged = collect($this->app->tagged(LayoutContainerSchemaExtender::TAG))
             ->contains(fn (object $extender): bool => $extender instanceof FoundationLayoutContainerSchemaExtender);
 
@@ -605,10 +597,6 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
     private function registerWidgetSchemaExtenders(): void
     {
-        if (! interface_exists(WidgetSchemaExtender::class)) {
-            return;
-        }
-
         $alreadyTagged = collect($this->app->tagged(WidgetSchemaExtender::TAG))
             ->contains(fn (object $extender): bool => $extender instanceof SectionVariantSchemaExtender);
 
@@ -622,10 +610,6 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
     private function registerLayoutContainerThemePresentationProjectors(): void
     {
-        if (! interface_exists(LayoutContainerThemePresentationProjector::class)) {
-            return;
-        }
-
         $alreadyTagged = collect($this->app->tagged(LayoutContainerThemePresentationProjector::TAG))
             ->contains(
                 fn (object $projector): bool => $projector instanceof FoundationLayoutContainerThemePresentationProjector,
@@ -760,12 +744,12 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
     private function registerLayoutBuilderRendering(): void
     {
-        resolve(ViewFactory::class)->addNamespace(
+        $this->app->make(ViewFactory::class)->addNamespace(
             'capell-theme-foundation',
             __DIR__ . '/../../resources/views',
         );
 
-        resolve(ViewFactory::class)->addNamespace(
+        $this->app->make(ViewFactory::class)->addNamespace(
             'capell',
             __DIR__ . '/../../resources/views',
         );
@@ -889,7 +873,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
     private function registerAuthMenuWidgetExtension(): void
     {
-        resolve(WidgetExtensionRegistrar::class)->register(new WidgetExtensionDefinitionData(
+        $this->app->make(WidgetExtensionRegistrar::class)->register(new WidgetExtensionDefinitionData(
             key: AuthMenuWidgetDefinition::KEY,
             packageName: self::$packageName,
             stateVersion: 1,
@@ -912,10 +896,6 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
      */
     private function registerPublicLayoutWidgetPayloadContributors(): void
     {
-        if (! interface_exists(PublicLayoutWidgetPayloadContributor::class)) {
-            return;
-        }
-
         $this->app->tag([FoundationSectionPublicLayoutWidgetPayloadContributor::class], PublicLayoutWidgetPayloadContributor::TAG);
     }
 
@@ -948,7 +928,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
     private function reserveDynamicFormFragmentPath(): void
     {
-        if (! class_exists(ReservedFrontendPathRegistry::class) || ! $this->app->bound(ReservedFrontendPathRegistry::class)) {
+        if (! CapellCore::isPackageAvailable('capell-app/frontend')) {
             return;
         }
 

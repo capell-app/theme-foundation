@@ -66,8 +66,12 @@ it('appends a variant select bound to the meta state path', function (): void {
 
     expect($components)->toHaveCount(2)
         ->and($components[0])->toBe('existing')
-        ->and($components[1])->toBeInstanceOf(Select::class)
-        ->and($components[1]->getName())->toBe('variant');
+        ->and($components[1])->toBeInstanceOf(Select::class);
+
+    $select = $components[1] ?? null;
+    throw_unless($select instanceof Select, RuntimeException::class, 'Expected the section variant extender to append a Select component.');
+
+    expect($select->getName())->toBe('variant');
 });
 
 it('offers the active theme declared variants for the edited section type', function (): void {

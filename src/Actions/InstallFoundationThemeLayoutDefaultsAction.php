@@ -191,7 +191,9 @@ final class InstallFoundationThemeLayoutDefaultsAction
                 continue;
             }
 
-            if (($container['meta']['area'] ?? null) === 'header') {
+            $meta = $container['meta'] ?? null;
+
+            if (is_array($meta) && ($meta['area'] ?? null) === 'header') {
                 return $key;
             }
         }

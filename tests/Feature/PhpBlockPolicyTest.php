@@ -117,10 +117,15 @@ uses(AssertsPublicThemeOutputSafety::class);
  * CAP-0247's directory widget-parity pass then ratcheted directory DOWN from
  * 36 to 31: its generic widget shim moved to a typed resolver action, and the
  * duplicated role-filters-toolbar markup collapsed into one shared Blade
- * component. That moves the fleet baseline from 685 to 680.
+ * component. That moves the fleet baseline from 685 to 680. The 2026-08-27
+ * reconciliation then recorded the already-merged URL-sanitisation and
+ * theme-surface changes that had not updated this shared fixture: business
+ * 10->17, curated 25->32, foundation 125->172, knowledge 13->14, and
+ * showreel 32->35, moving the current fleet baseline to 745. Future changes
+ * still ratchet only downward from these reconciled values.
  */
-it('confirms the frozen baseline snapshot sums to the programme-verified total of 680', function (): void {
-    expect(array_sum(ThemePhpBlockBaselineCounts::FROZEN_BASELINE_COUNTS))->toBe(680);
+it('confirms the frozen baseline snapshot sums to the programme-verified total of 745', function (): void {
+    expect(array_sum(ThemePhpBlockBaselineCounts::FROZEN_BASELINE_COUNTS))->toBe(745);
 });
 
 it('keeps each theme package within its frozen @php block baseline', function (): void {

@@ -45,10 +45,17 @@ it('renders a stored footer-area widget through each footer seam on a real publi
 
     throw_unless(is_array($containers), RuntimeException::class, 'Expected the Foundation demo layout to have containers.');
 
-    $containers['main']['widgets'] = array_values(array_filter(
-        $containers['main']['widgets'] ?? [],
+    $main = $containers['main'] ?? null;
+    throw_unless(is_array($main), RuntimeException::class, 'Expected the Foundation demo layout to have a main container.');
+
+    $mainWidgets = $main['widgets'] ?? [];
+    throw_unless(is_array($mainWidgets), RuntimeException::class, 'Expected the Foundation main container widgets to be an array.');
+
+    $main['widgets'] = array_values(array_filter(
+        $mainWidgets,
         static fn (mixed $widget): bool => ! is_array($widget) || ($widget['widget_key'] ?? null) !== 'page-content',
     ));
+    $containers['main'] = $main;
     $containers['footer'] = [
         'meta' => [
             'area' => 'footer',
@@ -86,13 +93,14 @@ it('renders a stored footer-area widget through each footer seam on a real publi
         : false;
     $footerEndOffset = is_int($footerOffset) ? strpos($html, '</footer>', $footerOffset) : false;
 
+    if (! is_int($footerOffset) || ! is_int($footerContainerOffset) || ! is_int($footerEndOffset)) {
+        throw new RuntimeException('Expected the rendered footer offsets to be integers.');
+    }
+
     expect($html)
         ->toContain('<footer')
         ->toContain('id="layout-container-footer"')
         ->toContain(e($pageTitle))
-        ->and($footerOffset)->toBeInt()
-        ->and($footerContainerOffset)->toBeInt()
-        ->and($footerEndOffset)->toBeInt()
         ->and($footerContainerOffset)->toBeGreaterThan($footerOffset)
         ->and($footerContainerOffset)->toBeLessThan($footerEndOffset);
 

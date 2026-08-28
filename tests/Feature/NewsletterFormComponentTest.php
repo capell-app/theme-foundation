@@ -50,6 +50,10 @@ it('renders visibly unavailable controls without a submitting fallback form', fu
         ->not->toContain('<form')
         ->not->toContain('method="get"');
 
+    if ($html === '') {
+        throw new RuntimeException('Expected the newsletter fallback to render HTML.');
+    }
+
     $document = new DOMDocument;
     $document->loadHTML($html, LIBXML_NOERROR | LIBXML_NOWARNING);
     $xpath = new DOMXPath($document);

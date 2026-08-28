@@ -208,3 +208,28 @@ it('keeps a legitimate https card link in the rendered card grid', function (): 
         ->toContain('ap-card-link')
         ->toContain('href="' . LEGITIMATE_WIDGET_URL . '"');
 });
+
+it('drops a javascript: scheme CTA from the rendered mobile navigation partial entirely', function (): void {
+    $html = view('capell-theme-foundation::theme.partials.mobile-navigation', [
+        'links' => [],
+        'ctaLabel' => 'Upgrade',
+        'ctaUrl' => HOSTILE_WIDGET_URL,
+    ])->render();
+
+    expect($html)
+        ->not->toContain('javascript:')
+        ->not->toContain('alert(1)')
+        ->not->toContain('capell-mobile-nav__cta');
+});
+
+it('keeps a legitimate https CTA in the rendered mobile navigation partial', function (): void {
+    $html = view('capell-theme-foundation::theme.partials.mobile-navigation', [
+        'links' => [],
+        'ctaLabel' => 'Upgrade',
+        'ctaUrl' => LEGITIMATE_WIDGET_URL,
+    ])->render();
+
+    expect($html)
+        ->toContain('capell-mobile-nav__cta')
+        ->toContain('href="' . LEGITIMATE_WIDGET_URL . '"');
+});

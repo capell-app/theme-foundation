@@ -126,6 +126,7 @@ trait AssertsPublicThemeOutputSafety
         '__',
         'Str',
         'Arr',
+        'PublicUrlSanitizer',
     ];
 
     /**

@@ -6,7 +6,7 @@
         )
         ->values();
     $mobileCtaLabel = $ctaLabel ?? null;
-    $mobileCtaUrl = $ctaUrl ?? null;
+    $mobileCtaUrl = \Capell\Core\Support\Security\PublicUrlSanitizer::sanitize($ctaUrl ?? null);
     $mobileMenuId = preg_replace(
         '/[^A-Za-z0-9_-]+/',
         '-',

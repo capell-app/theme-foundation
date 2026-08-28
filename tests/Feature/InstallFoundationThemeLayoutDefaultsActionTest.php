@@ -21,12 +21,17 @@ it('registers layout builder morph models during a same-process fresh install', 
 
     try {
         $result = InstallFoundationThemeLayoutDefaultsAction::run();
+        $homeLayout = Layout::query()->where('key', LayoutEnum::Home->value)->firstOrFail();
+        $homeContainers = $homeLayout->containers;
+        throw_unless(is_array($homeContainers), RuntimeException::class, 'Expected the home layout containers to be an array.');
+        $homeHeader = $homeContainers['header'] ?? null;
+        throw_unless(is_array($homeHeader), RuntimeException::class, 'Expected the home layout header container to be an array.');
 
         expect($result['created'])->toBeGreaterThanOrEqual(2)
             ->and(Relation::getMorphedModel('widget'))->toBe(Widget::class)
             ->and(Relation::getMorphedModel('widget_asset'))->toBe(WidgetAsset::class)
-            ->and(Layout::query()->where('key', LayoutEnum::Home->value)->firstOrFail()->widgets)->toBe(['page-content'])
-            ->and(Layout::query()->where('key', LayoutEnum::Home->value)->firstOrFail()->containers['header']['widgets'])->toBe([
+            ->and($homeLayout->widgets)->toBe(['page-content'])
+            ->and($homeHeader['widgets'] ?? null)->toBe([
                 AuthMenuWidget::block(),
             ]);
     } finally {

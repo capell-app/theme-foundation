@@ -128,7 +128,16 @@ function identityControlTokens(ThemeDefinitionData $definition): array
             continue;
         }
 
-        $tokens[$tokenKey] = ['options' => array_values($options)];
+        $typedOptions = [];
+        foreach ($options as $option) {
+            if (! is_string($option)) {
+                throw new LogicException(sprintf('Theme [%s] declares a non-string identity option for [%s].', $tokenKey, $tokenKey));
+            }
+
+            $typedOptions[] = $option;
+        }
+
+        $tokens[$tokenKey] = ['options' => $typedOptions];
     }
 
     return $tokens;

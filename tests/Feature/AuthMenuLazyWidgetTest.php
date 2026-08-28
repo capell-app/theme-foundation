@@ -19,10 +19,6 @@ use Capell\LayoutBuilder\Actions\WidgetSnapshots\BuildPublicWidgetInteractionLoc
 use Capell\LayoutBuilder\Actions\WidgetSnapshots\RebuildPublicWidgetSnapshotsAction;
 use Capell\LayoutBuilder\Support\WidgetExtensions\WidgetExtensionRegistry;
 use Capell\Tests\Fixtures\Models\User;
-use DOMDocument;
-use DOMElement;
-use DOMNodeList;
-use DOMXPath;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
@@ -51,8 +47,8 @@ it('keeps auth-state markup out of anonymous and authenticated cacheable public 
     foreach ($responses as $response) {
         $response->assertOk();
 
-        expect((string) $response->headers->get('Cache-Control'))
-            ->toContain('public', 'max-age=300');
+        $response->assertHeaderContains('Cache-Control', 'public')
+            ->assertHeaderContains('Cache-Control', 'max-age=300');
 
         $html = (string) $response->getContent();
         $document = authMenuDocument($html);
@@ -272,6 +268,9 @@ function authMenuDocument(string $html): DOMXPath
     return new DOMXPath($document);
 }
 
+/**
+ * @return DOMNodeList<DOMNode|DOMNameSpaceNode>
+ */
 function authMenuQuery(DOMXPath $document, string $expression): DOMNodeList
 {
     $nodes = $document->query($expression);
@@ -283,6 +282,9 @@ function authMenuQuery(DOMXPath $document, string $expression): DOMNodeList
     return $nodes;
 }
 
+/**
+ * @param  DOMNodeList<DOMNode|DOMNameSpaceNode>  $nodes
+ */
 function authMenuFirstElement(DOMNodeList $nodes, string $message): DOMElement
 {
     $node = $nodes->item(0);

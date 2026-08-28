@@ -9,12 +9,12 @@ final class ThemePhpBlockBaselineCounts
     /** @var array<string, int> */
     public const array FROZEN_BASELINE_COUNTS = [
         'photography' => 19,
-        'business' => 10,
+        'business' => 17,
         'directory' => 31,
         'magazine' => 35,
         'catalogue' => 29,
-        'curated' => 25,
-        'foundation' => 125,
+        'curated' => 32,
+        'foundation' => 172,
         'agency' => 32,
         'awards' => 35,
         'editorial' => 33,
@@ -26,8 +26,8 @@ final class ThemePhpBlockBaselineCounts
         'onepage' => 19,
         'portfolio' => 37,
         'blog' => 38,
-        'knowledge' => 13,
-        'showreel' => 32,
+        'knowledge' => 14,
+        'showreel' => 35,
         'minimalist' => 26,
         'submissions' => 36,
     ];
