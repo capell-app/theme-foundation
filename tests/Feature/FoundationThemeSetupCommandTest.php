@@ -32,7 +32,7 @@ it('installs Foundation theme layout defaults without owning the home hero', fun
         ->and($homeLayout->widgets)->toBe([])
         ->and(Layout::query()->where('key', LayoutEnum::Results->value)->exists())->toBeFalse();
 
-    test()->artisan('capell:theme-foundation-setup')->assertSuccessful();
+    capell_artisan('capell:theme-foundation-setup')->assertSuccessful();
 
     $homeLayout->refresh();
     $mainContainer = foundationThemeSetupMainContainer($homeLayout);
@@ -60,8 +60,8 @@ it('keeps home page content defaults stable on repeated setup', function (): voi
             ],
         ]);
 
-    test()->artisan('capell:theme-foundation-setup')->assertSuccessful();
-    test()->artisan('capell:theme-foundation-setup')->assertSuccessful();
+    capell_artisan('capell:theme-foundation-setup')->assertSuccessful();
+    capell_artisan('capell:theme-foundation-setup')->assertSuccessful();
 
     $homeLayout = Layout::query()->where('key', LayoutEnum::Home->value)->firstOrFail();
     $mainContainer = foundationThemeSetupMainContainer($homeLayout);
@@ -102,7 +102,7 @@ it('repairs custom page layouts that are missing page content without inserting 
         ],
     ]);
 
-    test()->artisan('capell:theme-foundation-setup')->assertSuccessful();
+    capell_artisan('capell:theme-foundation-setup')->assertSuccessful();
 
     $layout = Layout::query()->where('key', 'landing-page')->firstOrFail();
     $containers = $layout->containers ?? [];

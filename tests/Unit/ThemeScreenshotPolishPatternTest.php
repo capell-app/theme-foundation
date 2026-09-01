@@ -41,7 +41,6 @@ test('theme section navigations expose the shared mobile disclosure menu', funct
         'magazine',
         'minimalist',
         'onepage',
-        'photography',
         'platform',
         'portfolio',
         'saas',

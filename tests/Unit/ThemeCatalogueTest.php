@@ -11,6 +11,8 @@ declare(strict_types=1);
  * fields the differentiation programme relies on.
  */
 
+use Capell\Core\ThemeStudio\Data\ThemeDefinitionData;
+use Capell\Core\ThemeStudio\Data\ThemePresetData;
 use Capell\FoundationTheme\Actions\ValidateThemeCatalogueEntryAction;
 
 require_once __DIR__ . '/../Support/ThemeCatalogueScreenshotSurfaceGap.php';
@@ -59,6 +61,14 @@ function themeCatalogueThemeEntries(): array
 function themeCatalogue(): array
 {
     return themeCatalogueJson(dirname(__DIR__, 4) . '/docs/themes.json');
+}
+
+/**
+ * @return array<string, mixed>
+ */
+function themeCatalogueStringKeyedArray(mixed $value): array
+{
+    return is_array($value) ? capell_string_keyed_array($value) : [];
 }
 
 /**
@@ -160,6 +170,97 @@ it('records the customisation surfaces the differentiation contract depends on',
 
         expect($surfaces)
             ->toHaveKeys(['header', 'footer', 'themeStudioTokens'], "customisationSurfaces keys for {$label}");
+    }
+});
+
+it('publishes buyer inclusion facts for every theme and keeps demo profiles source-backed', function (): void {
+    $root = dirname(__DIR__, 4);
+    $catalogue = themeCatalogue();
+    $buyerInclusions = themeCatalogueStringKeyedArray($catalogue['buyerInclusions'] ?? []);
+    $manifestPaths = glob($root . '/packages/theme-*/capell.json') ?: [];
+    $manifestsByThemeKey = [];
+
+    foreach ($manifestPaths as $manifestPath) {
+        $manifest = themeCatalogueJson($manifestPath);
+        $themeKey = $manifest['themeKey'] ?? null;
+
+        if (is_string($themeKey)) {
+            $manifestsByThemeKey[$themeKey] = $manifest;
+        }
+    }
+
+    expect($buyerInclusions)->toHaveCount(count($manifestsByThemeKey));
+
+    foreach (themeCatalogueThemeEntries() as $theme) {
+        $themeKey = $theme['themeKey'] ?? null;
+
+        throw_unless(is_string($themeKey), RuntimeException::class, 'Each theme must have a string themeKey.');
+
+        $inclusions = themeCatalogueStringKeyedArray($buyerInclusions[$themeKey] ?? []);
+        $manifest = themeCatalogueStringKeyedArray($manifestsByThemeKey[$themeKey] ?? []);
+
+        expect($inclusions)
+            ->toHaveKeys(['demoProfiles', 'versionUpgrade', 'figmaSource', 'updates']);
+
+        $profiles = $inclusions['demoProfiles'] ?? [];
+        $providers = themeCatalogueStringKeyedArray($manifest['providers'] ?? []);
+        $runtimeProviders = is_array($providers['runtime'] ?? null) ? $providers['runtime'] : [];
+        $providerClass = $runtimeProviders[0] ?? null;
+
+        expect($profiles)
+            ->not->toBeEmpty()
+            ->and($providerClass)->toBeString();
+
+        throw_unless(is_string($providerClass) && class_exists($providerClass), RuntimeException::class, "Runtime provider for {$themeKey} must be a class.");
+
+        $definition = $providerClass::definition();
+        throw_unless($definition instanceof ThemeDefinitionData, RuntimeException::class, "Runtime provider for {$themeKey} must return a theme definition.");
+
+        $sourceProfiles = [];
+
+        foreach ($definition->presets as $preset) {
+            throw_unless($preset instanceof ThemePresetData, RuntimeException::class, "Preset for {$themeKey} must be a ThemePresetData.");
+
+            $sourceProfiles[] = [
+                'id' => $preset->key,
+                'label' => $preset->name,
+                'preset' => $preset->key,
+            ];
+        }
+
+        $versionUpgrade = themeCatalogueStringKeyedArray($inclusions['versionUpgrade'] ?? []);
+        $figmaSource = themeCatalogueStringKeyedArray($inclusions['figmaSource'] ?? []);
+        $updates = themeCatalogueStringKeyedArray($inclusions['updates'] ?? []);
+        $manifestName = $manifest['name'] ?? null;
+        $manifestVersion = $manifest['version'] ?? null;
+
+        throw_unless(is_string($manifestName), RuntimeException::class, "Manifest name for {$themeKey} must be a string.");
+        throw_unless(is_string($manifestVersion), RuntimeException::class, "Manifest version for {$themeKey} must be a string.");
+        $majorMinorVersion = implode('.', array_slice(explode('.', $manifestVersion), 0, 2));
+
+        expect($profiles)->toBe($sourceProfiles)
+            ->and($versionUpgrade['current'] ?? null)->toBe($manifestVersion)
+            ->and($versionUpgrade['scheme'] ?? null)->toBe('semver')
+            ->and($versionUpgrade['package'] ?? null)->toBe($manifestName)
+            ->and($versionUpgrade['compatibility'] ?? null)->toBe([
+                'capellApi' => '^1.0',
+                'php' => '>=8.4',
+            ])
+            ->and($versionUpgrade['notes'] ?? null)->toBe(['Initial stable release; no migration required.'])
+            ->and($versionUpgrade['path'] ?? null)->toBe('composer require ' . $manifestName . ':^' . $majorMinorVersion)
+            ->and($figmaSource['status'] ?? null)->toBe('not_included')
+            ->and($updates['durationMonths'] ?? null)->toBe(12);
+
+        expect($versionUpgrade['notes'] ?? null)->toBeArray()->not->toBeEmpty();
+
+        $commands = themeCatalogueStringKeyedArray($manifest['commands'] ?? []);
+        $demoCommand = $commands['demo'] ?? null;
+        throw_unless(is_string($demoCommand), RuntimeException::class, "Demo command for {$themeKey} must be declared.");
+
+        $commandFiles = glob($root . '/packages/theme-*/src/Console/Commands/*DemoCommand.php') ?: [];
+        $commandSource = implode("\n", array_map(static fn (string $path): string => (string) file_get_contents($path), $commandFiles));
+
+        expect($commandSource)->toContain('{--profile=');
     }
 });
 

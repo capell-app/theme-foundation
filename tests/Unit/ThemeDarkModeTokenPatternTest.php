@@ -11,7 +11,6 @@ test('dark-mode themes pin readable tokens inside the dark media query', functio
         'theme-magazine/resources/css/theme-magazine.css' => ['--gcm-ink: oklch(91.37% 0.0198 87.52);', '--gcm-paper: oklch(22.6% 0.0341 270.96);'],
         'theme-minimalist/resources/css/theme-minimalist.css' => ['--qwg-ink: oklch(0.948 0.011 76.6);', '--qwg-paper: oklch(0.292 0.008 59.4);'],
         'theme-onepage/resources/css/theme-onepage.css' => ['--ops-ink: oklch(94% 0.02 70);', '--ops-paper: oklch(20% 0.015 60);'],
-        'theme-photography/resources/css/theme-photography.css' => ['--dlm-ink: oklch(0.926 0.017 84.588);', '--dlm-paper: oklch(0.193 0.011 80.515);'],
         'theme-portfolio/resources/css/theme-portfolio.css' => ['--csp-ink: oklch(0.96 0.02 95);', '--csp-paper: oklch(0.17 0.015 75);'],
         'theme-saas/resources/css/theme-saas.css' => ['--lga-ink: oklch(96.83% 0.0069 247.9);', '--lga-paper: oklch(18.31% 0.0309 263.38);'],
     ];
@@ -57,7 +56,7 @@ test('agency and business themes use the class-driven dark-mode contract', funct
             $matches,
         );
 
-        $darkRuleBody = preg_replace('/\s+/', ' ', trim((string) ($matches['body'] ?? '')));
+        $darkRuleBody = preg_replace('/\s+/', ' ', trim($matches['body'] ?? ''));
 
         expect($matchCount)->toBe(1)
             ->and($darkRuleBody)->toContain('color-scheme: dark;')

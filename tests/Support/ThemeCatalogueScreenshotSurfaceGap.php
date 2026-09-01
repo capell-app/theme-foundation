@@ -18,7 +18,7 @@ declare(strict_types=1);
 function themeCatalogueViolationsExcludingKnownScreenshotSurfaceGap(string $themeKey, array $violations): array
 {
     $themesPendingScreenshotSurfaceCapture = [
-        'default', 'photography', 'directory', 'magazine', 'catalogue',
+        'default', 'directory', 'magazine', 'catalogue',
         'curated', 'agency', 'awards', 'editorial', 'saas',
         'events', 'platform', 'brutalist', 'onepage', 'portfolio',
         'showreel', 'minimalist', 'submissions',

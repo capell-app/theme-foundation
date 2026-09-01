@@ -11,12 +11,15 @@ it('normalizes theme demo install data', function (): void {
         languageCodes: ['en', 'cy'],
         baseUrl: 'https://demo.test/',
         force: true,
+        profile: ' after-hours ',
     );
 
     expect($data->siteNames)->toBe(['Demo Site'])
         ->and($data->languageCodes)->toBe(['en', 'cy'])
         ->and($data->baseUrl)->toBe('https://demo.test')
         ->and($data->force)->toBeTrue();
+
+    expect($data->profile)->toBe('after-hours');
 });
 
 it('provides public safe demo media urls', function (): void {
@@ -38,7 +41,7 @@ it('resolves every first-party non-foundation theme to a deliberate media pool',
     $themeKeys = [
         'agency', 'awards', 'blog', 'brutalist', 'business', 'catalogue',
         'curated', 'directory', 'editorial', 'events', 'knowledge',
-        'liquid-glass', 'magazine', 'minimalist', 'onepage', 'photography',
+        'liquid-glass', 'magazine', 'minimalist', 'onepage',
         'platform', 'portfolio', 'saas', 'showreel', 'submissions', 'bistro',
     ];
 
@@ -46,6 +49,11 @@ it('resolves every first-party non-foundation theme to a deliberate media pool',
         expect(ThemeDemoMedia::groupedForTheme($themeKey))
             ->not->toBe($defaultMedia, "Theme [{$themeKey}] must not inherit Foundation's default media pool.");
     }
+});
+
+it('does not retain a media alias for the retired Photography theme', function (): void {
+    expect(ThemeDemoMedia::groupedForTheme('photography'))
+        ->toBe(ThemeDemoMedia::groupedForTheme('default'));
 });
 
 it('keeps Bistro preview media relevant to hospitality', function (): void {

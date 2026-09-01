@@ -8,7 +8,6 @@ final class ThemePhpBlockBaselineCounts
 {
     /** @var array<string, int> */
     public const array FROZEN_BASELINE_COUNTS = [
-        'photography' => 19,
         'business' => 17,
         'directory' => 31,
         'magazine' => 35,

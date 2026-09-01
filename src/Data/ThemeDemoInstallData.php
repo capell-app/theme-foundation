@@ -16,6 +16,8 @@ final class ThemeDemoInstallData extends Data
 
     public readonly string $baseUrl;
 
+    public readonly ?string $profile;
+
     /**
      * @param  array<int, string>  $siteNames
      * @param  array<int, string>  $languageCodes
@@ -25,6 +27,7 @@ final class ThemeDemoInstallData extends Data
         array $languageCodes,
         string $baseUrl,
         public readonly bool $force = false,
+        ?string $profile = null,
     ) {
         $this->siteNames = $this->normalizeStrings($siteNames);
         $this->languageCodes = array_map(
@@ -32,6 +35,7 @@ final class ThemeDemoInstallData extends Data
             $this->normalizeStrings($languageCodes),
         );
         $this->baseUrl = rtrim(trim($baseUrl), '/');
+        $this->profile = $profile === null || trim($profile) === '' ? null : trim($profile);
     }
 
     /**

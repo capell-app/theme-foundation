@@ -24,7 +24,6 @@ final class ThemeDemoMedia
         'magazine' => 'knowledge',
         'minimalist' => 'portfolio',
         'onepage' => 'agency',
-        'photography' => 'portfolio',
         'platform' => 'saas',
         'portfolio' => 'portfolio',
         'saas' => 'saas',

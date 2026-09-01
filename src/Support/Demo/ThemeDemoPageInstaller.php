@@ -17,6 +17,7 @@ use Capell\Core\Models\Site;
 use Capell\Core\Models\Theme;
 use Capell\Core\Support\Creator\BlueprintCreator;
 use Capell\Core\Support\Creator\PageCreator;
+use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
 use Capell\FoundationTheme\Actions\BuildThemeDemoFormsPayloadAction;
 use Capell\FoundationTheme\Contracts\ProvidesThemeDemoContent;
 use Capell\FoundationTheme\Data\ThemeDemoInstallData;
@@ -40,7 +41,7 @@ final class ThemeDemoPageInstaller
 
     public function handle(ThemeDemoInstallData $data, string $themeKey, string $themeName, ?ProvidesThemeDemoContent $contentProvider = null): int
     {
-        $theme = $this->ensureTheme($themeKey, $themeName);
+        $theme = $this->ensureTheme($themeKey, $themeName, $data->profile);
         $languages = $this->resolveLanguages($data);
         $sites = $this->resolveSites($data, $theme, $languages);
         $definitions = $contentProvider?->definitions($themeKey, $themeName, $data->baseUrl)
@@ -54,9 +55,17 @@ final class ThemeDemoPageInstaller
         return Command::SUCCESS;
     }
 
-    private function ensureTheme(string $themeKey, string $themeName): Theme
+    private function ensureTheme(string $themeKey, string $themeName, ?string $profile): Theme
     {
-        return CreateThemeAction::run(key: $themeKey, name: $themeName);
+        if ($profile !== null) {
+            $definition = resolve(ThemeRegistry::class)->definition($themeKey);
+
+            if ($definition->preset($profile) === null) {
+                throw new InvalidArgumentException(sprintf('Theme profile [%s] is not registered for theme [%s].', $profile, $themeKey));
+            }
+        }
+
+        return CreateThemeAction::run(key: $themeKey, name: $themeName, activePreset: $profile);
     }
 
     /**
@@ -292,7 +301,7 @@ final class ThemeDemoPageInstaller
         }
 
         if ($definition->surface === 'empty') {
-            $renderData = $this->renderDataWithSearchRecoverySection($renderData);
+            return $this->renderDataWithSearchRecoverySection($renderData);
         }
 
         return $renderData;
@@ -484,13 +493,7 @@ final class ThemeDemoPageInstaller
             return true;
         }
 
-        foreach ($definition->bespokeWidgetComponentKeys() as $componentKey) {
-            if (str_ends_with($componentKey, '.' . $sectionType)) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any($definition->bespokeWidgetComponentKeys(), fn (string $componentKey): bool => str_ends_with($componentKey, '.' . $sectionType));
     }
 
     private function definitionLayoutKey(Site $site, string $themeKey, ThemeDemoPageDefinition $definition): string
@@ -1367,7 +1370,7 @@ HTML;
             ],
             'aeo-analytics' => [
                 'summary' => 'AEO Analytics demo content for Visible AEO.',
-                'heroHeading' => 'Your brand\'s answer-engine scoreboard.',
+                'heroHeading' => "Your brand's answer-engine scoreboard.",
                 'heroSummary' => 'Track every time ChatGPT, Perplexity, Gemini, and Copilot mention, cite, or recommend you — and see exactly where you\'re winning and where you\'re invisible.',
                 'featuresHeading' => 'AEO Analytics sections',
                 'featuresSummary' => 'Portable demo content using the AEO Analytics theme profile.',
@@ -1633,7 +1636,7 @@ HTML;
             ],
             'beauty-spa' => [
                 'summary' => 'Beauty & Spa demo content for Lumière Spa.',
-                'heroHeading' => 'Slow down. You\'re due some care.',
+                'heroHeading' => "Slow down. You're due some care.",
                 'heroSummary' => 'A boutique spa in the old town, with skin therapists, restorative massage, and a steam suite. Treat yourself, or someone you love, to an hour that resets everything.',
                 'featuresHeading' => 'Beauty & Spa sections',
                 'featuresSummary' => 'Portable demo content using the Beauty & Spa theme profile.',
@@ -1661,7 +1664,7 @@ HTML;
             ],
             'automotive-dealer' => [
                 'summary' => 'Automotive Dealer demo content for Apex Motors.',
-                'heroHeading' => 'Drive something you\'ll look back at.',
+                'heroHeading' => "Drive something you'll look back at.",
                 'heroSummary' => 'A hand-picked selection of prestige and performance cars, every one inspected, prepared, and warrantied. Reserve online, view in our showroom, and drive away the same week.',
                 'featuresHeading' => 'Automotive Dealer sections',
                 'featuresSummary' => 'Portable demo content using the Automotive Dealer theme profile.',

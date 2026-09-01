@@ -6,16 +6,20 @@ namespace Capell\FoundationTheme\Console\Commands;
 
 use Capell\FoundationTheme\Actions\InstallFoundationThemeDemoAction;
 use Capell\FoundationTheme\Data\ThemeDemoInstallData;
+use Capell\FoundationTheme\Support\Demo\InteractsWithThemeDemoProfile;
 use Illuminate\Console\Command;
 use Stringable;
 
 final class DemoCommand extends Command
 {
+    use InteractsWithThemeDemoProfile;
+
     protected $signature = 'capell:theme-foundation-demo
         {--site=* : Site name(s) to seed. Defaults to the existing default site or Demo.}
         {--language=* : Language code(s) to seed. Defaults to the existing default language or en.}
         {--base-url= : Base URL used for seeded demo links. Defaults to app.url.}
-        {--force : Rebuild existing Foundation demo page layouts}';
+        {--force : Rebuild existing Foundation demo page layouts}
+        {--profile= : Theme Studio preset key to apply}';
 
     protected $description = 'Install Foundation theme demo pages.';
 
@@ -26,6 +30,7 @@ final class DemoCommand extends Command
             languageCodes: $this->stringOptions('language'),
             baseUrl: $this->baseUrl(),
             force: (bool) $this->option('force'),
+            profile: $this->profileOption(),
         ));
 
         $this->info('Foundation theme demo pages installed.');
