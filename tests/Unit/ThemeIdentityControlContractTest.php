@@ -146,7 +146,10 @@ function identityControlTokens(ThemeDefinitionData $definition): array
 it('discovers every child theme definition', function (): void {
     // Guards the harness itself: a broken glob or namespace regex would make
     // every assertion below vacuously pass.
-    expect(identityControlThemeDefinitions())->toHaveCount(28);
+    // 28 -> 27 on 2026-08-31: PR #782 retired the Photography theme into Brutalist's
+    // `magazine-masthead` preset, leaving 28 theme packages of which 27 are child themes
+    // (theme-foundation itself ships no child definition).
+    expect(identityControlThemeDefinitions())->toHaveCount(27);
 });
 
 it('gives every child theme at least one configurable control', function (): void {

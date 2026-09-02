@@ -121,11 +121,16 @@ uses(AssertsPublicThemeOutputSafety::class);
  * reconciliation then recorded the already-merged URL-sanitisation and
  * theme-surface changes that had not updated this shared fixture: business
  * 10->17, curated 25->32, foundation 125->172, knowledge 13->14, and
- * showreel 32->35, moving the current fleet baseline to 745. Future changes
- * still ratchet only downward from these reconciled values.
+ * showreel 32->35, moving the current fleet baseline to 745. Retiring the
+ * Photography theme (PR #782 consolidated it into Brutalist, which kept the
+ * approved direction as its `magazine-masthead` preset) removed that theme's
+ * whole 19-block entry from the frozen snapshot, but the paired total below
+ * was left at 745 — so this cross-check, not the ratchet, is what went red:
+ * 745 - 19 = 726. No Blade block changed. Future changes still ratchet only
+ * downward from these reconciled values.
  */
-it('confirms the frozen baseline snapshot sums to the programme-verified total of 745', function (): void {
-    expect(array_sum(ThemePhpBlockBaselineCounts::FROZEN_BASELINE_COUNTS))->toBe(745);
+it('confirms the frozen baseline snapshot sums to the programme-verified total of 726', function (): void {
+    expect(array_sum(ThemePhpBlockBaselineCounts::FROZEN_BASELINE_COUNTS))->toBe(726);
 });
 
 it('keeps each theme package within its frozen @php block baseline', function (): void {

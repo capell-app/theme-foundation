@@ -11,7 +11,7 @@ function themeContractExtractCustomProperties(string $source): array
 
     preg_match_all('/--theme-(?:[a-z0-9]+(?:-[a-z0-9]+)*)/i', $source, $matches);
 
-    $tokens = array_map('strtolower', $matches[0]);
+    $tokens = array_map(strtolower(...), $matches[0]);
 
     sort($tokens);
 
@@ -204,7 +204,10 @@ it('only consumes emitted theme custom properties', function (): void {
     // theme stylesheet silently disappears (a deleted/renamed package, or a moved CSS path).
     // Update the number only when a theme is intentionally added or removed — never delete
     // this assertion to make the suite green.
-    expect($themeStylesheets)->toHaveLength(29);
+    // 29 -> 28 on 2026-08-31: PR #782 retired the Photography theme, consolidating it into
+    // Brutalist as the `magazine-masthead` preset. One package, one stylesheet, intentionally
+    // removed — the census follows the shipped fleet, which is now 28 theme packages.
+    expect($themeStylesheets)->toHaveLength(28);
 
     foreach ($themeStylesheets as $themeDirectory => $themeStylesheet) {
         $consumedTokens = themeContractExtractCustomProperties($themeStylesheet);
