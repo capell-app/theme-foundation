@@ -889,7 +889,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
     }
 
     /**
-     * Lets the CAP-0233 dynamic-form-delivery route (registered below) serve
+     * Lets the dynamic-form-delivery route (registered below) serve
      * the real, session-bound form markup for the Foundation section types
      * FoundationSection delivers dynamically — see
      * FoundationSectionPublicLayoutWidgetPayloadContributor.
@@ -900,7 +900,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
     }
 
     /**
-     * A theme-foundation-owned route for the CAP-0233 deferred-fragment
+     * A theme-foundation-owned route for the deferred-fragment
      * placeholder, deliberately separate from layout-builder's shared
      * `/_fragments/{reference}` route. That route unconditionally strips
      * `Set-Cookie` and forces `Cache-Control: public, max-age=300,
@@ -910,7 +910,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
      * visitor-independent content it was built for, but unsafe for a form
      * that must mint a fresh, working, session-bound CSRF token per visitor:
      * baking one into a response cacheable for five minutes would reproduce
-     * CAP-0216's bug one layer down. `web` middleware here (matching
+     * the same cross-visitor CSRF-token leak one layer down. `web` middleware here (matching
      * registerLazyLayoutWidgetRoute()'s own `_capell/` convention) gives the
      * real session access `@csrf` needs; FoundationDynamicFormFragmentController
      * answers with `private, no-store` instead.

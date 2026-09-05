@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 /*
 |--------------------------------------------------------------------------
-| Dynamic form delivery for cache-unsafe Foundation sections (CAP-0233)
+| Dynamic form delivery for cache-unsafe Foundation sections
 |--------------------------------------------------------------------------
 |
-| CAP-0216 added a literal @csrf to the "no form_handle configured" branch
+| A literal @csrf was added to the "no form_handle configured" branch
 | of the `form` and `contact-split` sections. Those sections render
 | synchronously through FoundationSection, a plain-Blade layout-widget with
 | no delivery-mode veto, so the resulting `<input type="hidden"
@@ -42,10 +42,11 @@ declare(strict_types=1);
 | LayoutNativeMainContentRendersWidgetsTest.php. Rendering that wrapper in
 | isolation (outside a full page's exact adjacent-component-tag sequence)
 | reproducibly renders empty with no exception; that is an existing Blade/
-| Blaze test-harness quirk unrelated to CAP-0233, not evidence this fix is
+| Blaze test-harness quirk unrelated to this fix, not evidence this fix is
 | broken. Exercising FoundationSection's real PHP decision logic
 | (constructor + viewData()) plus the real, unmodified section Blade views
-| covers the same code CAP-0216 touched without depending on that wrapper.
+| covers the same code the earlier @csrf change touched without depending
+| on that wrapper.
 */
 
 use Capell\Core\Models\Language;
@@ -116,7 +117,7 @@ function bindFoundationDynamicFormDeliveryFrontendContext(array $fixture): void
 
 /**
  * Exercises FoundationSection's real constructor + protected viewData()
- * method (the CAP-0233 decision logic) without going through the
+ * method (the deferred-fragment decision logic) without going through the
  * Blaze-affected outer component wrapper — see the file-level note above.
  *
  * @return array<array-key, mixed>
@@ -349,7 +350,7 @@ it('refuses to leak a form fragment through the shared, publicly-cached /_fragme
     // but the shared route, not theme-foundation's own. If this ever starts
     // returning the form, a CSRF token would be servable from a response
     // layout-builder unconditionally marks `Cache-Control: public,
-    // max-age=300` — reproducing CAP-0216's bug one layer down.
+    // max-age=300` — reproducing the original CSRF-leak bug one layer down.
     $response = $this->get(route('capell-layout-builder.fragments.show', ['reference' => $reference]));
 
     $response->assertNotFound();

@@ -29,7 +29,7 @@ final class FoundationSection extends AbstractWidget
      * Section types whose "no form_handle configured" branch renders a raw,
      * session-bound `@csrf` `<form>`. Rendered synchronously as part of the
      * ordinary page response, that form has no delivery-mode veto stopping
-     * it reaching the shared full-page HTML cache (CAP-0216/CAP-0233), so
+     * it reaching the shared full-page HTML cache, so
      * these section types are delivered dynamically instead: viewData()
      * exposes a deferred-fragment placeholder URL, and
      * FoundationSectionPublicLayoutWidgetPayloadContributor renders the real

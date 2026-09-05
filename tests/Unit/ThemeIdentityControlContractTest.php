@@ -8,7 +8,7 @@ use Capell\Core\ThemeStudio\Data\ThemeDefinitionData;
 use Capell\Core\ThemeStudio\Data\ThemeOverrideData;
 
 /*
- * CAP-0200 / CAP-0246: child themes used to ship the identical shared editor
+ * Child themes used to ship the identical shared editor
  * schema, so a buyer could not configure anything about the theme they bought.
  * Each theme now declares an identity control of its own.
  *
@@ -17,7 +17,7 @@ use Capell\Core\ThemeStudio\Data\ThemeOverrideData;
  * because StandardThemeEditorSchema::tokenKeys() only walks definition().
  *
  * Three properties are enforced, and together they are what stops the fleet
- * from growing 28 hollow copy-pasted controls (CAP-0203, structural
+ * from growing 28 hollow copy-pasted controls (structural
  * duplication):
  *
  *   1. every option a theme offers has a real CSS consumer in that theme's own
@@ -273,7 +273,7 @@ it('keeps identity controls distinct across the fleet', function (): void {
             1,
             "Identity token [{$tokenKey}] is declared by more than one theme (" . implode(', ', $themes)
                 . '). A control shared by several themes belongs in StandardThemeEditorSchema, not copy-pasted '
-                . 'per theme — see CAP-0203 on structural duplication.',
+                . 'per theme — this is exactly the structural duplication the fleet must avoid.',
         );
     }
 });

@@ -114,7 +114,7 @@ uses(AssertsPublicThemeOutputSafety::class);
  * pass then added nine reviewed preparation-only blocks across shared chrome,
  * component states, URL sanitisation, and widget render data. That moved
  * Foundation from 116 to 125 and the current fleet baseline from 676 to 685.
- * CAP-0247's directory widget-parity pass then ratcheted directory DOWN from
+ * The directory widget-parity pass then ratcheted directory DOWN from
  * 36 to 31: its generic widget shim moved to a typed resolver action, and the
  * duplicated role-filters-toolbar markup collapsed into one shared Blade
  * component. That moves the fleet baseline from 685 to 680. The 2026-08-27

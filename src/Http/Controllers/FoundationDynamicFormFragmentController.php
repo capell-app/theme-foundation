@@ -9,7 +9,7 @@ use Illuminate\Http\Response;
 
 /**
  * Serves the real, session-bound form markup for a Foundation section's
- * deferred-fragment placeholder (CAP-0233).
+ * deferred-fragment placeholder.
  *
  * Deliberately NOT layout-builder's shared `/_fragments/{reference}` route:
  * that route is architecturally a stateless, visitor-independent artifact —
@@ -18,7 +18,7 @@ use Illuminate\Http\Response;
  * every response under `_fragments/*`, and the route itself carries no
  * session middleware. A CSRF token baked into that response would be shared
  * across every visitor who resolves the same stable reference within that
- * cache window — the exact bug CAP-0233 exists to fix, just moved one layer
+ * cache window — the exact bug this controller exists to fix, just moved one layer
  * down. This route reuses the same reference format and the same generic
  * `RenderPublicFragmentAction` (decode, context/version checks,
  * `BuildPublicLayoutGraphAction`, authoring-surface safety), so the two

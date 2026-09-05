@@ -14,7 +14,7 @@ use Illuminate\Support\Fluent;
 
 /**
  * Serves the real, session-bound `<form>` markup for the Foundation section
- * types that `FoundationSection` delivers dynamically (CAP-0233) — `form`
+ * types that `FoundationSection` delivers dynamically — `form`
  * and `contact-split` when no `form_handle` is configured. Those sections
  * render a deferred-fragment placeholder into the ordinary (cacheable) page
  * response instead of the raw form, so the form itself is only ever

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * CAP-0233: the raw, CSRF-protected `<form>` markup this test originally
+ * The raw, CSRF-protected `<form>` markup this test originally
  * exercised directly against theme.sections.{form,contact-split,form--encouraging}
  * now lives in the dedicated `theme.sections.partials.*` views instead — the
  * section views themselves render a deferred-fragment placeholder for the
