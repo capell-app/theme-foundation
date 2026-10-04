@@ -36,7 +36,9 @@ final class BuildPageContentRenderDataAction
         $content = data_get($translation, 'content');
         $title = data_get($translation, 'title');
         $displayTitle = data_get($translation, 'meta.hero_title');
-        $contentStructure = data_get($blueprint, 'content_structure');
+        $override = $page instanceof Model ? ($page->getAttributes()['content_structure_override'] ?? null) : null;
+        $contentStructure = is_string($override) ? ContentStructure::tryFrom($override) : null;
+        $contentStructure ??= data_get($blueprint, 'content_structure');
         $contentStructure = $contentStructure instanceof ContentStructure
             ? $contentStructure
             : ContentStructure::Html;
@@ -46,11 +48,15 @@ final class BuildPageContentRenderDataAction
             imageAlt: is_string($imageAlt) && $imageAlt !== '' ? $imageAlt : null,
             content: is_string($content) ? $content : null,
             contentStructure: $contentStructure,
-            hasContent: in_array('content', $pageContents, true) && is_string($content) && $content !== '',
+            hasContent: in_array('content', $pageContents, true) && (
+                (is_string($content) && $content !== '')
+                || ($contentStructure === ContentStructure::Blocks && is_array($content) && $content !== [])
+            ),
             hasTitle: in_array('title', $pageContents, true) && $showPageTitle,
             title: is_string($displayTitle) && $displayTitle !== ''
                 ? $displayTitle
                 : (is_string($title) ? $title : null),
+            blocks: $contentStructure === ContentStructure::Blocks && is_array($content) ? $content : [],
         );
     }
 

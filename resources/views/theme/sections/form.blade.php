@@ -48,7 +48,7 @@
             />
         @elseif ($formDeliveryFragmentUrl)
             {{--
-                CAP-0233: a real `<form>@csrf</form>` here would be a
+                A real `<form>@csrf</form>` here would be a
                 literal, session-bound CSRF token baked into HTML that the
                 shared full-page HTML cache can serve to every later
                 visitor. This section renders synchronously as part of the

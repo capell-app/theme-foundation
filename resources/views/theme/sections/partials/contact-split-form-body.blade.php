@@ -1,5 +1,5 @@
 {{--
-    Wave 4c CAP-0233: the real `<form>` markup for the `contact-split`
+    The real `<form>` markup for the `contact-split`
     section's no-`form_handle` branch. Never included from the main page
     render — theme.sections.contact-split.blade.php renders a
     deferred-fragment placeholder instead (see FoundationSection::viewData())

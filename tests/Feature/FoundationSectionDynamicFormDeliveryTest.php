@@ -131,11 +131,10 @@ function foundationSectionViewData(Widget $widget): array
         loop: new stdClass,
         widget: $widget,
         widgetData: [],
-        pageSlot: null,
         occurrence: 1,
     );
 
-    $viewData = (new ReflectionMethod($component, 'viewData'))->invoke($component);
+    $viewData = new ReflectionMethod($component, 'viewData')->invoke($component);
 
     if (! is_array($viewData)) {
         throw new LogicException('FoundationSection::viewData() must return an array.');
@@ -202,6 +201,22 @@ it('does not compute a deferred-fragment URL for section types that do not need 
     expect($viewData['sectionType'])->toBe('hero')
         ->and($viewData['formDeliveryFragmentUrl'])->toBeNull();
 });
+
+it('does not prepare an unused fragment for a configured form embed', function (string $sectionType, string $component, string $handleKey, int|string $handle): void {
+    $fixture = foundationDynamicFormDeliveryFixture($sectionType, $component, [
+        $handleKey => $handle,
+    ]);
+    bindFoundationDynamicFormDeliveryFrontendContext($fixture);
+
+    $viewData = foundationSectionViewData($fixture['widget']);
+
+    expect($viewData['formDeliveryFragmentUrl'])->toBeNull();
+})->with([
+    ['form', FoundationSectionWidgetComponentEnum::Form->value, 'form_handle', 'contact'],
+    ['form', FoundationSectionWidgetComponentEnum::Form->value, 'formHandle', 'contact'],
+    ['form', FoundationSectionWidgetComponentEnum::Form->value, 'form_handle', 12],
+    ['contact-split', FoundationSectionWidgetComponentEnum::ContactSplit->value, 'form_handle', 'contact'],
+]);
 
 it('renders the base form section as a deferred-fragment placeholder with no baked CSRF token', function (): void {
     $html = view('capell-theme-foundation::theme.sections.form', [

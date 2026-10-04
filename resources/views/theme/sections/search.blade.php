@@ -56,9 +56,9 @@
         @if ($query !== '' || $searchResults !== [])
             <p class="mt-5 text-sm font-medium text-[var(--foundation-muted-fg)]">
                 @if ($query !== '')
-                    {{ __('capell-theme-foundation::generic.search_results_for_query', ['count' => $resultCount, 'query' => $query]) }}
+                    {{ trans_choice('capell-theme-foundation::generic.search_results_for_query', $resultCount, ['count' => $resultCount, 'query' => $query]) }}
                 @else
-                    {{ __('capell-theme-foundation::generic.search_results_for_query', ['count' => $resultCount, 'query' => __('capell-theme-foundation::generic.search')]) }}
+                    {{ trans_choice('capell-theme-foundation::generic.search_results_count', $resultCount, ['count' => $resultCount]) }}
                 @endif
             </p>
         @endif

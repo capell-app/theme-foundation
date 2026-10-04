@@ -418,20 +418,20 @@
                             />
                         @endif
 
-                        <span class="widget p-5">
+                        <span class="widget block p-5">
                             <span
                                 class="text-xs font-medium text-[var(--foundation-muted-fg)]"
                             >
                                 {{ $item['type'] ?? $item['publishedDate'] ?? '' }}
                             </span>
                             <span
-                                class="widget mt-2 text-base font-semibold text-[var(--foundation-heading-fg)]"
+                                class="widget mt-2 block text-base font-semibold text-[var(--foundation-heading-fg)]"
                             >
                                 {{ $item['title'] }}
                             </span>
                             @if (! empty($item['summary']))
                                 <span
-                                    class="widget mt-2 text-sm leading-6 text-[var(--foundation-muted-fg)]"
+                                    class="widget mt-2 block text-sm leading-6 text-[var(--foundation-muted-fg)]"
                                 >
                                     {{ $item['summary'] }}
                                 </span>

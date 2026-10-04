@@ -7,6 +7,7 @@ namespace Capell\FoundationTheme\View\Components\Widget;
 use Capell\FoundationTheme\Actions\ResolveFoundationSectionAnchorAction;
 use Capell\LayoutBuilder\Actions\Fragments\BuildLayoutBuilderFragmentReferenceAction;
 use Illuminate\Support\Fluent;
+use Override;
 
 final class FoundationSection extends AbstractWidget
 {
@@ -64,6 +65,7 @@ final class FoundationSection extends AbstractWidget
      *     formDeliveryFragmentUrl: string|null
      * }
      */
+    #[Override]
     protected function viewData(): array
     {
         $sectionMeta = is_array($this->widget->meta) ? $this->widget->meta : [];
@@ -81,6 +83,9 @@ final class FoundationSection extends AbstractWidget
             widgetIndex: $this->widgetIndex,
             occurrence: $this->occurrence,
         );
+        $formHandle = $sectionMeta['form_handle'] ?? ($sectionType === 'form' ? ($sectionMeta['formHandle'] ?? null) : null);
+        $usesFormEmbed = (is_string($formHandle) && $formHandle !== '')
+            || ($sectionType === 'form' && is_int($formHandle));
 
         return [
             'anchorable' => in_array($sectionType, self::ANCHORABLE_SECTION_TYPES, true),
@@ -88,7 +93,7 @@ final class FoundationSection extends AbstractWidget
             'section' => new Fluent($sectionMeta),
             'sectionType' => $sectionType,
             'sectionView' => self::SECTION_VIEWS[$sectionType] ?? null,
-            'formDeliveryFragmentUrl' => $this->resolveFormDeliveryFragmentUrl($sectionType),
+            'formDeliveryFragmentUrl' => $usesFormEmbed ? null : $this->resolveFormDeliveryFragmentUrl($sectionType),
         ];
     }
 
@@ -99,9 +104,10 @@ final class FoundationSection extends AbstractWidget
      * cannot produce a fragment reference (e.g. no resolved page/site;
      * BuildLayoutBuilderFragmentReferenceAction requires the full frontend
      * context that is always present during a real page render). The Blade
-     * views only consume this value when their own `form_handle` branch is
-     * not taken, so it is safe to compute unconditionally here rather than
-     * duplicate that per-view field-naming logic in PHP.
+     * views only consume this value without a configured form embed. Match
+     * their handle branches before calling this method: preparing an unused
+     * fragment reference queries and versions the widget during public Blade
+     * rendering, which the public view query guard rejects.
      *
      * Reuses the same reference format layout-builder's own
      * PresentationDeliveryMode::LazyFragment mechanism uses, but the URL

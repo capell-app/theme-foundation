@@ -35,7 +35,7 @@
                     />
                 @elseif ($formDeliveryFragmentUrl)
                     {{--
-                        CAP-0233: see theme.sections.form.blade.php for why
+                        See theme.sections.form.blade.php for why
                         the real @csrf-bearing <form> is delivered via this
                         deferred-fragment placeholder instead of rendering
                         synchronously into the cached page response.

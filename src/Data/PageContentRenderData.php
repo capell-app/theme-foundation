@@ -9,6 +9,7 @@ use Spatie\LaravelData\Data;
 
 final class PageContentRenderData extends Data
 {
+    /** @param array<int|string, mixed> $blocks */
     public function __construct(
         public readonly mixed $image,
         public readonly ?string $imageAlt,
@@ -17,5 +18,6 @@ final class PageContentRenderData extends Data
         public readonly bool $hasContent,
         public readonly bool $hasTitle,
         public readonly ?string $title,
+        public readonly array $blocks = [],
     ) {}
 }

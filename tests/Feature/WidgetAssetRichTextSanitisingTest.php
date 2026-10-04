@@ -7,7 +7,7 @@ use Capell\FoundationTheme\Data\WidgetAssetRenderData;
 
 /*
 |--------------------------------------------------------------------------
-| CAP-0232: author-supplied rich text must never reach public HTML raw
+| Author-supplied rich text must never reach public HTML raw
 |--------------------------------------------------------------------------
 |
 | The testimonial and banner asset widgets render author rich text with
@@ -16,7 +16,7 @@ use Capell\FoundationTheme\Data\WidgetAssetRenderData;
 | public Blade emits.
 */
 
-const CAP0232_HOSTILE_CONTENT = <<<'HTML'
+const WIDGET_ASSET_HOSTILE_CONTENT = <<<'HTML'
 <p>Genuine <strong>praise</strong> from a customer.</p>
 <ul><li>Fast <em>support</em></li></ul>
 <p><a href="/case-studies">Read the case study</a></p>
@@ -28,7 +28,7 @@ const CAP0232_HOSTILE_CONTENT = <<<'HTML'
 <div onclick="steal()">Hover me</div>
 HTML;
 
-function cap0232AssertSanitisedRichText(string $html): void
+function assertWidgetAssetSanitisedRichText(string $html): void
 {
     expect($html)
         ->not->toContain('<script')
@@ -45,7 +45,7 @@ function cap0232AssertSanitisedRichText(string $html): void
         ->and($html)->toContain('Genuine');
 }
 
-function cap0232WidgetAssetRenderData(?string $content): WidgetAssetRenderData
+function widgetAssetSanitisingRenderData(?string $content): WidgetAssetRenderData
 {
     return new WidgetAssetRenderData(
         asset: null,
@@ -77,8 +77,8 @@ function cap0232WidgetAssetRenderData(?string $content): WidgetAssetRenderData
 }
 
 it('sanitises testimonial rich text before it reaches public HTML', function (): void {
-    cap0232AssertSanitisedRichText(
-        cap0232WidgetAssetRenderData(CAP0232_HOSTILE_CONTENT)->safeContentHtml(),
+    assertWidgetAssetSanitisedRichText(
+        widgetAssetSanitisingRenderData(WIDGET_ASSET_HOSTILE_CONTENT)->safeContentHtml(),
     );
 });
 
@@ -87,17 +87,17 @@ it('sanitises banner rich text before it reaches public HTML', function (): void
         image: null,
         alt: '',
         title: 'Spring release',
-        content: CAP0232_HOSTILE_CONTENT,
+        content: WIDGET_ASSET_HOSTILE_CONTENT,
         url: '/spring',
         linkText: 'Read more',
     );
 
-    cap0232AssertSanitisedRichText($banner->safeContentHtml());
+    assertWidgetAssetSanitisedRichText($banner->safeContentHtml());
 });
 
 it('returns an empty string for missing rich text', function (): void {
-    expect(cap0232WidgetAssetRenderData(null)->safeContentHtml())->toBe('')
-        ->and(cap0232WidgetAssetRenderData('   ')->safeContentHtml())->toBe('');
+    expect(widgetAssetSanitisingRenderData(null)->safeContentHtml())->toBe('')
+        ->and(widgetAssetSanitisingRenderData('   ')->safeContentHtml())->toBe('');
 });
 
 it('keeps the raw rich-text call sites routed through the sanitiser', function (): void {

@@ -1,5 +1,5 @@
 {{--
-    Wave 4c CAP-0233: the real `<form>` markup for the `form--encouraging`
+    The real `<form>` markup for the `form--encouraging`
     variant's no-`form_handle` branch. Never included from the main page
     render — theme.sections.form--encouraging.blade.php renders a
     deferred-fragment placeholder instead (see FoundationSection::viewData())
@@ -9,7 +9,7 @@
     URL.
 
     (`form--encouraging` is not yet reachable through FoundationSection's
-    SECTION_VIEWS map — see the CAP-0233 handoff notes — so this partial is
+    SECTION_VIEWS map, so this partial is
     prepared, matching the base `form` treatment, for when that wiring lands.)
 --}}
 @php

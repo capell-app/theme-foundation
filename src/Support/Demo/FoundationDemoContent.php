@@ -31,14 +31,14 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
             $this->homepage($themeKey, $media),
             $this->directory($themeKey, $media),
             $this->detail($themeKey, $media),
-            $this->contact($themeKey, $media),
-            $this->empty($themeKey, $media),
-            $this->notFound($themeKey, $media),
-            $this->cta($themeKey, $media),
+            $this->contact($themeKey),
+            $this->empty($themeKey),
+            $this->notFound($themeKey),
+            $this->cta($themeKey),
         ];
 
         return array_map(
-            fn (ThemeDemoPageDefinition $definition): ThemeDemoPageDefinition => $this->withLayoutBuilderComposition($definition),
+            $this->withLayoutBuilderComposition(...),
             $definitions,
         );
     }
@@ -182,9 +182,9 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
                         summary: 'We help small organisations understand a place, agree what matters, and make the next useful change.',
                         primaryLabel: 'Start a conversation',
                         primaryUrl: 'theme-' . $themeKey . '-contact',
-                        primaryIsPath: true,
                         secondaryLabel: 'Explore our field notes',
                         secondaryUrl: '#content-listing',
+                        primaryIsPath: true,
                     ),
                     $this->featuresSection(
                         heading: 'What we work on',
@@ -193,6 +193,7 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
                     $this->searchSection(
                         heading: 'Find a useful field note',
                         summary: 'Search our practical notes on briefs, walk-throughs, workshops, and handovers.',
+                        results: $this->suggestedSearchResults(),
                     ),
                     $this->contentListingSection(
                         heading: 'Notes from the field',
@@ -212,9 +213,9 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
                         summary: 'Tell us what is changing, who the place is for, and what needs to work better.',
                         primaryLabel: 'Tell us about it',
                         primaryUrl: 'theme-' . $themeKey . '-contact',
-                        primaryIsPath: true,
                         secondaryLabel: 'See how we work',
                         secondaryUrl: '#proof',
+                        primaryIsPath: true,
                     ),
                 ],
             ],
@@ -255,6 +256,7 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
                     $this->searchSection(
                         heading: 'Search the field notes',
                         summary: 'Try a place type, project stage, or practical question.',
+                        results: $this->suggestedSearchResults(),
                     ),
                     $this->contentListingSection(
                         heading: 'All field notes',
@@ -325,9 +327,9 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
                         summary: 'Find practical guidance for site visits, workshops, prototypes, and handovers.',
                         primaryLabel: 'Browse all field notes',
                         primaryUrl: 'theme-' . $themeKey . '-directory',
-                        primaryIsPath: true,
                         secondaryLabel: 'Search the collection',
                         secondaryUrl: 'theme-' . $themeKey . '-directory#search',
+                        primaryIsPath: true,
                         secondaryIsPath: true,
                     ),
                 ],
@@ -335,10 +337,7 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
         );
     }
 
-    /**
-     * @param  array{hero: list<string>, listing: list<string>, detail: list<string>, proof: list<string>, contact: list<string>, cta: list<string>}  $media
-     */
-    private function contact(string $themeKey, array $media): ThemeDemoPageDefinition
+    private function contact(string $themeKey): ThemeDemoPageDefinition
     {
         return new ThemeDemoPageDefinition(
             surface: 'contact',
@@ -376,9 +375,9 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
                         summary: 'The field notes cover many of the questions that come up before a project begins.',
                         primaryLabel: 'Search the field notes',
                         primaryUrl: 'theme-' . $themeKey . '-directory#search',
-                        primaryIsPath: true,
                         secondaryLabel: 'Browse all notes',
                         secondaryUrl: 'theme-' . $themeKey . '-directory',
+                        primaryIsPath: true,
                         secondaryIsPath: true,
                     ),
                 ],
@@ -387,10 +386,7 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
         );
     }
 
-    /**
-     * @param  array{hero: list<string>, listing: list<string>, detail: list<string>, proof: list<string>, contact: list<string>, cta: list<string>}  $media
-     */
-    private function empty(string $themeKey, array $media): ThemeDemoPageDefinition
+    private function empty(string $themeKey): ThemeDemoPageDefinition
     {
         return new ThemeDemoPageDefinition(
             surface: 'empty',
@@ -412,23 +408,25 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
                         summary: 'Try a place type, a project stage, or a broader practical question.',
                         primaryLabel: 'Browse all field notes',
                         primaryUrl: 'theme-' . $themeKey . '-directory',
-                        primaryIsPath: true,
                         secondaryLabel: 'Back to the homepage',
                         secondaryUrl: 'theme-' . $themeKey,
+                        primaryIsPath: true,
                         secondaryIsPath: true,
                     ),
                     $this->searchSection(
                         heading: 'Try another search',
                         summary: 'Search by place, activity, project stage, or decision.',
+                        results: [],
+                        query: 'night shifts',
                     ),
                     $this->ctaSection(
                         heading: 'Still looking for an answer?',
                         summary: 'Send us the question. We will share a useful starting point if we have one.',
                         primaryLabel: 'Ask Field Office',
                         primaryUrl: 'theme-' . $themeKey . '-contact',
-                        primaryIsPath: true,
                         secondaryLabel: 'Browse all notes',
                         secondaryUrl: 'theme-' . $themeKey . '-directory',
+                        primaryIsPath: true,
                         secondaryIsPath: true,
                     ),
                 ],
@@ -436,10 +434,7 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
         );
     }
 
-    /**
-     * @param  array{hero: list<string>, listing: list<string>, detail: list<string>, proof: list<string>, contact: list<string>, cta: list<string>}  $media
-     */
-    private function notFound(string $themeKey, array $media): ThemeDemoPageDefinition
+    private function notFound(string $themeKey): ThemeDemoPageDefinition
     {
         return new ThemeDemoPageDefinition(
             surface: 'not-found',
@@ -461,9 +456,9 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
                         summary: 'The link may be out of date. Search the field notes or head back to the homepage.',
                         primaryLabel: 'Search the field notes',
                         primaryUrl: 'theme-' . $themeKey . '-directory#search',
-                        primaryIsPath: true,
                         secondaryLabel: 'Back to the homepage',
                         secondaryUrl: 'theme-' . $themeKey,
+                        primaryIsPath: true,
                         secondaryIsPath: true,
                     ),
                     $this->ctaSection(
@@ -471,9 +466,9 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
                         summary: 'Browse the complete collection or tell us what you were hoping to find.',
                         primaryLabel: 'Browse all field notes',
                         primaryUrl: 'theme-' . $themeKey . '-directory',
-                        primaryIsPath: true,
                         secondaryLabel: 'Ask Field Office',
                         secondaryUrl: 'theme-' . $themeKey . '-contact',
+                        primaryIsPath: true,
                         secondaryIsPath: true,
                     ),
                 ],
@@ -483,10 +478,7 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
         );
     }
 
-    /**
-     * @param  array{hero: list<string>, listing: list<string>, detail: list<string>, proof: list<string>, contact: list<string>, cta: list<string>}  $media
-     */
-    private function cta(string $themeKey, array $media): ThemeDemoPageDefinition
+    private function cta(string $themeKey): ThemeDemoPageDefinition
     {
         return new ThemeDemoPageDefinition(
             surface: 'cta',
@@ -525,9 +517,9 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
                         summary: 'Browse practical notes from earlier site visits, workshops, and handovers.',
                         primaryLabel: 'Browse all field notes',
                         primaryUrl: 'theme-' . $themeKey . '-directory',
-                        primaryIsPath: true,
                         secondaryLabel: 'Search the notes',
                         secondaryUrl: 'theme-' . $themeKey . '-directory#search',
+                        primaryIsPath: true,
                         secondaryIsPath: true,
                     ),
                 ],
@@ -573,9 +565,10 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
     }
 
     /**
+     * @param  list<array{title: string, summary: string}>  $results
      * @return array<string, mixed>
      */
-    private function searchSection(string $heading, string $summary): array
+    private function searchSection(string $heading, string $summary, array $results, string $query = ''): array
     {
         return [
             'type' => 'search',
@@ -583,10 +576,17 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
             'summary' => $summary,
             'action' => '/search',
             'placeholder' => 'Search field notes and projects',
-            'results' => [
-                ['title' => 'A practical brief for a shared workshop', 'summary' => 'Frame the people, activities, constraints, and decisions before fixing the answer.'],
-                ['title' => 'Planning a useful first walk-through', 'summary' => 'A short set of prompts for looking, listening, and recording what matters.'],
-            ],
+            'query' => $query,
+            'results' => $results,
+        ];
+    }
+
+    /** @return list<array{title: string, summary: string}> */
+    private function suggestedSearchResults(): array
+    {
+        return [
+            ['title' => 'A practical brief for a shared workshop', 'summary' => 'Frame the people, activities, constraints, and decisions before fixing the answer.'],
+            ['title' => 'Planning a useful first walk-through', 'summary' => 'A short set of prompts for looking, listening, and recording what matters.'],
         ];
     }
 

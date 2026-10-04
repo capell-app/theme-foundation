@@ -33,6 +33,7 @@ return [
     'design_tokens' => 'Design tokens',
     'header_background_color' => 'Header background colour',
     'heading_scale' => 'Heading scale',
+    'heading_scale_helper' => 'Controls the relative sizes and line heights of h1, h2 and h3 headings in the Foundation theme.',
     'heading_scale_options' => [
         'balanced' => 'Balanced',
         'compact' => 'Compact',

@@ -1,6 +1,6 @@
 ---
 name: capell-theme-foundation-development
-description: Use when editing Capell Foundation Theme Blade, Tailwind assets, media URLs, or settings.
+description: Default frontend theme infrastructure covering Blade components, Tailwind assets, URL helpers, and theme settings. Use when editing Capell Foundation Theme Blade, Tailwind assets, media URLs, or settings.
 ---
 
 # Capell Foundation Theme

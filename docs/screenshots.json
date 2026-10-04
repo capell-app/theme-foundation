@@ -134,7 +134,7 @@
             "useCase": "A buyer reviews the Foundation detail article surface before selecting theme-foundation.",
             "package": "theme-foundation",
             "scenario": "frontend-page",
-            "waitFor": "#main",
+            "waitFor": "#main form:has(input[name=\"name\"]):has(input[name=\"email\"]):has(textarea[name=\"message\"])",
             "colorSchemes": ["light"],
             "viewport": "desktop",
             "fullPage": true
@@ -153,7 +153,7 @@
             "useCase": "A buyer reviews the Foundation detail article surface before selecting theme-foundation.",
             "package": "theme-foundation",
             "scenario": "frontend-page",
-            "waitFor": "#main",
+            "waitFor": "#main form:has(input[name=\"name\"]):has(input[name=\"email\"]):has(textarea[name=\"message\"])",
             "colorSchemes": ["light"],
             "viewport": "tablet",
             "fullPage": true
@@ -172,7 +172,7 @@
             "useCase": "A buyer reviews the Foundation detail article surface before selecting theme-foundation.",
             "package": "theme-foundation",
             "scenario": "frontend-page",
-            "waitFor": "#main",
+            "waitFor": "#main form:has(input[name=\"name\"]):has(input[name=\"email\"]):has(textarea[name=\"message\"])",
             "colorSchemes": ["light"],
             "viewport": "mobile",
             "fullPage": true
@@ -191,7 +191,7 @@
             "useCase": "A buyer reviews the Foundation contact surface before selecting theme-foundation.",
             "package": "theme-foundation",
             "scenario": "frontend-page",
-            "waitFor": "#main",
+            "waitFor": "#main form:has(input[name=\"name\"]):has(input[name=\"email\"]):has(textarea[name=\"message\"])",
             "colorSchemes": ["light"],
             "viewport": "desktop",
             "fullPage": true
@@ -210,7 +210,7 @@
             "useCase": "A buyer reviews the Foundation contact surface before selecting theme-foundation.",
             "package": "theme-foundation",
             "scenario": "frontend-page",
-            "waitFor": "#main",
+            "waitFor": "#main form:has(input[name=\"name\"]):has(input[name=\"email\"]):has(textarea[name=\"message\"])",
             "colorSchemes": ["light"],
             "viewport": "tablet",
             "fullPage": true
@@ -229,7 +229,7 @@
             "useCase": "A buyer reviews the Foundation contact surface before selecting theme-foundation.",
             "package": "theme-foundation",
             "scenario": "frontend-page",
-            "waitFor": "#main",
+            "waitFor": "#main form:has(input[name=\"name\"]):has(input[name=\"email\"]):has(textarea[name=\"message\"])",
             "colorSchemes": ["light"],
             "viewport": "mobile",
             "fullPage": true
@@ -362,7 +362,7 @@
             "useCase": "A buyer reviews the Foundation call to action surface before selecting theme-foundation.",
             "package": "theme-foundation",
             "scenario": "frontend-page",
-            "waitFor": "#main",
+            "waitFor": "#main form:has(input[name=\"name\"]):has(input[name=\"email\"]):has(textarea[name=\"message\"])",
             "colorSchemes": ["light"],
             "viewport": "desktop",
             "fullPage": true
@@ -381,7 +381,7 @@
             "useCase": "A buyer reviews the Foundation call to action surface before selecting theme-foundation.",
             "package": "theme-foundation",
             "scenario": "frontend-page",
-            "waitFor": "#main",
+            "waitFor": "#main form:has(input[name=\"name\"]):has(input[name=\"email\"]):has(textarea[name=\"message\"])",
             "colorSchemes": ["light"],
             "viewport": "tablet",
             "fullPage": true
@@ -400,7 +400,7 @@
             "useCase": "A buyer reviews the Foundation call to action surface before selecting theme-foundation.",
             "package": "theme-foundation",
             "scenario": "frontend-page",
-            "waitFor": "#main",
+            "waitFor": "#main form:has(input[name=\"name\"]):has(input[name=\"email\"]):has(textarea[name=\"message\"])",
             "colorSchemes": ["light"],
             "viewport": "mobile",
             "fullPage": true
@@ -410,8 +410,8 @@
             "title": "Foundation Chrome Homepage",
             "surface": "frontend",
             "targetType": "frontend-url",
-            "target": "/theme-default",
-            "url": "/theme-default",
+            "target": "/",
+            "url": "/",
             "screenshotPath": "packages/theme-foundation/docs/screenshots/foundation-chrome-homepage.webp",
             "darkScreenshotPath": "packages/theme-foundation/docs/screenshots/foundation-chrome-homepage-dark.webp",
             "required": true,
@@ -421,7 +421,7 @@
             "evidenceScope": "foundation-real-chrome",
             "package": "theme-foundation",
             "scenario": "frontend-page",
-            "waitFor": "body:has(#header .header-logo):has(#header nav):has(#main):has(#footer)",
+            "waitFor": "body:has(#header .capell-product-header__brand-link :is(svg, img)):has(#header nav):has(#main):has(#footer)",
             "colorSchemes": ["light", "dark"],
             "viewport": "desktop",
             "fullPage": true,
@@ -440,19 +440,15 @@
                     "selector": "#header",
                     "tolerance": 1
                 }
-            ],
-            "intentionalVariant": {
-                "of": "foundation-homepage",
-                "reason": "Both contracts intentionally use the same real homepage with Foundation header and footer."
-            }
+            ]
         },
         {
             "id": "foundation-chrome-homepage-mobile",
             "title": "Foundation Chrome Homepage — Mobile",
             "surface": "frontend",
             "targetType": "frontend-url",
-            "target": "/theme-default",
-            "url": "/theme-default",
+            "target": "/",
+            "url": "/",
             "screenshotPath": "packages/theme-foundation/docs/screenshots/foundation-chrome-homepage-mobile.webp",
             "darkScreenshotPath": "packages/theme-foundation/docs/screenshots/foundation-chrome-homepage-mobile-dark.webp",
             "required": true,
@@ -462,7 +458,7 @@
             "evidenceScope": "foundation-real-chrome",
             "package": "theme-foundation",
             "scenario": "frontend-page",
-            "waitFor": "body:has(#header .header-logo):has(#header nav):has(#main):has(#footer)",
+            "waitFor": "body:has(#header .capell-product-header__brand-link :is(svg, img)):has(#header nav):has(#main):has(#footer)",
             "colorSchemes": ["light", "dark"],
             "viewport": "mobile",
             "fullPage": true,
@@ -481,11 +477,7 @@
                     "selector": "#header",
                     "tolerance": 1
                 }
-            ],
-            "intentionalVariant": {
-                "of": "foundation-homepage-mobile",
-                "reason": "Both mobile contracts intentionally use the same real homepage with Foundation header and footer."
-            }
+            ]
         }
     ]
 }

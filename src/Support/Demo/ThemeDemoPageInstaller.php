@@ -16,6 +16,7 @@ use Capell\Core\Models\Page;
 use Capell\Core\Models\Site;
 use Capell\Core\Models\Theme;
 use Capell\Core\Support\Creator\BlueprintCreator;
+use Capell\Core\Support\Creator\LayoutCreator;
 use Capell\Core\Support\Creator\PageCreator;
 use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
 use Capell\FoundationTheme\Actions\BuildThemeDemoFormsPayloadAction;
@@ -24,6 +25,7 @@ use Capell\FoundationTheme\Data\ThemeDemoInstallData;
 use Capell\LayoutBuilder\Support\Creator\WidgetCreator;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
@@ -221,27 +223,32 @@ final class ThemeDemoPageInstaller
                 ? $this->ensureDefinitionLayout($site, $themeKey, $definition)
                 : null;
 
-            $this->updateExistingPageLayout($site, $definition, $layout);
-
             $renderData = $this->renderDataForDefinition($definition);
 
             /** @var Page $page */
-            $page = $creator->createPage([
-                'name' => $definition->name,
-                'type_key' => $definition->type,
-                'layout_key' => $definition->layout,
-                'layout_id' => $layout?->getKey(),
-                'visible_from' => now()->subDay()->format('Y-m-d'),
-                'meta' => [
-                    'theme_demo' => [
-                        'theme_key' => $themeKey,
-                        'surface' => $definition->surface,
-                        'render_data' => $renderData,
+            $page = DB::transaction(function () use ($site, $definition, $layout, $themeKey, $creator, $renderData, $languages): Page {
+                $this->alignExistingDemoPage($site, $themeKey, $definition, $layout);
+
+                /** @var Page $page */
+                $page = $creator->createPage([
+                    'name' => $definition->name,
+                    'type_key' => $definition->type,
+                    'layout_key' => $definition->layout,
+                    'layout_id' => $layout?->getKey(),
+                    'visible_from' => now()->subDay()->format('Y-m-d'),
+                    'meta' => [
+                        'theme_demo' => [
+                            'theme_key' => $themeKey,
+                            'surface' => $definition->surface,
+                            'render_data' => $renderData,
+                        ],
+                        'robots' => ['noindex' => $definition->surface === 'not-found'],
                     ],
-                    'robots' => ['noindex' => $definition->surface === 'not-found'],
-                ],
-                'translations' => $this->translations($languages, $definition),
-            ], $site, $languages);
+                    'translations' => $this->translations($languages, $definition),
+                ], $site, $languages);
+
+                return $page;
+            });
 
             if ($definition->hasContainers()) {
                 $this->installLayoutContainers($page, $definition);
@@ -514,18 +521,55 @@ final class ThemeDemoPageInstaller
         return is_string($value) ? $value : '';
     }
 
-    private function updateExistingPageLayout(Site $site, ThemeDemoPageDefinition $definition, ?Layout $layout = null): void
+    private function alignExistingDemoPage(Site $site, string $themeKey, ThemeDemoPageDefinition $definition, ?Layout $layout): void
     {
         $layout ??= Layout::query()->firstWhere('key', $definition->layout->value);
+        $blueprint = Blueprint::query()->pageType()->firstWhere('key', $definition->type->value);
+        $mutableLookup = Page::query()
+            ->where('site_id', $site->getKey())
+            ->where('name', $definition->name)
+            ->where('blueprint_id', $blueprint?->getKey())
+            ->whereNull('parent_id');
 
-        if (! $layout instanceof Layout) {
+        if ($layout instanceof Layout) {
+            if ((clone $mutableLookup)->where('layout_id', $layout->getKey())->exists()) {
+                return;
+            }
+
+            // The base installer repaired layouts before Core's mutable lookup.
+            // Retain that adoption path for legacy metadata, but update only
+            // the compatible page Core would adopt, never every shared name.
+            $legacyPage = $mutableLookup->first();
+
+            if ($legacyPage instanceof Page
+                && in_array(data_get($legacyPage->meta, 'theme_demo.theme_key'), [null, $themeKey], true)
+                && in_array(data_get($legacyPage->meta, 'theme_demo.surface'), [null, $definition->surface], true)) {
+                $legacyPage->fill(['layout_id' => $layout->getKey()])->save();
+
+                return;
+            }
+        }
+
+        $identityMatches = Page::query()
+            ->where('site_id', $site->getKey())
+            ->where('meta->theme_demo->theme_key', $themeKey)
+            ->where('meta->theme_demo->surface', $definition->surface)
+            ->limit(2)
+            ->get();
+
+        // Older seeds can leave duplicate identities after name/slug changes.
+        // Ambiguity must fall back to Core rather than choosing either page.
+        if ($identityMatches->count() !== 1) {
             return;
         }
 
-        Page::query()
-            ->where('site_id', $site->getKey())
-            ->where('name', $definition->name)
-            ->update(['layout_id' => $layout->getKey()]);
+        $page = $identityMatches->firstOrFail();
+        $layout ??= resolve(LayoutCreator::class)->create($definition->layout);
+
+        // PageCreator looks up mutable name/layout fields. Align only this
+        // demo identity: names can change monthly or be shared by different
+        // surfaces. Keep the alignment atomic with translation persistence.
+        $page->fill(['name' => $definition->name, 'layout_id' => $layout->getKey()])->save();
     }
 
     /**

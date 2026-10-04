@@ -1,5 +1,5 @@
 {{--
-    Wave 4c CAP-0233: the real `<form>` markup for the base `form` section's
+    The real `<form>` markup for the base `form` section's
     no-`form_handle` branch. This partial is never included from the main
     page render — theme.sections.form.blade.php renders a deferred-fragment
     placeholder instead (see FoundationSection::viewData()) so the baked

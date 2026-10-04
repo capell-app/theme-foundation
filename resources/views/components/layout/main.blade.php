@@ -1,5 +1,6 @@
 @php
     use Capell\Core\Contracts\Pageable;
+    use Capell\Core\Enums\ContentStructure;
     use Capell\Core\Support\Security\PublicUrlSanitizer;
     use Capell\FoundationTheme\Actions\BuildPageContentRenderDataAction;
     use Capell\FoundationTheme\Actions\ResolveSafeCssColorTokenAction;
@@ -20,6 +21,7 @@
         showPageTitle: true,
     );
     $themeData = is_array($theme) ? $theme : [];
+    $isError = Frontend::isError();
 
     $mainContentHookData = new MainContentRenderHookData(
         layout: $layout,
@@ -71,7 +73,7 @@
         @else
             <x-capell::content
                 class="px-6 py-10"
-                :content="$pageContentRenderData->content ?? ''"
+                :content="$pageContentRenderData->contentStructure === ContentStructure::Blocks ? $pageContentRenderData->blocks : ($pageContentRenderData->content ?? '')"
                 :content-type="$pageContentRenderData->contentStructure"
                 :title="$pageContentRenderData->title ?? ''"
                 heading-tag="h1"
@@ -139,11 +141,18 @@
         @endif
     </div>
 
+    {{-- Recovery hooks may ship unlayered list resets, so the inset and rhythm use important utilities. --}}
+    @if ($isError)
+        <div class="capell-error-recovery mx-auto w-full max-w-7xl px-4 pb-12 text-[var(--foundation-body-fg)] sm:px-6 [&_h2]:font-[var(--theme-heading-font)] [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:text-[var(--foundation-heading-fg)] [&_ul]:mt-4 [&_ul]:list-disc! [&_ul]:ps-5! [&_ul]:space-y-3! [&_a]:text-[var(--theme-primary)] dark:[&_a]:text-[var(--foundation-body-fg)] [&_a]:underline [&_a]:underline-offset-4">
+    @endif
     {!! app(RenderHookRegistry::class)->renderAll(
         RenderHookLocation::AfterContent,
         $mainContentHookData,
         scenario: 'frontend-main-layout',
         target: 'capell::layout.main',
     ) !!}
+    @if ($isError)
+        </div>
+    @endif
     {{-- format-ignore-end --}}
 </main>

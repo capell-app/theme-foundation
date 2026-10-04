@@ -1,3 +1,4 @@
+{{-- @blaze-standard-compiler: class-backed layout views need the native component stack, including the empty-layout fallback. --}}
 @props([
     'containerClass' => null,
     'footer' => null,

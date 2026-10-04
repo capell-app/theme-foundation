@@ -65,7 +65,7 @@
                 @endif
 
                 <x-capell-layout-builder::layout-widgets
-                    :widgets="$pageContentRenderData->content"
+                    :widgets="$pageContentRenderData->blocks"
                     :$layout
                     :$containerKey
                     :$page

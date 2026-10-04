@@ -193,14 +193,7 @@ it('keeps the canonical catalogue screenshot matrix light-only', function (): vo
 
     expect($entries)->toHaveCount(21)
         ->and($entries->pluck('id')->sort()->values()->all())->toBe($expectedIds->sort()->values()->all())
-        ->and($entries->pluck('colorSchemes')->unique()->values()->all())->toBe([['light']])
-        ->and($entries->filter(function (array $entry): bool {
-            $id = $entry['id'] ?? null;
-            throw_unless(is_string($id), RuntimeException::class, 'Foundation screenshot id must be a string.');
-
-            return str_contains($id, 'contact');
-        })->pluck('waitFor')->unique()->values()->all())
-        ->toBe(['#main']);
+        ->and($entries->pluck('colorSchemes')->unique()->values()->all())->toBe([['light']]);
 
     foreach ($entries as $entry) {
         $id = $entry['id'] ?? null;
@@ -219,7 +212,12 @@ it('keeps the canonical catalogue screenshot matrix light-only', function (): vo
         expect($routes)->toHaveKey($surfaceId)
             ->and($target)->toBe($routes[$surfaceId])
             ->and($url)->toBe($routes[$surfaceId])
-            ->and($url)->not->toStartWith('/screenshot-fixtures/');
+            ->and($url)->not->toStartWith('/screenshot-fixtures/')
+            ->and($entry['waitFor'] ?? null)->toBeString()->not->toBeEmpty();
+
+        if (in_array($surfaceId, ['foundation-contact', 'foundation-detail', 'foundation-cta'], true)) {
+            expect($entry['waitFor'])->toContain('#main', 'form', 'input[name="name"]', 'input[name="email"]', 'textarea[name="message"]');
+        }
 
         expect(is_file(dirname(__DIR__, 2) . '/' . str_replace('packages/theme-foundation/', '', $screenshotPath)))->toBeTrue();
     }
@@ -255,15 +253,15 @@ it('declares separate runner-only Foundation chrome proof at desktop and mobile 
 
         $assertions = collect(foundationThemeManifestList($entry, 'assertions'));
 
-        expect($entry['target'] ?? null)->toBe('/theme-default')
-            ->and($entry['url'] ?? null)->toBe('/theme-default')
+        expect($entry['target'] ?? null)->toBe('/')
+            ->and($entry['url'] ?? null)->toBe('/')
             ->and($entry['scenario'] ?? null)->toBe('frontend-page')
             ->and($entry['required'] ?? null)->toBeTrue()
             ->and($entry['viewport'] ?? null)->toBe($contract['viewport'])
             ->and($entry['colorSchemes'] ?? null)->toBe(['light', 'dark'])
             ->and($entry['screenshotPath'] ?? null)->toBe($contract['light'])
             ->and($entry['darkScreenshotPath'] ?? null)->toBe($contract['dark'])
-            ->and($entry['waitFor'] ?? null)->toContain('#header', '.header-logo', 'nav', '#main', '#footer')
+            ->and($entry['waitFor'] ?? null)->toContain('#header', '.capell-product-header__brand-link :is(svg, img)', 'nav', '#main', '#footer')
             ->and($entry['assertions'] ?? null)->toBeArray()
             ->and($assertions->pluck('type')->all())
             ->toContain('visible', 'no-horizontal-overflow')

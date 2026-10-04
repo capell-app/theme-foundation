@@ -174,3 +174,21 @@ function heroRailWidgetAsset(string $role, string $caption): WidgetAsset
 
     return $widgetAsset;
 }
+
+it('preserves loaded page blocks and the per-page content structure override without queries', function (): void {
+    $page = Page::factory()->make(['content_structure_override' => ContentStructure::Blocks->value]);
+    $blocks = [['type' => 'text', 'data' => ['text' => 'Saved public content']]];
+    $translation = new Translation;
+    $page->setRelation('blueprint', null);
+    $translation->setRawAttributes(['translatable_id' => 1, 'content' => json_encode($blocks, JSON_THROW_ON_ERROR)]);
+    $translation->setRelation('translatable', $page);
+
+    $page->setRelation('translation', $translation);
+    DB::enableQueryLog();
+    $data = BuildPageContentRenderDataAction::run($page, ['content'], false);
+    expect($data->contentStructure)->toBe(ContentStructure::Blocks)
+        ->and($data->hasContent)->toBeTrue()
+        ->and($data->blocks)->toBe($blocks)
+        ->and(DB::getQueryLog())->toBe([]);
+    DB::disableQueryLog();
+});

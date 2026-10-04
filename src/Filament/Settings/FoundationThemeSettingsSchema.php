@@ -14,9 +14,11 @@ use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Override;
 
 class FoundationThemeSettingsSchema implements HasSchema
 {
+    #[Override]
     public static function make(Schema $configurator): array
     {
         return [
@@ -113,6 +115,7 @@ class FoundationThemeSettingsSchema implements HasSchema
                                 ->required(),
                             Select::make('heading_scale')
                                 ->label(self::translate('capell-theme-foundation::form.heading_scale'))
+                                ->helperText(self::translate('capell-theme-foundation::form.heading_scale_helper'))
                                 ->options([
                                     'compact' => self::translate('capell-theme-foundation::form.heading_scale_options.compact'),
                                     'balanced' => self::translate('capell-theme-foundation::form.heading_scale_options.balanced'),
