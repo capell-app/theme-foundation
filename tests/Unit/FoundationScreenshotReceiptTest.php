@@ -2,78 +2,141 @@
 
 declare(strict_types=1);
 
-it('binds the runner receipt to every Foundation chrome artifact', function (): void {
+use PHPUnit\Framework\Assert;
+use Symfony\Component\Process\Process;
+
+/**
+ * @param  list<string>  $committedPaths
+ */
+function assertFoundationScreenshotReceipts(string $repositoryRoot, array $committedPaths): void
+{
+    /** @return array<array-key, mixed> */
+    $readJson = static function (string $relativePath) use ($repositoryRoot): array {
+        $decoded = json_decode((string) file_get_contents($repositoryRoot . '/' . $relativePath), true, flags: JSON_THROW_ON_ERROR);
+
+        if (! is_array($decoded)) {
+            throw new RuntimeException("Screenshot document [{$relativePath}] must decode to an array.");
+        }
+
+        return $decoded;
+    };
+
+    $manifest = $readJson('packages/theme-foundation/docs/screenshots.json');
+    $entries = $manifest['entries'] ?? null;
+    if (! is_array($entries)) {
+        throw new RuntimeException('Foundation screenshot manifest must contain entries.');
+    }
+
+    /** @var array<string, array{generatedAt: DateTimeImmutable, provenance: array<array-key, mixed>, receipts: array<array-key, mixed>}> $reports */
+    $reports = [];
+    foreach ($committedPaths as $relativePath) {
+        if (! str_starts_with($relativePath, 'docs/screenshot-receipts/') || ! str_starts_with(basename($relativePath), 'theme-foundation--')) {
+            continue;
+        }
+
+        $report = $readJson($relativePath);
+        $provenance = $report['provenance'] ?? null;
+        if (! is_array($provenance) || ($provenance['schemaVersion'] ?? null) !== 2) {
+            continue;
+        }
+
+        $generatedAt = $provenance['generatedAt'] ?? null;
+        $receipts = $provenance['receipts'] ?? null;
+        if (! is_string($generatedAt) || $generatedAt === '' || ! is_array($receipts)) {
+            throw new RuntimeException("Malformed current-schema screenshot report [{$relativePath}].");
+        }
+
+        $reports[$relativePath] = [
+            'generatedAt' => new DateTimeImmutable($generatedAt),
+            'provenance' => $provenance,
+            'receipts' => $receipts,
+        ];
+    }
+
+    /** @var list<string> $missingReceipts */
+    $missingReceipts = [];
+    $verified = 0;
+    foreach ($entries as $entry) {
+        if (! is_array($entry) || ! is_string($entry['id'] ?? null)) {
+            throw new RuntimeException('Foundation screenshot manifest entries must have string IDs.');
+        }
+
+        $entryHashes = [];
+        foreach (['screenshotPath' => '', 'darkScreenshotPath' => '-dark'] as $pathKey => $suffix) {
+            $relativePath = $entry[$pathKey] ?? null;
+            if ($relativePath === null) {
+                continue;
+            }
+            if (! is_string($relativePath)) {
+                throw new RuntimeException("Malformed screenshot path for [{$entry['id']}].");
+            }
+            if (! in_array($relativePath, $committedPaths, true)) {
+                continue;
+            }
+
+            $id = $entry['id'] . $suffix;
+            Assert::assertFileExists($repositoryRoot . '/' . $relativePath, "Committed screenshot [{$id}].");
+            $newest = null;
+            $newestPath = '';
+            foreach ($reports as $reportPath => $report) {
+                // Per-entry reports are copies of whole batches. Only the named
+                // entry (and its dark variant) establishes image promotion;
+                // incidental batch captures may never have been committed.
+                if (! in_array(basename($reportPath), ['theme-foundation--' . $entry['id'] . '.json', 'theme-foundation--' . $id . '.json'], true)) {
+                    continue;
+                }
+                if ($newest === null || $report['generatedAt'] > $newest['generatedAt']) {
+                    $newest = $report;
+                    $newestPath = $reportPath;
+                }
+            }
+
+            if ($newest === null) {
+                $missingReceipts[] = $id;
+
+                continue;
+            }
+
+            $context = "Screenshot [{$id}] in [{$newestPath}]";
+            Assert::assertSame('shared-capell-screenshot-runner', $newest['provenance']['generator'] ?? null, $context);
+            Assert::assertSame('runner-only-v2', $newest['provenance']['policy'] ?? null, $context);
+            Assert::assertSame(false, $newest['provenance']['dryRun'] ?? null, $context);
+
+            $matching = array_values(array_filter($newest['receipts'], static fn (mixed $receipt): bool => is_array($receipt) && ($receipt['id'] ?? null) === $id));
+            Assert::assertCount(1, $matching, $context);
+            $receipt = $matching[0];
+            if (! is_array($receipt) || ! is_array($receipt['output'] ?? null) || ! is_string($receipt['output']['sha256'] ?? null)) {
+                throw new RuntimeException("Malformed output for {$context}.");
+            }
+
+            $hash = $receipt['output']['sha256'];
+            Assert::assertSame('theme-foundation', $receipt['package'] ?? null, $context);
+            Assert::assertSame('accepted', $receipt['acceptance'] ?? null, $context);
+            // Exact repository-relative equality rejects machine-local paths.
+            Assert::assertSame($relativePath, $receipt['output']['path'] ?? null, $context);
+            Assert::assertMatchesRegularExpression('/\A[a-f0-9]{64}\z/', $hash, $context);
+            Assert::assertSame($hash, hash_file('sha256', $repositoryRoot . '/' . $relativePath), $context . ' must match the committed image.');
+            $entryHashes[$suffix] = $hash;
+            $verified++;
+        }
+
+        if (isset($entryHashes[''], $entryHashes['-dark'])) {
+            Assert::assertNotSame($entryHashes[''], $entryHashes['-dark'], "Light and dark screenshots for [{$entry['id']}] must differ.");
+        }
+    }
+
+    // Some images lack promoted entry-specific current-schema receipts. Prevent
+    // that gap growing while allowing legitimate recaptures to reduce it.
+    $coverage = sprintf('%d images verified; %d committed images lack current-schema per-entry receipts: %s', $verified, count($missingReceipts), implode(', ', $missingReceipts));
+    Assert::assertLessThanOrEqual(11, count($missingReceipts), $coverage);
+    Assert::assertGreaterThan(0, $verified, $coverage);
+}
+
+it('binds the newest committed runner receipt to every receipted Foundation screenshot', function (): void {
     $repositoryRoot = dirname(__DIR__, 4);
-    $receiptPath = $repositoryRoot . '/docs/screenshot-receipts/cap0133/theme-foundation-chrome-homepage-matrix.json';
-    $receipt = json_decode((string) file_get_contents($receiptPath), true, flags: JSON_THROW_ON_ERROR);
+    $process = new Process(['git', 'ls-tree', '-r', '--name-only', '-z', 'HEAD', '--', 'packages/theme-foundation/docs/screenshots', 'docs/screenshot-receipts'], $repositoryRoot);
+    $process->mustRun();
+    $committedPaths = array_values(array_filter(explode("\0", $process->getOutput()), static fn (string $path): bool => $path !== ''));
 
-    if (! is_array($receipt)) {
-        throw new RuntimeException('Foundation screenshot receipt must decode to an array.');
-    }
-
-    if (! is_array($receipt['provenance'] ?? null)) {
-        throw new RuntimeException('Foundation screenshot receipt provenance must be an array.');
-    }
-
-    $provenance = $receipt['provenance'];
-    if (! is_array($provenance['receipts'] ?? null)) {
-        throw new RuntimeException('Foundation screenshot receipt artifacts must be an array.');
-    }
-    expect($receipt['captured'] ?? null)->toBe(4)
-        ->and($receipt['skipped'] ?? null)->toBe(0)
-        ->and($receipt['failed'] ?? null)->toBe(0)
-        ->and($provenance['schemaVersion'] ?? null)->toBe(1)
-        ->and($provenance['generator'] ?? null)->toBe('shared-capell-screenshot-runner')
-        ->and($provenance['policy'] ?? null)->toBe('runner-only-v1')
-        ->and($provenance['generatedAt'] ?? null)->toBeString();
-
-    $receipts = collect($provenance['receipts'])->keyBy('id');
-    $expected = [
-        'foundation-chrome-homepage' => 'packages/theme-foundation/docs/screenshots/foundation-chrome-homepage.webp',
-        'foundation-chrome-homepage-dark' => 'packages/theme-foundation/docs/screenshots/foundation-chrome-homepage-dark.webp',
-        'foundation-chrome-homepage-mobile' => 'packages/theme-foundation/docs/screenshots/foundation-chrome-homepage-mobile.webp',
-        'foundation-chrome-homepage-mobile-dark' => 'packages/theme-foundation/docs/screenshots/foundation-chrome-homepage-mobile-dark.webp',
-    ];
-
-    expect($receipts->keys()->sort()->values()->all())->toBe(collect(array_keys($expected))->sort()->values()->all());
-
-    foreach ($expected as $id => $relativePath) {
-        $artifactReceipt = $receipts->get($id);
-        $artifactPath = $repositoryRoot . '/' . $relativePath;
-
-        if (! is_array($artifactReceipt)) {
-            throw new RuntimeException("Missing Foundation screenshot receipt for [{$id}].");
-        }
-
-        $artifactPackage = $artifactReceipt['package'] ?? null;
-        $artifactOutput = $artifactReceipt['output'] ?? null;
-        $artifactHash = $artifactReceipt['sha256'] ?? null;
-        if (! is_string($artifactPackage) || ! is_string($artifactOutput) || ! is_string($artifactHash)) {
-            throw new RuntimeException("Malformed Foundation screenshot receipt for [{$id}].");
-        }
-
-        expect($artifactPackage)->toBe('theme-foundation')
-            // Receipt outputs are normalised to repository-relative paths by
-            // scripts/screenshots/relativise-evidence-paths.mjs, so this asserts
-            // exact equality rather than a suffix: an absolute machine-local
-            // path must not satisfy it.
-            ->and($artifactOutput)->toBe($relativePath)
-            ->and($artifactHash)->toMatch('/\A[a-f0-9]{64}\z/')
-            ->and(is_file($artifactPath))->toBeTrue()
-            ->and(hash_file('sha256', $artifactPath))->toBe($artifactHash);
-    }
-
-    $receiptHashes = [];
-    foreach (array_keys($expected) as $id) {
-        $receipt = $receipts->get($id);
-        if (! is_array($receipt) || ! is_string($receipt['sha256'] ?? null)) {
-            throw new RuntimeException("Missing hash for Foundation screenshot receipt [{$id}].");
-        }
-        $receiptHashes[$id] = $receipt['sha256'];
-    }
-
-    expect($receiptHashes['foundation-chrome-homepage'])
-        ->not->toBe($receiptHashes['foundation-chrome-homepage-dark'])
-        ->and($receiptHashes['foundation-chrome-homepage-mobile'])
-        ->not->toBe($receiptHashes['foundation-chrome-homepage-mobile-dark']);
+    assertFoundationScreenshotReceipts($repositoryRoot, $committedPaths);
 });

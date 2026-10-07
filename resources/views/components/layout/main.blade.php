@@ -64,6 +64,9 @@
     ])
 >
     {{-- format-ignore-start --}}
+    @if ($isError)
+        <div class="capell-error-page mx-auto w-full max-w-7xl px-4 sm:px-6">
+    @endif
     <div @class([
         'grow',
         $mainContainerClass => (bool) $mainContainerClass,
@@ -72,7 +75,7 @@
             {!! $mainContentHookOutput !!}
         @else
             <x-capell::content
-                class="px-6 py-10"
+                :class="$isError ? 'py-10' : 'px-6 py-10'"
                 :content="$pageContentRenderData->contentStructure === ContentStructure::Blocks ? $pageContentRenderData->blocks : ($pageContentRenderData->content ?? '')"
                 :content-type="$pageContentRenderData->contentStructure"
                 :title="$pageContentRenderData->title ?? ''"
@@ -143,7 +146,7 @@
 
     {{-- Recovery hooks may ship unlayered list resets, so the inset and rhythm use important utilities. --}}
     @if ($isError)
-        <div class="capell-error-recovery mx-auto w-full max-w-7xl px-4 pb-12 text-[var(--foundation-body-fg)] sm:px-6 [&_h2]:font-[var(--theme-heading-font)] [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:text-[var(--foundation-heading-fg)] [&_ul]:mt-4 [&_ul]:list-disc! [&_ul]:ps-5! [&_ul]:space-y-3! [&_a]:text-[var(--theme-primary)] dark:[&_a]:text-[var(--foundation-body-fg)] [&_a]:underline [&_a]:underline-offset-4">
+        <div class="capell-error-recovery pb-12 text-[var(--foundation-body-fg)] [&_h2]:font-[var(--theme-heading-font)] [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:text-[var(--foundation-heading-fg)] [&_ul]:mt-4 [&_ul]:list-disc! [&_ul]:ps-5! [&_ul]:space-y-3! [&_a]:text-[var(--theme-primary)] dark:[&_a]:text-[var(--foundation-body-fg)] [&_a]:underline [&_a]:underline-offset-4">
     @endif
     {!! app(RenderHookRegistry::class)->renderAll(
         RenderHookLocation::AfterContent,
@@ -152,6 +155,7 @@
         target: 'capell::layout.main',
     ) !!}
     @if ($isError)
+        </div>
         </div>
     @endif
     {{-- format-ignore-end --}}

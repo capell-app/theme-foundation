@@ -11,7 +11,7 @@ it('does not invent a search query when rendering suggested results', function (
         ],
     ]])->render();
 
-    expect($html)->toContain('2 results')
+    expect($html)->not->toContain('2 results')
         ->toContain('Planning a walk-through')
         ->not->toContain('for &quot;Search&quot;')
         ->not->toContain('capell-theme-foundation::')
@@ -39,6 +39,26 @@ it('uses the plural form for several results and for none', function (): void {
     ]])->render();
 
     expect($several)->toContain('2 results for &quot;workshop&quot;')
-        ->and($queryless)->toContain('3 results')
+        ->and($queryless)->not->toContain('3 results')
         ->not->toContain('for &quot;');
+});
+
+it('hides pagination when the results fit on one page', function (): void {
+    $html = view('capell-theme-foundation::theme.sections.pagination', ['section' => (object) [
+        'currentPage' => 1,
+        'totalPages' => 1,
+        'baseUrl' => '/field-notes',
+    ]])->render();
+
+    expect($html)->not->toContain('<nav')->not->toContain('page=');
+});
+
+it('keeps pagination for a genuine multipage listing', function (): void {
+    $html = view('capell-theme-foundation::theme.sections.pagination', ['section' => (object) [
+        'currentPage' => 2,
+        'totalPages' => 3,
+        'baseUrl' => '/field-notes?q=workshop',
+    ]])->render();
+
+    expect($html)->toContain('rel="prev"', 'rel="next"', 'aria-current="page"', '/field-notes?q=workshop&amp;page=3');
 });

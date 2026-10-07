@@ -13,6 +13,7 @@ use Capell\Core\Models\Theme;
 use Capell\FoundationTheme\Actions\BuildAssetBannerItemsAction;
 use Capell\FoundationTheme\Actions\BuildBannerImageRenderDataAction;
 use Capell\FoundationTheme\Actions\ResolveLoadedWidgetBackgroundImageAction;
+use Capell\FoundationTheme\Actions\ResolveWidgetBackgroundImageUrlAction;
 use Capell\FoundationTheme\Livewire\Widget\AbstractWidget as LivewireWidget;
 use Capell\FoundationTheme\View\Components\Widget\Page\AbstractPagesWidget;
 use Capell\FoundationTheme\View\Components\Widget\Page\Breadcrumbs as BreadcrumbsWidget;
@@ -27,6 +28,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Blaze\Blaze;
 
@@ -112,6 +114,38 @@ test('widget wrapper background image resolution does not lazy-load media', func
 
     DB::disableQueryLog();
 });
+
+test('widget background image URLs resolve relative paths and preserve legacy absolute URLs', function (): void {
+    Storage::fake('public');
+    Storage::disk('public')->put('media/background_image/replacement.jpg', 'image');
+
+    expect(ResolveWidgetBackgroundImageUrlAction::run(new Widget([
+        'meta' => ['background_image' => 'media/background_image/replacement.jpg'],
+    ])))->toBe(Storage::disk('public')->url('media/background_image/replacement.jpg'))
+        ->and(ResolveWidgetBackgroundImageUrlAction::run(new Widget([
+            'meta' => ['background_image' => 'https://example.test:8443/storage/legacy.jpg'],
+        ])))->toBe('https://example.test:8443/storage/legacy.jpg');
+});
+
+test('widget background image URLs encode spaces and parentheses in file names', function (): void {
+    Storage::fake('public');
+
+    expect(ResolveWidgetBackgroundImageUrlAction::run(new Widget([
+        'meta' => ['background_image' => 'media/My Photo (1).jpg'],
+    ])))->toBe(Storage::disk('public')->url('media/My%20Photo%20%281%29.jpg'));
+});
+
+test('widget background image URLs refuse values unsafe inside a CSS url()', function (string $value): void {
+    expect(ResolveWidgetBackgroundImageUrlAction::run(new Widget([
+        'meta' => ['background_image' => $value],
+    ])))->toBeNull();
+})->with([
+    'script scheme' => ['javascript:alert(1)'],
+    'data scheme' => ['data:image/svg+xml;base64,AAAA'],
+    'declaration separator' => ['media/a.jpg;background:red'],
+    'quote' => ['https://example.test/a".jpg'],
+    'line break' => ["media/a\nb.jpg"],
+]);
 
 test('asset banner render data uses only loaded relations', function (): void {
     $media = MediaFactory::new()->make([

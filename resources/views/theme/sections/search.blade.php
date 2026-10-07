@@ -53,13 +53,9 @@
             </button>
         </form>
 
-        @if ($query !== '' || $searchResults !== [])
+        @if ($query !== '')
             <p class="mt-5 text-sm font-medium text-[var(--foundation-muted-fg)]">
-                @if ($query !== '')
-                    {{ trans_choice('capell-theme-foundation::generic.search_results_for_query', $resultCount, ['count' => $resultCount, 'query' => $query]) }}
-                @else
-                    {{ trans_choice('capell-theme-foundation::generic.search_results_count', $resultCount, ['count' => $resultCount]) }}
-                @endif
+                {{ trans_choice('capell-theme-foundation::generic.search_results_for_query', $resultCount, ['count' => $resultCount, 'query' => $query]) }}
             </p>
         @endif
 

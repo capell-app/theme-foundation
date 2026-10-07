@@ -1,3 +1,4 @@
+{{-- @blaze-standard-compiler: the class-backed SVG needs its sanitised component data. --}}
 <svg
     width="{{ $width }}"
     height="{{ $height }}"

@@ -11,5 +11,6 @@ final class FooterLatestPageLinkData extends Data
     public function __construct(
         public readonly mixed $page,
         public readonly string $url,
+        public readonly string $label,
     ) {}
 }

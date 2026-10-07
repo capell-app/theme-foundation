@@ -80,7 +80,7 @@ const SEARCH_LED_RESULTS_THEMES = ['curated', 'directory', 'knowledge', 'catalog
 function fleetDemoContentProviderClass(string $slug, string $studio): string
 {
     return $slug === 'foundation'
-        ? 'Capell\\FoundationTheme\\Support\\Demo\\FoundationDemoContent'
+        ? FoundationDemoContent::class
         : "Capell\\Theme{$studio}\\Support\\Demo\\{$studio}DemoContent";
 }
 
@@ -264,7 +264,7 @@ it('foundation demonstrates a credible site instead of describing its implementa
         ->not->toContain('layout contract')
         ->not->toContain('section variant')
         ->not->toContain('capell starter theme')
-        ->not->toContain('capell:make-theme')
+        ->not->toContain('capell:make-theme', 'capell:make-foundation-theme')
         ->and($visibleCopy)
         ->not->toContain('—')
         ->not->toContain('–')

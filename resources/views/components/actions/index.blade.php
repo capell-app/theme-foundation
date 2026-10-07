@@ -1,3 +1,4 @@
+{{-- @blaze-standard-compiler: class-backed actions need their resolved component data. --}}
 <div
     {{
         $attributes->class([

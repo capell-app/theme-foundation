@@ -206,7 +206,7 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
                     ),
                     $this->paginationSection(
                         currentPage: 1,
-                        totalPages: 4,
+                        totalPages: 1,
                     ),
                     $this->ctaSection(
                         heading: 'Have a place with potential?',
@@ -265,7 +265,7 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
                     ),
                     $this->paginationSection(
                         currentPage: 1,
-                        totalPages: 4,
+                        totalPages: 1,
                     ),
                     $this->ctaSection(
                         heading: 'Need a note we have not written?',

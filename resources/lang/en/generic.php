@@ -75,7 +75,6 @@ return [
     'search' => 'Search',
     'search_empty_body' => 'No matching content is available for this query yet. Try a broader term or browse the recommended paths below.',
     'search_empty_title' => 'No matching results',
-    'search_results_count' => '{0} :count results|{1} :count result|[2,*] :count results',
     'search_results_for_query' => '{0} :count results for ":query"|{1} :count result for ":query"|[2,*] :count results for ":query"',
     'open_map' => 'Open location in Google Maps',
     'name' => 'Name',

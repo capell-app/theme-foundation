@@ -1,3 +1,4 @@
+{{-- @blaze-standard-compiler: class-backed footer views need the native component data. --}}
 @props([
     'links',
     'size' => 'md',

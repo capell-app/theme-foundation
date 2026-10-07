@@ -49,6 +49,7 @@ Desktop, tablet, and mobile variants remain defined in the screenshot contract; 
 ### Service providers
 
 - `Capell\FoundationTheme\Providers\FoundationThemeServiceProvider`
+- `Capell\FoundationTheme\Providers\ConsoleServiceProvider`
 - `FoundationThemeSiteSpecServiceProvider`
 
 ### Config files
@@ -186,7 +187,7 @@ Desktop, tablet, and mobile variants remain defined in the screenshot contract; 
 ### Command signatures
 
 - `capell:frontend-tailwind-assets`
-- `capell:make-theme`
+- `capell:make-foundation-theme`
 - `capell:theme-catalogue-report`
 - `capell:theme-foundation-demo`
 - `capell:theme-foundation-setup`
@@ -201,7 +202,7 @@ Desktop, tablet, and mobile variants remain defined in the screenshot contract; 
 
 - `DemoCommand`
 - `GenerateTailwindAssetsCommand`
-- `MakeThemeCommand`
+- `MakeFoundationThemeCommand`
 - `SetupCommand`
 - `ThemeCatalogueReportCommand`
 - `ValidateThemesCommand`
@@ -384,7 +385,7 @@ This theme has no schema impact. It relies on core Capell site, page, locale, an
 - Settings: `Capell\FoundationTheme\Settings\FoundationThemeSettings`.
 - Queues or schedules: none declared.
 - Cache tags: `theme-foundation`.
-- Commands: `capell:frontend-tailwind-assets`, `capell:make-theme`, `capell:theme-catalogue-report`, `capell:theme-foundation-demo`, `capell:theme-foundation-setup`, `capell:validate-themes`.
+- Commands: `capell:frontend-tailwind-assets`, `capell:make-foundation-theme`, `capell:theme-catalogue-report`, `capell:theme-foundation-demo`, `capell:theme-foundation-setup`, `capell:validate-themes`.
 
 ## Common Pitfalls
 

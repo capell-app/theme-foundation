@@ -13,7 +13,7 @@ use Capell\FoundationTheme\Testing\AssertsThemeDemoContentScaffolding;
 | AssertsThemeDemoContentScaffolding (Wave 2.8)
 |--------------------------------------------------------------------------
 |
-| Verifies the shared Pest helper trait intended for capell:make-theme's
+| Verifies the shared Pest helper trait intended for capell:make-foundation-theme's
 | scaffolded test stubs behaves correctly for both a complete (all 7
 | surfaces) fixture and an incomplete one, using local fixture classes so
 | this suite has no dependency on any sibling theme package.

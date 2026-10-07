@@ -1,3 +1,4 @@
+{{-- @blaze-standard-compiler: class-backed footer views need the native component data. --}}
 @props([
     'pages',
     'linkedPages' => collect(),
@@ -17,7 +18,7 @@
                         class="focus:text-primary hover:text-primary widget text-sm leading-tight font-medium text-[var(--color-footer-link)]"
                         wire:navigate
                     >
-                        {{ $linkedPage->page->getTranslation('label') ?? $linkedPage->page->getTranslation('title') ?? $linkedPage->page->name }}
+                        {{ $linkedPage->label }}
                     </a>
                 </li>
             @endforeach

@@ -9,7 +9,7 @@ use Capell\FoundationTheme\Support\Demo\ThemeDemoPageDefinition;
 
 /**
  * Wave 2.8 — shared Pest assertions for a freshly generated theme's
- * scaffolded test stubs (`capell:make-theme`). Deliberately narrow: these
+ * scaffolded test stubs (`capell:make-foundation-theme`). Deliberately narrow: these
  * are the two checks every new theme's own suite needs on day one, before
  * any bespoke widget or preset tests exist — "does this render at all" and
  * "does it cover all 7 demo surfaces" (the Wave 3.1

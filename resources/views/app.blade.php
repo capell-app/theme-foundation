@@ -6,7 +6,6 @@
     use Capell\Frontend\Facades\Frontend;
     use Capell\Frontend\Support\Render\RenderHookRegistry;
     use Capell\Frontend\Support\Security\JsonLdScriptSanitizer;
-    use Illuminate\Support\Facades\Route;
 
     $preparedThemeTokens = Frontend::getFrontendData('foundation.theme.tokens');
     $themeTokens = $preparedThemeTokens instanceof FoundationThemeTokensData
@@ -22,10 +21,6 @@
     $textDirection = $language?->direction() ?? Language::directionForCode((string) $languageCode);
     $runtimeManifest ??= null;
     $usesLivewire = $runtimeManifest?->usesLivewire ?? ($livewireEnabled ?? false);
-    $beaconRouteName = config('capell-page.frontend.route_name', 'capell-frontend.beacon');
-    $usesBeacon = ($runtimeManifest?->usesBeacon ?? false)
-        && is_string($beaconRouteName)
-        && Route::has($beaconRouteName);
 
     $bodyClass ??= null;
 @endphp
@@ -62,10 +57,6 @@
         {{ $slot }}
 
         {!! app(RenderHookRegistry::class)->renderAll(RenderHookLocation::BodyEnd) !!}
-
-        @if ($usesBeacon)
-            <x-capell::page-data />
-        @endif
 
         @stack('scripts')
 

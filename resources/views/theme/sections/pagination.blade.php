@@ -5,6 +5,7 @@
     $pageUrl = static fn (int $page): string => $baseUrl . (str_contains($baseUrl, '?') ? '&' : '?') . 'page=' . $page;
 @endphp
 
+@if ($totalPages > 1)
 <section
     class="theme-pagination border-b border-[var(--foundation-border)] bg-[var(--foundation-section-muted-bg)]"
 >
@@ -59,3 +60,4 @@
         @endif
     </nav>
 </section>
+@endif

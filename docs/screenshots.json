@@ -134,7 +134,7 @@
             "useCase": "A buyer reviews the Foundation detail article surface before selecting theme-foundation.",
             "package": "theme-foundation",
             "scenario": "frontend-page",
-            "waitFor": "#main form:has(input[name=\"name\"]):has(input[name=\"email\"]):has(textarea[name=\"message\"])",
+            "waitFor": "#main article.capell-page-content",
             "colorSchemes": ["light"],
             "viewport": "desktop",
             "fullPage": true
@@ -153,7 +153,7 @@
             "useCase": "A buyer reviews the Foundation detail article surface before selecting theme-foundation.",
             "package": "theme-foundation",
             "scenario": "frontend-page",
-            "waitFor": "#main form:has(input[name=\"name\"]):has(input[name=\"email\"]):has(textarea[name=\"message\"])",
+            "waitFor": "#main article.capell-page-content",
             "colorSchemes": ["light"],
             "viewport": "tablet",
             "fullPage": true
@@ -172,7 +172,7 @@
             "useCase": "A buyer reviews the Foundation detail article surface before selecting theme-foundation.",
             "package": "theme-foundation",
             "scenario": "frontend-page",
-            "waitFor": "#main form:has(input[name=\"name\"]):has(input[name=\"email\"]):has(textarea[name=\"message\"])",
+            "waitFor": "#main article.capell-page-content",
             "colorSchemes": ["light"],
             "viewport": "mobile",
             "fullPage": true

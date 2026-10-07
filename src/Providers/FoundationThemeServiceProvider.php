@@ -35,7 +35,7 @@ use Capell\FoundationTheme\Actions\ResolveFoundationThemeTokensAction;
 use Capell\FoundationTheme\Actions\ResolveResultsListingAction;
 use Capell\FoundationTheme\Console\Commands\DemoCommand;
 use Capell\FoundationTheme\Console\Commands\GenerateTailwindAssetsCommand;
-use Capell\FoundationTheme\Console\Commands\MakeThemeCommand;
+use Capell\FoundationTheme\Console\Commands\MakeFoundationThemeCommand;
 use Capell\FoundationTheme\Console\Commands\SetupCommand;
 use Capell\FoundationTheme\Console\Commands\ThemeCatalogueReportCommand;
 use Capell\FoundationTheme\Console\Commands\ValidateThemesCommand;
@@ -95,6 +95,7 @@ use Capell\Frontend\Contracts\FrontendResourceContributor;
 use Capell\Frontend\Contracts\FrontendRuntimeManifestContributor;
 use Capell\Frontend\Data\Assets\FrontendPackageDependencyData;
 use Capell\Frontend\Data\FrontendAssetData;
+use Capell\Frontend\Data\FrontendContext;
 use Capell\Frontend\Data\PageListingRequestData;
 use Capell\Frontend\Enums\FrontendPackageDependencyType;
 use Capell\Frontend\Events\FrontendContextResolved;
@@ -110,6 +111,7 @@ use Capell\LayoutBuilder\Contracts\PublicLayoutWidgetPayloadContributor;
 use Capell\LayoutBuilder\Data\WidgetExtensions\WidgetExtensionCapabilitiesData;
 use Capell\LayoutBuilder\Data\WidgetExtensions\WidgetExtensionDefinitionData;
 use Capell\LayoutBuilder\Enums\FrontendComponentKeyEnum;
+use Capell\LayoutBuilder\LayoutBuilderServiceProvider;
 use Capell\LayoutBuilder\Support\LayoutAreas\LayoutAreaRegistry;
 use Capell\LayoutBuilder\Support\WidgetExtensions\WidgetExtensionRegistrar;
 use Illuminate\Contracts\View\Factory as ViewFactory;
@@ -132,6 +134,10 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
     public static PackageTypeEnum $type = PackageTypeEnum::Theme;
 
+    private bool $sharedRenderingBooted = false;
+
+    private bool $installedRuntimeBooted = false;
+
     public static function definition(): ThemeDefinitionData
     {
         return new ThemeDefinitionData(
@@ -142,7 +148,6 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
             previewImage: '/vendor/capell/themes/foundation.webp',
             tags: ['Foundation', 'Structured', 'Default'],
             bestFit: ['Starter sites', 'Documentation', 'General publishing'],
-            includedSections: ['navigation', 'hero', 'features', 'proof', 'content-listing', 'search', 'pagination', 'form', 'contact-split', 'cta', 'footer'],
             presets: [
                 new ThemePresetData(
                     key: 'default',
@@ -168,6 +173,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
                     ],
                 ),
             ],
+            includedSections: ['navigation', 'hero', 'features', 'proof', 'content-listing', 'search', 'pagination', 'form', 'contact-split', 'cta', 'footer'],
             assets: ['css' => 'vendor/capell-theme-foundation/theme-foundation.css'],
             runtime: FrontendRuntime::Blade,
             frontend: [
@@ -185,6 +191,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
         );
     }
 
+    #[Override]
     public function configurePackage(Package $package): void
     {
         $package
@@ -193,24 +200,40 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
             ->hasTranslations()
             ->hasCommands([
                 DemoCommand::class,
-                GenerateTailwindAssetsCommand::class,
                 SetupCommand::class,
                 ThemeCatalogueReportCommand::class,
-                MakeThemeCommand::class,
+                MakeFoundationThemeCommand::class,
                 ValidateThemesCommand::class,
             ]);
     }
 
+    #[Override]
     public function packageBooted(): void
     {
-        $this->registerBladeDirectives();
-        $this->registerBladeComponents();
-        $this->registerPublicViewDataComposers();
-        $this->registerLayoutBuilderRendering();
-        $this->registerMediaBladeComponents();
-        $this->registerBlazeComponents();
-        $this->registerPublishCommands();
-        $this->registerFrontendRuntimeManifestContributors();
+        // Shared rendering belongs to the active Layout Builder runtime.
+        if (! $this->isPackageInstalled() && (
+            ! $this->app->providerIsLoaded(LayoutBuilderServiceProvider::class)
+            || ! CapellCore::isPackageInstalled(LayoutBuilderServiceProvider::$packageName)
+        )) {
+            return;
+        }
+
+        if (! $this->sharedRenderingBooted) {
+            $this->registerBladeDirectives();
+            $this->registerBladeComponents();
+            $this->registerPublicViewDataComposers();
+            $this->registerLayoutBuilderRendering();
+            $this->registerMediaBladeComponents();
+            $this->registerBlazeComponents();
+            $this->registerPublishCommands();
+            $this->registerFrontendRuntimeManifestContributors();
+            $this->registerSharedConsoleCommands();
+            $this->sharedRenderingBooted = true;
+        }
+
+        if ($this->installedRuntimeBooted) {
+            return;
+        }
 
         if (! $this->isPackageInstalled()) {
             return;
@@ -231,10 +254,25 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
         $this->registerLayoutContainerThemePresentationProjectors();
         $this->registerThemeChromeComponents();
         $this->registerThemeStudioDefinition();
+        $this->installedRuntimeBooted = true;
     }
 
+    #[Override]
     public function packageRegistered(): void
     {
+        $this->app->register(ConsoleServiceProvider::class);
+        $this->booted(function (): void {
+            $this->packageBooted();
+        });
+
+        // Shared rendering must also activate when Layout Builder is installed
+        // after this provider has already booted in the retained application.
+        Event::listen(PackageInstalled::class, function (PackageInstalled $event): void {
+            if ($event->package->name === LayoutBuilderServiceProvider::$packageName) {
+                $this->packageBooted();
+            }
+        });
+
         $this->app->tag([FoundationThemeProjectBuildArtifactHandler::class], ProjectBuildArtifactHandler::TAG);
         $this->app->scoped(FoundationThemeAssetContributor::class);
         $this->app->singleton(ThemeFrontendScriptRegistry::class);
@@ -253,6 +291,14 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
     protected function isPackageInstalled(): bool
     {
         return CapellCore::isPackageInstalled(self::$packageName);
+    }
+
+    private function registerSharedConsoleCommands(): void
+    {
+        // Frontend declares the same signature, so register after all providers boot.
+        $this->app->booted(function (): void {
+            $this->commands([GenerateTailwindAssetsCommand::class]);
+        });
     }
 
     private function registerTailwindAssetsGenerator(): void
@@ -401,7 +447,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
             language: $language,
             layout: $layout,
             page: $page,
-            setFrontendData: fn (string $key, mixed $value) => $event->context->setFrontendData($key, $value),
+            setFrontendData: fn (string $key, mixed $value): FrontendContextReader => $event->context->setFrontendData($key, $value),
         );
 
         $frontendData = $event->context->getFrontendData();
@@ -437,7 +483,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
         $this->prepareFooterData(
             getFrontendData: fn (?string $key = null): mixed => $event->context->getFrontendData($key),
-            setFrontendData: fn (string $key, mixed $value) => $event->context->setFrontendData($key, $value),
+            setFrontendData: fn (string $key, mixed $value): FrontendContextReader => $event->context->setFrontendData($key, $value),
             site: $site,
             language: $language,
             page: $page,
@@ -487,7 +533,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
         $this->prepareFooterData(
             getFrontendData: fn (?string $key = null): mixed => $event->context->getFrontendData($key),
-            setFrontendData: fn (string $key, mixed $value) => $event->context->setFrontendData($key, $value),
+            setFrontendData: fn (string $key, mixed $value): FrontendContext => $event->context->setFrontendData($key, $value),
             site: $site,
             language: $language,
             page: $page,

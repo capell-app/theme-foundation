@@ -185,6 +185,7 @@ it('keeps each theme package within its frozen @php block baseline', function ()
             'ResolveLoadedWidgetBackgroundImageAction',
             'ResolveRenderableComponentAction',
             'ResolveSafeCssColorTokenAction',
+            'ResolveWidgetBackgroundImageUrlAction',
             'ResponsiveAssetLayoutOptions',
             'ResponsiveVisibilityEnum',
             'Route',

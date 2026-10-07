@@ -10,15 +10,17 @@ use Illuminate\Console\Command;
 use InvalidArgumentException;
 
 /**
- * `capell:make-theme` — scaffolds a new, platform-shaped, layout-native
+ * `capell:make-foundation-theme` — scaffolds a new, platform-shaped, layout-native
  * theme package. Thin orchestration only: collects input (prompting for
  * anything not passed as an option), delegates generation to
  * {@see GenerateThemeScaffoldAction}, and prints a summary of what was
  * written. No template-rendering logic lives in this command.
+ * Core's `capell:make-theme` owns general app/package scaffolding; this
+ * catalogue scaffold has its own name so both generators remain available.
  */
-final class MakeThemeCommand extends Command
+final class MakeFoundationThemeCommand extends Command
 {
-    protected $signature = 'capell:make-theme
+    protected $signature = 'capell:make-foundation-theme
         {slug? : Kebab-case theme slug, e.g. "business"}
         {--name= : Display name shown in the marketplace, e.g. "Business"}
         {--tier= : Commercial tier: free or premium}
@@ -31,8 +33,8 @@ final class MakeThemeCommand extends Command
     {
         try {
             $request = $this->buildRequest();
-        } catch (InvalidArgumentException $exception) {
-            $this->error($exception->getMessage());
+        } catch (InvalidArgumentException $invalidArgumentException) {
+            $this->error($invalidArgumentException->getMessage());
 
             return self::FAILURE;
         }

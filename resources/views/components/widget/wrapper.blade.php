@@ -1,7 +1,7 @@
 @php
     use Capell\Core\Enums\ContainerWidthEnum;
     use Capell\Core\Enums\DefaultColorEnum;
-    use Capell\Core\Enums\MediaConversionEnum;
+    use Capell\FoundationTheme\Actions\ResolveWidgetBackgroundImageUrlAction;
     use Capell\FoundationTheme\Actions\ResolveLoadedWidgetBackgroundImageAction;
     use Capell\FoundationTheme\Actions\ResolveSafeCssColorTokenAction;
     use Capell\Frontend\Facades\Frontend;
@@ -45,6 +45,9 @@
     if ($widget->getMeta('container') !== null || ! $containerWidth instanceof ContainerWidthEnum) {
         $containerWidth = GetWidgetContainerWidthAction::run($widget);
     }
+
+    $backgroundImageUrl = $backgroundImage?->getAvailableUrl(['large'])
+        ?? ResolveWidgetBackgroundImageUrlAction::run($widget);
 @endphp
 
 @aware([
@@ -94,24 +97,24 @@
             'bg-warning' => $backgroundColor === DefaultColorEnum::Warning->value,
             'bg-white' => $backgroundColor === DefaultColorEnum::White->value,
             'dark:bg-gray-600' => $backgroundColor === DefaultColorEnum::LightGray->value && $theme->withDarkMode,
-            'bg-center' => $backgroundPosition === 'center' && $backgroundImage,
-            'bg-top' => $backgroundPosition === 'top' && $backgroundImage,
-            'bg-bottom' => $backgroundPosition === 'bottom' && $backgroundImage,
-            'bg-left' => $backgroundPosition === 'left' && $backgroundImage,
-            'bg-right' => $backgroundPosition === 'right' && $backgroundImage,
-            'bg-cover' => $backgroundSize === 'cover' && $backgroundImage,
-            'bg-contain' => $backgroundSize === 'contain' && $backgroundImage,
-            'bg-repeat' => $backgroundRepeat === 'repeat' && $backgroundImage,
-            'bg-repeat-x' => $backgroundRepeat === 'repeat-x' && $backgroundImage,
-            'bg-repeat-y' => $backgroundRepeat === 'repeat-y' && $backgroundImage,
-            'bg-no-repeat' => $backgroundRepeat === 'no-repeat' && $backgroundImage,
-            'bg-fixed' => $backgroundAttachment === 'fixed' && $backgroundImage,
-            'bg-scroll' => $backgroundAttachment === 'scroll' && $backgroundImage,
+            'bg-center' => $backgroundPosition === 'center' && $backgroundImageUrl,
+            'bg-top' => $backgroundPosition === 'top' && $backgroundImageUrl,
+            'bg-bottom' => $backgroundPosition === 'bottom' && $backgroundImageUrl,
+            'bg-left' => $backgroundPosition === 'left' && $backgroundImageUrl,
+            'bg-right' => $backgroundPosition === 'right' && $backgroundImageUrl,
+            'bg-cover' => $backgroundSize === 'cover' && $backgroundImageUrl,
+            'bg-contain' => $backgroundSize === 'contain' && $backgroundImageUrl,
+            'bg-repeat' => $backgroundRepeat === 'repeat' && $backgroundImageUrl,
+            'bg-repeat-x' => $backgroundRepeat === 'repeat-x' && $backgroundImageUrl,
+            'bg-repeat-y' => $backgroundRepeat === 'repeat-y' && $backgroundImageUrl,
+            'bg-no-repeat' => $backgroundRepeat === 'no-repeat' && $backgroundImageUrl,
+            'bg-fixed' => $backgroundAttachment === 'fixed' && $backgroundImageUrl,
+            'bg-scroll' => $backgroundAttachment === 'scroll' && $backgroundImageUrl,
             'relative overflow-hidden' => $backgroundOverlay,
         ])
     }}
-    @if ($safeBackgroundColor || $backgroundImage)
-        style="{{ $safeBackgroundColor ? 'background-color:' . $safeBackgroundColor . ';' : '' }}{{ $backgroundImage ? 'background-image:url(' . $backgroundImage->getAvailableUrl([MediaConversionEnum::Large->value]) . ');' : '' }}"
+    @if ($safeBackgroundColor || $backgroundImageUrl)
+        style="{{ $safeBackgroundColor ? 'background-color:' . $safeBackgroundColor . ';' : '' }}{{ $backgroundImageUrl ? 'background-image:url(' . $backgroundImageUrl . ');' : '' }}"
     @endif
 >
     @if ($backgroundOverlay)

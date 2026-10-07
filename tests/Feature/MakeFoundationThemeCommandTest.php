@@ -2,28 +2,57 @@
 
 declare(strict_types=1);
 
+use Capell\Core\Console\Commands\MakeThemeCommand as CoreMakeThemeCommand;
 use Capell\FoundationTheme\Actions\GenerateThemeScaffoldAction;
+use Capell\FoundationTheme\Console\Commands\MakeFoundationThemeCommand;
 use Capell\FoundationTheme\Data\ThemeScaffoldRequestData;
+use Capell\FoundationTheme\Testing\AssertsPublicThemeAccessibility;
+use Capell\FoundationTheme\Testing\AssertsPublicThemeOutputSafety;
+use Capell\ThemeBusiness\BusinessThemeServiceProvider;
+use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\File;
 
 /**
- * Exercises `capell:make-theme`'s generator (see
- * `GenerateThemeScaffoldAction`) end to end, at the Action layer rather than
- * through the Artisan command, so the test stays fast and does not depend on
- * interactive prompts. Every scaffold is written under a fresh temp
+ * Exercises `capell:make-foundation-theme` and its generator (see
+ * `GenerateThemeScaffoldAction`). Every scaffold is written under a fresh temp
  * directory rather than the real monorepo `packages/` tree, and that temp
  * directory is always removed afterwards, even on assertion failure.
  */
 beforeEach(function (): void {
-    $this->scaffoldBasePath = sys_get_temp_dir() . '/capell-make-theme-test-' . uniqid('', true);
+    $this->scaffoldBasePath = sys_get_temp_dir() . '/capell-make-foundation-theme-test-' . uniqid('', true);
 
     File::ensureDirectoryExists($this->scaffoldBasePath);
 });
 
 afterEach(function (): void {
-    if (isset($this->scaffoldBasePath) && File::isDirectory($this->scaffoldBasePath)) {
+    if (property_exists($this, 'scaffoldBasePath') && $this->scaffoldBasePath !== null && File::isDirectory($this->scaffoldBasePath)) {
         File::deleteDirectory($this->scaffoldBasePath);
     }
+});
+
+it('registers both theme generators under their own names', function (): void {
+    $commands = $this->app->make(Kernel::class)->all();
+
+    expect($commands['capell:make-theme'] ?? null)->toBeInstanceOf(CoreMakeThemeCommand::class)
+        ->and($commands['capell:make:theme'] ?? null)->toBeInstanceOf(CoreMakeThemeCommand::class)
+        ->and($commands['capell:make-foundation-theme'] ?? null)->toBeInstanceOf(MakeFoundationThemeCommand::class);
+});
+
+it('scaffolds a catalogue theme through its distinct Artisan command', function (): void {
+    $this->artisan('capell:make-foundation-theme', [
+        'slug' => 'business',
+        '--name' => 'Business',
+        '--tier' => 'premium',
+        '--family' => 'service-business',
+        '--path' => $this->scaffoldBasePath,
+    ])->assertSuccessful();
+
+    $manifest = decodeThemeScaffoldJson($this->scaffoldBasePath . '/theme-business/capell.json');
+
+    expect($manifest['themeKey'])->toBe('business')
+        ->and($manifest['extends'])->toBe('default')
+        ->and(data_get($manifest, 'product.tier'))->toBe('premium')
+        ->and($this->scaffoldBasePath . '/theme-business/tests/Unit/DefinitionTest.php')->toBeFile();
 });
 
 it('generates a complete theme scaffold with correct manifest, namespace, and provider wiring', function (): void {
@@ -52,7 +81,7 @@ it('generates a complete theme scaffold with correct manifest, namespace, and pr
         ->and($manifest['kind'])->toBe('theme')
         ->and($manifest['name'])->toBe('capell-app/theme-business')
         ->and(data_get($manifest, 'product.tier'))->toBe('premium')
-        ->and(data_get($manifest, 'providers.runtime'))->toContain('Capell\\ThemeBusiness\\BusinessThemeServiceProvider');
+        ->and(data_get($manifest, 'providers.runtime'))->toContain(BusinessThemeServiceProvider::class);
 
     $composerJson = decodeThemeScaffoldJson($packageDirectory . '/composer.json');
 
@@ -123,8 +152,8 @@ it('generates a complete theme scaffold with correct manifest, namespace, and pr
     );
 
     expect($publicOutputSafetyTestContents)
-        ->toContain('Capell\\FoundationTheme\\Testing\\AssertsPublicThemeAccessibility')
-        ->toContain('Capell\\FoundationTheme\\Testing\\AssertsPublicThemeOutputSafety')
+        ->toContain(AssertsPublicThemeAccessibility::class)
+        ->toContain(AssertsPublicThemeOutputSafety::class)
         ->toContain('assertThemeBladeMeetsAccessibilityContract');
 });
 
