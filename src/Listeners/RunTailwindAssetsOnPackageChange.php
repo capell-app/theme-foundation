@@ -6,25 +6,19 @@ namespace Capell\FoundationTheme\Listeners;
 
 use Capell\Core\Events\PackageInstalled;
 use Capell\Core\Events\PackageUninstalled;
-use Illuminate\Support\Facades\Artisan;
+use Capell\FoundationTheme\Support\Tailwind\TailwindAssetsGenerator;
 
 class RunTailwindAssetsOnPackageChange
 {
+    public function __construct(private readonly TailwindAssetsGenerator $generator) {}
+
     public function handleInstalled(PackageInstalled $event): void
     {
-        $this->run();
+        $this->generator->generate();
     }
 
     public function handleUninstalled(PackageUninstalled $event): void
     {
-        $this->run();
-    }
-
-    /**
-     * @param  array<string,mixed>  $arguments
-     */
-    private function run(array $arguments = []): void
-    {
-        Artisan::call('capell:frontend-tailwind-assets', $arguments);
+        $this->generator->generate();
     }
 }

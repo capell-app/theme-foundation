@@ -139,6 +139,7 @@ Desktop, tablet, and mobile variants remain defined in the screenshot contract; 
 - `ResolveThemeFormEmbedDataAction`
 - `ResolveThemeFrontendScriptDataAction`
 - `ResolveThemeOptionalSectionAvailabilityAction`
+- `ResolveWidgetBackgroundImageUrlAction`
 - `SetupFoundationThemePackageAction`
 - `ValidateThemeCatalogueEntryAction`
 - `WidgetIsSlotAction`
@@ -375,7 +376,7 @@ This theme has no schema impact. It relies on core Capell site, page, locale, an
 
 ## Install Impact
 
-- Required packages: `capell-app/core`, `capell-app/frontend`, `capell-app/layout-builder`, `capell-app/navigation`.
+- Required packages: `capell-app/admin`, `capell-app/core`, `capell-app/frontend`, `capell-app/layout-builder`, `capell-app/navigation`.
 - Admin navigation: no admin page or resource contribution is declared.
 - Admin/editor extensions: none declared.
 - Permissions: no package permission declarations or Shield gates detected; host access rules still apply.
@@ -389,7 +390,7 @@ This theme has no schema impact. It relies on core Capell site, page, locale, an
 
 ## Common Pitfalls
 
-- Keep required Capell packages on compatible v4 releases: `capell-app/core`, `capell-app/frontend`, `capell-app/layout-builder`, `capell-app/navigation`.
+- Keep required Capell packages on compatible v4 releases: `capell-app/admin`, `capell-app/core`, `capell-app/frontend`, `capell-app/layout-builder`, `capell-app/navigation`.
 - Review package configuration before production-like verification: `config/capell-theme-foundation.php`, `Capell\FoundationTheme\Settings\FoundationThemeSettings`.
 - Keep public Blade and cached HTML free of authoring markers, model IDs, permissions, signed editor URLs, and lazy database queries.
 - Custom write integrations must preserve invalidation for `theme-foundation` cache tags.

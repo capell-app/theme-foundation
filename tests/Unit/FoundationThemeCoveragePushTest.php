@@ -200,7 +200,7 @@ it('runs foundation tailwind command report generate and package-change listener
         serviceProviderClass: FoundationThemeServiceProvider::class,
         path: __DIR__,
     );
-    $listener = new RunTailwindAssetsOnPackageChange;
+    $listener = resolve(RunTailwindAssetsOnPackageChange::class);
     $listener->handleInstalled(new PackageInstalled($package));
     $listener->handleUninstalled(new PackageUninstalled($package));
 });
