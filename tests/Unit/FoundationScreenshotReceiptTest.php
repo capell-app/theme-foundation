@@ -125,10 +125,9 @@ function assertFoundationScreenshotReceipts(string $repositoryRoot, array $commi
         }
     }
 
-    // Some images lack promoted entry-specific current-schema receipts. Prevent
-    // that gap growing while allowing legitimate recaptures to reduce it.
+    // The receipt gap is closed. Recaptures must retain complete coverage.
     $coverage = sprintf('%d images verified; %d committed images lack current-schema per-entry receipts: %s', $verified, count($missingReceipts), implode(', ', $missingReceipts));
-    Assert::assertLessThanOrEqual(11, count($missingReceipts), $coverage);
+    Assert::assertLessThanOrEqual(0, count($missingReceipts), $coverage);
     Assert::assertGreaterThan(0, $verified, $coverage);
 }
 
