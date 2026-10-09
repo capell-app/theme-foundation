@@ -6,7 +6,12 @@ use Capell\Core\Data\VendorAssetData;
 use Capell\Core\Enums\VendorAssetEnum;
 use Capell\Core\Facades\CapellCore;
 use Capell\FoundationTheme\Support\Tailwind\TailwindAssetsGenerator;
+use Capell\Tests\Support\OwnedTestbenchSkeleton;
 use Illuminate\Filesystem\Filesystem;
+
+beforeEach(function (): void {
+    OwnedTestbenchSkeleton::useStorageProject(app());
+});
 
 /*
  * Guards Wave 6.1/6.2: theme-css:<key> conditioned imports must compile into
@@ -31,7 +36,7 @@ it('keeps conditioned imports in the shared bundle when the split flag is off', 
         condition: 'theme-css:split-flag-off',
     ));
 
-    $paths = (new TailwindAssetsGenerator(new Filesystem))->generate($targetPath);
+    $paths = new TailwindAssetsGenerator(new Filesystem)->generate($targetPath);
 
     expect($paths)->toBe([$targetPath])
         ->and((new Filesystem)->get($targetPath))->toContain('theme-split-flag-off.css');
@@ -55,7 +60,7 @@ it('splits conditioned imports into their own file when the split flag is on', f
         condition: 'theme-css:split-flag-on',
     ));
 
-    $paths = (new TailwindAssetsGenerator(new Filesystem))->generate($targetPath);
+    $paths = new TailwindAssetsGenerator(new Filesystem)->generate($targetPath);
 
     $themePath = $targetDirectory . '/themes/split-flag-on.css';
 
@@ -118,7 +123,7 @@ it('keeps Tailwind core in the shared entrypoint so split themes retain cascade 
         condition: 'theme-css:split-cascade',
     ));
 
-    (new TailwindAssetsGenerator(new Filesystem))->generate($targetPath);
+    new TailwindAssetsGenerator(new Filesystem)->generate($targetPath);
 
     $filesystem = new Filesystem;
     $sharedCss = $filesystem->get($targetPath);
@@ -140,7 +145,7 @@ it('leaves the base bundle untouched by unconditioned imports either way', funct
     CapellCore::forcePackageInstalled($packageName);
     CapellCore::registerVendorAsset(VendorAssetData::tailwindImport('resources/css/unconditioned.css', $packageName));
 
-    $paths = (new TailwindAssetsGenerator(new Filesystem))->generate($targetPath);
+    $paths = new TailwindAssetsGenerator(new Filesystem)->generate($targetPath);
 
     expect($paths)->toBe([$targetPath])
         ->and((new Filesystem)->get($targetPath))->toContain('unconditioned.css');

@@ -7,8 +7,13 @@ use Capell\Core\Enums\VendorAssetEnum;
 use Capell\Core\Facades\CapellCore;
 use Capell\FoundationTheme\Console\Commands\GenerateTailwindAssetsCommand;
 use Capell\FoundationTheme\Providers\FoundationThemeServiceProvider;
+use Capell\Tests\Support\OwnedTestbenchSkeleton;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Artisan;
+
+beforeEach(function (): void {
+    OwnedTestbenchSkeleton::useStorageProject(app());
+});
 
 it('owns the frontend Tailwind command and generates conditioned theme CSS', function (): void {
     $filesystem = new Filesystem;

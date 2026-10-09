@@ -77,6 +77,39 @@ class TailwindAssetsGenerator extends FrontendTailwindAssetsGenerator
         return $paths;
     }
 
+    /**
+     * The first path generate() could not write, or null when every output can be
+     * created or replaced. Lets callers skip generation on a read-only tree instead
+     * of failing part-way through.
+     */
+    public function unwritableOutputPath(): ?string
+    {
+        $baseTargetPath = $this->targetPath();
+
+        if ($this->files->exists($baseTargetPath) && ! $this->files->isWritable($baseTargetPath)) {
+            return $baseTargetPath;
+        }
+
+        $directories = [dirname($baseTargetPath)];
+
+        if ($this->shouldSplitThemeCss()) {
+            $directories[] = dirname($this->themeCssTargetPath('theme', $baseTargetPath));
+        }
+
+        foreach ($directories as $directory) {
+            // ensureDirectoryExists() creates missing directories, so the nearest existing ancestor must accept writes.
+            while (! $this->files->exists($directory) && dirname($directory) !== $directory) {
+                $directory = dirname($directory);
+            }
+
+            if (! $this->files->isDirectory($directory) || ! $this->files->isWritable($directory)) {
+                return $directory;
+            }
+        }
+
+        return null;
+    }
+
     private function generateFile(string $targetPath): void
     {
         $registry = $this->collectWithTarget($targetPath);

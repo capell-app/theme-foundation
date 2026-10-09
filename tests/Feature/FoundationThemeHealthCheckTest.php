@@ -29,10 +29,14 @@ afterEach(function (): void {
         unlink($this->publishedManifestPath);
     }
 
-    foundationThemeDeleteDirectory(sys_get_temp_dir() . '/capell-theme-foundation-health-manifest-missing');
-    foundationThemeDeleteDirectory(sys_get_temp_dir() . '/capell-theme-foundation-health-asset-missing');
+    foundationThemeDeleteDirectory(storage_path('framework/testing/capell-theme-foundation-health-manifest-missing'));
+    foundationThemeDeleteDirectory(storage_path('framework/testing/capell-theme-foundation-health-asset-missing'));
 
     resolve(ThemeRegistry::class)->reset();
+});
+
+it('keeps health fixtures inside this process storage tree', function (): void {
+    expect(foundationThemeHealthManifestPath())->toStartWith(storage_path() . '/');
 });
 
 it('reports a compatible capell api version', function (): void {
@@ -269,7 +273,7 @@ it('accepts explicit not-captured screenshot records in the fleet manifest', fun
 
 function foundationThemeHealthManifestPath(): string
 {
-    return sys_get_temp_dir() . '/capell-theme-foundation-health-' . getmypid() . '/manifest.json';
+    return storage_path('framework/testing/capell-theme-foundation-health/manifest.json');
 }
 
 function foundationThemeHealthCheck(?string $packageRoot = null): FoundationThemeHealthCheck
@@ -282,7 +286,7 @@ function foundationThemeHealthCheck(?string $packageRoot = null): FoundationThem
 
 function foundationThemeTemporaryFleetRoot(string $name): string
 {
-    $fleetContainer = sys_get_temp_dir() . '/capell-theme-foundation-fleet-' . $name;
+    $fleetContainer = storage_path('framework/testing/capell-theme-foundation-fleet-' . $name);
     foundationThemeDeleteDirectory($fleetContainer);
 
     $packagesDirectory = $fleetContainer . '/packages';
@@ -318,7 +322,7 @@ function foundationThemeRegisterInstalledHealthSurfaces(): void
 
 function foundationThemeTemporaryPackageRoot(string $name): string
 {
-    $root = sys_get_temp_dir() . '/capell-theme-foundation-health-' . $name;
+    $root = storage_path('framework/testing/capell-theme-foundation-health-' . $name);
     foundationThemeDeleteDirectory($root);
 
     foreach ([

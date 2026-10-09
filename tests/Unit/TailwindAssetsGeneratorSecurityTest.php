@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 use Capell\Core\Support\Tailwind\TailwindAssetsRegistry;
 use Capell\FoundationTheme\Support\Tailwind\TailwindAssetsGenerator;
+use Capell\Tests\Support\OwnedTestbenchSkeleton;
 use Illuminate\Filesystem\Filesystem;
+
+beforeEach(function (): void {
+    OwnedTestbenchSkeleton::useStorageProject(app());
+});
 
 require_once dirname(__DIR__, 2) . '/src/Support/Tailwind/TailwindAssetsGenerator.php';
 
@@ -90,7 +95,7 @@ test('directory output paths generate a frontend css entrypoint', function (): v
 test('output paths outside the project are rejected', function (): void {
     $outsidePath = dirname(base_path()) . '/capell-theme-foundation-tailwind-' . uniqid() . '.css';
 
-    expect(fn (): array => (new TailwindAssetsGenerator(new Filesystem))->generate($outsidePath))
+    expect(fn (): array => new TailwindAssetsGenerator(new Filesystem)->generate($outsidePath))
         ->toThrow(InvalidArgumentException::class, 'Tailwind output CSS path must stay inside the project.');
 });
 

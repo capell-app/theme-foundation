@@ -11,7 +11,12 @@ use Capell\Frontend\Data\FrontendResourceContextData;
 use Capell\Frontend\Data\FrontendRuntimeManifestData;
 use Capell\Frontend\Enums\FrontendResourceKind;
 use Capell\Frontend\Enums\RenderingStrategyEnum;
+use Capell\Tests\Support\OwnedTestbenchSkeleton;
 use Illuminate\Filesystem\Filesystem;
+
+beforeEach(function (): void {
+    OwnedTestbenchSkeleton::useStorageProject(app());
+});
 
 it('contributes typed application CSS and conditional Foundation runtime resources', function (): void {
     $runtime = FrontendRuntimeManifestData::forRenderingStrategy(RenderingStrategyEnum::BladeOnly);

@@ -51,6 +51,7 @@ use Capell\FoundationTheme\View\Components\Widget\Page\Siblings;
 use Capell\Frontend\Support\State\FrontendState;
 use Capell\LayoutBuilder\Models\Widget;
 use Capell\LayoutBuilder\Support\Livewire\OpaqueWidgetReference;
+use Capell\Tests\Support\OwnedTestbenchSkeleton;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Select;
@@ -64,6 +65,10 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Spatie\MediaLibrary\Support\PathGenerator\PathGenerator;
+
+beforeEach(function (): void {
+    OwnedTestbenchSkeleton::useStorageProject(app());
+});
 
 function foundationThemeCoverageView(mixed $view): View
 {
@@ -85,7 +90,7 @@ it('generates tailwind assets from configured app sources and packages', functio
         ],
     ]);
 
-    $generated = (new TailwindAssetsGenerator(new Filesystem))->generate($targetPath);
+    $generated = new TailwindAssetsGenerator(new Filesystem)->generate($targetPath);
     $css = (string) file_get_contents($targetPath);
 
     capell_expect($generated)->toBe([$targetPath])
@@ -123,7 +128,7 @@ it('collects default tailwind assets without writing files', function (): void {
         'capell-theme-foundation.tailwind.sources' => ['resources/views/**/*.blade.php'],
     ]);
 
-    $registry = (new TailwindAssetsGenerator(new Filesystem))->collect();
+    $registry = new TailwindAssetsGenerator(new Filesystem)->collect();
 
     capell_expect($registry)->toBeInstanceOf(TailwindAssetsRegistry::class)
         ->and($registry->imports())->toContain('swiper/css')
@@ -166,7 +171,7 @@ it('generates tailwind assets from installed vendor assets and validates configu
     CapellCore::registerVendorAsset(VendorAssetData::tailwindThemeColor('bad;color', '#123456', $packageName));
     CapellCore::registerVendorAsset(VendorAssetData::tailwindImport('missing-package.css', 'vendor/not-installed'));
 
-    (new TailwindAssetsGenerator(new Filesystem))->generate($targetPath);
+    new TailwindAssetsGenerator(new Filesystem)->generate($targetPath);
 
     $css = (string) file_get_contents($targetPath);
 
@@ -229,7 +234,7 @@ it('declares foundation settings schema and settings migrations', function (): v
     $designTokenComponents = foundationThemeCoverageChildComponents(foundationThemeCoverageChildComponents($components[1])[0]);
     $darkDesignTokenComponents = foundationThemeCoverageChildComponents(foundationThemeCoverageChildComponents($components[2])[0]);
     $provider = new FoundationThemeSettingsMigrationProvider;
-    $settingDefaults = (new ReflectionClass(FoundationThemeSettings::class))->getDefaultProperties();
+    $settingDefaults = new ReflectionClass(FoundationThemeSettings::class)->getDefaultProperties();
 
     capell_expect($components)->toHaveCount(3)
         ->and($components[0])->toBeInstanceOf(Section::class)
@@ -439,7 +444,7 @@ it('rewrites media urls to the active frontend root or configured site base', fu
         }
     };
 
-    $generator = (new CapellUrlGenerator(resolve(Repository::class)))
+    $generator = new CapellUrlGenerator(resolve(Repository::class))
         ->setMedia($media)
         ->setPathGenerator($pathGenerator);
 

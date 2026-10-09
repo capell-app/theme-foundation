@@ -463,7 +463,11 @@ final class ThemeDemoPageInstaller
                 ],
                 'admin' => $baseLayoutAdmin,
                 'order' => $baseLayoutOrder ?? 100,
-                'default' => false,
+                // Exclude this layout so repeated installs retain the site's chosen default.
+                'default' => ! $site->layouts()
+                    ->where('key', '!=', $key)
+                    ->default()
+                    ->exists(),
                 'status' => true,
             ],
         );
