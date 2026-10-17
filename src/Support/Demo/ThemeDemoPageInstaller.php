@@ -227,7 +227,7 @@ final class ThemeDemoPageInstaller
 
             /** @var Page $page */
             $page = DB::transaction(function () use ($site, $definition, $layout, $themeKey, $creator, $renderData, $languages): Page {
-                $this->alignExistingDemoPage($site, $themeKey, $definition, $layout);
+                $existingPage = $this->alignExistingDemoPage($site, $themeKey, $definition, $layout);
 
                 /** @var Page $page */
                 $page = $creator->createPage([
@@ -244,7 +244,7 @@ final class ThemeDemoPageInstaller
                         ],
                         'robots' => ['noindex' => $definition->surface === 'not-found'],
                     ],
-                    'translations' => $this->translations($languages, $definition),
+                    'translations' => $this->translations($languages, $definition, $existingPage),
                 ], $site, $languages);
 
                 return $page;
@@ -525,10 +525,30 @@ final class ThemeDemoPageInstaller
         return is_string($value) ? $value : '';
     }
 
-    private function alignExistingDemoPage(Site $site, string $themeKey, ThemeDemoPageDefinition $definition, ?Layout $layout): void
+    private function alignExistingDemoPage(Site $site, string $themeKey, ThemeDemoPageDefinition $definition, ?Layout $layout): ?Page
     {
         $layout ??= Layout::query()->firstWhere('key', $definition->layout->value);
         $blueprint = Blueprint::query()->pageType()->firstWhere('key', $definition->type->value);
+
+        if ($definition->type === PageTypeEnum::NotFound) {
+            $systemPages = Page::query()
+                ->where('site_id', $site->getKey())
+                ->where('blueprint_id', $blueprint?->getKey())
+                ->whereNull('parent_id')
+                ->limit(2)
+                ->get();
+
+            // Site/domain setup may already have generated this site's error page.
+            // Adopt that identity instead of leaving a competing recovery page.
+            if ($systemPages->count() === 1) {
+                $page = $systemPages->firstOrFail();
+                $layout ??= resolve(LayoutCreator::class)->create($definition->layout);
+                $page->fill(['name' => $definition->name, 'layout_id' => $layout->getKey()])->save();
+
+                return $page;
+            }
+        }
+
         $mutableLookup = Page::query()
             ->where('site_id', $site->getKey())
             ->where('name', $definition->name)
@@ -537,7 +557,7 @@ final class ThemeDemoPageInstaller
 
         if ($layout instanceof Layout) {
             if ((clone $mutableLookup)->where('layout_id', $layout->getKey())->exists()) {
-                return;
+                return null;
             }
 
             // The base installer repaired layouts before Core's mutable lookup.
@@ -550,7 +570,7 @@ final class ThemeDemoPageInstaller
                 && in_array(data_get($legacyPage->meta, 'theme_demo.surface'), [null, $definition->surface], true)) {
                 $legacyPage->fill(['layout_id' => $layout->getKey()])->save();
 
-                return;
+                return null;
             }
         }
 
@@ -564,7 +584,7 @@ final class ThemeDemoPageInstaller
         // Older seeds can leave duplicate identities after name/slug changes.
         // Ambiguity must fall back to Core rather than choosing either page.
         if ($identityMatches->count() !== 1) {
-            return;
+            return null;
         }
 
         $page = $identityMatches->firstOrFail();
@@ -574,6 +594,8 @@ final class ThemeDemoPageInstaller
         // demo identity: names can change monthly or be shared by different
         // surfaces. Keep the alignment atomic with translation persistence.
         $page->fill(['name' => $definition->name, 'layout_id' => $layout->getKey()])->save();
+
+        return $page;
     }
 
     /**
@@ -643,9 +665,12 @@ final class ThemeDemoPageInstaller
      * @param  EloquentCollection<int, Language>  $languages
      * @return array<string, array<string, mixed>>
      */
-    private function translations(EloquentCollection $languages, ThemeDemoPageDefinition $definition): array
+    private function translations(EloquentCollection $languages, ThemeDemoPageDefinition $definition, ?Page $existingPage = null): array
     {
         $translations = [];
+        $errorTranslations = $definition->type === PageTypeEnum::NotFound
+            ? $existingPage?->translations
+            : null;
 
         foreach ($languages as $language) {
             $translations[(string) $language->code] = [
@@ -662,6 +687,12 @@ final class ThemeDemoPageInstaller
                     'theme_demo' => $definition->renderData,
                 ],
             ];
+
+            $errorCopy = $errorTranslations?->firstWhere('language_id', $language->getKey())?->meta['error_status_copy'] ?? null;
+
+            if (is_array($errorCopy)) {
+                $translations[(string) $language->code]['meta']['error_status_copy'] = $errorCopy;
+            }
         }
 
         return $translations;

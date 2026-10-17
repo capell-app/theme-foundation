@@ -33,20 +33,11 @@ declare(strict_types=1);
 |      token: FoundationSectionPublicLayoutWidgetPayloadContributor only
 |      answers on theme-foundation's own route.
 |
-| (1) and (2) are exercised separately rather than through FoundationSection's
-| own outer `foundation-section.blade.php` wrapper: that view lives under
-| theme-foundation's `resources/views/components/`, which
-| tests/Packages/PackagesTestCase forces through Livewire Blaze compilation
-| for every test in this suite (see registerBlazeOptimizedViews()) — the same
-| known component-stack-desync class already documented and worked around in
-| LayoutNativeMainContentRendersWidgetsTest.php. Rendering that wrapper in
-| isolation (outside a full page's exact adjacent-component-tag sequence)
-| reproducibly renders empty with no exception; that is an existing Blade/
-| Blaze test-harness quirk unrelated to this fix, not evidence this fix is
-| broken. Exercising FoundationSection's real PHP decision logic
-| (constructor + viewData()) plus the real, unmodified section Blade views
-| covers the same code the earlier @csrf change touched without depending
-| on that wrapper.
+| (1) and (2) exercise prepared component data and the section partials
+| separately. LayoutNativeMainContentRendersWidgetsTest covers the real
+| Foundation wrapper on initial and repeated HTTP renders with Blaze enabled.
+| The class-backed wrapper uses the standard Blade compiler so its prepared
+| section data reaches those partials.
 */
 
 use Capell\Core\Models\Language;
@@ -60,6 +51,7 @@ use Capell\Frontend\Facades\Frontend;
 use Capell\Frontend\Support\State\FrontendState;
 use Capell\LayoutBuilder\Actions\Fragments\BuildLayoutBuilderFragmentReferenceAction;
 use Capell\LayoutBuilder\Models\Widget;
+use Illuminate\Contracts\View\View;
 
 /**
  * @param  array<string, mixed>  $sectionMeta
@@ -70,7 +62,7 @@ function foundationDynamicFormDeliveryFixture(string $sectionType, string $compo
     $language = Language::factory()->create(['status' => true]);
     $site = Site::factory()->language($language)->withTranslations($language)->create(['status' => true]);
     $widget = Widget::factory()->create([
-        'key' => 'foundation-' . $sectionType . '-cap-0233-' . uniqid(),
+        'key' => 'foundation-' . $sectionType . '-delivery-' . uniqid(),
         'status' => true,
         'component' => $component,
         'meta' => ['type' => $sectionType, ...$sectionMeta],
@@ -116,9 +108,8 @@ function bindFoundationDynamicFormDeliveryFrontendContext(array $fixture): void
 }
 
 /**
- * Exercises FoundationSection's real constructor + protected viewData()
- * method (the deferred-fragment decision logic) without going through the
- * Blaze-affected outer component wrapper — see the file-level note above.
+ * Exercises FoundationSection's prepared public render data, including
+ * deferred fragment delivery; real page rendering is covered separately.
  *
  * @return array<array-key, mixed>
  */
@@ -134,13 +125,10 @@ function foundationSectionViewData(Widget $widget): array
         occurrence: 1,
     );
 
-    $viewData = new ReflectionMethod($component, 'viewData')->invoke($component);
+    $view = $component->render();
+    throw_unless($view instanceof View, LogicException::class, 'FoundationSection must return a view.');
 
-    if (! is_array($viewData)) {
-        throw new LogicException('FoundationSection::viewData() must return an array.');
-    }
-
-    return $viewData;
+    return $view->getData();
 }
 
 /**

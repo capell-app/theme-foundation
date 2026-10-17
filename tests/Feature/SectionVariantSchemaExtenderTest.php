@@ -7,6 +7,7 @@ use Capell\Admin\Enums\CapellPermission;
 use Capell\Core\Facades\CapellCore;
 use Capell\Core\Models\Blueprint;
 use Capell\Core\Models\Theme;
+use Capell\Core\Support\Packages\InstalledRuntimeLifecycle;
 use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
 use Capell\FoundationTheme\Filament\Extenders\SectionVariantSchemaExtender;
 use Capell\FoundationTheme\Providers\FoundationThemeServiceProvider;
@@ -28,9 +29,7 @@ function bootEditorialSectionVariantLifecycle(): void
     CapellCore::forcePackageInstalled(FoundationThemeServiceProvider::$packageName);
     CapellCore::forcePackageInstalled(EditorialThemeServiceProvider::$packageName);
 
-    $foundationProvider = new FoundationThemeServiceProvider(app());
-    $foundationProvider->register();
-    $foundationProvider->boot();
+    resolve(InstalledRuntimeLifecycle::class)->refresh(FoundationThemeServiceProvider::$packageName);
 
     $editorialProvider = new EditorialThemeServiceProvider(app());
     $editorialProvider->register();

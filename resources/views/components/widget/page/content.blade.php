@@ -1,3 +1,4 @@
+{{-- @blaze-standard-compiler: class-backed views also render directly through Laravel. --}}
 @php
     use Capell\Core\Contracts\Pageable;
     use Capell\Core\Enums\ContentStructure;

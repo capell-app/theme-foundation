@@ -1,3 +1,4 @@
+{{-- @blaze-standard-compiler: class-backed views also render directly through Laravel. --}}
 @props([
     'ancestors' => null,
     'container',

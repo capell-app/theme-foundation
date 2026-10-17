@@ -1,3 +1,4 @@
+{{-- @blaze-standard-compiler: this class-backed view needs its prepared section data when rendered through Laravel. --}}
 @if (is_string($sectionView))
     @if ($anchorable)
         <div

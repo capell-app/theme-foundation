@@ -17,10 +17,10 @@ use Capell\FoundationTheme\Actions\MarkPrimaryHeadingRenderedAction;
 use Capell\FoundationTheme\Actions\PrepareFoundationPageWidgetDataAction;
 use Capell\FoundationTheme\Actions\ResolveLoadedWidgetBackgroundImageAction;
 use Capell\FoundationTheme\Actions\WidgetIsSlotAction;
+use Capell\FoundationTheme\Livewire\Assets\Table\PageAssets;
 use Capell\FoundationTheme\Livewire\Widget\Pages as LivewirePages;
 use Capell\FoundationTheme\Support\Blade\BladeDirectives;
 use Capell\FoundationTheme\Support\Media\CapellUrlGenerator;
-use Capell\FoundationTheme\Tests\Fixtures\FoundationThemeFinalPageAssetsHarness;
 use Capell\FoundationTheme\Tests\Fixtures\FoundationThemeFinalPathGenerator;
 use Capell\FoundationTheme\View\Components\Widget\Navigation;
 use Capell\FoundationTheme\View\Components\Widget\Page\Breadcrumbs;
@@ -36,9 +36,9 @@ use Capell\LayoutBuilder\Support\Livewire\OpaqueWidgetReference;
 use Capell\Navigation\Enums\NavigationItemType;
 use Capell\Navigation\Models\Navigation as NavigationModel;
 use Carbon\CarbonImmutable;
+use Filament\Tables\Table;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -47,6 +47,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Blaze\Blaze;
 use Ramsey\Uuid\Uuid;
 
 function foundationThemeFinalView(mixed $view): View
@@ -226,42 +227,48 @@ it('mounts the livewire pages widget around selected page assets', function (): 
         'occurrence' => 1,
     ]));
 
-    $pagesProperty = new ReflectionProperty($component, 'pages');
+    // Render this isolated widget with native Blade; the surrounding page owns Blaze's component stack.
+    $blazeEnabled = Blaze::isEnabled();
+    Blaze::disable();
+    try {
+        $html = $component->render();
+    } finally {
+        if ($blazeEnabled) {
+            Blaze::enable();
+        }
+    }
 
-    $componentPages = $pagesProperty->getValue($component);
-
-    $html = $component->render();
-
-    expect($html)->toContain('<div class="contents">')
-        ->and($component->widget()->assets)->toHaveCount(1)
-        ->and($componentPages->pluck('id')->all())->toContain($selectedPage->id);
+    expect($html)->toContain('Selected page')->not->toContain('Current page');
 });
 
 it('covers page asset table query branches and selected record submission', function (): void {
     $language = Language::factory()->english()->create();
     $excludedPage = Page::factory()->withTranslations($language)->create();
+    $eligiblePage = Page::factory()->withTranslations($language)->create();
     $uuidModel = new class extends Model
     {
         /** @use HasFactory<Factory<static>> */
         use HasFactory;
 
+        #[Override]
         public function getKey(): mixed
         {
             return Uuid::fromString('8fd9d7f7-e9a3-44b5-a9d8-88e5fb308c92');
         }
     };
-    $component = new FoundationThemeFinalPageAssetsHarness;
+    $component = new PageAssets;
     $component->tableArguments = ['pageId' => $excludedPage->getKey()];
     $component->existingRecords = [$excludedPage->getKey()];
     $component->selectedTableRecords = [$excludedPage->getKey()];
     $component->actionModalId = 'asset-modal';
 
-    $query = $component->exposeTableQuery();
+    $table = $component->table(Table::make($component));
+    $query = $table->getQuery();
+    throw_unless($query !== null, RuntimeException::class);
 
-    expect($query)->toBeInstanceOf(Builder::class)
-        ->and($query->toSql())->toContain('not')
-        ->and($component->getTableRecordKey($uuidModel))->toBe('8fd9d7f7-e9a3-44b5-a9d8-88e5fb308c92')
-        ->and($component->exposePersistsTableFiltersInSession())->toBeTrue();
+    expect($query->pluck('id')->all())->toContain($eligiblePage->getKey())
+        ->not->toContain($excludedPage->getKey())
+        ->and($component->getTableRecordKey($uuidModel))->toBe('8fd9d7f7-e9a3-44b5-a9d8-88e5fb308c92');
 
     $component->isDisabled = true;
     $component->selectRecords();
@@ -285,7 +292,7 @@ it('rewrites media urls for local overrides paths query strings and active domai
     $media->file_name = 'hero.jpg';
     $media->setAttribute('updated_at', CarbonImmutable::parse('2026-04-01 12:00:00'));
 
-    $generator = (new CapellUrlGenerator(resolve(Repository::class)))
+    $generator = new CapellUrlGenerator(resolve(Repository::class))
         ->setMedia($media)
         ->setPathGenerator(new FoundationThemeFinalPathGenerator);
 
@@ -340,13 +347,15 @@ it('parses buffer expressions without arguments and ignores nested delimiter cha
 {{ $renderEmpty() }}
 BLADE);
 
-    $method = new ReflectionMethod(BladeDirectives::class, 'findFirstTopLevelComma');
-    $position = $method->invoke(null, <<<'EXPRESSION'
-$target['a,b']->call("x,\"y", ['nested' => "{value,still nested}"])
-EXPRESSION);
+    $nested = Blade::render(<<<'BLADE'
+@capellBuffer($renderNested, string $title = "A,B", array $payload = ['nested' => "{value,still nested}"])
+<strong>{{ $title }} {{ $payload['nested'] }}</strong>
+@endcapellBuffer
+{{ $renderNested() }}
+BLADE);
 
     expect($buffer)->toContain('<span>Empty args</span>')
-        ->and($position)->toBeNull();
+        ->and($nested)->toContain('<strong>A,B {value,still nested}</strong>');
 });
 
 it('renders navigation and breadcrumbs with frontend context data', function (): void {
@@ -395,6 +404,15 @@ it('renders navigation and breadcrumbs with frontend context data', function ():
         'meta' => ['navigation' => 'docs'],
     ]);
     $navigationByKeyComponent = new Navigation([], 'main', 1, new stdClass, $navigationByKeyWidget);
+    $legacyNavigationComponents = [];
+    foreach ([$navigation->getKey(), (string) $navigation->getKey()] as $legacyValue) {
+        $legacyWidget = Widget::factory()->create(['meta' => ['navigation' => $legacyValue]]);
+        $legacyNavigationComponents[] = new Navigation([], 'main', 3, new stdClass, $legacyWidget);
+    }
+
+    $foreignNavigation = NavigationModel::factory()->create(['language_id' => $language->id]);
+    $foreignNavigationWidget = Widget::factory()->create(['meta' => ['navigation' => $foreignNavigation->id]]);
+    $foreignNavigationComponent = new Navigation([], 'main', 4, new stdClass, $foreignNavigationWidget);
     $emptyNavigation = NavigationModel::factory()
         ->site($site)
         ->language($language)
@@ -412,6 +430,12 @@ it('renders navigation and breadcrumbs with frontend context data', function ():
         ->and($navigationComponent->menu?->getKey())->toBe($navigation->getKey())
         ->and(foundationThemeFinalView($navigationComponent->render())->name())->toBe('capell-theme-foundation::components.widget.navigation.index')
         ->and($navigationByKeyComponent->menu?->getKey())->toBe($navigation->getKey())
+        ->and($legacyNavigationComponents[0]->menu?->getKey())->toBe($navigation->getKey())
+        ->and($legacyNavigationComponents[1]->menu?->getKey())->toBe($navigation->getKey())
+        ->and($legacyNavigationComponents[0]->items)->toHaveCount(1)
+        ->and($legacyNavigationComponents[1]->items)->toHaveCount(1)
+        ->and($foreignNavigationComponent->menu)->toBeNull()
+        ->and($foreignNavigationComponent->render())->toBe('')
         ->and($emptyNavigationComponent->render())->toBe('')
         ->and(foundationThemeFinalView($breadcrumbs->render())->name())->toBe('capell-theme-foundation::components.widget.page.breadcrumbs');
 });

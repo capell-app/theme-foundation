@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 use Capell\Core\ThemeStudio\Assets\ThemeTokenStore;
 use Capell\Core\ThemeStudio\Data\BrandProfileData;
-use Illuminate\Support\Facades\Date;
-use Illuminate\Support\Sleep;
 
 it('stores token css under isolated theme preset and brand keys', function (): void {
     $brand = new BrandProfileData(
@@ -36,13 +34,12 @@ it('does not rewrite token css when the generated content is unchanged', functio
     $store = new ThemeTokenStore(storage_path('framework/testing/theme-tokens-idempotent'));
 
     $path = $store->put('corporate', 'boardroom', $brand);
-    touch($path, Date::now()->subMinutes(1)->getTimestamp());
+    touch($path, 1_000);
     clearstatcache(true, $path);
     $firstModifiedAt = filemtime($path);
 
-    Sleep::sleep(1);
-
     $secondPath = $store->put('corporate', 'boardroom', $brand);
+    clearstatcache(true, $path);
 
     expect($secondPath)->toBe($path)
         ->and(filemtime($path))->toBe($firstModifiedAt);

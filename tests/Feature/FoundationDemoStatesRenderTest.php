@@ -88,6 +88,7 @@ it('resolves the real registered form builder public component', function (): vo
 
 it('aligns the system error heading with the recovery suggestions', function (): void {
     [$pageUrl] = layoutNativeThemeCreatePage('default', 'System Error Alignment', 'not-found');
+    $pageUrl->loadMissing('pageable.layout');
     $page = $pageUrl->pageable;
     Assert::assertInstanceOf(Page::class, $page);
     $layout = $page->layout;

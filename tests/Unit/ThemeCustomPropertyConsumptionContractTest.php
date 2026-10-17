@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Capell\Core\ThemeStudio\Assets\ThemeTokenRenderer;
 use Capell\Core\ThemeStudio\Data\BrandProfileData;
 
 /** @return list<string> */
@@ -190,7 +191,8 @@ function themeContractThemeAliasTokens(string $source): array
 
 it('only consumes emitted theme custom properties', function (): void {
     $themeContractEmitted = array_unique([
-        ...array_keys((new BrandProfileData)->tokens()),
+        // Runtime emission includes derived tokens absent from the brand's input map.
+        ...themeContractExtractCustomProperties((new ThemeTokenRenderer)->css(new BrandProfileData)),
         ...themeContractExtractCustomProperties(themeContractFoundationStyleSheets()),
         ...themeContractThemeEditorExtraTokens(),
     ]);

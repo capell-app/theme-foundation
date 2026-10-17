@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use Capell\Core\ThemeStudio\Data\BrandProfileData;
+use Capell\FoundationTheme\Providers\FoundationThemeServiceProvider;
+use Illuminate\Support\Facades\File;
 
 /** @return array<string, string> */
 function themeFontFamilyContractStylesheets(): array
@@ -308,17 +310,31 @@ it('keeps the Foundation font bundle local, licensed, and WOFF2-only', function 
     $packageRoot = dirname(__DIR__, 2);
     $fontStylesheet = file_get_contents($packageRoot . '/resources/css/fonts.css');
     $themeStylesheet = file_get_contents($packageRoot . '/resources/css/theme-foundation.css');
-    $provider = file_get_contents($packageRoot . '/src/Providers/FoundationThemeServiceProvider.php');
 
     throw_unless(is_string($fontStylesheet), RuntimeException::class, 'Expected the Foundation font stylesheet to be readable.');
     throw_unless(is_string($themeStylesheet), RuntimeException::class, 'Expected the Foundation theme stylesheet to be readable.');
-    throw_unless(is_string($provider), RuntimeException::class, 'Expected the Foundation service provider to be readable.');
 
     preg_match_all('/@font-face\s*\{([^}]*)\}/is', $fontStylesheet, $matches);
 
     expect($matches[1])->toHaveCount(15)
-        ->and($themeStylesheet)->toContain("@import './fonts.css';")
-        ->and($provider)->toContain("__DIR__ . '/../../resources/fonts' => public_path('vendor/capell-theme-foundation/fonts')");
+        ->and($themeStylesheet)->toContain("@import './fonts.css';");
+
+    $directory = sys_get_temp_dir() . '/foundation-fonts-' . bin2hex(random_bytes(8));
+    $previousPublicPath = public_path();
+    app()->usePublicPath($directory);
+    try {
+        app()->register(FoundationThemeServiceProvider::class, true);
+        $this->artisan('vendor:publish', ['--tag' => 'capell-theme-foundation-assets', '--force' => true])->assertSuccessful();
+        foreach (glob($packageRoot . '/resources/fonts/*.woff2') ?: [] as $fontFile) {
+            $published = $directory . '/vendor/capell-theme-foundation/fonts/' . basename($fontFile);
+            expect($published)->toBeFile()
+                ->and(hash_file('sha256', $published))->toBe(hash_file('sha256', $fontFile));
+        }
+        expect(glob($directory . '/vendor/capell-theme-foundation/fonts/licenses/*.txt') ?: [])->toHaveCount(13);
+    } finally {
+        app()->usePublicPath($previousPublicPath);
+        File::deleteDirectory($directory);
+    }
 
     $fontFiles = [];
 

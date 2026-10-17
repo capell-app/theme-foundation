@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Capell\Core\Actions\RuntimeRefresh\RefreshInstalledPackageRuntimeAction;
 use Capell\Core\Data\Diagnostics\DoctorCheckResultData;
 use Capell\Core\Facades\CapellCore;
 use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
@@ -308,16 +309,9 @@ function foundationThemeTemporaryFleetRoot(string $name): string
 
 function foundationThemeRegisterInstalledHealthSurfaces(): void
 {
-    $provider = new FoundationThemeServiceProvider(app());
-
-    foreach ([
-        'registerVendorCssJsAssets',
-        'registerSettingsSchemas',
-        'registerThemeStudioDefinition',
-    ] as $methodName) {
-        $method = new ReflectionMethod(FoundationThemeServiceProvider::class, $methodName);
-        $method->invoke($provider);
-    }
+    RefreshInstalledPackageRuntimeAction::run(
+        CapellCore::getPackage(FoundationThemeServiceProvider::$packageName),
+    );
 }
 
 function foundationThemeTemporaryPackageRoot(string $name): string

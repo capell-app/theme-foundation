@@ -6,7 +6,7 @@
     "kind": "theme",
     "capellApiVersion": "^1.0",
     "version": "1.0.0",
-    "description": "Capell's foundation theme — base Blade layouts, runtime design tokens, a deterministic DesignSpec v1 compiler, Project Build theme artifacts, and the override contracts that all vertical Capell themes extend.",
+    "description": "Capell's foundation theme: base Blade layouts, runtime design tokens, a deterministic DesignSpec v1 compiler, Project Build theme artefacts, and the override contracts that all vertical Capell themes extend.",
     "product": {
         "group": "Capell Themes",
         "tier": "free",
@@ -89,12 +89,12 @@
         "project-build-capell-theme-artifact"
     ],
     "security": {
-        "riskTier": "low",
+        "riskTier": "standard",
         "publicSurface": {
             "routeNames": [
                 "capell-theme-foundation.dynamic-form-fragments.show"
             ],
-            "auth": "none",
+            "auth": "public",
             "csrfExemptRoutes": [],
             "signedRoutes": [],
             "tokenizedRoutes": [],

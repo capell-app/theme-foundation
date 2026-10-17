@@ -5,6 +5,7 @@
     use Capell\Core\Facades\CapellCore;
     use Capell\Core\Support\Security\PublicHtmlSanitizer;
     use Capell\Frontend\Facades\Frontend;
+    use Capell\LayoutBuilder\Actions\ResolvePageContentStructureAction;
     use Capell\Frontend\Support\View\PublicModelMeta;
 
     $language = Frontend::language();
@@ -40,7 +41,6 @@
     $isArticleListWidget = in_array($widget->key, ['latest-articles', 'popular-articles'], true);
     $currentPageRelations = method_exists($page, 'getRelations') ? $page->getRelations() : [];
     $currentPageTranslation = $currentPageRelations['translation'] ?? null;
-    $currentPageType = $currentPageRelations['type'] ?? null;
 
     if ($componentItem === 'capell::list.item') {
         $componentItem = AssetComponentEnum::Card->value;
@@ -71,12 +71,12 @@
                 <x-capell::content
                     class="widget-content"
                     :compact="true"
-                    :content="$showContent ? ($widget->translation->content ?: ($showPageContent ? $currentPageTranslation?->content : null)) : null"
-                    :content-type="$widget->translation->content ? $widget->blueprint->content_structure : ($showPageContent ? $currentPageType?->content_structure : null)"
+                    :content="$showContent ? ($widget->translation?->content ?: ($showPageContent ? $currentPageTranslation?->content : null)) : null"
+                    :content-type="$widget->translation?->content ? $widget->blueprint->content_structure : ($showPageContent ? ResolvePageContentStructureAction::run($page) : null)"
                     :divider="$widget->getMeta('content_divider')"
                     :muted="in_array($containerKey, $theme->secondary_containers)"
                     :text-align="$widget->getMeta('align')"
-                    :title="$showTitle ? ($widget->translation->title ?: ($showPageTitle ? $currentPageTranslation?->title : null)) : null"
+                    :title="$showTitle ? ($widget->translation?->title ?: ($showPageTitle ? $currentPageTranslation?->title : null)) : null"
                     :heading-style="$widget->getMeta('heading_style')"
                     :heading-tag="$showPageTitle ? 'h1' : $widget->getMeta('heading_tag', 'h2')"
                 />

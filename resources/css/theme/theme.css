@@ -392,7 +392,8 @@
         --tw-prose-th-borders: var(--foundation-border);
         --tw-prose-td-borders: var(--foundation-border);
         color: var(--foundation-body-fg);
-        color-scheme: light;
+        /* Resolve light-dark() on the same scheme as the containing theme. */
+        color-scheme: inherit;
     }
 
     .content-component.capell-standard-page-content

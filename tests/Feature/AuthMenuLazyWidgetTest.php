@@ -9,6 +9,7 @@ use Capell\Core\Models\Page;
 use Capell\Core\Models\Site;
 use Capell\Core\Models\SiteDomain;
 use Capell\Core\Models\Theme;
+use Capell\Core\Support\Packages\InstalledRuntimeLifecycle;
 use Capell\FoundationTheme\Providers\FoundationThemeServiceProvider;
 use Capell\FoundationTheme\Support\AuthMenuWidget;
 use Capell\Frontend\Actions\BuildPublicPageRenderDataAction;
@@ -24,7 +25,7 @@ use Illuminate\Support\Facades\Route;
 
 beforeEach(function (): void {
     CapellCore::forcePackageInstalled(FoundationThemeServiceProvider::$packageName);
-    (new FoundationThemeServiceProvider(app()))->packageBooted();
+    resolve(InstalledRuntimeLifecycle::class)->refresh(FoundationThemeServiceProvider::$packageName);
 
     Route::get('/cap-0234-login', static fn (): string => 'Login')->name('login');
     Route::get('/cap-0234-account', static fn (): string => 'Account')->name('dashboard');

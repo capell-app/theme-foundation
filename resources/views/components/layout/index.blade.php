@@ -9,7 +9,6 @@
 ])
 @php
     use Capell\Frontend\Facades\Frontend;
-    use Livewire\Blaze\Blaze;
 
     $theme ??= Frontend::theme();
     $page ??= Frontend::page();
@@ -43,25 +42,8 @@
         @endif
     @endif
 
-    {{--
-            Blaze's static component-tag optimization compiles the sibling
-            tags in this view (header, content, logo) into inlined function
-            calls sharing Blaze's own output-buffering bookkeeping. When
-            `<x-capell::layout.main>` — a class-backed component that renders
-            layout-builder's dynamic, render-hook-driven main content — is
-            invoked immediately after those Blaze-compiled calls in the same
-            buffer scope, Laravel's native component stack (`$__env`) desyncs
-            and `capell::layout.main` silently renders empty output instead
-            of the page's real widgets. Disabling Blaze around this one
-            invocation mirrors the same defence
-            `capell-layout-builder::components.layout.widget` and
-            `Capell\LayoutBuilder\Support\RenderHooks\RegisterMainContentLayoutHook`
-            already use around their own dynamic, hook-driven renders.
-        --}}
-    @php
-        $wasBlazeEnabledForMain = Blaze::isEnabled();
-        Blaze::disable();
-    @endphp
+    {{-- Keep nested compilation in the caller's Blaze mode; class-backed
+         layout views use the standard compiler registration above. --}}
     <x-capell::layout.main
         :$layout
         :$page
@@ -72,26 +54,6 @@
         :main-class="$mainClass"
         :main-container-class="$mainContainerClass"
     />
-    @php
-        if ($wasBlazeEnabledForMain) {
-            Blaze::enable();
-        }
-    @endphp
-
-    {{--
-            Same Blaze static-tag desync as `<x-capell::layout.main>` above:
-            re-enabling Blaze immediately before the footer leaves it
-            rendering in the same corrupted `$__env` buffer scope
-            `<x-capell::layout.main>`'s own comment describes, so the footer
-            (including its plain, literal `<x-capell::footer.index />` tag
-            path -- this isn't specific to `<x-dynamic-component>`) silently
-            renders empty. Disabling Blaze around the footer too, the same
-            way it's disabled around `layout.main`, fixes it.
-        --}}
-    @php
-        $wasBlazeEnabledForFooter = Blaze::isEnabled();
-        Blaze::disable();
-    @endphp
     @if ($footer)
         {{ $footer }}
     @elseif ($footer !== false && (! array_key_exists('footer', $themeMeta) || $themeMeta['footer'] !== false))
@@ -101,9 +63,4 @@
             <x-dynamic-component :component="$themeMeta['footer_file']" />
         @endif
     @endif
-    @php
-        if ($wasBlazeEnabledForFooter) {
-            Blaze::enable();
-        }
-    @endphp
 </div>

@@ -2,52 +2,41 @@
 
 declare(strict_types=1);
 
-it('ships translated labels for every shared carousel control', function (): void {
-    $themePath = dirname(__DIR__, 2);
-    $translations = (string) file_get_contents($themePath . '/resources/lang/en/generic.php');
-    $appLayout = (string) file_get_contents($themePath . '/resources/views/app.blade.php');
-    $carouselRuntime = (string) file_get_contents($themePath . '/resources/js/widgets/widget/carousel.js');
+use Capell\Core\Models\Language;
+use Capell\Core\Models\Layout;
+use Capell\Core\Models\Page;
+use Capell\Core\Models\Theme;
+use Capell\Frontend\Support\State\FrontendState;
+use Illuminate\Support\HtmlString;
+use Symfony\Component\Process\Process;
 
-    expect($translations)->toContain("'carousel_go_to_slide' => 'Go to slide :number'")
-        ->and($translations)->toContain("'pause_carousel' => 'Pause carousel'")
-        ->and($translations)->toContain("'play_carousel' => 'Play carousel'")
-        ->and($appLayout)->toContain('data-carousel-label-go-to-slide')
-        ->and($appLayout)->toContain('data-carousel-label-pause')
-        ->and($appLayout)->toContain('data-carousel-label-play')
-        ->and($carouselRuntime)->toContain('A11y, Keyboard')
-        ->and($carouselRuntime)->toContain('keyboard: {')
-        ->and($carouselRuntime)->toContain('data-carousel-autoplay-toggle')
-        ->and($carouselRuntime)->not->toContain('aria-label="Go to slide ${index + 1}"');
+require_once __DIR__ . '/../Support/DomQueries.php';
+
+it('renders translated carousel controls in the public shell', function (): void {
+    $theme = new Theme(['key' => 'default']);
+    resolve(FrontendState::class)->withTheme($theme);
+    $page = Page::factory()->withTranslations()->create();
+    resolve(FrontendState::class)->withPage($page)->withSite($page->site)->withLayout($page->layout);
+    resolve(FrontendState::class)->withLanguage(Language::factory()->english()->create());
+    $html = view('capell-theme-foundation::app', [
+        'layout' => new Layout(['key' => 'default']),
+        'theme' => $theme,
+        'slot' => new HtmlString(''),
+    ])->render();
+    if ($html === '') {
+        throw new RuntimeException('Expected a rendered public shell.');
+    }
+    foreach (['go-to-slide' => 'carousel_go_to_slide', 'pause' => 'pause_carousel', 'play' => 'play_carousel'] as $attribute => $key) {
+        $document = new DOMDocument;
+        @$document->loadHTML($html, LIBXML_NONET);
+        expect($document->documentElement?->getAttribute('data-carousel-label-' . $attribute))
+            ->toBe(__('capell-theme-foundation::generic.' . $key));
+    }
 });
 
-it('does not start shared carousel autoplay for reduced-motion visitors', function (): void {
-    $carouselRuntime = (string) file_get_contents(dirname(__DIR__, 2) . '/resources/js/widgets/widget/carousel.js');
-
-    expect($carouselRuntime)->toContain("window.matchMedia?.('(prefers-reduced-motion: reduce)')")
-        ->and($carouselRuntime)->toContain('autoplayEnabled: autoplayRequested && !prefersReducedMotion()');
-});
-
-it('publishes the current carousel runtime through the Foundation asset manifest', function (): void {
-    $themePath = dirname(__DIR__, 2);
-    $manifest = json_decode(
-        (string) file_get_contents($themePath . '/publishes/build/manifest.json'),
-        true,
-        flags: JSON_THROW_ON_ERROR,
-    );
-
-    if (! is_array($manifest)) {
-        throw new RuntimeException('Foundation asset manifest must decode to an array.');
-    }
-
-    $carouselEntry = $manifest['resources/js/widgets/widget/carousel.js'] ?? null;
-
-    if (! is_array($carouselEntry) || ! is_string($carouselEntry['file'] ?? null)) {
-        throw new RuntimeException('Foundation carousel asset manifest entry is invalid.');
-    }
-
-    $carouselBuild = $carouselEntry['file'];
-    $publishedRuntime = (string) file_get_contents($themePath . '/publishes/build/' . $carouselBuild);
-
-    expect($publishedRuntime)->toContain('data-carousel-autoplay-toggle')
-        ->and($publishedRuntime)->toContain('prefers-reduced-motion: reduce');
+it('honours translated control labels and reduced motion in source and published carousels', function (): void {
+    $process = new Process(['node', '--experimental-vm-modules', __DIR__ . '/../Support/carousel-outcomes.mjs']);
+    $process->setTimeout(30);
+    $process->run();
+    expect($process->getExitCode())->toBe(0, $process->getOutput() . $process->getErrorOutput());
 });

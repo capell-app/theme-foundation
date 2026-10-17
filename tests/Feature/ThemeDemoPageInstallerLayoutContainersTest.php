@@ -16,11 +16,18 @@ use Capell\FoundationTheme\Tests\Fixtures\ThemeDemoPageInstallerIdentityFixtureP
 use Capell\FoundationTheme\Tests\Fixtures\ThemeDemoPageInstallerLayoutContainersFixtureProvider;
 use Capell\FoundationTheme\Tests\Fixtures\ThemeDemoPageInstallerSharedLayoutFixtureProvider;
 use Capell\FoundationTheme\Tests\Fixtures\ThemeDemoPageInstallerUnknownWidgetMethodFixtureProvider;
+use Capell\Frontend\Actions\RegenerateSiteErrorPagesAction;
 use Capell\LayoutBuilder\Actions\ResolveLayoutAreaContainersAction;
 use Capell\LayoutBuilder\Models\Widget;
 use Capell\LayoutBuilder\Support\LayoutAreas\LayoutAreaRegistry;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Event;
+
+// These single-surface fixtures exercise demo identity/transactions, not background error-page generation.
+// ThemeDemoSystemPageTest covers the real system-page lifecycle without this isolation.
+beforeEach(function (): void {
+    RegenerateSiteErrorPagesAction::mock()->shouldReceive('handle')->andReturnNull();
+});
 
 it('leaves ambiguous identities unchanged when Core has no mutable match', function (): void {
     $data = new ThemeDemoInstallData(['Ambiguous Identity'], ['en'], 'https://ambiguous.test');

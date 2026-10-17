@@ -10,9 +10,12 @@ use Capell\Core\Models\Theme;
 use Capell\FoundationTheme\Actions\BuildPageContentRenderDataAction;
 use Capell\FoundationTheme\Data\LayoutNeighborLinksData;
 use Capell\FoundationTheme\Data\PageContentRenderData;
+use Capell\Frontend\Data\PublicPageRenderData;
 use Capell\Frontend\Facades\Frontend;
+use Capell\Frontend\Support\Render\PublicRenderDataScope;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
+use Override;
 use RuntimeException;
 
 final class Main extends Component
@@ -32,6 +35,8 @@ final class Main extends Component
 
     public mixed $finalCta;
 
+    public ?PublicPageRenderData $publicRenderData;
+
     public function __construct(
         public Layout $layout,
         public Pageable $page,
@@ -42,6 +47,9 @@ final class Main extends Component
         public ?string $mainContainerClass = null,
         public mixed $pageSlot = null,
     ) {
+        // Render data travels in a scope, never as a component attribute that
+        // a theme's own layout override would receive undeclared.
+        $this->publicRenderData = PublicRenderDataScope::current();
         $this->theme = is_array($theme) ? $theme : [];
         $themeModel = Frontend::theme();
 
@@ -58,6 +66,7 @@ final class Main extends Component
         );
     }
 
+    #[Override]
     public function render(): View
     {
         return view('capell::components.layout.main');

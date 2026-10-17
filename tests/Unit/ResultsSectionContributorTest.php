@@ -36,15 +36,23 @@ it('replaces authored listing items with hydrated results on the results layout'
         archiveUrl: '/blog/archives',
     );
 
-    $resolver = Mockery::mock(ResultsListingResolver::class);
-    $resolver->shouldReceive('handle')
-        ->once()
-        ->with($site, $language, $page)
-        ->andReturn($resolvedResults);
+    $resolver = new class($resolvedResults) implements ResultsListingResolver
+    {
+        public function __construct(private ResultsListingData $results) {}
+
+        #[Override]
+        public function handle(Site $site, Language $language, Page $page): ResultsListingData
+        {
+            return $this->results;
+        }
+    };
 
     $contributor = new ResultsSectionContributor($resolver);
 
-    expect($contributor->contribute($widget, $layout, $site, $language, $page))->toBe($resolvedResults)
+    $results = $contributor->contribute($widget, $layout, $site, $language, $page);
+
+    expect($results?->items)->toEqual($resolvedResults->items)
+        ->and($results?->archiveUrl)->toBe('/blog/archives')
         ->and(data_get($widget->meta, 'items.0.title'))->toBe('Hydrated page')
         ->and(data_get($widget->meta, 'resolvedResults.archiveUrl'))->toBe('/blog/archives');
 });
@@ -61,8 +69,14 @@ it('preserves explicit listing items away from the results layout', function ():
         ],
     ]);
 
-    $resolver = Mockery::mock(ResultsListingResolver::class);
-    $resolver->shouldNotReceive('handle');
+    $resolver = new class implements ResultsListingResolver
+    {
+        #[Override]
+        public function handle(Site $site, Language $language, Page $page): ResultsListingData
+        {
+            return new ResultsListingData(items: [['title' => 'Unrelated search result', 'summary' => null, 'url' => '/unrelated', 'type' => null, 'image' => null, 'publishedDate' => null]], archiveUrl: '/search');
+        }
+    };
 
     $contributor = new ResultsSectionContributor($resolver);
 
@@ -71,20 +85,20 @@ it('preserves explicit listing items away from the results layout', function ():
         ->and(data_get($widget->meta, 'resolvedResults'))->toBeNull();
 });
 
-it('binds every foundation content listing variant to resolved results with an explicit item fallback', function (): void {
-    $views = [
-        'content-listing.blade.php',
-        'content-listing--grid.blade.php',
-        'content-listing--rows.blade.php',
-        'content-listing--masonry-safe.blade.php',
+it('renders resolved results and preserves authored items as a fallback', function (string $variant): void {
+    $section = (object) [
+        'heading' => 'Results', 'summary' => null, 'variant' => null,
+        'items' => [['title' => 'Authored item', 'url' => '/authored']],
+        'resolvedResults' => ['items' => [['title' => 'Hydrated result', 'url' => '/hydrated']], 'archiveUrl' => '/archives'],
     ];
+    /** @var view-string $view */
+    $view = implode('', ['capell-theme-foundation::theme.sections.content-listing', $variant]);
+    $resolvedHtml = view($view, compact('section'))->render();
+    unset($section->resolvedResults);
+    $fallbackHtml = view($view, compact('section'))->render();
 
-    foreach ($views as $view) {
-        $source = file_get_contents(dirname(__DIR__, 2) . '/resources/views/theme/sections/' . $view);
-
-        expect($source)->not->toBeFalse()
-            ->and($source)->toContain("data_get(\$section, 'resolvedResults.items', data_get(\$section, 'items', []))")
-            ->and($source)->toContain("data_get(\$section, 'resolvedResults.archiveUrl')")
-            ->and($source)->not->toContain('$section->items');
-    }
-});
+    expect($resolvedHtml)->toContain('Hydrated result', 'href="/hydrated"', 'href="/archives"')
+        ->not->toContain('Authored item')
+        ->and($fallbackHtml)->toContain('Authored item', 'href="/authored"')
+        ->not->toContain('Hydrated result', 'href="/archives"');
+})->with(['default' => '', 'grid' => '--grid', 'rows' => '--rows', 'masonry' => '--masonry-safe']);

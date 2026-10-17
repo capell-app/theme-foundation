@@ -2,6 +2,7 @@
     use Capell\Core\Models\Language;
     use Capell\FoundationTheme\Actions\ResolveFoundationThemeTokensAction;
     use Capell\FoundationTheme\Data\FoundationThemeTokensData;
+    use Capell\Frontend\Data\Assets\RenderedFrontendResourcesData;
     use Capell\Frontend\Enums\RenderHookLocation;
     use Capell\Frontend\Facades\Frontend;
     use Capell\Frontend\Support\Render\RenderHookRegistry;
@@ -23,6 +24,7 @@
     $usesLivewire = $runtimeManifest?->usesLivewire ?? ($livewireEnabled ?? false);
 
     $bodyClass ??= null;
+    $renderedFrontendResources = Frontend::getFrontendData('renderedFrontendResources');
 @endphp
 
 <!DOCTYPE html>
@@ -55,6 +57,19 @@
     ])
     >
         {{ $slot }}
+
+        @if ($renderedFrontendResources instanceof RenderedFrontendResourcesData)
+            {!! $renderedFrontendResources->bodyEndHtml !!}
+
+            @if ($renderedFrontendResources->lazyRuntimePayload !== [])
+                <script
+                    type="application/json"
+                    data-capell-widget-assets
+                >
+                    {!! json_encode($renderedFrontendResources->lazyRuntimePayload, JSON_THROW_ON_ERROR) !!}
+                </script>
+            @endif
+        @endif
 
         {!! app(RenderHookRegistry::class)->renderAll(RenderHookLocation::BodyEnd) !!}
 

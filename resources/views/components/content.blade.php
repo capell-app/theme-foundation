@@ -1,3 +1,4 @@
+{{-- @blaze-standard-compiler: this view also renders through native previews; cache rendered content, not a Blaze function. --}}
 @php
     use Capell\Core\Enums\ContentStructure;
     use Capell\Frontend\Actions\GetPageVariablesAction;
@@ -191,7 +192,7 @@
         {{-- format-ignore-start --}}
         <{{ $headingTag }}
             @class([
-                'font-medium mb-4 not-prose text-secondary',
+                'font-medium mb-4 not-prose text-secondary dark:text-[var(--foundation-heading-fg)]',
                 'text-secondary' => $headingStyle === 'secondary',
                 'text-4xl' => $headingSize === 'h1',
                 'text-3xl' => $headingSize === 'h2',

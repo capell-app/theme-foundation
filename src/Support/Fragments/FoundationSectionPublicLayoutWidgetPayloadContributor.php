@@ -25,7 +25,7 @@ use Illuminate\Support\Fluent;
  * `PublicLayoutWidgetPayloadContributor::TAG`, which also backs its
  * `/_fragments/{reference}` route — a route that unconditionally strips
  * `Set-Cookie` and forces `Cache-Control: public, max-age=300` on every
- * response (see FoundationThemeServiceProvider::registerDynamicFormFragmentRoute()
+ * response (see FoundationSharedFragmentServiceProvider::registerDynamicFormFragmentRoute()
  * for why that is unsafe for a CSRF-bearing form). Nothing about the
  * reference token distinguishes which route resolved it — the same
  * encrypted reference is valid on both — so this contributor only answers

@@ -14,7 +14,7 @@
         'text-sm @md/item:text-base' => $size === 'sm',
         'text-md lg:text-base' => $size === 'md',
         'text-lg lg:text-xl' => $size === 'lg',
-        'text-secondary hover:text-primary focus:text-primary font-medium' => ! $active,
+        'text-secondary hover:text-primary focus:text-primary font-medium dark:text-[var(--foundation-body-fg)]' => ! $active,
         'text-primary font-semibold' => $active,
     ];
 @endphp

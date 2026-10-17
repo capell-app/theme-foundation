@@ -3,34 +3,40 @@
 declare(strict_types=1);
 
 use Capell\Core\Models\Language;
+use Capell\Core\Models\Layout;
+use Capell\Core\Models\Page;
+use Capell\Core\Models\Theme;
+use Capell\Frontend\Support\State\FrontendState;
+use Illuminate\Support\HtmlString;
 
-test('the theme shell derives text direction from the language model', function (): void {
-    $shell = file_get_contents(dirname(__DIR__, 2) . '/resources/views/app.blade.php');
+require_once __DIR__ . '/../Support/DomQueries.php';
 
-    if (! is_string($shell)) {
-        throw new RuntimeException('Unable to read the Foundation theme application shell.');
+test('renders the shell direction for resolved languages and the locale fallback', function (?string $code, string $locale, string $direction): void {
+    app()->setLocale($locale);
+    resolve(FrontendState::class)->reset();
+    if ($code !== null) {
+        resolve(FrontendState::class)->withLanguage(new Language(['code' => $code]));
     }
+    $theme = new Theme(['key' => 'default']);
+    resolve(FrontendState::class)->withTheme($theme);
+    $page = Page::factory()->withTranslations()->create();
+    resolve(FrontendState::class)->withPage($page)->withSite($page->site)->withLayout($page->layout);
+    if ($code === null) {
+        // The head requires a language model; isolate the shell's locale fallback from that boundary.
+        view()->prependNamespace('capell', __DIR__ . '/../Fixtures/direction');
+        view()->getFinder()->flush();
+    }
+    $html = view('capell-theme-foundation::app', [
+        'layout' => new Layout(['key' => 'default']),
+        'theme' => $theme,
+        'slot' => new HtmlString('<p>Public page</p>'),
+    ])->render();
 
-    expect($shell)->toContain('$language?->direction()')
-        ->toContain('Language::directionForCode((string) $languageCode)')
-        ->toContain('dir="{{ $textDirection }}"')
-        ->not->toContain("'ckb'");
-});
-
-test('the shell direction expression resolves a right-to-left language', function (): void {
-    $language = new Language(['code' => 'ar', 'meta' => null]);
-
-    expect($language->direction())->toBe('rtl');
-});
-
-test('the shell direction expression resolves a left-to-right language', function (): void {
-    $language = new Language(['code' => 'fr', 'meta' => null]);
-
-    expect($language->direction())->toBe('ltr');
-});
-
-test('the shell direction expression falls back when no language is resolved', function (): void {
-    // Mirrors the shell expression for an unresolved language: the null-safe
-    // call yields null, so the fallback decides the direction.
-    expect(Language::directionForCode(app()->getLocale()))->toBe('ltr');
-});
+    expect(domQueryCount($html, '//html[@dir="' . $direction . '"]'))->toBe(1)
+        ->and($html)->toContain('Public page');
+})->with([
+    'Arabic' => ['ar', 'en', 'rtl'],
+    'French' => ['fr', 'en', 'ltr'],
+    'Arabic locale fallback' => [null, 'ar', 'rtl'],
+    'French locale fallback' => [null, 'fr', 'ltr'],
+]);

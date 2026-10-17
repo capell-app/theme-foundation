@@ -1,3 +1,4 @@
+{{-- @blaze-standard-compiler: this class-backed view is rendered by Laravel, not invoked as a Blaze function. --}}
 @php
     use Capell\Core\Contracts\Pageable;
     use Capell\Core\Enums\ContentStructure;
@@ -32,6 +33,7 @@
         mainClass: $mainClass,
         mainContainerClass: $mainContainerClass,
         layoutNeighborLinks: $layoutNeighborLinks,
+        publicRenderData: $publicRenderData ?? null,
     );
 
     $mainContentHookOutput = app(RenderHookRegistry::class)->renderAll(

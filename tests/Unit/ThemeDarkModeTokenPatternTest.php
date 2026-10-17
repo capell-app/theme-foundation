@@ -5,8 +5,8 @@ declare(strict_types=1);
 test('dark-mode themes pin readable tokens inside the dark media query', function (): void {
     $packagesPath = dirname(__DIR__, 3);
 
+    // Catalogue's paired tokens are guarded by page-content-token-contrast.test.mjs.
     $expectations = [
-        'theme-catalogue/resources/css/theme-catalogue.css' => ['--fga-ink: oklch(97.2% 0.003 247.9);'],
         'theme-editorial/resources/css/theme-editorial.css' => ['--dnews-ink: oklch(94.8% 0.0131 82.4);', '--dnews-paper: oklch(16.5% 0.007 78.1);'],
         'theme-magazine/resources/css/theme-magazine.css' => ['--gcm-ink: oklch(91.37% 0.0198 87.52);', '--gcm-paper: oklch(22.6% 0.0341 270.96);'],
         'theme-minimalist/resources/css/theme-minimalist.css' => ['--qwg-ink: oklch(0.948 0.011 76.6);', '--qwg-paper: oklch(0.292 0.008 59.4);'],

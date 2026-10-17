@@ -51,7 +51,11 @@ use Capell\FoundationTheme\View\Components\Widget\Page\Siblings;
 use Capell\Frontend\Support\State\FrontendState;
 use Capell\LayoutBuilder\Models\Widget;
 use Capell\LayoutBuilder\Support\Livewire\OpaqueWidgetReference;
+use Capell\Tests\Support\InstalledRuntimeParity;
+use Capell\Tests\Support\InstalledRuntimeState;
+use Capell\Tests\Support\InstalledRuntimeTestCase;
 use Capell\Tests\Support\OwnedTestbenchSkeleton;
+use Capell\Tests\Support\RenderedHtml;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Select;
@@ -59,8 +63,10 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -101,23 +107,21 @@ it('generates tailwind assets from configured app sources and packages', functio
 });
 
 it('registers foundation theme provider runtime services and package boot hooks', function (): void {
-    config([
-        'capell-theme-foundation.blaze.enabled' => false,
-        'capell-theme-foundation.npm_dependencies' => [
-            '' => '^0.0',
-            'invalid-version' => '',
-            123 => '^0.0',
-            'swiper' => '^11.0',
-        ],
-    ]);
+    InstalledRuntimeState::run(static function (): void {
+        InstalledRuntimeTestCase::boot(InstalledRuntimeParity::manifest('theme-foundation'), true, static function (Application $app): void {
+            $app->make(Repository::class)->set([
+                'capell-theme-foundation.blaze.enabled' => false,
+                'capell-theme-foundation.npm_dependencies' => [
+                    '' => '^0.0',
+                    'invalid-version' => '',
+                    123 => '^0.0',
+                    'swiper' => '^11.0',
+                ],
+            ]);
+        }, sourceRoot: dirname(__DIR__, 2));
 
-    CapellCore::forcePackageInstalled(FoundationThemeServiceProvider::$packageName);
-
-    $provider = new FoundationThemeServiceProvider(app());
-    $provider->packageRegistered();
-    $provider->packageBooted();
-
-    capell_expect(config('media-library.url_generator'))->toBe(CapellUrlGenerator::class);
+        capell_expect(config('media-library.url_generator'))->toBe(CapellUrlGenerator::class);
+    });
 });
 
 it('collects default tailwind assets without writing files', function (): void {
@@ -578,14 +582,23 @@ it('resolves action component links and public action payloads', function (): vo
 });
 
 it('renders video popup actions as lightbox triggers', function (): void {
-    $view = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/actions/index.blade.php');
+    $html = Blade::render('<x-capell::actions :actions="$actions" />', [
+        'actions' => [[
+            'type' => 'video_popup',
+            'video_url' => 'https://example.test/film.mp4',
+            'label' => 'Watch the film',
+            'group' => 'customer-films',
+        ]],
+    ]);
+    $document = new RenderedHtml($html);
+    $trigger = $document->element('//a[@data-type="video"]');
 
-    capell_expect($view)
-        ->toContain('($action[\'kind\'] ?? null) === \'video_popup\'')
-        ->toContain("'lightbox action-item max-w-full whitespace-normal'")
-        ->toContain(':data-lightbox="$action[\'video_url\']"')
-        ->toContain('data-type="video"')
-        ->toContain(':data-title="$action[\'label\'] ?? \'\'"');
+    capell_expect($trigger->getAttribute('data-lightbox'))->toBe('https://example.test/film.mp4')
+        ->and($trigger->getAttribute('data-title'))->toBe('Watch the film')
+        ->and($trigger->getAttribute('data-group'))->toBe('customer-films')
+        ->and(trim($trigger->textContent))->toBe('Watch the film')
+        ->and($trigger->getAttribute('href'))->toBe('#')
+        ->and($trigger->hasAttribute('wire:navigate'))->toBeFalse();
 });
 
 it('builds footer context and table asset record keys', function (): void {
@@ -613,8 +626,9 @@ it('builds page asset table queries with scoped exclusions', function (): void {
     $table->tableArguments = ['pageId' => 10];
     $table->existingRecords = [20, 30];
 
-    $method = new ReflectionMethod(PageAssets::class, 'getTableQuery');
-    $query = $method->invoke($table);
+    $table->bootedInteractsWithTable();
+    $query = $table->getTable()->getQuery();
+    throw_unless($query instanceof Builder, RuntimeException::class);
 
     capell_expect($query->toSql())->toContain('not')
         ->and($query->getEagerLoads())->toHaveKeys([

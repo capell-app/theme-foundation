@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Capell\FoundationTheme\Providers;
 
+use Capell\Core\Actions\Install\RegisterCommandsInCurrentProcessAction;
 use Capell\FoundationTheme\Console\Commands\DemoCommand;
 use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\ServiceProvider;
 use Override;
 
@@ -23,7 +23,7 @@ final class ConsoleServiceProvider extends ServiceProvider
 
         // Composer can add this provider to an already running installer.
         if ($this->app instanceof Application && $this->app->isBooted()) {
-            Artisan::registerCommand($this->app->make(DemoCommand::class));
+            RegisterCommandsInCurrentProcessAction::run([DemoCommand::class]);
         }
     }
 }

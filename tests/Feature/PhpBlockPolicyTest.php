@@ -149,6 +149,7 @@ it('keeps each theme package within its frozen @php block baseline', function ()
     // language tag to 'rtl'/'ltr' from an in-class constant list: no database
     // access, no container resolution, no persistence. The instance form
     // ($language->direction()) reads only an already-hydrated meta attribute.
+    // ResolvePageContentStructureAction reads only attributes and a loaded blueprint.
     // Every other theme keeps the base whitelist only.
     $additionalWhitelistedStaticCallPrefixesByTheme = [
         'foundation' => [
@@ -183,6 +184,7 @@ it('keeps each theme package within its frozen @php block baseline', function ()
             'ResolveFoundationThemeTokensAction',
             'ResolveLoadedLayoutContainerBackgroundImageAction',
             'ResolveLoadedWidgetBackgroundImageAction',
+            'ResolvePageContentStructureAction',
             'ResolveRenderableComponentAction',
             'ResolveSafeCssColorTokenAction',
             'ResolveWidgetBackgroundImageUrlAction',

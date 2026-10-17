@@ -62,14 +62,18 @@ $noneMotionTokens = FoundationThemeSettings::MOTION_INTENSITY_OPTIONS['none'];
     }
 
     .dark:root {
+        /* Content typography consumes RGB channels, including outside the default theme wrapper. */
+        --color-heading: 248 250 252;
+        --color-base: var(--color-heading);
+        --color-muted: 203 213 225;
         --foundation-page-bg: {{ $tokens->darkPageBackground }};
-        --foundation-body-fg: #f8fafc;
+        --foundation-body-fg: rgb(var(--color-base));
         --foundation-surface-bg: {{ $tokens->darkSurfaceBackground }};
         --foundation-muted-bg: {{ $tokens->darkMutedBackground }};
         --foundation-section-bg: {{ $tokens->darkSurfaceBackground }};
         --foundation-section-muted-bg: {{ $tokens->darkMutedBackground }};
-        --foundation-heading-fg: #f8fafc;
-        --foundation-muted-fg: #cbd5e1;
+        --foundation-heading-fg: rgb(var(--color-heading));
+        --foundation-muted-fg: rgb(var(--color-muted));
         --foundation-inverse-bg: {{ $tokens->darkPageBackground }};
         --foundation-focus-ring: {{ $tokens->darkPrimaryAction }};
         --foundation-header-bg: {{ $tokens->darkHeaderBackground }};

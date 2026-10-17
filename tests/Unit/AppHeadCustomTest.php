@@ -2,62 +2,51 @@
 
 declare(strict_types=1);
 
+use Capell\Core\Models\Layout;
+use Capell\Core\Models\Site;
+use Capell\Core\Models\Theme;
+use Capell\Core\ThemeStudio\Data\BrandProfileData;
+use Capell\FoundationTheme\Actions\ResolveFoundationThemeTokensAction;
+use Capell\FoundationTheme\Settings\FoundationThemeSettings;
+use Capell\FoundationTheme\Settings\FoundationThemeSettingsMigrationProvider;
 use Capell\Frontend\Facades\Frontend;
+use Capell\Tests\Support\RenderedHtml;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\HtmlString;
+use Spatie\LaravelSettings\Migrations\SettingsMigration;
+use Spatie\LaravelSettings\Migrations\SettingsMigrator;
+use Symfony\Component\Process\Process;
 
-it('owns the opinionated public head behavior', function (): void {
-    $component = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/app/head/custom.blade.php');
-    $tokens = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/app/head/tokens.blade.php');
-    $tokenAction = file_get_contents(dirname(__DIR__, 2) . '/src/Actions/ResolveFoundationThemeTokensAction.php');
+require_once __DIR__ . '/../Support/PublicChromeFixture.php';
 
-    expect($component)->toContain('localStorage.theme')
-        ->and($component)->toContain('updateHeaderSticky')
-        ->and($component)->toContain('<x-capell::app.head.tokens />')
-        ->and($tokens)->toContain('Frontend::getFrontendData(\'foundation.theme.tokens\')')
-        ->and($tokens)->toContain('ResolveFoundationThemeTokensAction::run(resolveSettings: false)')
-        ->and($tokens)->toContain('--color-brand')
-        ->and($tokenAction)->toContain('DefaultColorEnum::getKeyValues()')
-        ->and($tokenAction)->toContain('->merge($theme instanceof Theme && is_array($theme->colors) ? $theme->colors : [])')
-        ->and($tokenAction)->toContain('$linkColorActiveMeta = $theme instanceof Theme ? $theme->getMeta(\'link_color_active\') : null')
-        ->and($tokenAction)->toContain('resolve(FoundationThemeSettings::class)')
-        ->and($tokens)->toContain('--foundation-page-bg')
-        ->and($tokens)->toContain('--foundation-body-fg')
-        ->and($tokens)->toContain('--foundation-section-bg')
-        ->and($tokens)->toContain('--foundation-section-muted-bg')
-        ->and($tokens)->toContain('--foundation-heading-fg')
-        ->and($tokens)->toContain('--foundation-muted-fg')
-        ->and($tokens)->toContain('--foundation-inverse-bg')
-        ->and($tokens)->toContain('--foundation-focus-ring')
-        ->and($tokens)->toContain('--foundation-border')
-        ->and($tokens)->toContain('--foundation-section-spacing')
-        ->and($tokens)->toContain('--foundation-band-bg')
-        ->and($tokens)->toContain('--foundation-image-border')
-        ->and($tokens)->toContain('--foundation-image-radius')
-        ->and($tokens)->toContain('--foundation-widget-gap')
-        ->and($tokens)->toContain('--foundation-heading-size-h1')
-        ->and($tokens)->toContain('--foundation-heading-line-height');
+it('emits safe theme colours and prepared design tokens in the public head', function (): void {
+    $theme = (new Theme)->forceFill(['meta' => ['colors' => ['primary' => '#123456'], 'link_color' => '#345678']]);
+    $site = (new Site)->forceFill(['meta' => ['brand_color' => '#abcdef']]);
+    $tokens = ResolveFoundationThemeTokensAction::run(theme: $theme, site: $site, resolveSettings: false);
+    Frontend::setFrontendData('foundation.theme.tokens', $tokens);
+    $html = Blade::render('<x-capell::app.head.custom />');
+    expect($tokens->brandColor)->toBe('rgb(171, 205, 239)')
+        ->and($tokens->linkColor)->toBe('rgb(52, 86, 120)')
+        ->and($html)->toMatch('/--color-brand\s*:\s*rgb\(171, 205, 239\)\s*;/')
+        ->toMatch('/--color-link\s*:\s*rgb\(52, 86, 120\)\s*;/')
+        ->toMatch('/--color-primary\s*:\s*rgb\(18, 52, 86\)\s*;/');
 });
 
-it('boots dark-theme script on all pages but keeps Livewire header sticky wiring gated', function (): void {
-    Frontend::setFrontendData('runtimeManifest', (object) ['usesLivewire' => false]);
-
-    $lightDom = Blade::render('<x-capell::app.head.custom />');
-
-    expect($lightDom)->toContain('function setupTheme()')
-        ->and($lightDom)->toContain("localStorage.theme === 'dark'")
-        ->and($lightDom)->toContain("document.documentElement.classList.toggle('dark', isDarkMode)")
-        ->and($lightDom)->not->toContain("document.addEventListener('livewire:load')")
-        ->and($lightDom)->not->toContain("document.addEventListener('livewire:navigated'")
-        ->and($lightDom)->not->toContain('window.addEventListener(\'scroll\', updateHeaderSticky);');
-
-    Frontend::setFrontendData('runtimeManifest', (object) ['usesLivewire' => true]);
-    $livewireDom = Blade::render('<x-capell::app.head.custom />');
-
-    expect($livewireDom)->toContain("document.addEventListener('livewire:load', updateHeaderSticky)")
-        ->and($livewireDom)->toContain('document.addEventListener(\'livewire:navigated\', handleHeaderAndTheme)')
-        ->and($livewireDom)->toContain('window.addEventListener(\'scroll\', updateHeaderSticky, { passive: true })')
-        ->and($livewireDom)->not->toContain('window.addEventListener(\'scroll\', updateHeaderSticky);');
-});
+it('applies saved dark preference and updates sticky headers only on Livewire pages', function (bool $usesLivewire): void {
+    Frontend::setFrontendData('runtimeManifest', (object) ['usesLivewire' => $usesLivewire]);
+    $process = new Process(['node', dirname(__DIR__, 4) . '/tests/Fixtures/BrowserScripts/head.cjs']);
+    $process->setInput(Blade::render('<x-capell::app.head.custom />'))->setTimeout(10)->mustRun();
+    $states = capell_json_array($process->getOutput());
+    expect(data_get($states, '0.initialDark'))->toBeTrue()
+        ->and(data_get($states, '1.initialDark'))->toBeFalse()
+        ->and(data_get($states, '0.scrolledSticky'))->toBe($usesLivewire)
+        ->and(data_get($states, '1.scrolledSticky'))->toBe($usesLivewire)
+        ->and(data_get($states, '0.navigatedDark'))->toBe(! $usesLivewire)
+        ->and(data_get($states, '1.navigatedDark'))->toBe($usesLivewire)
+        ->and(data_get($states, '0.resetSticky'))->toBeFalse()
+        ->and(data_get($states, '1.resetSticky'))->toBeFalse();
+})->with([false, true]);
 
 it('renders structured data as inert, script-safe JSON', function (): void {
     $html = Blade::render(
@@ -72,125 +61,89 @@ it('renders structured data as inert, script-safe JSON', function (): void {
         ->not->toContain('</script><img');
 });
 
-it('maps foundation design settings into public CSS hooks', function (): void {
-    $settings = file_get_contents(dirname(__DIR__, 2) . '/src/Settings/FoundationThemeSettings.php');
-    $schema = file_get_contents(dirname(__DIR__, 2) . '/src/Filament/Settings/FoundationThemeSettingsSchema.php');
-    $styles = file_get_contents(dirname(__DIR__, 2) . '/resources/css/theme/theme.css');
-    $tokens = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/app/head/tokens.blade.php');
-    $tokenAction = file_get_contents(dirname(__DIR__, 2) . '/src/Actions/ResolveFoundationThemeTokensAction.php');
-
-    expect($settings)->toContain('public string $page_background_color')
-        ->and($settings)->toContain('public string $border_color')
-        ->and($settings)->toContain('public string $band_background_color')
-        ->and($settings)->toContain('public string $image_border_color')
-        ->and($settings)->toContain('public string $dark_page_background_color')
-        ->and($settings)->toContain('public string $dark_primary_action_color')
-        ->and($settings)->toContain('public string $dark_image_border_color')
-        ->and($settings)->toContain('public string $image_radius')
-        ->and($settings)->toContain('SECTION_SPACING_OPTIONS')
-        ->and($settings)->toContain('WIDGET_GAP_OPTIONS')
-        ->and($settings)->toContain('HEADING_SCALE_OPTIONS')
-        ->and($settings)->toContain('public string $heading_scale')
-        ->and($settings)->toContain('public string $responsive_repeatable_layout')
-        ->and($schema)->toContain("ColorPicker::make('page_background_color')")
-        ->and($schema)->toContain("ColorPicker::make('border_color')")
-        ->and($schema)->toContain("ColorPicker::make('band_background_color')")
-        ->and($schema)->toContain("ColorPicker::make('image_border_color')")
-        ->and($schema)->toContain("ColorPicker::make('dark_page_background_color')")
-        ->and($schema)->toContain("ColorPicker::make('dark_primary_action_color')")
-        ->and($schema)->toContain("ColorPicker::make('dark_image_border_color')")
-        ->and($schema)->toContain("Select::make('image_radius')")
-        ->and($schema)->toContain("Select::make('section_spacing')")
-        ->and($schema)->toContain("Select::make('widget_gap')")
-        ->and($schema)->toContain("Select::make('heading_scale')")
-        ->and($schema)->toContain("Select::make('responsive_repeatable_layout')")
-        ->and($tokenAction)->toContain('sectionSpacingCssValue()')
-        ->and($tokenAction)->toContain('headingScaleCssValues()')
-        ->and($tokenAction)->toContain("darkPageBackground: \$this->settingColor(\$settings, 'dark_page_background_color', '#0b1716')")
-        ->and($tokenAction)->toContain("darkPrimaryAction: \$this->settingColor(\$settings, 'dark_primary_action_color', '#79d7c2')")
-        ->and($tokenAction)->toContain('widgetGapCssValue()')
-        ->and($tokenAction)->toContain('responsiveRepeatableLayoutKey()')
-        ->and($tokens)->toContain('.dark:root')
-        ->and($tokens)->toContain('--foundation-body-fg: #f8fafc')
-        ->and($tokens)->toContain('--foundation-page-bg: {{ $tokens->darkPageBackground }}')
-        ->and($tokens)->toContain('--foundation-band-alt-bg')
-        ->and($tokens)->toContain('--foundation-widget-gap')
-        ->and($tokens)->toContain('--foundation-heading-size-h1')
-        ->and($tokens)->toContain('--foundation-heading-size-h2')
-        ->and($tokens)->toContain('--foundation-heading-size-h3')
-        ->and($tokens)->toContain('--foundation-heading-line-height')
-        ->and($styles)->toContain('background: var(--foundation-page-bg)')
-        ->and($styles)->toContain('color: var(--foundation-body-fg)')
-        ->and($styles)->toContain('var(--foundation-section-spacing)')
-        ->and($styles)->toContain('var(--foundation-heading-size-h1)')
-        ->and($styles)->toContain('var(--foundation-card-bg)')
-        ->and($styles)->toContain('var(--foundation-primary-action)')
-        ->and($styles)->toContain('var(--foundation-image-border)')
-        ->and($styles)->toContain('var(--foundation-image-radius)');
+it('maps design settings to public render tokens', function (): void {
+    $settings = new FoundationThemeSettings;
+    $settings->page_background_color = '#123456';
+    $settings->dark_page_background_color = '#234567';
+    $settings->dark_primary_action_color = '#345678';
+    $settings->image_radius = '0.25rem';
+    $settings->heading_scale = 'expressive';
+    $settings->section_spacing = 'spacious';
+    $settings->widget_gap = 'compact';
+    $settings->responsive_repeatable_layout = 'desktop-grid-mobile-carousel';
+    $tokens = ResolveFoundationThemeTokensAction::run(settings: $settings);
+    expect($tokens->pageBackground)->toBe('rgb(18, 52, 86)')
+        ->and($tokens->darkPageBackground)->toBe('rgb(35, 69, 103)')
+        ->and($tokens->darkPrimaryAction)->toBe('rgb(52, 86, 120)')
+        ->and($tokens->imageRadius)->toBe('0.25rem')
+        ->and($tokens->headingSizeH1)->toBe(FoundationThemeSettings::HEADING_SCALE_OPTIONS['expressive']['h1'])
+        ->and($tokens->sectionSpacing)->toBe(FoundationThemeSettings::SECTION_SPACING_OPTIONS['spacious'])
+        ->and($tokens->widgetGap)->toBe(FoundationThemeSettings::WIDGET_GAP_OPTIONS['compact'])
+        ->and($tokens->responsiveRepeatableLayout)->toBe('desktop-grid-mobile-carousel');
 });
 
-it('ships an inherited theme-wide responsive repeatable item policy', function (): void {
-    $migration = file_get_contents(dirname(__DIR__, 2) . '/database/settings/2026_07_15_210000_add_theme_foundation_responsive_repeatable_layout.php');
-    $migrationProvider = file_get_contents(dirname(__DIR__, 2) . '/src/Settings/FoundationThemeSettingsMigrationProvider.php');
-    $assetView = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/widget/asset/index.blade.php');
+it('adds design settings idempotently without overwriting saved choices', function (string $migrationName, string $key, string $default): void {
+    $provider = new FoundationThemeSettingsMigrationProvider;
+    expect($provider->getSettingMigrations())->toContain($migrationName);
+    $name = substr($key, strlen('theme_foundation.'));
+    DB::table('settings')->where('group', 'theme_foundation')->where('name', $name)->delete();
+    $migration = require dirname(__DIR__, 2) . '/database/settings/' . $migrationName . '.php';
+    throw_unless($migration instanceof SettingsMigration, RuntimeException::class);
+    $migration->up();
+    $read = static function () use ($name): mixed {
+        $payload = DB::table('settings')->where('group', 'theme_foundation')->where('name', $name)->value('payload');
+        throw_unless(is_string($payload), RuntimeException::class, 'A migrated setting must have a JSON payload.');
 
-    expect($migration)
-        ->toContain('theme_foundation.responsive_repeatable_layout')
-        ->toContain('desktop-grid-mobile-carousel')
-        ->and($migrationProvider)->toContain('2026_07_15_210000_add_theme_foundation_responsive_repeatable_layout')
-        ->and($assetView)->toContain('responsiveRepeatableLayout');
-});
+        return json_decode($payload, true, flags: JSON_THROW_ON_ERROR);
+    };
+    expect($read())->toBe($default);
+    app(SettingsMigrator::class)->update($key, static fn (): string => 'Saved choice');
+    $migration->up();
+    expect($read())->toBe('Saved choice')
+        ->and(DB::table('settings')->where('group', 'theme_foundation')->where('name', $name)->count())->toBe(1);
+})->with([
+    'dark background' => ['2026_06_07_000001_add_theme_foundation_dark_design_tokens', 'theme_foundation.dark_page_background_color', '#0f172a'],
+    'dark action' => ['2026_06_07_000001_add_theme_foundation_dark_design_tokens', 'theme_foundation.dark_primary_action_color', '#93c5fd'],
+    'dark image border' => ['2026_06_07_000001_add_theme_foundation_dark_design_tokens', 'theme_foundation.dark_image_border_color', '#334155'],
+    'typography' => ['2026_06_07_000002_add_theme_foundation_typography_tokens', 'theme_foundation.heading_scale', 'balanced'],
+    'repeatable layout' => ['2026_07_15_210000_add_theme_foundation_responsive_repeatable_layout', 'theme_foundation.responsive_repeatable_layout', 'desktop-grid-mobile-carousel'],
+]);
 
-it('ships additive settings defaults for the dark foundation token layer', function (): void {
-    $migration = file_get_contents(dirname(__DIR__, 2) . '/database/settings/2026_06_07_000001_add_theme_foundation_dark_design_tokens.php');
-    $translations = file_get_contents(dirname(__DIR__, 2) . '/resources/lang/en/form.php');
-    $tokenData = file_get_contents(dirname(__DIR__, 2) . '/src/Data/FoundationThemeTokensData.php');
+it('emits document direction and logical shell utilities for RTL support', function (string $code, string $direction): void {
+    \Capell\FoundationTheme\Tests\Support\preparePublicChrome();
+    Frontend::language()?->forceFill(['code' => $code]);
+    $shell = view()->file(dirname(__DIR__, 2) . '/resources/views/app.blade.php', [
+        'layout' => new Layout(['key' => 'customer-page', 'meta' => []]),
+        'theme' => new Theme(['meta' => []]),
+        'slot' => new HtmlString('Customer page'),
+    ])->render();
+    $document = new RenderedHtml($shell);
+    expect($document->element('//html')->getAttribute('lang'))->toBe($code)
+        ->and($document->element('//html')->getAttribute('dir'))->toBe($direction);
 
-    expect($migration)
-        ->toContain('theme_foundation.dark_page_background_color')
-        ->toContain('theme_foundation.dark_surface_background_color')
-        ->toContain('theme_foundation.dark_card_background_color')
-        ->toContain('theme_foundation.dark_primary_action_color')
-        ->toContain('theme_foundation.dark_image_border_color')
-        ->toContain('$this->migrator->exists($key)')
-        ->and($translations)->toContain('dark_design_tokens')
-        ->and($translations)->toContain('Dark page background colour')
-        ->and($tokenData)->toContain('public string $darkPageBackground')
-        ->and($tokenData)->toContain('public string $darkPrimaryAction')
-        ->and($tokenData)->toContain('public string $darkImageBorder');
-});
+    $page = view('capell-theme-foundation::theme.page', [
+        'brand' => new BrandProfileData,
+        'content' => new HtmlString('Customer content'),
+    ])->render();
+    $navigation = view('capell-theme-foundation::theme.sections.navigation', ['section' => (object) [
+        'brandName' => 'Customer site', 'items' => [['label' => 'Stories', 'url' => '/stories']],
+        'ctaLabel' => null, 'ctaUrl' => null,
+    ]])->render();
+    $listing = '';
+    foreach (['spotlight', 'gallery'] as $variant) {
+        $listing .= view('capell-theme-foundation::theme.sections.content-listing', ['section' => (object) [
+            'variant' => $variant, 'heading' => 'Explore', 'summary' => '',
+            'items' => [['title' => 'Stories', 'url' => '/stories', 'summary' => 'Customer stories']],
+        ]])->render();
+    }
 
-it('ships additive settings defaults for the foundation typography token layer', function (): void {
-    $migration = file_get_contents(dirname(__DIR__, 2) . '/database/settings/2026_06_07_000002_add_theme_foundation_typography_tokens.php');
-    $migrationProvider = file_get_contents(dirname(__DIR__, 2) . '/src/Settings/FoundationThemeSettingsMigrationProvider.php');
-    $translations = file_get_contents(dirname(__DIR__, 2) . '/resources/lang/en/form.php');
-    $tokenData = file_get_contents(dirname(__DIR__, 2) . '/src/Data/FoundationThemeTokensData.php');
-
-    expect($migration)
-        ->toContain('theme_foundation.heading_scale')
-        ->toContain('$this->migrator->exists')
-        ->and($migrationProvider)->toContain('2026_06_07_000002_add_theme_foundation_typography_tokens')
-        ->and($translations)->toContain('heading_scale')
-        ->and($translations)->toContain('Expressive')
-        ->and($tokenData)->toContain('public string $headingSizeH1')
-        ->and($tokenData)->toContain('public string $headingLineHeight');
-});
-
-it('emits document direction and logical shell utilities for RTL support', function (): void {
-    $appShell = file_get_contents(dirname(__DIR__, 2) . '/resources/views/app.blade.php');
-    $themePage = file_get_contents(dirname(__DIR__, 2) . '/resources/views/theme/page.blade.php');
-    $navigation = file_get_contents(dirname(__DIR__, 2) . '/resources/views/theme/sections/navigation.blade.php');
-    $contentListing = file_get_contents(dirname(__DIR__, 2) . '/resources/views/theme/sections/content-listing.blade.php');
-
-    expect($appShell)
-        ->toContain('Frontend::language()')
-        ->toContain('$textDirection')
-        ->toContain('dir="{{ $textDirection }}"')
-        ->and($themePage)->toContain('focus:start-4')
-        ->and($navigation)->toContain('end-0')
-        ->and($navigation)->not->toContain('right-0')
-        ->and($contentListing)->toContain('text-start')
-        ->and($contentListing)->toContain('pe-4')
-        ->and($contentListing)->not->toContain('text-left')
-        ->and($contentListing)->not->toContain('pr-4');
-});
+    $pageDocument = new RenderedHtml($page);
+    $navigationDocument = new RenderedHtml($navigation);
+    $listingDocument = new RenderedHtml($listing);
+    expect(explode(' ', $pageDocument->element('//a[@href="#main-content"]')->getAttribute('class')))->toContain('focus:start-4')
+        ->and(explode(' ', $navigationDocument->element('//details/div')->getAttribute('class')))->toContain('end-0')
+        ->not->toContain('right-0')
+        ->and($listingDocument->count('//*[contains(concat(" ", normalize-space(@class), " "), " text-start ")]'))->toBeGreaterThan(0)
+        ->and($listingDocument->count('//*[contains(concat(" ", normalize-space(@class), " "), " pe-4 ")]'))->toBeGreaterThan(0)
+        ->and($listingDocument->count('//*[contains(concat(" ", normalize-space(@class), " "), " text-left ") or contains(concat(" ", normalize-space(@class), " "), " pr-4 ")]'))->toBe(0);
+})->with(['English' => ['en', 'ltr'], 'Arabic' => ['ar', 'rtl']]);

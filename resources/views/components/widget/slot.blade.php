@@ -1,3 +1,4 @@
+{{-- @blaze-standard-compiler: class-backed views also render directly through Laravel. --}}
 @props(['pageSlot', 'container' => null, 'containerKey' => null, 'containerWidth' => null, 'loop' => null, 'widget' => null])
 
 <x-capell-theme-foundation::widget.wrapper

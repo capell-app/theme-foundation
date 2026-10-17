@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
+use Capell\Core\Models\Translation;
 use Capell\FoundationTheme\Data\AssetBannerItemData;
 use Capell\FoundationTheme\Data\WidgetAssetRenderData;
+use Illuminate\Database\Eloquent\Model;
 
 /*
 |--------------------------------------------------------------------------
@@ -100,20 +102,36 @@ it('returns an empty string for missing rich text', function (): void {
         ->and(widgetAssetSanitisingRenderData('   ')->safeContentHtml())->toBe('');
 });
 
-it('keeps the raw rich-text call sites routed through the sanitiser', function (): void {
-    $views = dirname(__DIR__, 2) . '/resources/views/components/widget/asset/';
+require_once __DIR__ . '/../Support/WidgetViewFixture.php';
 
-    $testimonials = file_get_contents($views . 'testimonials.blade.php');
-    $banners = file_get_contents($views . 'banners.blade.php');
-    $pages = file_get_contents($views . 'pages.blade.php');
+it('renders sanitised rich text in the testimonial and banner views', function (string $view): void {
+    $widget = foundationWidgetViewFixture(count: 1);
+    $asset = foundationWidgetAssets($widget)->first();
+    throw_unless($asset !== null, RuntimeException::class, 'Missing widget asset.');
+    $page = $asset->getRelation('asset');
+    throw_unless($page instanceof Model, RuntimeException::class, 'Missing asset.');
+    $page->setRelation('translation', (object) [
+        'title' => 'Ada Lovelace', 'content' => WIDGET_ASSET_HOSTILE_CONTENT, 'link_text' => null,
+    ]);
+    $items = collect([[
+        'widgetAsset' => $asset,
+        'renderData' => widgetAssetSanitisingRenderData(WIDGET_ASSET_HOSTILE_CONTENT),
+    ]]);
+    $html = renderFoundationWidgetFixture($view, $widget, ['assetRenderDataItems' => $items]);
 
-    expect($testimonials)->toBeString()
-        ->and($testimonials)->toContain('$assetRenderData->safeContentHtml()')
-        ->and($testimonials)->not->toContain('$content = $assetRenderData->content;')
-        ->and($banners)->toBeString()
-        ->and($banners)->toContain('{!! $bannerItem->safeContentHtml() !!}')
-        ->and($banners)->not->toContain('{!! $bannerItem->content !!}')
-        ->and($pages)->toBeString()
-        ->and($pages)->toContain('PublicHtmlSanitizer::class)->sanitize(')
-        ->and($pages)->not->toContain("{!! \$widget->translation?->getMeta('no_results')");
+    assertWidgetAssetSanitisedRichText($html);
+})->with(['testimonials', 'banners']);
+
+it('sanitises authored empty-listing copy in the rendered page view', function (): void {
+    config()->set('capell-layout-builder.widget.skip_render_empty', false);
+    $widget = foundationWidgetViewFixture(count: 0);
+    $widget->setRelation('translation', new Translation([
+        'meta' => ['no_results' => WIDGET_ASSET_HOSTILE_CONTENT],
+    ]));
+    $html = renderFoundationWidgetFixture('pages', $widget, [
+        'pages' => collect(), 'widgetData' => [], 'showTitle' => false,
+        'showContent' => false, 'index' => 0,
+    ]);
+
+    assertWidgetAssetSanitisedRichText($html);
 });

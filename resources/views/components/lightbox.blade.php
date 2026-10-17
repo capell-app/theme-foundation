@@ -1,5 +1,7 @@
 <div
     x-data="lightbox"
+    x-ignore
+    data-lightbox-pending
     @lightbox.window="lightbox(event)"
     @keyup.escape.window="close()"
     @keyup.left.window="loadPrevious()"

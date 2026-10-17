@@ -2,45 +2,36 @@
 
 declare(strict_types=1);
 
-use Capell\FoundationTheme\Support\Demo\ThemeDemoPageDefinition;
+use Capell\Core\Models\Page;
+use Capell\FoundationTheme\Data\ThemeDemoInstallData;
 use Capell\FoundationTheme\Support\Demo\ThemeDemoPageInstaller;
 
 it('adds premium demo page surfaces for every prompt-built theme', function (string $themeKey, string $themeName): void {
-    $installer = new ThemeDemoPageInstaller;
-    $method = new ReflectionMethod($installer, 'definitions');
+    expect(new ThemeDemoPageInstaller()->handle(new ThemeDemoInstallData(['Premium surfaces'], ['en'], 'https://example.test'), $themeKey, $themeName))->toBe(0);
+    $pages = Page::query()->with('translation')->get();
+    $surfaces = $pages->map(fn (Page $page): mixed => data_get($page->meta, 'theme_demo.surface'))->all();
+    $premiumPages = $pages->filter(fn (Page $page): bool => ! in_array(data_get($page->meta, 'theme_demo.surface'), [
+        'homepage', 'directory', 'detail', 'contact', 'empty', 'not-found', 'cta',
+    ], true));
 
-    /** @var list<ThemeDemoPageDefinition> $definitions */
-    $definitions = $method->invoke($installer, $themeKey, $themeName, 'https://example.test');
-    $surfaces = array_map(static fn (ThemeDemoPageDefinition $definition): string => $definition->surface, $definitions);
-    $premiumDefinitions = array_values(array_filter(
-        $definitions,
-        static fn (ThemeDemoPageDefinition $definition): bool => ! in_array($definition->surface, [
-            'homepage',
-            'directory',
-            'detail',
-            'contact',
-            'empty',
-            'not-found',
-            'cta',
-        ], true),
-    ));
-
-    expect($definitions)->toHaveCount(10)
-        ->and($premiumDefinitions)->toHaveCount(3)
+    expect($pages)->toHaveCount(10)
+        ->and($premiumPages)->toHaveCount(3)
         ->and($surfaces)->not->toContain('premium-1', 'premium-2', 'premium-3');
 
-    foreach ($premiumDefinitions as $definition) {
-        $heroHeading = data_get($definition->renderData, 'hero.heading');
+    foreach ($premiumPages as $page) {
+        $renderData = data_get($page->meta, 'theme_demo.render_data');
+        throw_unless(is_array($renderData), RuntimeException::class);
+        $heroHeading = data_get($renderData, 'hero.heading');
 
-        expect($definition->renderData['sections'] ?? null)
+        expect($renderData['sections'] ?? null)
             ->toBeArray()
             ->toHaveCount(3)
-            ->and($definition->renderData['items'] ?? null)
+            ->and($renderData['items'] ?? null)
             ->toBeArray()
             ->toHaveCount(3)
             ->and($heroHeading)
             ->toBeString()
-            ->and($definition->title)
+            ->and($page->translation?->title)
             ->toEndWith(is_string($heroHeading) && $heroHeading !== '' ? $heroHeading : 'x');
     }
 })->with([
@@ -75,24 +66,22 @@ it('adds premium demo page surfaces for every prompt-built theme', function (str
 ]);
 
 it('attaches object-form navigation and footer chrome to every base demo surface', function (): void {
-    $installer = new ThemeDemoPageInstaller;
-    $method = new ReflectionMethod($installer, 'definitions');
-
-    /** @var list<ThemeDemoPageDefinition> $definitions */
-    $definitions = $method->invoke($installer, 'api-platform', 'API Platform', 'https://example.test');
+    expect(new ThemeDemoPageInstaller()->handle(new ThemeDemoInstallData(['Base chrome'], ['en'], 'https://example.test'), 'api-platform', 'API Platform'))->toBe(0);
+    $pages = Page::query()->with('translation')->get();
 
     $brandName = 'API Platform Demo';
     $baseSurfaces = ['homepage', 'directory', 'detail', 'contact', 'empty', 'not-found', 'cta'];
 
     foreach ($baseSurfaces as $surface) {
-        $definition = collect($definitions)->firstWhere('surface', $surface);
+        $page = $pages->first(fn (Page $page): bool => data_get($page->meta, 'theme_demo.surface') === $surface);
+        throw_unless($page instanceof Page, RuntimeException::class);
 
-        expect($definition)->not->toBeNull("missing base surface: {$surface}");
+        expect($page)->not->toBeNull("missing base surface: {$surface}");
 
         // Object form (assoc, not list) is what the adapter's navigationFrom()/footerFrom()
         // resolve into a branded nav + footer; a list form or absent key collapses to the
         // barren defaultNavigation()/defaultFooter() fallback.
-        $navigation = $definition->renderData['navigation'] ?? null;
+        $navigation = data_get($page->meta, 'theme_demo.render_data.navigation');
         throw_unless(is_array($navigation), RuntimeException::class, "{$surface} navigation missing.");
 
         expect($navigation)->toBeArray("{$surface} navigation missing")
@@ -100,7 +89,7 @@ it('attaches object-form navigation and footer chrome to every base demo surface
             ->and($navigation['brandName'] ?? null)->toBe($brandName)
             ->and($navigation['items'] ?? null)->toBeArray();
 
-        $footer = $definition->renderData['footer'] ?? null;
+        $footer = data_get($page->meta, 'theme_demo.render_data.footer');
         throw_unless(is_array($footer), RuntimeException::class, "{$surface} footer missing.");
 
         expect($footer)->toBeArray("{$surface} footer missing")

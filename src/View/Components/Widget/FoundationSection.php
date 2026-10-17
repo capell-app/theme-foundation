@@ -113,7 +113,7 @@ final class FoundationSection extends AbstractWidget
      * PresentationDeliveryMode::LazyFragment mechanism uses, but the URL
      * points at theme-foundation's own dynamic-form-delivery route rather
      * than the shared `/_fragments/{reference}` route — see
-     * FoundationThemeServiceProvider::registerDynamicFormFragmentRoute() for
+     * FoundationSharedFragmentServiceProvider::registerDynamicFormFragmentRoute() for
      * why a session-bound CSRF token cannot safely be served from the shared
      * route.
      */

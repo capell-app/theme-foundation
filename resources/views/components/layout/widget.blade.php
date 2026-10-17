@@ -7,7 +7,6 @@
     use Capell\Frontend\Facades\Frontend;
     use Capell\LayoutBuilder\Support\Livewire\OpaqueWidgetReference;
     use Illuminate\Contracts\View\View as ViewContract;
-    use Livewire\Blaze\Blaze;
 @endphp
 
 @props([
@@ -59,16 +58,7 @@
             $pageWidgetOutput = $pageWidget->render();
 
             if ($pageWidgetOutput instanceof ViewContract) {
-                $wasBlazeEnabled = Blaze::isEnabled();
-                Blaze::disable();
-
-                try {
-                    $pageWidgetOutput = $pageWidgetOutput->render();
-                } finally {
-                    if ($wasBlazeEnabled) {
-                        Blaze::enable();
-                    }
-                }
+                $pageWidgetOutput = $pageWidgetOutput->render();
             }
         @endphp
 

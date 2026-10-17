@@ -14,6 +14,9 @@ declare(strict_types=1);
 use Capell\Core\ThemeStudio\Data\ThemeDefinitionData;
 use Capell\Core\ThemeStudio\Data\ThemePresetData;
 use Capell\FoundationTheme\Actions\ValidateThemeCatalogueEntryAction;
+use Illuminate\Contracts\Console\Kernel;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
 
 require_once __DIR__ . '/../Support/ThemeCatalogueScreenshotSurfaceGap.php';
 
@@ -257,10 +260,11 @@ it('publishes buyer inclusion facts for every theme and keeps demo profiles sour
         $demoCommand = $commands['demo'] ?? null;
         throw_unless(is_string($demoCommand), RuntimeException::class, "Demo command for {$themeKey} must be declared.");
 
-        $commandFiles = glob($root . '/packages/theme-*/src/Console/Commands/*DemoCommand.php') ?: [];
-        $commandSource = implode("\n", array_map(static fn (string $path): string => (string) file_get_contents($path), $commandFiles));
-
-        expect($commandSource)->toContain('{--profile=');
+        $command = resolve(Kernel::class)->all()[$demoCommand] ?? null;
+        throw_unless($command instanceof Command, RuntimeException::class, "Demo command for {$themeKey} must be available.");
+        expect($command->getDefinition()->hasOption('profile'))->toBeTrue($themeKey);
+        $input = new ArrayInput(['--profile' => $sourceProfiles[0]], $command->getDefinition());
+        expect($input->getOption('profile'))->toBe($sourceProfiles[0]);
     }
 });
 

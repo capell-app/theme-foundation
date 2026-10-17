@@ -1,3 +1,4 @@
+{{-- @blaze-standard-compiler: class-backed views also render directly through Laravel. --}}
 @php
     use Capell\FoundationTheme\Actions\ResolveSafeCssColorTokenAction;
     use Capell\FoundationTheme\View\Components\Footer\Index as FooterComponent;

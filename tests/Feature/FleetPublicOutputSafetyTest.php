@@ -4,21 +4,9 @@ declare(strict_types=1);
 
 use Capell\FoundationTheme\Testing\AssertsPublicThemeAccessibility;
 use Capell\FoundationTheme\Testing\AssertsPublicThemeOutputSafety;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 uses(AssertsPublicThemeOutputSafety::class);
-
-/** @extends TestCase<MockObject> */
-final class FoundationAccessibilityContractHarness extends TestCase
-{
-    use AssertsPublicThemeAccessibility;
-
-    public function verifyRenderedDocument(string $html): void
-    {
-        $this->assertRenderedDocumentMeetsAccessibilityContract($html, 'Foundation public page shell');
-    }
-}
 
 it('keeps the rendered Foundation page shell within the shared accessibility contract', function (): void {
     $page = view('capell-theme-foundation::theme.page', [
@@ -50,7 +38,16 @@ it('keeps the rendered Foundation page shell within the shared accessibility con
         ->toContain('id="theme-status"')
         ->toContain('Foundation public page');
 
-    new FoundationAccessibilityContractHarness('verifyRenderedDocument')->verifyRenderedDocument($document);
+    $harness = new class('verifyRenderedDocument') extends TestCase
+    {
+        use AssertsPublicThemeAccessibility;
+
+        public function verifyRenderedDocument(string $html): void
+        {
+            $this->assertRenderedDocumentMeetsAccessibilityContract($html, 'Foundation public page shell');
+        }
+    };
+    $harness->verifyRenderedDocument($document);
 });
 
 /*

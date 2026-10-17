@@ -1,3 +1,4 @@
+{{-- @blaze-standard-compiler: this dynamic layout bridge shares views with native preview and render-hook paths. --}}
 @php
     use Capell\Frontend\Facades\Frontend;
 @endphp

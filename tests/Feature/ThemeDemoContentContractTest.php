@@ -213,7 +213,7 @@ it('priority themes ship populated portable contact form data', function (string
     fn (string $slug): array => [$slug => [$slug]],
 )->all());
 
-it('search-led themes separate curated landing content from hydrated results', function (string $slug): void {
+it('search-led themes separate curated landing content from dedicated results', function (string $slug): void {
     $studio = Str::studly($slug);
     $providerClass = fleetDemoContentProviderClass($slug, $studio);
     $provider = new $providerClass;
@@ -235,8 +235,16 @@ it('search-led themes separate curated landing content from hydrated results', f
 
     expect($landing->layout)->not->toBe(LayoutEnum::Results)
         ->and($results->layout)->toBe(LayoutEnum::Results)
-        ->and($resultsListingWidgets)->not->toBeEmpty()
-        ->and($resultsListingWidgets->every(static fn (array $widget): bool => data_get($widget, 'args.3.items') === []))->toBeTrue();
+        ->and($resultsListingWidgets)->not->toBeEmpty();
+
+    if ($slug === 'directory') {
+        // Directory deliberately ships a populated creator results fixture.
+        $items = $resultsListingWidgets->pluck('args.3.items')->flatten(1);
+        expect($items->pluck('title')->all())->toBe(['Aria Wells', 'Mira Sol', 'Devon Park Studio', 'Jonas Reff', 'Lena Okafor'])
+            ->and($items->pluck('url')->unique()->values()->all())->toBe(['/theme-directory-detail']);
+    } else {
+        expect($resultsListingWidgets->every(static fn (array $widget): bool => data_get($widget, 'args.3.items') === []))->toBeTrue();
+    }
 })->with(collect(SEARCH_LED_RESULTS_THEMES)->mapWithKeys(
     static fn (string $slug): array => [$slug => [$slug]],
 )->all());

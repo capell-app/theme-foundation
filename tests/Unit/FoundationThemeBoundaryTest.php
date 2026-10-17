@@ -2,6 +2,32 @@
 
 declare(strict_types=1);
 
+use Capell\Core\Actions\InstallPackageAction;
+use Capell\Core\Actions\RuntimeRefresh\RefreshInstalledPackageRuntimeAction;
+use Capell\Core\Data\VendorAssetData;
+use Capell\Core\Enums\VendorAssetEnum;
+use Capell\Core\Facades\CapellCore;
+use Capell\Core\Models\Site;
+use Capell\Core\Models\SiteDomain;
+use Capell\Core\Models\Translation;
+use Capell\Core\Support\Themes\ThemeChromeRegistry;
+use Capell\Core\ThemeStudio\Data\BrandProfileData;
+use Capell\FoundationTheme\Providers\FoundationThemeServiceProvider;
+use Capell\FoundationTheme\View\Components\Footer\SocialLinks;
+use Capell\FoundationTheme\View\Components\Widget\Asset;
+use Capell\LayoutBuilder\Models\Widget;
+use Capell\Tests\Support\CssDeclarations;
+use Capell\Tests\Support\InstalledRuntimeParity;
+use Capell\Tests\Support\InstalledRuntimeState;
+use Capell\Tests\Support\InstalledRuntimeTestCase;
+use Capell\Tests\Support\RenderedDocument;
+use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\DB;
+use Illuminate\View\ComponentAttributeBag;
+use Livewire\Blaze\Blaze;
+
 it('owns the opinionated public body behavior', function (): void {
     $body = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/app/body.blade.php');
 
@@ -9,15 +35,43 @@ it('owns the opinionated public body behavior', function (): void {
 });
 
 it('renders hero content and links through public safety boundaries', function (): void {
-    $hero = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/widget/hero.blade.php');
-
-    expect($hero)
-        ->toContain('<x-capell::content')
-        ->toContain('PublicUrlSanitizer::sanitize')
-        ->not->toContain('strip_tags(')
-        ->not->toContain('{!!');
+    $widget = new Widget(['key' => 'hero', 'meta' => [
+        'container' => 'full', 'call_to_action_label' => 'Read the guide', 'call_to_action_url' => '/guide',
+    ]]);
+    $widget->setRelation('blueprint', null);
+    $widget->setRelation('media', collect());
+    $widget->setRelation('translation', new Translation([
+        'title' => 'A public hero', 'content' => '<p>Helpful <strong>copy</strong>.</p><script>alert(1)</script>',
+    ]));
+    $render = static fn (): string => view()->file(dirname(__DIR__, 2) . '/resources/views/components/widget/hero.blade.php', [
+        'widget' => $widget, 'container' => null, 'containerKey' => 'main', 'containerWidth' => null,
+        'loop' => (object) ['index' => 0],
+    ])->render();
+    $connection = DB::connection();
+    $wasLogging = $connection->logging();
+    $connection->enableQueryLog();
+    $queriesBefore = count($connection->getQueryLog());
+    $wasBlazeEnabled = Blaze::isEnabled();
+    Blaze::disable();
+    try {
+        $document = new RenderedDocument($render());
+        expect($document->elements('//h2[normalize-space(.)="A public hero"]'))->toHaveCount(1)
+            ->and($document->elements('//strong[normalize-space(.)="copy"]'))->toHaveCount(1)
+            ->and($document->elements('//script'))->toBeEmpty()
+            ->and($document->elements('//a[@href="/guide"][normalize-space(.)="Read the guide"]'))->toHaveCount(1);
+        $widget->meta = ['container' => 'full', 'call_to_action_label' => 'Read the guide', 'call_to_action_url' => 'javascript:alert(1)'];
+        $hostile = new RenderedDocument($render());
+        expect($hostile->elements('//a'))->toBeEmpty()
+            ->and(count($connection->getQueryLog()))->toBe($queriesBefore);
+    } finally {
+        if ($wasBlazeEnabled) {
+            Blaze::enable();
+        }
+        if (! $wasLogging) {
+            $connection->disableQueryLog();
+        }
+    }
 });
-
 it('owns the opinionated content prose and divider behavior', function (): void {
     $content = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/content.blade.php');
 
@@ -68,6 +122,7 @@ it('moves modern widget interactions out of blade and into the frontend runtime'
     $pricing = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/widget/modern/pricing-table.blade.php');
     $testimonials = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/widget/modern/testimonials.blade.php');
     $widgetsCss = file_get_contents(dirname(__DIR__, 2) . '/resources/css/widgets/foundation-widgets.css');
+    throw_unless(is_string($widgetsCss), RuntimeException::class);
 
     expect($entrypoint)
         ->toContain('data-faq-category-tab')
@@ -78,7 +133,7 @@ it('moves modern widget interactions out of blade and into the frontend runtime'
         ->toContain('data-pathway-panel')
         ->toContain('data-theme-spotlight')
         ->toContain('data-spotlight-tab')
-        ->and($widgetsCss)->toContain('@keyframes faqFadeIn')
+        ->and(collect(CssDeclarations::parse($widgetsCss))->filter(fn (array $declaration): bool => in_array('@keyframes faqFadeIn', $declaration['contexts'], true)))->not->toBeEmpty()
         ->and($faq)->not->toContain('<style')
         ->and($faq)->not->toContain('<script')
         ->and($faq)->not->toContain('onclick=')
@@ -166,13 +221,11 @@ it('publishes the foundation frontend runtime build during setup', function (): 
 
     expect($provider)->toContain('capell-theme-foundation-assets')
         ->and(file_exists(dirname(__DIR__, 2) . '/publishes/build/manifest.json'))->toBeTrue()
-        ->and($runtime)->toBeString()
         ->and(strlen($compressedRuntime))->toBeLessThanOrEqual(5_000)
         ->and(count($javascriptAssets))->toBeGreaterThan(1)
         ->and($runtimeEntry['dynamicImports'] ?? [])->not->toBeEmpty()
         ->toContain('resources/js/widgets/widget/auth-menu-refresh.js')
-        ->and($compiledRuntime)->toBeString()
-        ->toContain('tabs-change', 'alpine:init', '_x_dataStack')
+        ->and($compiledRuntime)->toContain('tabs-change', 'alpine:init', '_x_dataStack')
         ->and($action)->toContain('vendor:publish')
         ->and($action)->toContain('capell-theme-foundation-assets');
 });
@@ -215,40 +268,103 @@ it('provides the hero component registered by Layout Builder', function (): void
         ->and($hero)->not->toContain('DB::');
 });
 
-it('gives every footer social link an accessible fallback name', function (): void {
-    $socialLinks = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/footer/social-links.blade.php');
-    $siteInfo = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/footer/site-info.blade.php');
+it('gives every footer social link an accessible fallback name and drops unsafe destinations', function (): void {
+    $component = new SocialLinks([
+        ['url' => 'https://example.test/profile', 'title' => 'Named profile'],
+        ['url' => 'https://network.test/profile', 'type' => 'network'],
+        ['url' => 'https://fallback.test/profile'],
+        ['url' => 'javascript:alert(1)', 'title' => 'Unsafe profile'],
+    ]);
+    $wasBlazeEnabled = Blaze::isEnabled();
+    Blaze::disable();
+    try {
+        $html = view()->file(dirname(__DIR__, 2) . '/resources/views/components/footer/social-links.blade.php', [
+            'links' => $component->links,
+        ])->render();
+    } finally {
+        if ($wasBlazeEnabled) {
+            Blaze::enable();
+        }
+    }
+    $document = new RenderedDocument($html);
+    expect($document->elements('//a'))->toHaveCount(3);
+    foreach (['example.test' => 'Named profile', 'network.test' => 'network', 'fallback.test' => 'fallback.test'] as $host => $label) {
+        $link = $document->element('//a[@href="https://' . $host . '/profile"]');
+        expect($link->getAttribute('aria-label'))->toBe($label)
+            ->and($link->getAttribute('target'))->toBe('_blank')
+            ->and(explode(' ', $link->getAttribute('rel')))->toContain('noopener');
+    }
+});
+it('renders legacy site social links only while Socials does not manage the profiles', function (): void {
+    InstalledRuntimeState::run(static function (): void {
+        InstalledRuntimeTestCase::boot(InstalledRuntimeParity::manifest('theme-foundation'), true, sourceRoot: dirname(__DIR__, 2));
+        $site = new Site(['name' => 'Studio', 'meta' => ['social_links' => [
+            ['url' => 'https://network.test/studio', 'title' => 'Studio profile'],
+        ]]]);
+        $site->setRelation('siteDomain', new SiteDomain(['domain' => 'studio.test', 'scheme' => 'https']));
+        Blade::component(SocialLinks::class, 'capell::footer.social-links');
+        $wasBlazeEnabled = Blaze::isEnabled();
+        Blaze::disable();
+        $resolver = 'Capell\\Socials\\Contracts\\SocialProfilesResolver';
+        try {
+            $render = static fn (): string => view()->file(dirname(__DIR__, 2) . '/resources/views/components/footer/site-info.blade.php', [
+                'site' => $site, 'contactPage' => null,
+            ])->render();
+            $legacy = new RenderedDocument($render());
+            expect($legacy->elements('//a[@href="https://network.test/studio"][@aria-label="Studio profile"]'))->toHaveCount(1);
 
-    expect($socialLinks)->toBeString()
-        ->and($socialLinks)->toContain('parse_url')
-        ->and($socialLinks)->toContain('aria-label="{{ $label }}"')
-        ->and($siteInfo)->toContain("\$site->getMeta('social_links')")
-        ->and($siteInfo)->toContain("app()->bound('Capell\Socials\Contracts\SocialProfilesResolver')")
-        ->and($siteInfo)->not->toContain("isPackageInstalled('capell-app/socials')");
+            app()->instance($resolver, new stdClass);
+            $managed = new RenderedDocument($render());
+            expect($managed->elements('//a[@href="https://network.test/studio"]'))->toBeEmpty();
+        } finally {
+            app()->forgetInstance($resolver);
+            if ($wasBlazeEnabled) {
+                Blaze::enable();
+            }
+        }
+    });
 });
 
 it('keeps runtime asset registrations behind the installed package guard', function (): void {
-    $provider = file_get_contents(dirname(__DIR__, 2) . '/src/Providers/FoundationThemeServiceProvider.php');
+    InstalledRuntimeState::run(static function (): void {
+        $app = InstalledRuntimeTestCase::boot(InstalledRuntimeParity::manifest('theme-foundation'), false, sourceRoot: dirname(__DIR__, 2));
+        $assets = static fn (VendorAssetEnum $type): array => CapellCore::getVendorAssetsForType($type)
+            ->filter(static fn (VendorAssetData $asset): bool => $asset->packageName === FoundationThemeServiceProvider::$packageName)
+            ->map(static fn (VendorAssetData $asset): string => $asset->value)
+            ->sort()->values()->all();
 
-    throw_unless(is_string($provider), RuntimeException::class, 'Expected foundation theme service provider to be readable.');
+        expect($assets(VendorAssetEnum::TailwindImport))->toBe([])
+            ->and($assets(VendorAssetEnum::TailwindSource))->toBe([]);
 
-    $guardPosition = strpos($provider, 'if (! $this->isPackageInstalled())');
-    $assetRegistrationPosition = strpos($provider, '$this->registerVendorCssJsAssets();');
+        $package = CapellCore::getPackage(FoundationThemeServiceProvider::$packageName);
+        InstalledRuntimeTestCase::prepareLateInstallMigrations($app);
+        InstallPackageAction::run($package);
+        $imports = [
+            'resources/css/theme-foundation.css',
+            'resources/css/widgets/foundation-widgets.css',
+            'swiper/css',
+            'swiper/css/autoplay',
+            'swiper/css/navigation',
+            'swiper/css/pagination',
+        ];
+        expect($assets(VendorAssetEnum::TailwindImport))->toBe($imports)
+            ->and($assets(VendorAssetEnum::TailwindSource))->toBe(['resources/views/**/*.blade.php']);
 
-    throw_if(! is_int($guardPosition) || ! is_int($assetRegistrationPosition), RuntimeException::class, 'Expected foundation theme asset guard and registration calls to be present.');
-
-    expect($guardPosition)->not->toBeFalse()
-        ->and($assetRegistrationPosition)->not->toBeFalse()
-        ->and($guardPosition)->toBeLessThan($assetRegistrationPosition);
+        RefreshInstalledPackageRuntimeAction::run($package);
+        RefreshInstalledPackageRuntimeAction::run($package);
+        expect($assets(VendorAssetEnum::TailwindImport))->toBe($imports)
+            ->and($assets(VendorAssetEnum::TailwindSource))->toBe(['resources/views/**/*.blade.php']);
+    });
 });
 
 it('registers foundation chrome components for admin selection', function (): void {
-    $provider = file_get_contents(dirname(__DIR__, 2) . '/src/Providers/FoundationThemeServiceProvider.php');
+    InstalledRuntimeState::run(static function (): void {
+        InstalledRuntimeTestCase::boot(InstalledRuntimeParity::manifest('theme-foundation'), true, sourceRoot: dirname(__DIR__, 2));
+        $registry = resolve(ThemeChromeRegistry::class);
 
-    throw_unless(is_string($provider), RuntimeException::class, 'Expected foundation theme service provider to be readable.');
-
-    expect($provider)->toContain("registerHeader('capell::header.index'")
-        ->and($provider)->toContain("registerFooter('capell::footer'");
+        expect($registry->headerOptions())->toHaveKey('capell::header.index', __('capell-admin::form.foundation_header'))
+            ->and($registry->footerOptions())->toHaveKey('capell::footer', __('capell-admin::form.foundation_footer'));
+    });
 });
 
 it('does not rebuild tailwind assets for runtime theme color changes', function (): void {
@@ -264,55 +380,62 @@ it('does not rebuild tailwind assets for runtime theme color changes', function 
 });
 
 it('renders the shared theme page with a matching skip link target and main landmark', function (): void {
-    $page = file_get_contents(dirname(__DIR__, 2) . '/resources/views/theme/page.blade.php');
-
-    // Wave 7 landmark restructure: the token-carrying wrapper is the
-    // outermost element, and <main> demotes inside it as a sibling of the
-    // chrome (nav/footer) — see ThemeLandmarkStructureTest for the DOM-level
-    // guard that nav/footer never nest inside <main>.
-    expect($page)->toContain('href="#main-content"')
-        ->and($page)->toContain('<main')
-        ->and($page)->toContain('id="main-content"')
-        ->and($page)->toContain('id="theme-status"')
-        ->and($page)->toContain('role="status"')
-        ->and($page)->toContain('aria-live="polite"')
-        ->and($page)->toContain('aria-atomic="true"')
-        ->and($page)->toContain('style="{{ collect($brand->tokens())')
-        ->and($page)->toContain('class="site-theme-shell');
+    $brand = new BrandProfileData;
+    $html = view()->file(dirname(__DIR__, 2) . '/resources/views/theme/page.blade.php', [
+        'brand' => $brand, 'content' => '<h1>Public page</h1>',
+        'chromeHeader' => '<header>Public navigation</header>', 'chromeFooter' => '<footer>Public footer</footer>',
+    ])->render();
+    $document = new RenderedDocument($html);
+    $main = $document->element('//main');
+    expect($main->getAttribute('id'))->toBe('main-content');
+    $skip = $document->element('//a[@href="#' . $main->getAttribute('id') . '"]');
+    expect(trim($skip->textContent))->toBe(__('capell-frontend::generic.skip_to_content'))
+        ->and($document->elements('//main/h1[normalize-space(.)="Public page"]'))->toHaveCount(1)
+        ->and($document->elements('//main/preceding-sibling::header'))->toHaveCount(1)
+        ->and($document->elements('//main/following-sibling::footer'))->toHaveCount(1);
+    $status = $document->element('//*[@role="status"]');
+    expect($status->getAttribute('id'))->toBe('theme-status')
+        ->and($status->getAttribute('aria-live'))->toBe('polite')
+        ->and($status->getAttribute('aria-atomic'))->toBe('true');
+    $shell = $document->element('//main/parent::div');
+    expect(explode(' ', $shell->getAttribute('class')))->toContain('site-theme-shell');
+    $styles = [];
+    foreach (explode(';', $shell->getAttribute('style')) as $declaration) {
+        [$name, $value] = explode(':', $declaration, 2);
+        $styles[trim($name)] = trim($value);
+    }
+    expect($styles)->toMatchArray($brand->tokens());
 });
-
 it('documents the stable child theme override surface', function (): void {
-    $readme = file_get_contents(dirname(__DIR__, 2) . '/README.md');
-    $overview = file_get_contents(dirname(__DIR__, 2) . '/docs/overview.md');
-    $provider = file_get_contents(dirname(__DIR__, 2) . '/src/Providers/FoundationThemeServiceProvider.php');
-    $tokens = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/app/head/tokens.blade.php');
+    $definition = FoundationThemeServiceProvider::definition();
+    $tokens = view()->file(dirname(__DIR__, 2) . '/resources/views/components/app/head/tokens.blade.php')->render();
+    $documents = [
+        dirname(__DIR__, 2) . '/README.md',
+        dirname(__DIR__, 2) . '/docs/overview.md',
+    ];
 
-    foreach ([$readme, $overview] as $document) {
-        expect($document)
-            ->toContain('Child Theme Override Contract')
-            ->toContain("extends: 'default'")
-            ->toContain('`navigation`, `hero`, `features`, `proof`, `content-listing`, `search`, `pagination`, `form`, `contact-split`, `cta`, `footer`')
-            ->toContain('`capell::theme.page`')
-            ->toContain('`capell::layout.area`')
-            ->toContain('`capell::media.svg`')
-            ->toContain('`--foundation-page-bg`')
-            ->toContain('`--foundation-section-spacing`')
-            ->toContain('`--foundation-widget-gap`')
-            ->toContain('`header`')
-            ->toContain('authoring metadata')
-            ->toContain('controls');
+    foreach ($documents as $path) {
+        $document = (string) file_get_contents($path);
+        // The override documentation must name the public sections and extension surfaces customers can use.
+        foreach ($definition->includedSections as $section) {
+            expect($document)->toContain('`' . $section . '`');
+        }
+        foreach (['capell::theme.page', 'capell::layout.area', 'capell::media.svg', '--foundation-page-bg', '--foundation-section-spacing', '--foundation-widget-gap', 'header'] as $surface) {
+            expect($document)->toContain('`' . $surface . '`');
+        }
+        expect($document)->toContain("extends: '" . $definition->key . "'")
+            ->toContain('Child Theme Override Contract');
+        // The public override instructions must warn against exposing editor controls or metadata.
+        expect($document)->toContain('authoring metadata')->toContain('controls');
     }
 
-    expect($provider)
-        ->toContain("includedSections: ['navigation', 'hero', 'features', 'proof', 'content-listing', 'search', 'pagination', 'form', 'contact-split', 'cta', 'footer']")
-        ->toContain("->register('header'");
-
-    expect($tokens)
-        ->toContain('--foundation-page-bg')
-        ->toContain('--foundation-section-spacing')
-        ->toContain('--foundation-widget-gap');
+    $document = new RenderedDocument($tokens);
+    $style = $document->element('//style')->textContent;
+    // These published custom properties are the documented child-theme override boundary.
+    foreach (['--foundation-page-bg', '--foundation-section-spacing', '--foundation-widget-gap'] as $token) {
+        expect($style)->toMatch('/' . preg_quote($token, '/') . '\\s*:\\s*[^;]+;/');
+    }
 });
-
 it('delegates primary header navigation to the navigation render hook', function (): void {
     $header = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/header/index.blade.php');
     $layoutArea = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/layout/area.blade.php');
@@ -454,18 +577,63 @@ it('delegates main layout container rendering to the shared frontend hook', func
 });
 
 it('owns the product showcase styling for modern homepage widgets', function (): void {
-    $hero = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/widget/modern/hero-banner.blade.php');
-    $cardGrid = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/widget/modern/card-grid.blade.php');
-    $featureList = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/widget/modern/feature-list.blade.php');
-    $cta = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/widget/modern/cta-section.blade.php');
-    $gallery = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/widget/modern/image-gallery.blade.php');
+    require_once __DIR__ . '/../Support/WidgetViewFixture.php';
 
-    expect($hero)->toContain('hero_panel_title')
-        ->and($hero)->toContain('hero_empty_title')
-        ->and($cardGrid)->toContain('ap-card__link')
-        ->and($featureList)->toContain('ap-feature-item__icon')
-        ->and($cta)->toContain('Homepage content is widget, media, and layout driven.')
-        ->and($gallery)->toContain('ap-gallery-caption');
+    $widget = foundationWidgetViewFixture();
+    $widget->setRelation('translation', new Translation(['title' => 'Distinctive showcase headline', 'content' => '<p>Prepared showcase description.</p>']));
+    $wasBlazeEnabled = Blaze::isEnabled();
+    Blaze::disable();
+    try {
+        $cta = view('capell-theme-foundation::components.widget.modern.cta-section', [
+            'widget' => $widget, 'container' => [], 'containerKey' => 'main', 'containerWidth' => null,
+            'loop' => (object) ['index' => 0], 'attributes' => new ComponentAttributeBag,
+        ])->render();
+    } finally {
+        if ($wasBlazeEnabled) {
+            Blaze::enable();
+        }
+    }
+    $document = new RenderedDocument($cta);
+    config(['capell-layout-builder.widget.skip_render_empty' => false]);
+    $renderWidget = static function (string $name, Widget $widget): RenderedDocument {
+        $widget->view_file = 'capell-theme-foundation::components.widget.modern.' . $name;
+        $component = new Asset(
+            container: [],
+            containerKey: 'main',
+            widgetIndex: 0,
+            loop: (object) ['index' => 0],
+            widget: $widget,
+        );
+        $view = $component->render(['attributes' => new ComponentAttributeBag, 'containerWidth' => null]);
+        throw_unless($view instanceof View, RuntimeException::class);
+
+        return new RenderedDocument($view->render());
+    };
+    Blaze::disable();
+    try {
+        $emptyHero = $renderWidget('hero-banner', foundationWidgetViewFixture(count: 0));
+        $showcase = foundationWidgetViewFixture();
+        foreach (foundationWidgetAssets($showcase) as $asset) {
+            $record = $asset->getRelation('asset');
+            throw_unless($record instanceof Model, RuntimeException::class);
+            $record->setAttribute('meta', ['icon' => 'Accessible feature', 'link_url' => '/showcase', 'link_text' => 'Explore item']);
+        }
+        $cardGrid = $renderWidget('card-grid', $showcase);
+        $featureList = $renderWidget('feature-list', $showcase);
+        $gallery = $renderWidget('image-gallery', $showcase);
+    } finally {
+        if ($wasBlazeEnabled) {
+            Blaze::enable();
+        }
+    }
+    expect($emptyHero->elements('//span[contains(@class, "ap-hero__panel-title") and normalize-space(.) != ""]'))->toHaveCount(1)
+        ->and($emptyHero->elements('//span[contains(@class, "ap-hero__rail-title") and normalize-space(.) != ""]'))->toHaveCount(1)
+        ->and($cardGrid->elements('//a[contains(@class, "ap-card__link") and @href="/showcase"]'))->toHaveCount(2)
+        ->and($featureList->elements('//span[contains(@class, "ap-feature-item__icon") and normalize-space(.)="Accessible feature"]'))->toHaveCount(2)
+        ->and($document->elements('//h2[normalize-space(.)="Distinctive showcase headline"]'))->toHaveCount(1)
+        ->and($document->elements('//p[normalize-space(.)="Prepared showcase description."]'))->toHaveCount(1)
+        ->and($document->elements('//p[contains(concat(" ", normalize-space(@class), " "), " ap-showcase-cta__proof-text ") and normalize-space(.) != ""]'))->toHaveCount(3)
+        ->and($gallery->elements('//figcaption[contains(@class, "ap-gallery-caption")]'))->toHaveCount(2);
 });
 
 it('does not own premium demo kit homepage section styling', function (): void {

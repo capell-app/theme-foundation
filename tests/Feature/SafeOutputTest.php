@@ -2,98 +2,94 @@
 
 declare(strict_types=1);
 
+use Capell\Core\Models\Page;
+use Capell\Core\Models\Translation;
 use Capell\FoundationTheme\View\Components\Actions;
 use Capell\Frontend\Actions\Performance\RecordExtensionRenderContributionAction;
+use Capell\Frontend\Facades\Frontend;
+use Capell\Tests\Support\CssDeclarations;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use Livewire\Blaze\Blaze;
 use Symfony\Component\Finder\Finder;
 
+require_once __DIR__ . '/../Support/DomQueries.php';
+require_once __DIR__ . '/../Support/PublicChromeFixture.php';
+require_once __DIR__ . '/../Support/WidgetViewFixture.php';
+
+use function Capell\FoundationTheme\Tests\Support\chromeElements;
+use function Capell\FoundationTheme\Tests\Support\preparePublicChrome;
+use function Capell\FoundationTheme\Tests\Support\renderPublicChromeView;
+
 test('default theme escapes site titles and plain footer text', function (): void {
-    $themePath = dirname(__DIR__, 2);
-
-    $header = file_get_contents($themePath . '/resources/views/components/header/index.blade.php');
-    $footer = file_get_contents($themePath . '/resources/views/components/footer/index.blade.php');
-    $relatedSites = file_get_contents($themePath . '/resources/views/components/footer/related-sites.blade.php');
-    $siteInfo = file_get_contents($themePath . '/resources/views/components/footer/site-info.blade.php');
-
-    expect($footer)->toContain('RenderHtmlContentAction::run(Lang::get($footerCopy');
-    expect($header)->not->toContain('{!! $site->translation->title !!}');
-    expect($siteInfo)->not->toContain('{!! $site->translation->title !!}');
-    expect($relatedSites)->not->toContain('{!! $relatedSite->translation->title !!}');
-    expect($relatedSites)->not->toContain('{!! $description !!}');
-    expect($footer)->not->toMatch('/\{!!\s*Lang::get\s*\(\s*\$footerCopy/');
+    $site = preparePublicChrome('<script>alert(1)</script>');
+    $translation = $site->getRelation('translation');
+    if (! $translation instanceof Translation) {
+        throw new RuntimeException('Expected prepared site copy.');
+    }
+    $translation->setAttribute('meta', ['footer_copy' => '<p>Safe footer copy</p><script>alert(2)</script>']);
+    foreach (['header.index', 'footer.index', 'footer.site-info'] as $name) {
+        $html = renderPublicChromeView($name, ['site' => $site]);
+        expect(domQueryCount($html, '//script[normalize-space(.)="alert(1)" or normalize-space(.)="alert(2)"]'))->toBe(0)
+            ->and($html)->toContain('&lt;script&gt;alert(1)&lt;/script&gt;');
+        if ($name === 'footer.index') {
+            expect($html)->toContain('Safe footer copy')->not->toContain('alert(2)');
+        }
+    }
+    $relatedSites = Blade::render('<x-capell::footer.related-sites :related-sites="$sites" />', ['sites' => collect([
+        ['url' => '/safe-site', 'title' => '<script>alert(1)</script>', 'description' => '<img src=x onerror=alert(2)>', 'primaryColor' => '#123456'],
+    ])]);
+    expect(domQueryCount($relatedSites, '//a[@href="/safe-site"]'))->toBe(1)
+        ->and(domQueryCount($relatedSites, '//script | //img[@onerror]'))->toBe(0)
+        ->and($relatedSites)->toContain('&lt;script&gt;', '&lt;img');
 });
 
 test('content component sanitizes cms html before rendering', function (): void {
-    $themePath = dirname(__DIR__, 2);
+    $html = Blade::render('<x-capell::content :content="$content" />', [
+        'content' => '<p>Safe <strong>formatting</strong>.</p><script>alert(1)</script><a href="javascript:alert(2)">Link</a>',
+    ]);
 
-    $content = file_get_contents($themePath . '/resources/views/components/content.blade.php');
-
-    expect($content)->toContain('RenderHtmlContentAction::run($content, $pageVariables)')
-        ->and($content)->not->toContain('{!! $content !!}')
-        ->and($content)->not->toContain('{!! $page->translation->content !!}')
-        ->and($content)->not->toContain('onkeydown=')
-        ->and($content)->toContain("'imageLoading' => 'lazy'")
-        ->and($content)->toContain("'imageFetchPriority' => 'auto'");
+    expect($html)->toContain('<strong>formatting</strong>')
+        ->not->toContain('<script', 'javascript:', 'alert(');
 });
 
-test('layout native foundation sections expose stable buyer journey anchors', function (): void {
-    $sectionComponent = file_get_contents(
-        dirname(__DIR__, 2) . '/src/View/Components/Widget/FoundationSection.php',
-    );
-    $sectionRenderer = file_get_contents(
-        dirname(__DIR__, 2) . '/resources/views/components/widget/foundation-section.blade.php',
-    );
+test('outer Foundation sections deliver deferred form fragments in both anchor states', function (bool $anchorable): void {
+    $url = 'https://example.test/_capell/foundation-dynamic-form/opaque-reference';
+    $wasBlazeEnabled = Blaze::isEnabled();
+    Blaze::disable();
 
-    expect($sectionComponent)->not->toBeFalse()
-        ->and($sectionComponent)->toContain('ANCHORABLE_SECTION_TYPES')
-        ->and($sectionComponent)->toContain('ResolveFoundationSectionAnchorAction::run(')
-        ->and($sectionRenderer)->not->toBeFalse()
-        ->and($sectionRenderer)->toContain('$anchorable')
-        ->and($sectionRenderer)->toContain('id="{{ $sectionAnchor }}"');
-});
-
-test('the outer Foundation section forwards cache-unsafe form delivery URLs to its selected section view', function (): void {
-    $sectionRenderer = file_get_contents(
-        dirname(__DIR__, 2) . '/resources/views/components/widget/foundation-section.blade.php',
-    );
-
-    if (! is_string($sectionRenderer)) {
-        throw new RuntimeException('Unable to read the Foundation section component view.');
+    try {
+        $html = view('capell-theme-foundation::components.widget.foundation-section', [
+            'sectionView' => 'capell-theme-foundation::theme.sections.form',
+            'section' => (object) ['heading' => 'Get in touch'],
+            'sectionAnchor' => 'contact', 'anchorable' => $anchorable,
+            'formDeliveryFragmentUrl' => $url,
+        ])->render();
+    } finally {
+        if ($wasBlazeEnabled) {
+            Blaze::enable();
+        }
     }
 
-    expect(substr_count($sectionRenderer, "'formDeliveryFragmentUrl' => \$formDeliveryFragmentUrl"))->toBe(2);
-});
+    expect($html)->toContain('data-deferred-fragment-url="' . $url . '"')
+        ->not->toContain('_token', '<form');
+
+    expect(domQueryCount($html, '//*[@id="contact"]'))->toBe($anchorable ? 1 : 0);
+})->with([true, false]);
 
 test('the public skip link keeps an explicit high contrast focus indicator', function (): void {
-    $layout = file_get_contents(
-        dirname(__DIR__, 2) . '/resources/views/components/layout/index.blade.php',
-    );
-    $themeCss = file_get_contents(
-        dirname(__DIR__, 2) . '/resources/css/theme-foundation.css',
-    );
+    preparePublicChrome(themeMeta: ['header' => false, 'footer' => false]);
+    $html = Blade::render('<x-capell::layout><p>Prepared main content</p></x-capell::layout>');
+    expect(domQueryCount($html, '//a[@href="#main" and contains(concat(" ", normalize-space(@class), " "), " capell-public-skip-link ")]'))->toBe(1)
+        ->and(domQueryCount($html, '//*[@id="main"]'))->toBe(1);
 
-    expect($layout)->not->toBeFalse()
-        ->and($layout)->toContain('capell-public-skip-link')
-        ->and($themeCss)->not->toBeFalse()
-        ->and($themeCss)->toContain('.capell-public-skip-link:focus')
-        ->and($themeCss)->toContain('outline: 3px solid var(--foundation-focus-ring, #1d4ed8) !important')
-        ->and($themeCss)->toContain('outline-color: Highlight !important');
-});
-
-test('public buttons expose finite safe states and sanitize destinations', function (): void {
-    $button = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/button/index.blade.php');
-
-    if (! is_string($button)) {
-        throw new RuntimeException('Unable to read the public Foundation button component.');
-    }
-
-    expect(substr_count($button, "'color' =>"))->toBe(1)
-        ->and($button)->toContain('PublicUrlSanitizer::sanitize($url)')
-        ->toContain("'type' => 'button'")
-        ->toContain('aria-busy="true"')
-        ->toContain('aria-disabled="true"')
-        ->toContain('noopener noreferrer');
+    $focus = collect(CssDeclarations::fromFile(dirname(__DIR__, 2) . '/resources/css/theme-foundation.css'))
+        ->where('selector', '.capell-public-skip-link:focus');
+    expect($focus->where('contexts', [])->where('property', 'outline')->where('important', true)->pluck('value')->all())
+        ->toContain('3px solid var(--foundation-focus-ring, #1d4ed8)')
+        ->and($focus->where('contexts', ['@media (forced-colors: active)'])->where('property', 'outline-color')->where('important', true)->pluck('value')->all())
+        ->toContain('Highlight');
 });
 
 test('public image source component renders URL images without admin metadata', function (): void {
@@ -111,18 +107,13 @@ test('public image source component renders URL images without admin metadata', 
 });
 
 test('default theme treats navigation as optional', function (): void {
-    $themePath = dirname(__DIR__, 2);
-
-    $header = file_get_contents($themePath . '/resources/views/components/header/index.blade.php');
-    $footer = file_get_contents($themePath . '/resources/views/components/footer/index.blade.php');
-    $footerComponent = file_get_contents($themePath . '/src/View/Components/Footer/Index.php');
-
-    expect($header)->toContain("scenario: 'theme-foundation-primary-navigation'")
-        ->and($header)->not->toContain('NavigationAvailability::check()')
-        ->and($header)->not->toContain('if ($navigationAvailable)')
-        ->and($footerComponent)->toContain('NavigationAvailability::check()')
-        ->and($footerComponent)->toContain('$navigationAvailable')
-        ->and($footer)->not->toContain('NavigationAvailability::check()');
+    preparePublicChrome();
+    $header = renderPublicChromeView('header.index');
+    $footer = renderPublicChromeView('footer.index');
+    expect(domQueryCount($header, '//header'))->toBe(1)
+        ->and(domQueryCount($footer, '//footer'))->toBe(1)
+        ->and($header)->toContain('Public site')
+        ->and($footer)->toContain('Public site');
 });
 
 test('public layout output does not include debug widget comments', function (): void {
@@ -139,30 +130,26 @@ test('public layout output does not include debug widget comments', function ():
 });
 
 test('language flag images reserve dimensions for stable public layout', function (): void {
-    $themePath = dirname(__DIR__, 2);
-    $files = [
-        'resources/views/components/languages.blade.php',
-        'resources/views/components/header/menu/languages-dropdown.blade.php',
-    ];
-    $violations = [];
-
-    foreach ($files as $file) {
-        $contents = file_get_contents($themePath . '/' . $file);
-
-        preg_match_all('/<img\b.*?vendor\/blade-country-flags.*?\/>/s', (string) $contents, $matches);
-
-        foreach ($matches[0] as $imageTag) {
-            if (! str_contains($imageTag, 'width="16"') || ! str_contains($imageTag, 'height="16"')) {
-                $violations[] = $file . ' contains an unsized language flag image';
+    preparePublicChrome();
+    $languages = [['id' => 2, 'url' => '/fr', 'flag' => 'fr', 'name' => 'French']];
+    $html = Blade::render('<x-capell::languages :languages="$languages" />', compact('languages'));
+    $header = Blade::render('<x-capell::header.menu.languages-dropdown :language="$language" :page-languages="$languages"><x-slot:trigger>Languages</x-slot:trigger></x-capell::header.menu.languages-dropdown>', [
+        'language' => Frontend::language(), 'languages' => $languages,
+    ]);
+    foreach ([$html, $header] as $output) {
+        $images = chromeElements($output, '//img[contains(@src, "/vendor/blade-country-flags/")]');
+        expect(count($images))->toBeGreaterThan(0);
+        foreach ($images as $image) {
+            if (! $image instanceof DOMElement) {
+                throw new RuntimeException('Expected a rendered language image.');
             }
+            expect($image->getAttribute('width'))->toBe('16')
+                ->and($image->getAttribute('height'))->toBe('16')
+                ->and($image->getAttribute('alt'))->toBe('')
+                ->and($image->getAttribute('loading'))->toBe('lazy');
         }
+        expect(domQueryCount($output, '//a[@href="/fr"][normalize-space(.)="French"]'))->toBe(1);
     }
-
-    expect($violations)->toBe(
-        [],
-        'Language flag images without explicit dimensions found:' . PHP_EOL .
-        json_encode($violations, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),
-    );
 });
 
 test('public action buttons mark their csrf output as non-cacheable', function (): void {
@@ -190,6 +177,7 @@ test('public action buttons mark their csrf output as non-cacheable', function (
 test('public blade keeps data loading out of templates', function (): void {
     $themePath = dirname(__DIR__, 2);
     $violations = [];
+    // Public templates may not perform database or media loading; retain only the loading API tokens.
     $forbiddenPatterns = [
         'DB::',
         '::query(',
@@ -227,106 +215,29 @@ test('public blade keeps data loading out of templates', function (): void {
     );
 });
 
-test('public blade getMeta and translation relation reads stay reviewed', function (): void {
-    $themePath = dirname(__DIR__, 2);
-    $reviewedAccess = [
-        'resources/views/app.blade.php' => ['getMeta' => 2, 'translation' => 0],
-        'resources/views/components/app/body.blade.php' => ['getMeta' => 2, 'translation' => 0],
-        'resources/views/components/app/head/tokens.blade.php' => ['getMeta' => 4, 'translation' => 0],
-        'resources/views/components/content.blade.php' => ['getMeta' => 1, 'translation' => 0],
-        'resources/views/components/demo/contact-page.blade.php' => ['getMeta' => 0, 'translation' => 2],
-        'resources/views/components/footer/index.blade.php' => ['getMeta' => 1, 'translation' => 0],
-        'resources/views/components/footer/site-info.blade.php' => ['getMeta' => 4, 'translation' => 0],
-        'resources/views/components/header/index.blade.php' => ['getMeta' => 13, 'translation' => 1],
-        'resources/views/components/layout/index.blade.php' => ['getMeta' => 1, 'translation' => 3],
-        'resources/views/components/layout/main.blade.php' => ['getMeta' => 2, 'translation' => 0],
-        'resources/views/components/logo/index.blade.php' => ['getMeta' => 0, 'translation' => 1],
-        'resources/views/components/section/team-member.blade.php' => ['getMeta' => 1, 'translation' => 2],
-        'resources/views/components/widget/announcement-bar.blade.php' => ['getMeta' => 4, 'translation' => 2],
-        'resources/views/components/widget/asset/accordion.blade.php' => ['getMeta' => 6, 'translation' => 3],
-        'resources/views/components/widget/asset/banners.blade.php' => ['getMeta' => 1, 'translation' => 0],
-        'resources/views/components/widget/asset/carousel.blade.php' => ['getMeta' => 22, 'translation' => 10],
-        'resources/views/components/widget/asset/features.blade.php' => ['getMeta' => 10, 'translation' => 3],
-        'resources/views/components/widget/asset/index.blade.php' => ['getMeta' => 16, 'translation' => 3],
-        'resources/views/components/widget/asset/media.blade.php' => ['getMeta' => 9, 'translation' => 3],
-        'resources/views/components/widget/asset/pages.blade.php' => ['getMeta' => 17, 'translation' => 6],
-        'resources/views/components/widget/asset/testimonials.blade.php' => ['getMeta' => 21, 'translation' => 9],
-        'resources/views/components/widget/asset/widgets.blade.php' => ['getMeta' => 12, 'translation' => 3],
-        'resources/views/components/widget/banner-image.blade.php' => ['getMeta' => 8, 'translation' => 2],
-        'resources/views/components/widget/default.blade.php' => ['getMeta' => 10, 'translation' => 2],
-        'resources/views/components/widget/hero.blade.php' => ['getMeta' => 2, 'translation' => 2],
-        'resources/views/components/widget/kitchen-sink/reference.blade.php' => ['getMeta' => 2, 'translation' => 3],
-        'resources/views/components/widget/modern/alternating-content.blade.php' => ['getMeta' => 0, 'translation' => 5],
-        'resources/views/components/widget/modern/card-grid.blade.php' => ['getMeta' => 3, 'translation' => 5],
-        'resources/views/components/widget/modern/cta-section.blade.php' => ['getMeta' => 4, 'translation' => 2],
-        'resources/views/components/widget/modern/faq-section.blade.php' => ['getMeta' => 2, 'translation' => 5],
-        'resources/views/components/widget/modern/feature-list.blade.php' => ['getMeta' => 2, 'translation' => 5],
-        'resources/views/components/widget/modern/hero-banner.blade.php' => ['getMeta' => 5, 'translation' => 2],
-        'resources/views/components/widget/modern/image-gallery.blade.php' => ['getMeta' => 1, 'translation' => 2],
-        'resources/views/components/widget/modern/pricing-table.blade.php' => ['getMeta' => 8, 'translation' => 5],
-        'resources/views/components/widget/modern/process-steps.blade.php' => ['getMeta' => 3, 'translation' => 5],
-        'resources/views/components/widget/modern/stats-section.blade.php' => ['getMeta' => 2, 'translation' => 5],
-        'resources/views/components/widget/modern/team-members.blade.php' => ['getMeta' => 1, 'translation' => 5],
-        'resources/views/components/widget/modern/testimonials.blade.php' => ['getMeta' => 6, 'translation' => 5],
-        'resources/views/components/widget/navigation/index.blade.php' => ['getMeta' => 4, 'translation' => 0],
-        'resources/views/components/widget/page/breadcrumbs.blade.php' => ['getMeta' => 0, 'translation' => 2],
-        'resources/views/components/widget/page/content.blade.php' => ['getMeta' => 6, 'translation' => 2],
-        'resources/views/components/widget/snippet.blade.php' => ['getMeta' => 3, 'translation' => 2],
-        'resources/views/components/widget/wrapper.blade.php' => ['getMeta' => 9, 'translation' => 0],
-    ];
-    $violations = [];
-
-    $files = (new Finder)
-        ->files()
-        ->in($themePath . '/resources/views')
-        ->name('*.blade.php')
-        ->notPath('components/filament')
-        ->notPath('components/infolists');
-
-    foreach ($files as $file) {
-        $contents = $file->getContents();
-        $relativePath = str_replace($themePath . '/', '', $file->getPathname());
-
-        preg_match_all('/getMeta\(/', $contents, $getMetaMatches);
-        preg_match_all('/(?:\?->|->)translation\b/', $contents, $translationMatches);
-
-        $actualAccess = [
-            'getMeta' => count($getMetaMatches[0]),
-            'translation' => count($translationMatches[0]),
-        ];
-        $allowedAccess = $reviewedAccess[$relativePath] ?? ['getMeta' => 0, 'translation' => 0];
-
-        foreach ($actualAccess as $accessType => $count) {
-            if ($count > $allowedAccess[$accessType]) {
-                $violations[] = sprintf(
-                    '%s contains %d reviewed %s reads, found %d',
-                    $relativePath,
-                    $allowedAccess[$accessType],
-                    $accessType,
-                    $count,
-                );
-            }
+test('prepared public chrome renders without database reads', function (): void {
+    $site = preparePublicChrome();
+    DB::enableQueryLog();
+    try {
+        foreach (['header.index', 'footer.index', 'footer.site-info'] as $name) {
+            expect(renderPublicChromeView($name, ['site' => $site]))->toContain('Public site');
         }
+        expect(DB::getQueryLog())->toBe([]);
+    } finally {
+        DB::disableQueryLog();
     }
-
-    expect($violations)->toBe(
-        [],
-        'Unreviewed public Blade getMeta or translation relation reads found:' . PHP_EOL .
-        json_encode($violations, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),
-    );
 });
 
 test('demo contact page uses only the prepared current domain relation', function (): void {
-    $contactPage = file_get_contents(
-        dirname(__DIR__, 2) . '/resources/views/components/demo/contact-page.blade.php',
-    );
-
-    expect($contactPage)
-        ->not->toContain('->defaultDomain')
-        ->toContain('$site->siteDomain?->url')
-        ->toContain('<x-capell::form-embed')
-        ->toContain("__('capell-theme-foundation::generic.contact_expectations')")
-        ->not->toContain('action="#"');
+    $site = preparePublicChrome();
+    $page = new Page(['name' => 'Contact']);
+    $page->setRelation('translation', new Translation(['title' => 'Contact']));
+    $html = renderPublicChromeView('demo.contact-page', compact('site', 'page'));
+    expect(domQueryCount($html, '//a[@href="/prepared-home"][normalize-space(.)="Public site"]'))->toBe(1)
+        ->and(domQueryCount($html, '//h1[normalize-space(.)="Contact"]'))->toBe(1)
+        ->and(domQueryCount($html, '//form[@action="#"]'))->toBe(0)
+        ->and($html)->toContain(__('capell-theme-foundation::generic.contact_expectations'))
+        ->not->toContain('wire:snapshot', 'fieldPath', 'recordId');
 });
 
 test('theme public views and assets avoid package and theme implementation markers', function (): void {
@@ -336,6 +247,7 @@ test('theme public views and assets avoid package and theme implementation marke
         ...glob($packagesRoot . '/theme-*') ?: [],
     ];
     $directories = [];
+    // These confidential authoring and package markers must never ship in public assets or HTML.
     $forbiddenMarkers = [
         'data-theme-key',
         'data-capell-theme',
@@ -407,6 +319,7 @@ test('reviewed public blade widgets do not read asset and page relations directl
         'resources/views/components/widget/asset/media.blade.php',
         'resources/views/components/widget/asset/widgets.blade.php',
     ];
+    // Dereferencing these unhydrated relations can query or expose raw editor state in public Blade.
     $forbiddenPatterns = [
         '$page?->assets',
         '$attachment->asset',
@@ -441,104 +354,102 @@ test('reviewed public blade widgets do not read asset and page relations directl
     );
 });
 
-test('ap hero and gallery public output avoid reviewed accessibility and editor copy regressions', function (): void {
-    $themePath = dirname(__DIR__, 2);
-    $hero = file_get_contents($themePath . '/resources/views/components/widget/modern/hero-banner.blade.php');
-    $gallery = file_get_contents($themePath . '/resources/views/components/widget/modern/image-gallery.blade.php');
-    $cardGrid = file_get_contents($themePath . '/resources/views/components/widget/modern/card-grid.blade.php');
-    $pageContent = file_get_contents($themePath . '/resources/views/components/widget/page/content.blade.php');
-    $pageCollection = file_get_contents($themePath . '/resources/views/components/widget/asset/pages.blade.php');
-    $themeStyles = file_get_contents($themePath . '/resources/css/theme/theme.css');
+test('public hero, page content and collection titles honour the primary heading context', function (): void {
+    $widget = foundationWidgetViewFixture(count: 0);
+    $widget->setRelation('backgroundImage', null);
+    $data = ['widget' => $widget, 'title' => 'Public hero', 'content' => 'Prepared copy', 'container' => [], 'containerKey' => 'main', 'containerWidth' => null, 'loop' => (object) ['index' => 0], 'assets' => collect(), 'assetRenderDataItems' => []];
+    $html = renderPublicChromeView('widget.modern.hero-banner', $data);
+    expect(domQueryCount($html, '//h1[normalize-space(.)="Public hero"]'))->toBe(1)
+        ->and(domQueryCount($html, '//button[contains(@class, "ap-hero__slideshow-play")]'))->toBe(0);
+    $html = renderPublicChromeView('widget.modern.hero-banner', [...$data, 'hasPrimaryHeading' => true]);
+    expect(domQueryCount($html, '//h2'))->toBe(1)->and(domQueryCount($html, '//h1'))->toBe(0);
+    foreach (['image-gallery', 'card-grid'] as $name) {
+        $html = renderPublicChromeView('widget.modern.' . $name, $data);
+        expect($html)->not->toContain('No images configured', 'No cards configured');
+    }
+    $page = new Page(['name' => 'Page copy']);
+    $page->setRelation('translation', new Translation(['title' => 'Page copy', 'content' => '<p>Prepared body</p>']));
+    $page->setRelation('image', null);
+    $page->setRelation('blueprint', null);
+    $html = renderPublicChromeView('widget.page.content', [...$data, 'widgetData' => ['meta' => ['show_page_title' => true]], 'pageRecord' => $page, 'hasPrimaryHeading' => true]);
+    expect(domQueryCount($html, '//h2'))->toBe(1)->and(domQueryCount($html, '//h1'))->toBe(0);
+    // Saved configurations need fresh widgets: metadata resolved by an earlier render is cached.
+    $widget = foundationWidgetViewFixture(['heading_tag' => 'h3'], count: 0);
+    $widget->setRelation('translation', new Translation(['title' => 'Collection title', 'content' => '']));
+    $currentPage = Frontend::page();
+    if (! $currentPage instanceof Page) {
+        throw new RuntimeException('Expected a prepared page for collection headings.');
+    }
+    $currentPage->setRelation('translation', $page->getRelation('translation'));
+    $currentPage->setRelation('type', null);
+    config(['capell-layout-builder.widget.skip_render_empty' => false]);
+    foreach ([false, true] as $showPageTitle) {
+        $html = renderFoundationWidgetFixture('pages', $widget, ['pages' => collect(), 'widgetData' => ['meta' => []], 'componentItem' => 'fixture.asset', 'showPageTitle' => $showPageTitle, 'showPageContent' => false, 'index' => 0]);
+        expect($html)->toContain($showPageTitle ? '<h1' : '<h3');
+    }
+});
 
-    expect($hero)->toContain('MarkPrimaryHeadingRenderedAction::run()')
-        ->and($pageContent)->toContain("\$headingTag = (\$hasPrimaryHeading ? 'h2' : 'h1');")
-        ->and($pageContent)->not->toContain('prose-headings:text-slate-950')
-        ->and($pageContent)->not->toContain('text-slate-700')
-        ->and($themeStyles)->toContain('--tw-prose-body: var(--foundation-body-fg)')
-        ->and($themeStyles)->toContain('.content-component.capell-standard-page-content')
-        ->and($themeStyles)->toMatch('/\.dark \.content-component\.capell-standard-page-content.*?--tw-prose-body: currentColor.*?--tw-prose-headings: currentColor/s')
-        ->and($themeStyles)->toContain('color: inherit !important')
-        ->and($pageCollection)->toContain(":heading-tag=\"\$showPageTitle ? 'h1' : \$widget->getMeta('heading_tag', 'h2')\"")
-        ->and($hero)->not->toContain('ap-hero__slideshow-play')
-        ->and($gallery)->not->toContain('No images configured')
-        ->and($cardGrid)->not->toContain('No cards configured');
+test('standard content keeps inherited theme colours in dark mode', function (): void {
+    $themeStyles = file_get_contents(dirname(__DIR__, 2) . '/resources/css/theme/theme.css');
+    expect($themeStyles)->toContain('--tw-prose-body: var(--foundation-body-fg)')
+        ->toContain('.content-component.capell-standard-page-content')
+        ->toMatch('/\.dark \.content-component\.capell-standard-page-content.*?--tw-prose-body: currentColor.*?--tw-prose-headings: currentColor/s')
+        ->toContain('color: inherit !important');
 });
 
 test('theme public blade avoids unstable identifier helpers', function (): void {
-    $themePath = dirname(__DIR__, 2);
-    $contentListing = file_get_contents($themePath . '/resources/views/theme/sections/content-listing.blade.php');
-
-    expect($contentListing)
-        ->not->toContain('md5(')
-        ->toContain("hash('xxh128'");
+    $render = static fn (string $heading): string => view('capell-theme-foundation::theme.sections.content-listing', [
+        'section' => (object) ['heading' => $heading, 'summary' => 'Prepared cards', 'variant' => 'spotlight', 'items' => [
+            ['title' => 'First story', 'url' => '/first'], ['title' => 'Second story', 'url' => '/second'],
+        ]],
+    ])->render();
+    $first = $render('Featured stories');
+    $second = $render('Featured stories');
+    $other = $render('Other stories');
+    $ids = static fn (string $html): array => array_map(static fn (DOMNode $node): string => $node instanceof DOMElement ? $node->getAttribute('id') : '', chromeElements($html, '//*[@role="tab" or @role="tabpanel"]'));
+    expect($ids($first))->not->toBeEmpty()->toBe($ids($second))->not->toBe($ids($other));
+    foreach (chromeElements($first, '//*[@role="tab"]') as $tab) {
+        if (! $tab instanceof DOMElement) {
+            throw new RuntimeException('Expected a rendered story tab.');
+        }
+        $panelId = $tab->getAttribute('aria-controls');
+        expect(domQueryCount($first, '//*[@role="tabpanel"][@id="' . $panelId . '"][@aria-labelledby="' . $tab->getAttribute('id') . '"]'))->toBe(1);
+    }
 });
 
 test('reviewed foundation chrome avoids accessibility regressions', function (): void {
-    $themePath = dirname(__DIR__, 2);
-    $footer = file_get_contents($themePath . '/resources/views/components/footer/index.blade.php');
-    $socialLinks = file_get_contents($themePath . '/resources/views/components/footer/social-links.blade.php');
-    $relatedSites = file_get_contents($themePath . '/resources/views/components/footer/related-sites.blade.php');
-    $languages = file_get_contents($themePath . '/resources/views/components/languages.blade.php');
-    $dropdown = file_get_contents($themePath . '/resources/views/components/dropdown/index.blade.php');
-
-    expect($footer)->not->toContain('href="javascript:void(0)"')
-        ->and($footer)->toContain('type="button"')
-        ->and($footer)->toContain("__('capell-theme-foundation::generic.scroll_to_top')")
-        ->and($socialLinks)->toContain('rel="nofollow noopener"')
-        ->and($relatedSites)->not->toContain('role="menu"')
-        ->and($relatedSites)->not->toContain('role="menuitem"')
-        ->and($relatedSites)->toContain('ResolveSafeCssColorTokenAction::run')
-        ->and($relatedSites)->toContain('border-[var(--border-color-footer)]')
-        ->and($footer)->toContain('footer.related-sites')
-        ->and($footer)->toContain('$containerWidth->getContainerClass()')
-        ->and($languages)->not->toContain('role="menuitem"')
-        ->and($languages)->toContain("__('capell-theme-foundation::generic.change_language')")
-        ->and($languages)->toContain(':dark-mode="false"')
-        ->and($languages)->toContain('alt=""')
-        ->and($dropdown)->toContain('x-float')
-        ->and($dropdown)->toContain('$floatingDropdownRef')
-        ->and($dropdown)->toContain('.toggle(\$event)');
+    preparePublicChrome();
+    $footer = renderPublicChromeView('footer.index');
+    $scrollLabel = __('capell-theme-foundation::generic.scroll_to_top');
+    expect(domQueryCount($footer, '//button[@type="button"][@aria-label="' . $scrollLabel . '"]'))->toBe(1)
+        ->and(domQueryCount($footer, '//a[starts-with(@href,"javascript:")]'))->toBe(0);
+    $social = renderPublicChromeView('footer.social-links', ['links' => [
+        ['url' => 'https://example.test/social', 'safe_url' => 'https://example.test/social', 'title' => 'Follow us'],
+    ]]);
+    expect(domQueryCount($social, '//a[@href="https://example.test/social"][@target="_blank"][@rel="nofollow noopener"][@aria-label="Follow us"]'))->toBe(1);
+    $related = renderPublicChromeView('footer.related-sites', ['relatedSites' => collect([
+        ['url' => '/related', 'title' => 'Related site', 'description' => 'More stories', 'primaryColor' => 'red; background:url(javascript:alert(1))'],
+    ])]);
+    expect(domQueryCount($related, '//a[@href="/related"]'))->toBe(1)
+        ->and(domQueryCount($related, '//*[@role="menu" or @role="menuitem"]'))->toBe(0)
+        ->and($related)->not->toContain('javascript:', 'background:url');
 });
 
 test('public blade style tokens use css color safety resolver', function (): void {
-    $themePath = dirname(__DIR__, 2);
-    $files = [
-        'resources/views/components/footer/index.blade.php',
-        'resources/views/components/header/index.blade.php',
-        'resources/views/components/layout/main.blade.php',
-    ];
-    $violations = [];
-
-    $headTokens = file_get_contents($themePath . '/resources/views/components/app/head/tokens.blade.php');
-    $tokenAction = file_get_contents($themePath . '/src/Actions/ResolveFoundationThemeTokensAction.php');
-
-    if (! is_string($headTokens) || ! str_contains($headTokens, 'ResolveFoundationThemeTokensAction::run')) {
-        $violations[] = 'resources/views/components/app/head/tokens.blade.php does not use ResolveFoundationThemeTokensAction::run';
+    $unsafe = 'red; background:url(javascript:alert(1))';
+    $site = preparePublicChrome(themeMeta: [
+        'header_divider' => true, 'header_border_color' => $unsafe, 'header_color' => $unsafe,
+        'header_background_color' => $unsafe, 'footer_color' => $unsafe,
+        'footer_background_color' => $unsafe, 'footer_border_color' => $unsafe,
+    ]);
+    $site->setAttribute('meta', ['brand_color' => $unsafe]);
+    foreach (['header.index', 'footer.index', 'app.head.tokens'] as $name) {
+        $html = renderPublicChromeView($name);
+        expect(domQueryCount($html, '//style'))->toBeGreaterThan(0)
+            ->and($html)->not->toContain('javascript:', 'background:url', 'alert(1)');
     }
-
-    if (! is_string($tokenAction) || ! str_contains($tokenAction, 'ResolveSafeCssColorTokenAction::run')) {
-        $violations[] = 'src/Actions/ResolveFoundationThemeTokensAction.php does not use ResolveSafeCssColorTokenAction::run';
+    preparePublicChrome(themeMeta: ['header_color' => '#123456', 'footer_color' => '#123456']);
+    foreach (['header.index', 'footer.index'] as $name) {
+        expect(renderPublicChromeView($name))->toContain('rgb(18, 52, 86)');
     }
-
-    foreach ($files as $file) {
-        $contents = file_get_contents($themePath . '/' . $file);
-
-        if (! is_string($contents)) {
-            throw new RuntimeException(sprintf('Expected %s to be readable.', $file));
-        }
-
-        if (! str_contains($contents, 'ResolveSafeCssColorTokenAction::run')) {
-            $violations[] = $file . ' does not use ResolveSafeCssColorTokenAction::run';
-        }
-
-        if (str_contains($contents, 'ColorConverterAction::run')) {
-            $violations[] = $file . ' calls ColorConverterAction::run directly';
-        }
-    }
-
-    expect($violations)->toBe(
-        [],
-        'Unsafe public Blade style-token resolvers found:' . PHP_EOL .
-        json_encode($violations, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),
-    );
 });

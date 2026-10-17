@@ -105,15 +105,21 @@ class Navigation extends AbstractWidget
             return NavigationLoader::getNavigationById((int) $this->widget->meta['navigation_id'], $site, $language);
         }
 
-        if (! isset($this->widget->meta['navigation']) || ! is_string($this->widget->meta['navigation'])) {
-            return null;
+        $reference = $this->widget->meta['navigation'] ?? null;
+
+        if (is_string($reference)) {
+            $navigation = NavigationLoader::getNavigation($reference, $site, $language);
+
+            if ($navigation instanceof Models\Navigation) {
+                return $navigation;
+            }
         }
 
-        return NavigationLoader::getNavigation(
-            $this->widget->meta['navigation'],
-            $site,
-            $language,
-        );
+        if (is_numeric($reference)) {
+            return NavigationLoader::getNavigationById((int) $reference, $site, $language);
+        }
+
+        return null;
     }
 
     /**

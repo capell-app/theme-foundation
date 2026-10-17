@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Capell\Tests\Support\RenderedDocument;
+
 /*
  * Guards the Wave 5 section-variant contract: a theme may declare
  * `frontend['sectionVariants']` (see VariantViewSectionRenderer) naming which
@@ -25,6 +27,7 @@ declare(strict_types=1);
  */
 
 require_once __DIR__ . '/../../../../tests/Packages/Support/ThemeManifestContracts.php';
+require_once __DIR__ . '/../Support/DomQueries.php';
 
 /**
  * @return array<string, array{directory: string, providerClass: class-string}>
@@ -114,17 +117,15 @@ it('ships every Foundation hero variant as a subordinate heading with stable med
     ];
 
     foreach ($heroViews as $heroView) {
-        $source = file_get_contents($themeRoot . '/resources/views/theme/sections/' . $heroView);
-
-        expect($source)
-            ->toContain('<h2')
-            ->not->toContain('<h1')
-            ->toContain('width="')
-            ->toContain('height="')
-            ->toContain('loading="eager"')
-            ->toContain('fetchpriority="high"')
-            ->toContain("\$action['url']")
-            ->toContain("\$action['label']");
+        $html = view()->file($themeRoot . '/resources/views/theme/sections/' . $heroView, ['section' => (object) [
+            'eyebrow' => 'Introduction', 'heading' => 'A subordinate hero', 'summary' => 'Helpful copy',
+            'mediaUrl' => '/media/hero.jpg', 'mediaAlt' => 'Hero photograph',
+            'actions' => [['url' => '/contact', 'label' => 'Contact us']],
+        ]])->render();
+        expect(domQueryCount($html, '//h2[normalize-space(.)="A subordinate hero"]'))->toBe(1)
+            ->and(domQueryCount($html, '//h1'))->toBe(0)
+            ->and(domQueryCount($html, '//img[@src="/media/hero.jpg"][@alt="Hero photograph"][number(@width) > 0][number(@height) > 0][@loading="eager"][@fetchpriority="high"]'))->toBe(1)
+            ->and(domQueryCount($html, '//a[@href="/contact"][normalize-space(.)="Contact us"]'))->toBe(1);
     }
 
     $styles = file_get_contents($themeRoot . '/resources/css/theme/theme.css');
@@ -139,23 +140,17 @@ it('ships every Foundation hero variant as a subordinate heading with stable med
 
 it('ships proof and conversion sections with resilient media and action states', function (): void {
     $themeRoot = dirname(__DIR__, 2);
-    $features = file_get_contents($themeRoot . '/resources/views/theme/sections/features.blade.php');
-    $proof = file_get_contents($themeRoot . '/resources/views/theme/sections/proof.blade.php');
     $styles = file_get_contents($themeRoot . '/resources/css/theme/theme.css');
-
-    expect($features)
-        ->toContain("\$feature['image_alt'] ?? \$feature['title']")
-        ->toContain('width="800"')
-        ->toContain('height="480"')
-        ->toContain('loading="lazy"')
-        ->toContain('decoding="async"');
-
-    expect($proof)
-        ->toContain("\$item['image_alt'] ?? \$item['title'] ?? \$item['name']")
-        ->toContain('width="800"')
-        ->toContain('height="320"')
-        ->toContain('loading="lazy"')
-        ->toContain('decoding="async"');
+    $features = view('capell-theme-foundation::theme.sections.features', ['section' => (object) [
+        'heading' => 'Features', 'summary' => '',
+        'features' => [['title' => 'Feature title', 'image' => '/media/feature.jpg']],
+    ]])->render();
+    $proof = view('capell-theme-foundation::theme.sections.proof', ['section' => (object) [
+        'heading' => 'Proof', 'summary' => '',
+        'items' => [['title' => 'Proof title', 'image' => '/media/proof.jpg']],
+    ]])->render();
+    expect(domQueryCount($features, '//img[@src="/media/feature.jpg"][@alt="Feature title"][@width="800"][@height="480"][@loading="lazy"][@decoding="async"]'))->toBe(1)
+        ->and(domQueryCount($proof, '//img[@src="/media/proof.jpg"][@alt="Proof title"][@width="800"][@height="320"][@loading="lazy"][@decoding="async"]'))->toBe(1);
 
     expect($styles)
         ->toContain('.theme-features article:hover')
@@ -165,25 +160,40 @@ it('ships proof and conversion sections with resilient media and action states',
         ->toContain('@media (prefers-reduced-motion: reduce)');
 });
 
-it('ships discovery sections with readable states and small-screen navigation', function (): void {
-    $styles = file_get_contents(dirname(__DIR__, 2) . '/resources/css/theme/theme.css');
+it('renders discovery search with a labelled query and navigable results', function (): void {
+    $document = new RenderedDocument(view('capell-theme-foundation::theme.sections.search', ['section' => (object) [
+        'heading' => 'Find a guide', 'query' => 'Widgets', 'queryParameter' => 'term', 'action' => '/search',
+        'results' => [['title' => 'Widget guide', 'url' => '/guides/widgets', 'summary' => 'Build a useful page.']],
+    ]])->render());
+    $input = $document->element('//input[@type="search"]');
+    expect($input->getAttribute('name'))->toBe('term')
+        ->and($input->getAttribute('value'))->toBe('Widgets')
+        ->and($document->elements('//label[@for="' . $input->getAttribute('id') . '"]'))->toHaveCount(1)
+        ->and($document->element('//form[@role="search"]')->getAttribute('action'))->toBe('/search')
+        ->and($document->element('//form')->getAttribute('method'))->toBe('get')
+        ->and($document->elements('//a[@href="/guides/widgets"]'))->toHaveCount(1)
+        ->and($document->element('//h2')->textContent)->toContain('Find a guide');
 
-    expect($styles)
-        ->toContain('.theme-content-listing :where(a, button):focus-visible')
-        ->toContain('.theme-content-listing img')
-        ->toContain('.theme-search form')
-        ->toContain('.theme-search ul a:hover')
-        ->toContain('.theme-pagination :where(a, span)')
-        ->toContain('.theme-changelog-stream article')
-        ->toContain('@media (max-width: 639px)');
+    $pagination = new RenderedDocument(view('capell-theme-foundation::theme.sections.pagination', ['section' => (object) [
+        'currentPage' => 2, 'totalPages' => 3, 'baseUrl' => '/search?term=Widgets',
+    ]])->render());
+    expect($pagination->element('//a[@aria-current="page"]')->getAttribute('href'))->toBe('/search?term=Widgets&page=2')
+        ->and($pagination->element('//a[@rel="prev"]')->getAttribute('href'))->toBe('/search?term=Widgets&page=1')
+        ->and($pagination->element('//a[@rel="next"]')->getAttribute('href'))->toBe('/search?term=Widgets&page=3');
 });
 
 it('ships form and decision sections with complete accessible interaction styling', function (): void {
     $themeRoot = dirname(__DIR__, 2);
-    $contact = file_get_contents($themeRoot . '/resources/views/theme/sections/contact-split.blade.php');
+    $contact = view()->file($themeRoot . '/resources/views/theme/sections/contact-split.blade.php', [
+        'section' => (object) ['heading' => 'Contact the studio', 'summary' => 'Send an enquiry.', 'address_lines' => ['Studio House', 'London']],
+        'formDeliveryFragmentUrl' => '/fragments/contact-form',
+    ])->render();
     $styles = file_get_contents($themeRoot . '/resources/css/theme/theme.css');
 
-    expect($contact)->toContain('theme-contact-split');
+    expect(domQueryCount($contact, '//h2[normalize-space(.)="Contact the studio"]'))->toBe(1)
+        ->and(domQueryCount($contact, '//address/div[normalize-space(.)="Studio House"]'))->toBe(1)
+        ->and(domQueryCount($contact, '//*[@data-deferred-fragment-url="/fragments/contact-form"]'))->toBe(1)
+        ->and(domQueryCount($contact, '//form'))->toBe(0);
 
     expect($styles)
         ->toContain('.theme-form form')

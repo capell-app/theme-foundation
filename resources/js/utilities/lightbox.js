@@ -26,7 +26,9 @@
  * `close()`, `loadPrevious()`, `loadNext()`, a `lightbox(event)` handler for
  * the `window` `"lightbox"` CustomEvent this file dispatches, and `total()`
  * for pager UI. Registration supports both normal Alpine startup and assets
- * loaded after Alpine has already scanned the document.
+ * loaded after Alpine has already scanned the document. Viewers declare
+ * `x-ignore` and `data-lightbox-pending` until registration; this module
+ * activates them on arrival and after Livewire navigation.
  */
 
 ;(function () {
@@ -300,16 +302,34 @@
             },
         }))
 
-        document.querySelectorAll('[x-data="lightbox"]').forEach((root) => {
-            const componentState = root._x_dataStack?.[0]
+        function initializeViewers() {
+            document.querySelectorAll('[x-data="lightbox"]').forEach((root) => {
+                // Lazy assets can arrive after Alpine's first scan. Viewers stay
+                // ignored until their provider exists, so no binding runs early.
+                if (root.hasAttribute('data-lightbox-pending')) {
+                    Alpine.mutateDom(() => {
+                        Alpine.destroyTree(root)
+                        root.removeAttribute('x-ignore')
+                        root.removeAttribute('data-lightbox-pending')
+                        Alpine.initTree(root)
+                    })
 
-            if (!componentState || Object.keys(componentState).length > 0) {
-                return
-            }
+                    return
+                }
 
-            Alpine.destroyTree(root)
-            Alpine.initTree(root)
-        })
+                const componentState = root._x_dataStack?.[0]
+
+                if (!componentState || Object.keys(componentState).length > 0) {
+                    return
+                }
+
+                Alpine.destroyTree(root)
+                Alpine.initTree(root)
+            })
+        }
+
+        document.addEventListener('livewire:navigated', initializeViewers)
+        initializeViewers()
     }
 
     document.addEventListener('alpine:init', initialize)

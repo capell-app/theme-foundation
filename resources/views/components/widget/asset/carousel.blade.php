@@ -1,5 +1,6 @@
 @php
     use Capell\Frontend\Facades\Frontend;
+    use Capell\LayoutBuilder\Actions\ResolvePageContentStructureAction;
     use Spatie\Image\Image;
 
     $theme = Frontend::theme();
@@ -56,8 +57,8 @@
             <div class="container mb-8">
                 <x-capell::content
                     :compact="true"
-                    :content="$widget->translation->content ?? ($showPageContent ? $page->translation->content : null)"
-                    :content-type="$widget->translation->content ? $widget->blueprint->content_structure : ($showPageContent ? $page->blueprint->content_structure : null)"
+                    :content="$widget->translation?->content ?: ($showPageContent ? $page->translation->content : null)"
+                    :content-type="$widget->translation?->content ? $widget->blueprint->content_structure : ($showPageContent ? ResolvePageContentStructureAction::run($page) : null)"
                     :divider="$widget->getMeta('content_divider')"
                     :color="$color"
                     :muted="in_array($containerKey, $theme->secondary_containers)"

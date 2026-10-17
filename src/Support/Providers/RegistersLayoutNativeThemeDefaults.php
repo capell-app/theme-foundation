@@ -113,21 +113,15 @@ trait RegistersLayoutNativeThemeDefaults
      * theme wants to register are out of scope for this method and should be
      * registered separately by that theme's own provider.
      *
-     * Uses the `afterResolving`/`resolved` double-registration dance so this
-     * still registers correctly regardless of whether `LayoutAreaRegistry`
-     * has already been resolved by the time this runs (boot-order safety).
+     * The installed-runtime hook reaches existing and future registries.
+     * Stable area keys keep registration idempotent across themes and
+     * repeated transient resolutions without changing area order.
      */
     protected function registerStandardLayoutAreas(): void
     {
-        $register = function (LayoutAreaRegistry $registry): void {
+        $this->callAfterResolving(LayoutAreaRegistry::class, static function (LayoutAreaRegistry $registry): void {
             $registry->register('header', __('capell-layout-builder::generic.header_area'));
             $registry->register('footer', __('capell-layout-builder::generic.footer_area'));
-        };
-
-        $this->app->afterResolving(LayoutAreaRegistry::class, $register);
-
-        if ($this->app->resolved(LayoutAreaRegistry::class)) {
-            $register($this->app->make(LayoutAreaRegistry::class));
-        }
+        });
     }
 }

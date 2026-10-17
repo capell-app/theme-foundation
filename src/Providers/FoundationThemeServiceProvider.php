@@ -50,7 +50,6 @@ use Capell\FoundationTheme\Filament\AuthMenuWidget;
 use Capell\FoundationTheme\Filament\Extenders\FoundationLayoutContainerSchemaExtender;
 use Capell\FoundationTheme\Filament\Extenders\SectionVariantSchemaExtender;
 use Capell\FoundationTheme\Filament\Settings\FoundationThemeSettingsSchema;
-use Capell\FoundationTheme\Http\Controllers\FoundationDynamicFormFragmentController;
 use Capell\FoundationTheme\Listeners\RunTailwindAssetsOnPackageChange;
 use Capell\FoundationTheme\Livewire\Assets\Table\PageAssets;
 use Capell\FoundationTheme\Livewire\Widget\Pages;
@@ -103,7 +102,6 @@ use Capell\Frontend\Events\FrontendRenderPreparing;
 use Capell\Frontend\Support\Assets\FrontendPackageDependencyRegistry;
 use Capell\Frontend\Support\Loader\PageLoader;
 use Capell\Frontend\Support\Loader\SiteLoader;
-use Capell\Frontend\Support\Routing\ReservedFrontendPathRegistry;
 use Capell\LayoutBuilder\Contracts\Extenders\LayoutContainerSchemaExtender;
 use Capell\LayoutBuilder\Contracts\Extenders\WidgetSchemaExtender;
 use Capell\LayoutBuilder\Contracts\LayoutContainerThemePresentationProjector;
@@ -114,19 +112,26 @@ use Capell\LayoutBuilder\Enums\FrontendComponentKeyEnum;
 use Capell\LayoutBuilder\LayoutBuilderServiceProvider;
 use Capell\LayoutBuilder\Support\LayoutAreas\LayoutAreaRegistry;
 use Capell\LayoutBuilder\Support\WidgetExtensions\WidgetExtensionRegistrar;
+use Illuminate\Console\Application as ConsoleApplication;
+use Illuminate\Contracts\Console\Kernel as KernelContract;
 use Illuminate\Contracts\View\Factory as ViewFactory;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Foundation\Console\Kernel;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View as ViewFacade;
 use Livewire\Livewire;
 use Override;
+use ReflectionProperty;
 use Spatie\LaravelPackageTools\Package;
 
 final class FoundationThemeServiceProvider extends AbstractPackageServiceProvider
 {
     public const string THEME_KEY = 'default';
+
+    private const string COMPONENT_NAMESPACE = 'Capell\\FoundationTheme\\View\\Components';
+
+    private const string SHARED_RENDERING_BOOTED = self::class . '.shared-rendering-booted';
 
     public static string $name = 'capell-theme-foundation';
 
@@ -135,8 +140,6 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
     public static PackageTypeEnum $type = PackageTypeEnum::Theme;
 
     private bool $sharedRenderingBooted = false;
-
-    private bool $installedRuntimeBooted = false;
 
     public static function definition(): ThemeDefinitionData
     {
@@ -210,66 +213,30 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
     #[Override]
     public function packageBooted(): void
     {
-        // Shared rendering belongs to the active Layout Builder runtime.
-        if (! $this->isPackageInstalled() && (
-            ! $this->app->providerIsLoaded(LayoutBuilderServiceProvider::class)
-            || ! CapellCore::isPackageInstalled(LayoutBuilderServiceProvider::$packageName)
-        )) {
-            return;
-        }
-
-        if (! $this->sharedRenderingBooted) {
-            $this->registerBladeDirectives();
-            $this->registerBladeComponents();
-            $this->registerPublicViewDataComposers();
-            $this->registerLayoutBuilderRendering();
-            $this->registerMediaBladeComponents();
-            $this->registerBlazeComponents();
-            $this->registerPublishCommands();
-            $this->registerFrontendRuntimeManifestContributors();
-            $this->registerSharedConsoleCommands();
-            $this->sharedRenderingBooted = true;
-        }
-
-        if ($this->installedRuntimeBooted) {
-            return;
-        }
-
-        if (! $this->isPackageInstalled()) {
-            return;
-        }
-
-        $this->registerTailwindAssetsGenerator();
-        $this->registerAssets();
-        $this->registerTailwindEventListeners();
-        $this->registerVendorCssJsAssets();
-        $this->registerMediaUrlGenerator();
-        $this->registerModelInterceptors();
-        $this->registerSettingsSchemas();
-        $this->registerPublicRuntimeData();
-        $this->registerLayoutAreas();
-        $this->registerAuthMenuWidgetExtension();
-        $this->registerLayoutContainerSchemaExtenders();
-        $this->registerWidgetSchemaExtenders();
-        $this->registerLayoutContainerThemePresentationProjectors();
-        $this->registerThemeChromeComponents();
-        $this->registerThemeStudioDefinition();
-        $this->installedRuntimeBooted = true;
+        $this->bootSharedRendering();
     }
 
     #[Override]
     public function packageRegistered(): void
     {
         $this->app->register(ConsoleServiceProvider::class);
-        $this->booted(function (): void {
-            $this->packageBooted();
-        });
+
+        // Register after all providers so this hook follows Layout Builder's own routes,
+        // but still participates in activation before any dependant consumes them.
+        $registerFragments = function (): void {
+            $this->app->register(FoundationSharedFragmentServiceProvider::class);
+        };
+        if ($this->app->isBooted()) {
+            $registerFragments();
+        } else {
+            $this->app->booting($registerFragments);
+        }
 
         // Shared rendering must also activate when Layout Builder is installed
         // after this provider has already booted in the retained application.
         Event::listen(PackageInstalled::class, function (PackageInstalled $event): void {
             if ($event->package->name === LayoutBuilderServiceProvider::$packageName) {
-                $this->packageBooted();
+                $this->bootSharedRendering();
             }
         });
 
@@ -288,9 +255,76 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
     }
 
     #[Override]
+    protected function bootInstalledRuntime(): void
+    {
+        // Shared rendering must precede installed widgets on both fresh and late activation.
+        $this->bootSharedRendering();
+        $this->app->make(RenderableRegistry::class);
+
+        $this->registerTailwindAssetsGenerator();
+        $this->registerAssets();
+        $this->registerTailwindEventListeners();
+        $this->registerVendorCssJsAssets();
+        $this->registerMediaUrlGenerator();
+        $this->registerModelInterceptors();
+        $this->registerSettingsSchemas();
+        $this->registerPublicRuntimeData();
+        $this->registerLayoutAreas();
+        $this->registerAuthMenuWidgetExtension();
+        $this->registerLayoutContainerSchemaExtenders();
+        $this->registerWidgetSchemaExtenders();
+        $this->registerLayoutContainerThemePresentationProjectors();
+        $this->registerThemeChromeComponents();
+        $this->registerThemeStudioDefinition();
+    }
+
+    #[Override]
     protected function isPackageInstalled(): bool
     {
         return CapellCore::isPackageInstalled(self::$packageName);
+    }
+
+    /**
+     * Shared rendering also serves an installed Layout Builder before this
+     * package is installed. Completion belongs to the application, independent
+     * of pre-registered namespaces or fresh provider instances. Blade aliases
+     * and publish destinations can be repaired without repeating view paths,
+     * composers or contributors.
+     */
+    private function bootSharedRendering(): void
+    {
+        if ($this->sharedRenderingBooted) {
+            return;
+        }
+
+        if (! $this->isPackageInstalled() && (
+            ! $this->app->providerIsLoaded(LayoutBuilderServiceProvider::class)
+            || ! CapellCore::isPackageInstalled(LayoutBuilderServiceProvider::$packageName)
+        )) {
+            return;
+        }
+
+        if ($this->app->bound(self::SHARED_RENDERING_BOOTED)) {
+            $this->registerBladeComponentAliases();
+            $this->registerLayoutBuilderComponentAliases();
+            $this->registerMediaBladeComponents();
+            $this->registerPublishCommands();
+            $this->sharedRenderingBooted = true;
+
+            return;
+        }
+
+        $this->registerBladeDirectives();
+        $this->registerBladeComponents();
+        $this->registerPublicViewDataComposers();
+        $this->registerLayoutBuilderRendering();
+        $this->registerMediaBladeComponents();
+        $this->registerBlazeComponents();
+        $this->registerPublishCommands();
+        $this->registerFrontendRuntimeManifestContributors();
+        $this->registerSharedConsoleCommands();
+        $this->app->instance(self::SHARED_RENDERING_BOOTED, true);
+        $this->sharedRenderingBooted = true;
     }
 
     private function registerSharedConsoleCommands(): void
@@ -298,6 +332,19 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
         // Frontend declares the same signature, so register after all providers boot.
         $this->app->booted(function (): void {
             $this->commands([GenerateTailwindAssetsCommand::class]);
+
+            if (! $this->app->runningInConsole() || ! $this->app->resolved(KernelContract::class)) {
+                return;
+            }
+
+            $kernel = $this->app->make(KernelContract::class);
+            if (! $kernel instanceof Kernel
+                || ! new ReflectionProperty(Kernel::class, 'artisan')->getValue($kernel) instanceof ConsoleApplication) {
+                return;
+            }
+
+            // A deferred declaration cannot replace Frontend's command in an already-built application.
+            $kernel->registerCommand($this->app->make(GenerateTailwindAssetsCommand::class));
         });
     }
 
@@ -373,6 +420,11 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
         $this->app->make(ViewFactory::class)->prependNamespace('capell', __DIR__ . '/../../resources/views');
 
         Blade::anonymousComponentPath(__DIR__ . '/../../resources/views/components', 'capell');
+        $this->registerBladeComponentAliases();
+    }
+
+    private function registerBladeComponentAliases(): void
+    {
         Blade::component(AppBodyComponent::class, 'capell::app.body');
         Blade::component(FooterIndexComponent::class, 'capell::footer.index');
         Blade::component(FooterSocialLinksComponent::class, 'capell::footer.social-links');
@@ -599,11 +651,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
             $registry->registerFooter('capell::footer', __('capell-admin::form.foundation_footer'));
         };
 
-        $this->app->afterResolving(ThemeChromeRegistry::class, $register);
-
-        if ($this->app->resolved(ThemeChromeRegistry::class)) {
-            $register($this->app->make(ThemeChromeRegistry::class));
-        }
+        $this->callAfterResolving(ThemeChromeRegistry::class, $register);
     }
 
     private function registerThemeStudioDefinition(): void
@@ -612,11 +660,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
             $registry->register(definition: self::definition());
         };
 
-        $this->app->afterResolving(ThemeRegistry::class, $register);
-
-        if ($this->app->resolved(ThemeRegistry::class)) {
-            $register($this->app->make(ThemeRegistry::class));
-        }
+        $this->callAfterResolving(ThemeRegistry::class, $register);
     }
 
     private function registerLayoutAreas(): void
@@ -626,19 +670,13 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
             $registry->register('footer', __('capell-layout-builder::generic.footer_area'));
         };
 
-        $this->app->afterResolving(LayoutAreaRegistry::class, $register);
-
-        if ($this->app->resolved(LayoutAreaRegistry::class)) {
-            $register($this->app->make(LayoutAreaRegistry::class));
-        }
+        $this->callAfterResolving(LayoutAreaRegistry::class, $register);
     }
 
     private function registerLayoutContainerSchemaExtenders(): void
     {
-        $alreadyTagged = collect($this->app->tagged(LayoutContainerSchemaExtender::TAG))
-            ->contains(fn (object $extender): bool => $extender instanceof FoundationLayoutContainerSchemaExtender);
-
-        if ($alreadyTagged) {
+        // Only this registration binds the extender, so its binding key marks the tag.
+        if ($this->app->bound(FoundationLayoutContainerSchemaExtender::class)) {
             return;
         }
 
@@ -648,10 +686,8 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
     private function registerWidgetSchemaExtenders(): void
     {
-        $alreadyTagged = collect($this->app->tagged(WidgetSchemaExtender::TAG))
-            ->contains(fn (object $extender): bool => $extender instanceof SectionVariantSchemaExtender);
-
-        if ($alreadyTagged) {
+        // Only this registration binds the extender, so its binding key marks the tag.
+        if ($this->app->bound(SectionVariantSchemaExtender::class)) {
             return;
         }
 
@@ -661,12 +697,8 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
     private function registerLayoutContainerThemePresentationProjectors(): void
     {
-        $alreadyTagged = collect($this->app->tagged(LayoutContainerThemePresentationProjector::TAG))
-            ->contains(
-                fn (object $projector): bool => $projector instanceof FoundationLayoutContainerThemePresentationProjector,
-            );
-
-        if ($alreadyTagged) {
+        // Only this registration binds the projector, so its binding key marks the tag.
+        if ($this->app->bound(FoundationLayoutContainerThemePresentationProjector::class)) {
             return;
         }
 
@@ -723,11 +755,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
             }
         };
 
-        $this->app->afterResolving(FrontendPackageDependencyRegistry::class, $register);
-
-        if ($this->app->resolved(FrontendPackageDependencyRegistry::class)) {
-            $register($this->app->make(FrontendPackageDependencyRegistry::class));
-        }
+        $this->callAfterResolving(FrontendPackageDependencyRegistry::class, $register);
     }
 
     private function registerVendorCssJsAssets(): void
@@ -807,32 +835,10 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
         Blade::anonymousComponentPath(__DIR__ . '/../../resources/views/components', 'capell');
         Blade::anonymousComponentPath(__DIR__ . '/../../resources/views/components', 'capell-theme-foundation');
-        Blade::componentNamespace('Capell\\FoundationTheme\\View\\Components', 'capell');
-        Blade::componentNamespace('Capell\\FoundationTheme\\View\\Components', 'capell-theme-foundation');
-        Blade::component(AssetComponent::class, 'capell::widget.asset');
-        Blade::component(AssetAccordionComponent::class, 'capell::widget.asset.accordion');
-        Blade::component(AssetComponent::class, 'capell::widget.asset.banners');
-        Blade::component(AssetCarouselComponent::class, 'capell::widget.asset.carousel');
-        Blade::component(AssetComponent::class, 'capell::widget.asset.features');
-        Blade::component(AssetComponent::class, 'capell::widget.asset.media');
-        Blade::component(AssetComponent::class, 'capell::widget.asset.testimonials');
-        Blade::component(AssetComponent::class, 'capell::widget.asset.widgets');
-        Blade::component(FoundationSectionComponent::class, 'capell-theme-foundation::widget.foundation-section');
-        Blade::component(PageBreadcrumbsComponent::class, 'capell::widget.page.breadcrumbs');
-        Blade::component(ActionsComponent::class, 'capell::actions');
-        Blade::component(ActionsComponent::class, 'capell-theme-foundation::actions');
-        Blade::component(PageContentComponent::class, 'capell-widget-page-content');
-        Blade::component(PageContentComponent::class, 'capell::widget.page.content');
-        Blade::component(SlotComponent::class, 'capell::widget.slot');
-        Blade::component('capell-theme-foundation::components.widget.wrapper', 'capell-layout-builder::widget.wrapper');
-        Blade::component(PageChildrenComponent::class, 'capell::widget.page.children');
-        Blade::component(PageLatestComponent::class, 'capell::widget.page.latest');
-        Blade::component(PageSiblingsComponent::class, 'capell::widget.page.siblings');
+        $this->registerLayoutBuilderComponentAliases();
 
         $this->registerFoundationSectionWidgetRenderables();
         $this->registerPublicLayoutWidgetPayloadContributors();
-        $this->registerDynamicFormFragmentRoute();
-        $this->reserveDynamicFormFragmentPath();
 
         $registerLivewireComponents = function (): void {
             Livewire::component('capell::widget.pages', Pages::class);
@@ -909,6 +915,31 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
         });
     }
 
+    private function registerLayoutBuilderComponentAliases(): void
+    {
+        Blade::componentNamespace(self::COMPONENT_NAMESPACE, 'capell');
+        Blade::componentNamespace(self::COMPONENT_NAMESPACE, 'capell-theme-foundation');
+        Blade::component(AssetComponent::class, 'capell::widget.asset');
+        Blade::component(AssetAccordionComponent::class, 'capell::widget.asset.accordion');
+        Blade::component(AssetComponent::class, 'capell::widget.asset.banners');
+        Blade::component(AssetCarouselComponent::class, 'capell::widget.asset.carousel');
+        Blade::component(AssetComponent::class, 'capell::widget.asset.features');
+        Blade::component(AssetComponent::class, 'capell::widget.asset.media');
+        Blade::component(AssetComponent::class, 'capell::widget.asset.testimonials');
+        Blade::component(AssetComponent::class, 'capell::widget.asset.widgets');
+        Blade::component(FoundationSectionComponent::class, 'capell-theme-foundation::widget.foundation-section');
+        Blade::component(PageBreadcrumbsComponent::class, 'capell::widget.page.breadcrumbs');
+        Blade::component(ActionsComponent::class, 'capell::actions');
+        Blade::component(ActionsComponent::class, 'capell-theme-foundation::actions');
+        Blade::component(PageContentComponent::class, 'capell-widget-page-content');
+        Blade::component(PageContentComponent::class, 'capell::widget.page.content');
+        Blade::component(SlotComponent::class, 'capell::widget.slot');
+        Blade::component('capell-theme-foundation::components.widget.wrapper', 'capell-layout-builder::widget.wrapper');
+        Blade::component(PageChildrenComponent::class, 'capell::widget.page.children');
+        Blade::component(PageLatestComponent::class, 'capell::widget.page.latest');
+        Blade::component(PageSiblingsComponent::class, 'capell::widget.page.siblings');
+    }
+
     private function registerFoundationSectionWidgetRenderables(): void
     {
         $this->callAfterResolving(RenderableRegistry::class, static function (RenderableRegistry $registry): void {
@@ -940,49 +971,13 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
     }
 
     /**
-     * Lets the dynamic-form-delivery route (registered below) serve
-     * the real, session-bound form markup for the Foundation section types
+     * Lets the dynamic-form-delivery route registered by
+     * FoundationSharedFragmentServiceProvider serve the real, session-bound form markup for the Foundation section types
      * FoundationSection delivers dynamically — see
      * FoundationSectionPublicLayoutWidgetPayloadContributor.
      */
     private function registerPublicLayoutWidgetPayloadContributors(): void
     {
         $this->app->tag([FoundationSectionPublicLayoutWidgetPayloadContributor::class], PublicLayoutWidgetPayloadContributor::TAG);
-    }
-
-    /**
-     * A theme-foundation-owned route for the deferred-fragment
-     * placeholder, deliberately separate from layout-builder's shared
-     * `/_fragments/{reference}` route. That route unconditionally strips
-     * `Set-Cookie` and forces `Cache-Control: public, max-age=300,
-     * stale-while-revalidate=60` on every response under `_fragments/*` (see
-     * LayoutBuilderServiceProvider's RequestHandled listener) and carries no
-     * session middleware — architecturally correct for the stateless,
-     * visitor-independent content it was built for, but unsafe for a form
-     * that must mint a fresh, working, session-bound CSRF token per visitor:
-     * baking one into a response cacheable for five minutes would reproduce
-     * the same cross-visitor CSRF-token leak one layer down. `web` middleware here (matching
-     * registerLazyLayoutWidgetRoute()'s own `_capell/` convention) gives the
-     * real session access `@csrf` needs; FoundationDynamicFormFragmentController
-     * answers with `private, no-store` instead.
-     */
-    private function registerDynamicFormFragmentRoute(): void
-    {
-        Route::middleware('web')
-            ->name('capell-theme-foundation.dynamic-form-fragments.')
-            ->group(function (): void {
-                Route::get('/_capell/foundation-dynamic-form/{reference}', FoundationDynamicFormFragmentController::class)
-                    ->where('reference', '.*')
-                    ->name('show');
-            });
-    }
-
-    private function reserveDynamicFormFragmentPath(): void
-    {
-        if (! CapellCore::isPackageAvailable('capell-app/frontend')) {
-            return;
-        }
-
-        $this->app->make(ReservedFrontendPathRegistry::class)->reservePrefix('_capell/foundation-dynamic-form');
     }
 }

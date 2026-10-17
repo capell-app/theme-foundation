@@ -251,7 +251,8 @@
             "waitFor": "#main",
             "colorSchemes": ["light"],
             "viewport": "desktop",
-            "fullPage": true
+            "fullPage": true,
+            "expectedState": "empty"
         },
         {
             "id": "foundation-empty-tablet",
@@ -270,7 +271,8 @@
             "waitFor": "#main",
             "colorSchemes": ["light"],
             "viewport": "tablet",
-            "fullPage": true
+            "fullPage": true,
+            "expectedState": "empty"
         },
         {
             "id": "foundation-empty-mobile",
@@ -289,7 +291,8 @@
             "waitFor": "#main",
             "colorSchemes": ["light"],
             "viewport": "mobile",
-            "fullPage": true
+            "fullPage": true,
+            "expectedState": "empty"
         },
         {
             "id": "foundation-not-found",
@@ -308,7 +311,8 @@
             "waitFor": "#main",
             "colorSchemes": ["light"],
             "viewport": "desktop",
-            "fullPage": true
+            "fullPage": true,
+            "expectedState": "not-found"
         },
         {
             "id": "foundation-not-found-tablet",
@@ -327,7 +331,8 @@
             "waitFor": "#main",
             "colorSchemes": ["light"],
             "viewport": "tablet",
-            "fullPage": true
+            "fullPage": true,
+            "expectedState": "not-found"
         },
         {
             "id": "foundation-not-found-mobile",
@@ -346,7 +351,8 @@
             "waitFor": "#main",
             "colorSchemes": ["light"],
             "viewport": "mobile",
-            "fullPage": true
+            "fullPage": true,
+            "expectedState": "not-found"
         },
         {
             "id": "foundation-cta",

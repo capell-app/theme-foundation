@@ -15,6 +15,7 @@ use Capell\FoundationTheme\Actions\BuildBannerImageRenderDataAction;
 use Capell\FoundationTheme\Actions\ResolveLoadedWidgetBackgroundImageAction;
 use Capell\FoundationTheme\Actions\ResolveWidgetBackgroundImageUrlAction;
 use Capell\FoundationTheme\Livewire\Widget\AbstractWidget as LivewireWidget;
+use Capell\FoundationTheme\Tests\Support\SidebarPageContentFixtureWidget;
 use Capell\FoundationTheme\View\Components\Widget\Page\AbstractPagesWidget;
 use Capell\FoundationTheme\View\Components\Widget\Page\Breadcrumbs as BreadcrumbsWidget;
 use Capell\FoundationTheme\View\Components\Widget\Page\Content as ContentWidget;
@@ -203,28 +204,56 @@ test('asset banner render data does not lazy-load relations', function (): void 
     DB::disableQueryLog();
 });
 
-test('public livewire widgets expose only an opaque reference as public state', function (): void {
-    $reflection = new ReflectionClass(LivewireWidget::class);
-    $publicProperties = collect($reflection->getProperties(ReflectionProperty::IS_PUBLIC))
-        ->map(fn (ReflectionProperty $property): string => $property->getName())
-        ->all();
+test('layout livewire widgets render encrypted placement data without serialising raw public context', function (): void {
+    $language = Language::factory()->create();
+    $site = sidebarPageWidgetStyleSite($language);
+    $widget = Widget::factory()->create([
+        'key' => 'placement-content',
+        'meta' => ['view_file' => 'capell-theme-foundation::components.widget.page.content'],
+    ]);
+    $layout = Layout::factory()->site($site)->create([
+        'containers' => ['main' => ['widgets' => [['widget_key' => $widget->key, 'occurrence' => 1]]]],
+    ]);
+    $page = Page::factory()->site($site)->layout($layout)->withTranslations($language, [
+        'title' => 'Placement title', 'content' => '<p>Placement content</p>',
+    ])->create();
+    sidebarPageWidgetStyleBindContext(new FrontendContext(
+        site: $site,
+        language: $language,
+        page: $page,
+        layout: $layout,
+        theme: new Theme,
+        params: [],
+        slug: null,
+    ));
+    Livewire\Livewire::component('sidebar-placement-fixture', SidebarPageContentFixtureWidget::class);
+    $wasBlazeEnabled = Blaze::isEnabled();
+    Blaze::disable();
 
-    expect($publicProperties)
-        ->toContain('widgetReference')
-        ->not->toContain('container')
-        ->not->toContain('widget')
-        ->not->toContain('widgetData')
-        ->not->toContain('loop');
-});
+    try {
+        $html = view('capell-theme-foundation::components.layout.widget', [
+            'type' => 'livewire', 'component' => 'sidebar-placement-fixture',
+            'container' => [], 'containerKey' => 'main', 'containerIndex' => 0,
+            'layout' => $layout, 'widget' => $widget, 'widgetIndex' => 0,
+            'loop' => (object) ['index' => 0, 'first' => true, 'last' => true],
+            'widgetData' => ['meta' => ['preview_copy' => 'Placement title and Placement content']],
+        ])->render();
+    } finally {
+        if ($wasBlazeEnabled) {
+            Blaze::enable();
+        }
+    }
 
-test('layout livewire widgets preserve extension widget data mount parameters', function (): void {
-    $view = file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/layout/widget.blade.php');
+    // Read the HTTP-visible snapshot, which is the state a visitor receives.
+    preg_match('/wire:snapshot="([^"]+)"/', $html, $matches);
+    $snapshot = html_entity_decode($matches[1] ?? '', ENT_QUOTES);
+    $decoded = json_decode($snapshot, true, flags: JSON_THROW_ON_ERROR);
+    $data = is_array($decoded) && is_array($decoded['data'] ?? null) ? $decoded['data'] : [];
 
-    expect($view)
-        ->toContain('OpaqueWidgetReference::encode')
-        ->toContain("'widgetReference' => \$widgetReference")
-        ->toContain("'widget_data' => \$widgetData")
-        ->not->toContain("'widgetData' => \$widgetData");
+    expect($html)->toContain('Placement title', 'Placement content')
+        ->and($data)->toHaveKey('widgetReference')
+        ->not->toHaveKeys(['container', 'widget', 'widgetData', 'loop'])
+        ->and($snapshot)->not->toContain('page_id', 'site_id', 'widget_key', 'page_content');
 });
 
 test('opaque widget references do not expose raw public context', function (): void {
@@ -575,9 +604,7 @@ test('public livewire page content widgets render from encrypted context without
         ->and($renderedPage->translation->content)->toBe('<p>Hydrated page content</p>')
         ->and($renderData['widgetData']['meta']['page_content'])->toBe(['title', 'content'])
         ->and($html)->toContain('Hydrated page title')
-        ->and($html)->toContain('Hydrated page content')
-        ->and(file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/widget/page/content.blade.php'))
-        ->not->toContain('Frontend::page()');
+        ->and($html)->toContain('Hydrated page content');
 });
 
 test('asset page widget view does not query or lazy-load optional item parents', function (): void {
@@ -632,9 +659,7 @@ test('asset page widget view does not query or lazy-load optional item parents',
         EloquentModel::preventLazyLoading($previous);
     }
 
-    expect(file_get_contents(dirname(__DIR__, 2) . '/resources/views/components/widget/asset/pages.blade.php'))
-        ->not->toContain('loadParent(')
-        ->and($queries)->toBe([]);
+    expect($queries)->toBe([]);
 });
 
 test('breadcrumbs render data does not lazy-load optional page and site relations', function (): void {
