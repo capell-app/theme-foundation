@@ -48,7 +48,7 @@
 
     <span
         class="mt-2 text-sm"
-        style="color: var(--foundation-border-strong)"
+        style="color: var(--foundation-muted-fg)"
     >
         {{ $resolvedLabel }}
     </span>

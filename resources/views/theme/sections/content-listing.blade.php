@@ -54,7 +54,7 @@
         }
 
         .theme-content-listing [data-theme-section-label] {
-            color: var(--theme-content-accent);
+            color: var(--foundation-muted-fg);
         }
 
         .theme-content-listing [data-theme-section-heading] {
@@ -107,7 +107,7 @@
         @if (filled($safeArchiveUrl))
             <a
                 href="{{ $safeArchiveUrl }}"
-                class="mb-8 inline-flex font-semibold text-[var(--theme-primary)] underline-offset-4 hover:underline"
+                class="mb-8 inline-flex min-h-11 items-center font-semibold text-[var(--foundation-body-fg)] underline underline-offset-4"
             >
                 {{ __('capell-theme-foundation::results.archive') }}
             </a>
@@ -441,5 +441,6 @@
                 @endforeach
             </div>
         @endif
+        @include('capell-theme-foundation::theme.sections.results-pagination', ['section' => $section])
     </div>
 </section>

@@ -2359,6 +2359,12 @@
         padding-inline-start: clamp(1rem, 3vw, 2rem);
     }
 
+    .theme-stats-display-band:not(.theme-stats-display-band--light)
+        .count-up-stat {
+        --foundation-body-fg: #f8fafc;
+        --foundation-muted-fg: #cbd5e1;
+    }
+
     .theme-stats-display-band--light .count-up-stat {
         border-inline-start-color: var(--foundation-border);
         color: var(--foundation-heading-fg);

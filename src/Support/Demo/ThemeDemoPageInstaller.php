@@ -688,7 +688,17 @@ final class ThemeDemoPageInstaller
                 ],
             ];
 
-            $errorCopy = $errorTranslations?->firstWhere('language_id', $language->getKey())?->meta['error_status_copy'] ?? null;
+            $errorTranslation = $errorTranslations?->firstWhere('language_id', $language->getKey());
+            $existingSlug = $errorTranslation?->meta['slug'] ?? null;
+
+            // Themes share the site's recovery page. Keep its established demo
+            // path: moving it back to a previous theme's slug cycles its redirects.
+            if (data_get($existingPage?->meta, 'theme_demo.surface') === 'not-found'
+                && is_string($existingSlug) && $existingSlug !== '') {
+                $translations[(string) $language->code]['meta']['slug'] = $existingSlug;
+            }
+
+            $errorCopy = $errorTranslation?->meta['error_status_copy'] ?? null;
 
             if (is_array($errorCopy)) {
                 $translations[(string) $language->code]['meta']['error_status_copy'] = $errorCopy;

@@ -121,6 +121,12 @@ final class ExampleProvidesThemeDemoContentImplementation implements \Capell\Fou
 app()->bind(\Capell\FoundationTheme\Contracts\ProvidesThemeDemoContent::class, ExampleProvidesThemeDemoContentImplementation::class);
 ```
 
+Resolvers can also implement `PaginatesResultsListing` to support opt-in GET
+pagination without changing existing resolver implementations. See
+[Results listings](results-listings.md) for the request and response contracts,
+page limits and loader behaviour. Bind the implementation through the existing
+`ResultsListingResolver` contract.
+
 <!-- example: contract Capell\FoundationTheme\Contracts\ResultsListingResolver -->
 
 ```php

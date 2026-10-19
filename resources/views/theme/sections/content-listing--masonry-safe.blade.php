@@ -19,7 +19,7 @@
             class="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between"
         >
             <div>
-                <p class="mb-3 text-xs font-semibold tracking-[0.16em] text-[var(--theme-primary)] uppercase">
+                <p class="mb-3 text-xs font-semibold tracking-[0.16em] text-[var(--foundation-muted-fg)] uppercase">
                     {{ __('capell-theme-foundation::generic.content') }}
                 </p>
                 <h2
@@ -36,7 +36,7 @@
         @if (filled($safeArchiveUrl))
             <a
                 href="{{ $safeArchiveUrl }}"
-                class="mb-8 inline-flex font-semibold text-[var(--theme-primary)] underline-offset-4 hover:underline"
+                class="mb-8 inline-flex min-h-11 items-center font-semibold text-[var(--foundation-body-fg)] underline underline-offset-4"
             >
                 {{ __('capell-theme-foundation::results.archive') }}
             </a>
@@ -92,5 +92,6 @@
                 </a>
             @endforeach
         </div>
+        @include('capell-theme-foundation::theme.sections.results-pagination', ['section' => $section])
     </div>
 </section>

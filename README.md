@@ -50,6 +50,7 @@ Desktop, tablet, and mobile variants remain defined in the screenshot contract; 
 
 - `Capell\FoundationTheme\Providers\FoundationThemeServiceProvider`
 - `Capell\FoundationTheme\Providers\ConsoleServiceProvider`
+- `FoundationSharedFragmentServiceProvider`
 - `FoundationThemeSiteSpecServiceProvider`
 
 ### Config files
@@ -95,6 +96,7 @@ Desktop, tablet, and mobile variants remain defined in the screenshot contract; 
 - `DesignSpecMigrationReader`
 - `InstallsThemeDemo`
 - `OptionalExtensionAvailability`
+- `PaginatesResultsListing`
 - `ProvidesThemeDemoContent`
 - `ResultsListingResolver`
 
@@ -135,6 +137,7 @@ Desktop, tablet, and mobile variants remain defined in the screenshot contract; 
 - `ResolveNewsletterFormDataAction`
 - `ResolveResultsArchiveUrlAction`
 - `ResolveResultsListingAction`
+- `ResolveResultsPaginationLinksAction`
 - `ResolveSafeCssColorTokenAction`
 - `ResolveThemeFormEmbedDataAction`
 - `ResolveThemeFrontendScriptDataAction`
@@ -178,6 +181,9 @@ Desktop, tablet, and mobile variants remain defined in the screenshot contract; 
 - `NewsletterFormData`
 - `PageContentRenderData`
 - `ResultsListingData`
+- `ResultsPaginationData`
+- `ResultsPaginationLinkData`
+- `ResultsPaginationRequestData`
 - `ThemeDemoInstallData`
 - `ThemeFormEmbedData`
 - `ThemeFrontendScriptData`
@@ -347,6 +353,7 @@ Desktop, tablet, and mobile variants remain defined in the screenshot contract; 
 - `packages/theme-foundation/resources/views/theme/sections/pricing-value-spectrum--compact.blade.php`
 - `packages/theme-foundation/resources/views/theme/sections/pricing-value-spectrum.blade.php`
 - `packages/theme-foundation/resources/views/theme/sections/proof.blade.php`
+- `packages/theme-foundation/resources/views/theme/sections/results-pagination.blade.php`
 - `packages/theme-foundation/resources/views/theme/sections/search.blade.php`
 - `packages/theme-foundation/resources/views/theme/sections/stats-display-band--light.blade.php`
 - `packages/theme-foundation/resources/views/theme/sections/stats-display-band.blade.php`

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Capell\FoundationTheme\Data;
 
 use Spatie\LaravelData\Data;
+use Spatie\LaravelData\Optional;
 
 final class ResultsListingData extends Data
 {
@@ -14,5 +15,6 @@ final class ResultsListingData extends Data
     public function __construct(
         public readonly array $items,
         public readonly ?string $archiveUrl = null,
+        public readonly ResultsPaginationData|Optional $pagination = new Optional,
     ) {}
 }
