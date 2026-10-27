@@ -144,7 +144,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
         $missingPackages = $this->missingInstalledPackages();
 
         return new DoctorCheckResultData(
-            label: 'Foundation Theme package installation',
+            label: 'Foundation Theme: package installed',
             passed: $missingPackages === [],
             message: $missingPackages === []
                 ? 'Foundation Theme and its required frontend, layout-builder, and navigation dependencies are installed.'
@@ -152,6 +152,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
             remediation: $missingPackages === []
                 ? null
                 : 'Install or enable Foundation Theme and its required Capell frontend dependencies before rendering this theme.',
+            id: 'legacy.foundation.theme.package.installation',
         );
     }
 
@@ -160,7 +161,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
         $issues = $this->manifestProviderIssues();
 
         return new DoctorCheckResultData(
-            label: 'Foundation Theme manifest and provider contract',
+            label: 'Foundation Theme: package metadata and services valid',
             passed: $issues === [],
             message: $issues === []
                 ? 'The manifest declares the expected theme key, dependencies, runtime provider, and critical health check.'
@@ -168,6 +169,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
             remediation: $issues === []
                 ? null
                 : 'Update capell.json so Diagnostics, install, and Marketplace discovery match the shipped Foundation Theme provider.',
+            id: 'legacy.foundation.theme.manifest.and.provider.contract',
         );
     }
 
@@ -176,7 +178,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
         $issues = $this->themeStudioDefinitionIssues();
 
         return new DoctorCheckResultData(
-            label: 'Foundation Theme Studio definition',
+            label: 'Foundation Theme: theme registered',
             passed: $issues === [],
             message: $issues === []
                 ? 'The Foundation Theme Studio definition is registered with the expected runtime, asset, preset, and section contract.'
@@ -184,6 +186,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
             remediation: $issues === []
                 ? null
                 : 'Ensure FoundationThemeServiceProvider boots while the package is installed and registers the default Theme Studio definition.',
+            id: 'legacy.foundation.theme.studio.definition',
         );
     }
 
@@ -192,7 +195,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
         $missingViews = $this->missingViews();
 
         return new DoctorCheckResultData(
-            label: 'Foundation Theme render views',
+            label: 'Foundation Theme: page templates available',
             passed: $missingViews === [],
             message: $missingViews === []
                 ? 'The Foundation layout, section, token, layout component, and widget wrapper views are resolvable.'
@@ -200,6 +203,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
             remediation: $missingViews === []
                 ? null
                 : 'Ensure the Foundation Theme view namespace is loaded and required Blade files are present.',
+            id: 'legacy.foundation.theme.render.views',
         );
     }
 
@@ -208,7 +212,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
         $missingAssets = $this->missingAssets();
 
         return new DoctorCheckResultData(
-            label: 'Foundation Theme asset pipeline',
+            label: 'Foundation Theme: public assets built',
             passed: $missingAssets === [],
             message: $missingAssets === []
                 ? 'The Foundation source assets, publishable build manifest, published public manifest, and vendor asset registrations are present.'
@@ -216,6 +220,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
             remediation: $missingAssets === []
                 ? null
                 : 'Restore missing package assets, boot the Foundation Theme provider, then publish the frontend build assets.',
+            id: 'legacy.foundation.theme.asset.pipeline',
         );
     }
 
@@ -224,7 +229,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
         $issues = $this->configAndTokenIssues();
 
         return new DoctorCheckResultData(
-            label: 'Foundation Theme config and tokens',
+            label: 'Foundation Theme: theme settings and design tokens available',
             passed: $issues === [],
             message: $issues === []
                 ? 'Foundation config, settings schema, runtime token settings, and token Blade hook are available.'
@@ -232,6 +237,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
             remediation: $issues === []
                 ? null
                 : 'Restore the Foundation config/settings classes and ensure the provider registers the theme_foundation settings group.',
+            id: 'legacy.foundation.theme.config.and.tokens',
         );
     }
 
@@ -240,7 +246,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
         $issues = $this->providerRegistrationIssues();
 
         return new DoctorCheckResultData(
-            label: 'Foundation Theme provider registrations',
+            label: 'Foundation Theme: theme services registered',
             passed: $issues === [],
             message: $issues === []
                 ? 'The provider registered the Tailwind generator, asset contributor, runtime asset condition, and settings surface.'
@@ -248,6 +254,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
             remediation: $issues === []
                 ? null
                 : 'Boot FoundationThemeServiceProvider with the package installed so runtime services and registries are populated.',
+            id: 'legacy.foundation.theme.provider.registrations',
         );
     }
 
@@ -262,7 +269,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
         $issues = $this->themesMissingCatalogueEntries();
 
         return new DoctorCheckResultData(
-            label: 'Fleet theme catalogue coverage',
+            label: 'Foundation Theme: theme catalogue complete',
             passed: $issues === [],
             message: $issues === []
                 ? 'Every discovered theme package has a matching docs/themes.json catalogue entry.'
@@ -270,6 +277,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
             remediation: $issues === []
                 ? null
                 : 'Add a docs/themes.json entry for each listed theme package before it ships.',
+            id: 'legacy.fleet.theme.catalogue.coverage',
         );
     }
 
@@ -284,7 +292,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
         $issues = $this->themesMissingDemoContent();
 
         return new DoctorCheckResultData(
-            label: 'Fleet demo content coverage',
+            label: 'Foundation Theme: demo content complete',
             passed: $issues === [],
             message: $issues === []
                 ? 'Every discovered theme package registers a ProvidesThemeDemoContent implementation.'
@@ -292,6 +300,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
             remediation: $issues === []
                 ? null
                 : 'Implement Capell\\FoundationTheme\\Contracts\\ProvidesThemeDemoContent for each listed theme.',
+            id: 'legacy.fleet.demo.content.coverage',
         );
     }
 
@@ -305,7 +314,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
         $issues = $this->themesMissingScreenshots();
 
         return new DoctorCheckResultData(
-            label: 'Fleet screenshot freshness',
+            label: 'Foundation Theme: screenshot coverage documented',
             passed: $issues === [],
             message: $issues === []
                 ? 'Every discovered theme package has a docs/screenshots.json manifest with at least one entry.'
@@ -313,6 +322,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
             remediation: $issues === []
                 ? null
                 : 'Capture and commit docs/screenshots.json entries for each listed theme before it ships.',
+            id: 'legacy.fleet.screenshot.freshness',
         );
     }
 

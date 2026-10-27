@@ -35,7 +35,7 @@
                             alt="{{ $item['image_alt'] ?? $item['title'] ?? $item['name'] ?? '' }}"
                             width="800"
                             height="320"
-                            loading="lazy"
+                            loading="{{ $secondaryImageLoading ?? 'lazy' }}"
                             decoding="async"
                             class="aspect-[5/2] w-full object-cover opacity-90"
                         />

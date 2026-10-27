@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Capell\FoundationTheme\Filament\Settings\FoundationThemeSettingsSchema;
+use Filament\Forms\Components\Field;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Text;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
@@ -72,3 +73,22 @@ function foundationThemeHelperText(Component $component): string
 
     return $content;
 }
+
+it('offers an image loading control and build guidance without an editable minification switch', function (): void {
+    $livewire = new class extends LivewireComponent implements HasSchemas
+    {
+        use InteractsWithSchemas;
+    };
+    $schema = Schema::make($livewire);
+    $schema->components(array_map(static function (mixed $component): Htmlable|string {
+        throw_unless($component instanceof Htmlable || is_string($component), RuntimeException::class, 'Expected a valid settings component.');
+
+        return $component;
+    }, FoundationThemeSettingsSchema::make($schema)));
+
+    $components = flattenFoundationThemeSettingsComponents(array_values(array_filter($schema->getComponents(withHidden: true), static fn (mixed $component): bool => $component instanceof Component)));
+    $fields = collect($components)->filter(static fn (Component $component): bool => $component instanceof Field);
+    $names = $fields->map(static fn (Field $field): string => $field->getName())->all();
+    expect($names)->toContain('enable_lazy_loading')->not->toContain('minify_assets');
+    expect(collect($components)->filter(static fn (Component $component): bool => $component instanceof Text)->isNotEmpty())->toBeTrue();
+});

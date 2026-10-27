@@ -1,0 +1,40 @@
+{
+    "previews": [
+        {
+            "widget": "capell.widget.foundation.navigation",
+            "path": "resources/previews/foundation-navigation.webp"
+        },
+        {
+            "widget": "capell.widget.foundation.hero",
+            "path": "resources/previews/foundation-hero.webp"
+        },
+        {
+            "widget": "capell.widget.foundation.features",
+            "path": "resources/previews/foundation-features.webp"
+        },
+        {
+            "widget": "capell.widget.foundation.search",
+            "path": "resources/previews/foundation-search.webp"
+        },
+        {
+            "widget": "capell.widget.foundation.content-listing",
+            "path": "resources/previews/foundation-content-listing.webp"
+        },
+        {
+            "widget": "capell.widget.foundation.proof",
+            "path": "resources/previews/foundation-proof.webp"
+        },
+        {
+            "widget": "capell.widget.foundation.cta",
+            "path": "resources/previews/foundation-cta.webp"
+        },
+        {
+            "widget": "capell.widget.foundation.footer",
+            "path": "resources/previews/foundation-footer.webp"
+        },
+        {
+            "widget": "capell.widget.foundation.form",
+            "path": "resources/previews/foundation-form.webp"
+        }
+    ]
+}

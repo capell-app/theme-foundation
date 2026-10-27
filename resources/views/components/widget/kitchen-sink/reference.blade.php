@@ -18,6 +18,7 @@
                 :compact="true"
                 :content="$widget->translation->content"
                 :content-type="$widget->blueprint->content_structure"
+                :block-media-owner="$widget"
                 :title="$widget->translation->title"
             />
         @endif

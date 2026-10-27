@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Capell\FoundationTheme\View\Components\Widget;
 
+use Capell\FoundationTheme\Actions\ResolveFoundationImageLoadingAction;
 use Capell\FoundationTheme\Actions\ResolveFoundationSectionAnchorAction;
+use Capell\FoundationTheme\Support\Render\FoundationImageLoadingContributor;
+use Capell\Frontend\Data\PublicPageRenderData;
+use Capell\Frontend\Support\Render\PublicRenderDataScope;
 use Capell\LayoutBuilder\Actions\Fragments\BuildLayoutBuilderFragmentReferenceAction;
 use Illuminate\Support\Fluent;
 use Override;
@@ -61,6 +65,7 @@ final class FoundationSection extends AbstractWidget
      *     sectionAnchor: string,
      *     section: Fluent<array-key, mixed>,
      *     sectionType: string,
+     *     secondaryImageLoading: string,
      *     sectionView: string|null,
      *     formDeliveryFragmentUrl: string|null
      * }
@@ -92,9 +97,20 @@ final class FoundationSection extends AbstractWidget
             'sectionAnchor' => $sectionAnchor,
             'section' => new Fluent($sectionMeta),
             'sectionType' => $sectionType,
+            'secondaryImageLoading' => $this->secondaryImageLoading(),
             'sectionView' => self::SECTION_VIEWS[$sectionType] ?? null,
             'formDeliveryFragmentUrl' => $usesFormEmbed ? null : $this->resolveFormDeliveryFragmentUrl($sectionType),
         ];
+    }
+
+    private function secondaryImageLoading(): string
+    {
+        $scope = PublicRenderDataScope::current();
+        if ($scope instanceof PublicPageRenderData) {
+            return data_get($scope->extensionData(FoundationImageLoadingContributor::KEY), 'loading') === 'eager' ? 'eager' : 'lazy';
+        }
+
+        return ResolveFoundationImageLoadingAction::run();
     }
 
     /**

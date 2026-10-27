@@ -50,6 +50,7 @@ $theme = Frontend::theme();
                 :compact="true"
                 :content="$content"
                 :content-type="$widget->blueprint->content_structure"
+                :block-media-owner="$widget"
                 :color="$colorScheme"
                 :divider="$widget->getMeta('content_divider')"
                 :heading-size="$headingSize"

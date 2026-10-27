@@ -49,7 +49,7 @@ final class BuildThemeDemoFormSectionAction
                 ],
                 [
                     'name' => 'email',
-                    'label' => 'Email',
+                    'label' => __('capell-theme-foundation::generic.email'),
                     'type' => 'email',
                     'required' => true,
                     'autocomplete' => 'email',

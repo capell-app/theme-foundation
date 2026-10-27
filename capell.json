@@ -40,6 +40,11 @@
     },
     "contributes": [
         {
+            "type": "public-render-data",
+            "key": "foundation_image_loading",
+            "class": "Capell\\FoundationTheme\\Support\\Render\\FoundationImageLoadingContributor"
+        },
+        {
             "type": "console-command",
             "class": "Capell\\FoundationTheme\\Manifest\\FoundationThemeConsoleCommandsContribution",
             "commands": [
@@ -69,6 +74,7 @@
         "install": null,
         "setup": "capell:theme-foundation-setup",
         "demo": "capell:theme-foundation-demo",
+        "demoParams": ["url", "languages", "sites"],
         "doctor": null,
         "tailwindAssets": "capell:frontend-tailwind-assets",
         "catalogueReport": "capell:theme-catalogue-report",

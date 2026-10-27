@@ -11,10 +11,14 @@ use Capell\Core\Models\Site;
 use Capell\Frontend\Contracts\FrontendContextReader;
 use Capell\Frontend\Contracts\FrontendRuntimeManifestContributor;
 use Capell\Frontend\Data\FrontendRuntimeManifestData;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
+use Override;
 
 final class FoundationThemeRuntimeManifestContributor implements FrontendRuntimeManifestContributor
 {
+    #[Override]
     public function contribute(FrontendContextReader $context, FrontendRuntimeManifestData $manifest): void
     {
         $site = $context->site();
@@ -36,16 +40,27 @@ final class FoundationThemeRuntimeManifestContributor implements FrontendRuntime
         }
 
         if ($page instanceof Pageable && $page instanceof Model) {
-            $relations = [
-                'image.translations.language',
-                'media.translations.language',
-            ];
+            $relations = array_values(array_filter(
+                ['image', 'socialImage', 'media'],
+                static fn (string $relation): bool => $page->relationLoaded($relation) || $page->isRelation($relation),
+            ));
+            $page->loadMissing($relations);
 
-            if (method_exists($page, 'socialImage')) {
-                $relations[] = 'socialImage.translations.language';
+            $pageMedia = [];
+            foreach ($relations as $relation) {
+                $related = $page->getRelation($relation);
+                if ($related instanceof Media) {
+                    $pageMedia[] = $related;
+                } elseif ($related instanceof Collection) {
+                    foreach ($related as $media) {
+                        if ($media instanceof Media) {
+                            $pageMedia[] = $media;
+                        }
+                    }
+                }
             }
 
-            $page->loadMissing($relations);
+            new EloquentCollection($pageMedia)->loadMissing('translations.language');
         }
 
         if ($this->usesAuthMenu($context->layout())) {
@@ -69,12 +84,6 @@ final class FoundationThemeRuntimeManifestContributor implements FrontendRuntime
             return true;
         }
 
-        foreach ($value as $child) {
-            if ($this->containsAuthMenu($child)) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any($value, fn ($child): bool => $this->containsAuthMenu($child));
     }
 }

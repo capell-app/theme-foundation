@@ -38,6 +38,7 @@
                 :compact="true"
                 :content="$widget->translation->content"
                 :content-type="$widget->blueprint->content_structure"
+                :block-media-owner="$widget"
                 :divider="$widget->getMeta('content_divider')"
                 :muted="in_array($containerKey, $theme->secondary_containers)"
                 :title="$widget->translation->title"

@@ -6,6 +6,8 @@ Start at the [package README](../README.md) when deciding whether to install thi
 
 ## Guides
 
+- [Safe demo setup](demo-setup.md): Explicit demo targets, preservation, deliberate overwrite and repeat-install behaviour.
+
 | Doc                                                             | Use it for                                                                         |
 | --------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
 | [Credits And Acknowledgements](credits-and-acknowledgements.md) | Upstream services, dependencies, and acknowledgements.                             |

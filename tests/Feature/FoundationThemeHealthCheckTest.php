@@ -49,17 +49,17 @@ it('runs real diagnostics returning check results', function (): void {
 
     expect($results)->toHaveCount(10)
         ->and($results->every(static fn (mixed $result): bool => $result instanceof DoctorCheckResultData))->toBeTrue()
-        ->and($results->pluck('label')->all())->toBe([
-            'Foundation Theme package installation',
-            'Foundation Theme manifest and provider contract',
-            'Foundation Theme Studio definition',
-            'Foundation Theme render views',
-            'Foundation Theme asset pipeline',
-            'Foundation Theme config and tokens',
-            'Foundation Theme provider registrations',
-            'Fleet theme catalogue coverage',
-            'Fleet demo content coverage',
-            'Fleet screenshot freshness',
+        ->and($results->pluck('id')->all())->toBe([
+            'legacy.foundation.theme.package.installation',
+            'legacy.foundation.theme.manifest.and.provider.contract',
+            'legacy.foundation.theme.studio.definition',
+            'legacy.foundation.theme.render.views',
+            'legacy.foundation.theme.asset.pipeline',
+            'legacy.foundation.theme.config.and.tokens',
+            'legacy.foundation.theme.provider.registrations',
+            'legacy.fleet.theme.catalogue.coverage',
+            'legacy.fleet.demo.content.coverage',
+            'legacy.fleet.screenshot.freshness',
         ]);
 });
 
@@ -266,8 +266,12 @@ it('accepts explicit not-captured screenshot records in the fleet manifest', fun
 
     $check = foundationThemeHealthCheck($fleetRoot . '/theme-foundation');
 
+    $result = $check->fleetScreenshotFreshnessCheck();
+
     expect($check->themesMissingScreenshots())->not->toContain('theme-unshot')
-        ->and($check->fleetScreenshotFreshnessCheck()->passed)->toBeTrue();
+        ->and($result->passed)->toBeTrue()
+        ->and($result->label)->toStartWith('Foundation Theme: ')->not->toMatch('/up to date|fresh/i')
+        ->and(is_file($fleetRoot . '/theme-foundation/docs/screenshots/foundation-homepage.png'))->toBeFalse();
 
     foundationThemeDeleteDirectory(dirname($fleetRoot));
 });

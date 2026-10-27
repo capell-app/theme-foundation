@@ -11,7 +11,7 @@ legacy implementations continue to render their normal results without a pager.
 `handlePaginated()` receives `ResultsPaginationRequestData` and returns
 `ResultsListingData` with optional `ResultsPaginationData` metadata.
 
-The default implementation bounds the page size to 1–48, orders articles before
+The default implementation bounds the page size to 1-48, orders articles before
 pages, uses eligible children when present and otherwise falls back to site
 content, and excludes demonstration recovery pages from the page dataset. Totals
 cover the complete eligible dataset rather than the historical 24-item limit.

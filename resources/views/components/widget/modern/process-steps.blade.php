@@ -40,7 +40,7 @@
         @if ($layout === 'horizontal')
             <div class="relative mx-auto max-w-5xl">
                 <div
-                    class="md:widget absolute top-12 right-0 left-0 hidden h-px bg-stone-200"
+                    class="md:block absolute top-12 right-0 left-0 hidden h-px bg-stone-200"
                 ></div>
 
                 <div

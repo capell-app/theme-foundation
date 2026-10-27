@@ -8,6 +8,7 @@ use Capell\FoundationTheme\Actions\InstallFoundationThemeDemoAction;
 use Capell\FoundationTheme\Data\ThemeDemoInstallData;
 use Capell\FoundationTheme\Support\Demo\InteractsWithThemeDemoProfile;
 use Illuminate\Console\Command;
+use Override;
 use Stringable;
 
 final class DemoCommand extends Command
@@ -15,19 +16,28 @@ final class DemoCommand extends Command
     use InteractsWithThemeDemoProfile;
 
     protected $signature = 'capell:theme-foundation-demo
-        {--site=* : Site name(s) to seed. Defaults to the existing default site or Demo.}
+        {--site=*}
         {--language=* : Language code(s) to seed. Defaults to the existing default language or en.}
         {--base-url= : Base URL used for seeded demo links. Defaults to app.url.}
-        {--force : Rebuild existing Foundation demo page layouts}
+        {--sites= : Comma-separated demo site names for package lifecycle dispatch.}
+        {--languages= : Comma-separated language codes for package lifecycle dispatch.}
+        {--url= : Base URL for package lifecycle dispatch.}
+        {--force}
         {--profile= : Theme Studio preset key to apply}';
 
     protected $description = 'Install Foundation theme demo pages.';
 
+    #[Override]
+    public function getHelp(): string
+    {
+        return parent::getHelp() ?: __('capell-theme-foundation::demo.foundation_help');
+    }
+
     public function handle(): int
     {
         $result = InstallFoundationThemeDemoAction::run(new ThemeDemoInstallData(
-            siteNames: $this->stringOptions('site'),
-            languageCodes: $this->stringOptions('language'),
+            siteNames: $this->stringOptions('site', 'sites'),
+            languageCodes: $this->stringOptions('language', 'languages'),
             baseUrl: $this->baseUrl(),
             force: (bool) $this->option('force'),
             profile: $this->profileOption(),
@@ -41,13 +51,15 @@ final class DemoCommand extends Command
     /**
      * @return array<int, string>
      */
-    private function stringOptions(string $name): array
+    private function stringOptions(string $name, string $csvName): array
     {
         $options = $this->option($name);
+        $csv = $this->option($csvName);
 
-        if (! is_array($options)) {
-            return [];
-        }
+        $options = [
+            ...(is_array($options) ? $options : []),
+            ...(is_array($csv) ? $csv : (is_string($csv) ? explode(',', $csv) : [])),
+        ];
 
         return array_values(array_filter(
             array_map(
@@ -62,10 +74,12 @@ final class DemoCommand extends Command
 
     private function baseUrl(): string
     {
-        $baseUrl = $this->option('base-url');
+        foreach (['base-url', 'url'] as $name) {
+            $baseUrl = $this->option($name);
 
-        if (is_string($baseUrl) && trim($baseUrl) !== '') {
-            return trim($baseUrl);
+            if (is_string($baseUrl) && trim($baseUrl) !== '') {
+                return trim($baseUrl);
+            }
         }
 
         $configuredUrl = config('app.url', 'http://localhost');

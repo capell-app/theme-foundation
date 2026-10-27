@@ -160,3 +160,43 @@ declare(strict_types=1);
 $inputs = []; // Supply the arguments required by the action handle() method.
 resolve(\Capell\FoundationTheme\Actions\SetupFoundationThemePackageAction::class)->handle(...$inputs);
 ```
+
+## PaginatesResultsListing adapter
+
+This adapter delegates to the shipped implementation so the existing eligibility,
+ownership or pagination bounds remain in force. Resolve the backend by its concrete
+class to avoid resolving the replacement contract recursively.
+
+Register through `ResultsListingResolver`: the results-section consumer checks the
+resolved object for `PaginatesResultsListing` before calling `handlePaginated()`.
+The inherited `handle()` remains available for widgets without pagination.
+
+<!-- example: contract Capell\FoundationTheme\Contracts\PaginatesResultsListing -->
+
+```php
+<?php
+declare(strict_types=1);
+
+final class ExamplePaginatesResultsListingAdapter implements \Capell\FoundationTheme\Contracts\PaginatesResultsListing
+{
+    public function __construct(private readonly \Capell\FoundationTheme\Actions\ResolveResultsListingAction $backend) {}
+
+    #[\Override]
+    public function handle(\Capell\Core\Models\Site $site, \Capell\Core\Models\Language $language, \Capell\Core\Models\Page $page): \Capell\FoundationTheme\Data\ResultsListingData
+    {
+        return $this->backend->handle($site, $language, $page);
+    }
+
+    #[\Override]
+    public function handlePaginated(\Capell\Core\Models\Site $site, \Capell\Core\Models\Language $language, \Capell\Core\Models\Page $page, \Capell\FoundationTheme\Data\ResultsPaginationRequestData $pagination): \Capell\FoundationTheme\Data\ResultsListingData
+    {
+        return $this->backend->handlePaginated($site, $language, $page, $pagination);
+    }
+}
+
+app()->bind(\Capell\FoundationTheme\Contracts\ResultsListingResolver::class, ExamplePaginatesResultsListingAdapter::class);
+```
+
+## Section variant scope
+
+The section variant picker uses the effective theme of each tracked page or layout containing the widget. A layout theme overrides the site theme. Shared widgets offer the intersection of supported variants, plus Default for the base section. Layout references and page assets cover all registered Pageable types, including Article and Event consumers, through Core’s public page-type registry. Widgets without tracked uses explicitly show options from the default admin theme. Clearing the picker saves Default. Unsupported saved variants remain stored during unrelated edits until replaced or explicitly cleared; the public view resolver retains its existing base-section fallback.

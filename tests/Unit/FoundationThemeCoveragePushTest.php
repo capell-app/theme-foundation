@@ -60,6 +60,7 @@ use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Text;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\View\View;
@@ -246,7 +247,7 @@ it('declares foundation settings schema and settings migrations', function (): v
         ->and($components[2])->toBeInstanceOf(Section::class)
         ->and($performanceComponents)->toHaveCount(2)
         ->and($performanceComponents[0])->toBeInstanceOf(Checkbox::class)
-        ->and($performanceComponents[1])->toBeInstanceOf(Checkbox::class)
+        ->and($performanceComponents[1])->toBeInstanceOf(Text::class)
         ->and($designTokenComponents)->toHaveCount(19)
         ->and($designTokenComponents[0])->toBeInstanceOf(ColorPicker::class)
         ->and($designTokenComponents[12])->toBeInstanceOf(ColorPicker::class)

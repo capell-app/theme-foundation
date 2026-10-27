@@ -31,7 +31,7 @@
                             alt="{{ $feature['image_alt'] ?? $feature['title'] }}"
                             width="800"
                             height="480"
-                            loading="lazy"
+                            loading="{{ $secondaryImageLoading ?? 'lazy' }}"
                             decoding="async"
                             class="aspect-[5/3] w-full object-cover"
                         />

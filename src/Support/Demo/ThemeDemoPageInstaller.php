@@ -19,6 +19,7 @@ use Capell\Core\Support\Creator\BlueprintCreator;
 use Capell\Core\Support\Creator\LayoutCreator;
 use Capell\Core\Support\Creator\PageCreator;
 use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
+use Capell\FoundationTheme\Actions\AssertThemeDemoTargetAction;
 use Capell\FoundationTheme\Actions\BuildThemeDemoFormsPayloadAction;
 use Capell\FoundationTheme\Contracts\ProvidesThemeDemoContent;
 use Capell\FoundationTheme\Data\ThemeDemoInstallData;
@@ -43,6 +44,8 @@ final class ThemeDemoPageInstaller
 
     public function handle(ThemeDemoInstallData $data, string $themeKey, string $themeName, ?ProvidesThemeDemoContent $contentProvider = null): int
     {
+        AssertThemeDemoTargetAction::run($data);
+
         $theme = $this->ensureTheme($themeKey, $themeName, $data->profile);
         $languages = $this->resolveLanguages($data);
         $sites = $this->resolveSites($data, $theme, $languages);
@@ -126,6 +129,11 @@ final class ThemeDemoPageInstaller
 
         /** @var Site $site */
         $site = Site::query()->firstOrNew(['name' => $siteName]);
+        // Naming a site permits adding demo pages, not replacing its configuration.
+        if ($site->exists && ! $data->force) {
+            return $site;
+        }
+
         $site->fill([
             'blueprint_id' => $site->blueprint_id ?? $siteType->getKey(),
             'language_id' => $site->language_id ?? $primaryLanguage?->getKey(),
@@ -138,6 +146,9 @@ final class ThemeDemoPageInstaller
             'default' => $site->exists ? $site->default : ! Site::query()->default()->exists(),
         ]);
         $site->save();
+
+        $hasMultipleSites = count(array_unique($data->siteNames)) > 1
+            || Site::query()->whereKeyNot($site->getKey())->exists();
 
         foreach ($languages as $languageIndex => $language) {
             $site->translations()->updateOrCreate(
@@ -170,7 +181,7 @@ final class ThemeDemoPageInstaller
             $site->siteDomains()->updateOrCreate(
                 ['language_id' => $language->getKey()],
                 [
-                    ...$this->siteDomainData($data->baseUrl, $siteName, (string) $language->code, $languageIndex),
+                    ...$this->siteDomainData($data->baseUrl, $siteName, (string) $language->code, $languageIndex, $hasMultipleSites),
                     'default' => $languageIndex === 0,
                     'status' => true,
                 ],
@@ -183,7 +194,7 @@ final class ThemeDemoPageInstaller
     /**
      * @return array{scheme: string|null, domain: string|null, path: string|null}
      */
-    private function siteDomainData(string $baseUrl, string $siteName, string $languageCode, int $languageIndex): array
+    private function siteDomainData(string $baseUrl, string $siteName, string $languageCode, int $languageIndex, bool $hasMultipleSites): array
     {
         $scheme = parse_url($baseUrl, PHP_URL_SCHEME);
         $domain = parse_url($baseUrl, PHP_URL_HOST);
@@ -194,7 +205,7 @@ final class ThemeDemoPageInstaller
             $pathParts[] = $languageCode;
         }
 
-        if (Site::query()->count() > 1) {
+        if ($hasMultipleSites) {
             $pathParts[] = Str::slug($siteName);
         }
 

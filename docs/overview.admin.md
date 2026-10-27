@@ -6,15 +6,19 @@ It also owns DesignSpec v1 and the deterministic Foundation compiler used by Web
 
 ## How to use it
 
-1. Install and set up Foundation Theme, then select the `default` theme definition in the shared Theme Studio workflow for the intended site.
-2. Open the Foundation Theme extension settings surface to configure performance and runtime design tokens.
-3. Build pages with the shared Layout Builder sections, then preview the public output.
-4. Activate a vertical theme when you need its specialised section set; it continues to use Foundation's runtime contracts.
+1. Open the theme-management entry for **Foundation Theme**, note the site's current theme, and select only the site you intend to review.
+2. Choose **Preview Foundation Theme** to view this theme privately on that site's existing content without changing its selected theme. Check available page areas, sections and the mobile layout; create a page first if there is nothing to preview.
+3. When ready, choose **Apply Foundation Theme** for that site. This changes its public design immediately, including already-published pages.
+4. Open the Foundation Theme extension settings surface to configure performance and runtime design tokens.
+5. Build pages with the shared Layout Builder sections, then preview the public output.
+6. Use the same Preview then Apply workflow for a specialised child theme; it continues to use Foundation runtime contracts.
+
+To recover the previous design, reopen the previous theme's management entry, select the same site and choose its **Apply** button. This restores the theme selection; it does not undo content or shared Theme Studio settings. Saving those settings can affect public pages using that theme, so do not treat settings edits as private preview changes.
 
 ## What it adds
 
 - The base page layouts every Capell theme uses.
-- Extension settings for lazy loading, asset minification, light/dark colour tokens, image radius, section spacing, widget gaps, heading scale, motion intensity, and responsive repeatable layouts.
+- Extension settings for secondary-image lazy loading, build-policy guidance, light/dark colour tokens, image radius, section spacing, widget gaps, heading scale, motion intensity, and responsive repeatable layouts.
 - Shared Blade components, layout areas, media/SVG handling, and cache-safe public rendering for child themes.
 - A closed DesignSpec v1 schema, canonical reader, deterministic compiler, and `capell-theme` Project Build artifact handler.
 - Setup, demo, theme-validation, theme-catalogue, Tailwind-generation, and theme-scaffolding commands for maintainers.
@@ -37,3 +41,15 @@ Stable contract points:
 - Runtime tokens: `--foundation-page-bg`, `--foundation-section-spacing`, `--foundation-widget-gap`.
 - Layout Builder chrome areas: `header`.
 - Public-output rule: child themes must not expose authoring metadata, editor controls, model IDs, field paths, permissions, or signed editor URLs.
+
+## Try fictional demo content safely
+
+Use private theme Preview for existing content. Ask a developer to follow [safe demo setup](../../theme-foundation/docs/demo-setup.md) in a disposable local site when you want fictional sample pages instead.
+
+A scoped demo run writes sample pages, widgets and demo layouts, including on repeats, and can adopt the site recovery page. An unscoped run refuses existing sites; a scoped run preserves site configuration unless the developer deliberately chooses the documented overwrite option. Review the target, languages and domains together before setup.
+
+## Performance controls
+
+Lazy loading controls secondary feature, proof and content-listing images. Disable it to load those images eagerly; hero images always remain eager with high priority. CSS and JavaScript use the resource variants supplied by the installed build. There is no save-time asset rebuild switch. Existing saved minification values are retained for compatibility and do not select a different asset build.
+
+A successful Foundation settings save invalidates generated full-page HTML and queues the configured edge-cache purge through the frontend output-cache contract. Rolled-back saves leave that output intact.

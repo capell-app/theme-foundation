@@ -89,6 +89,7 @@ class FoundationThemeSettings extends Settings implements SettingsContract
 
     public bool $enable_lazy_loading = true;
 
+    /** Retained for older settings rows; installed builds supply resource variants. */
     public bool $minify_assets = true;
 
     public string $page_background_color = '#f5f7f4';

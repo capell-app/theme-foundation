@@ -13,6 +13,7 @@ use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Text;
 use Filament\Schemas\Schema;
 use Override;
 
@@ -30,13 +31,9 @@ class FoundationThemeSettingsSchema implements HasSchema
                             HelperText::apply(
                                 Checkbox::make('enable_lazy_loading')
                                     ->label(self::translate('capell-frontend::form.enable_lazy_loading')),
-                                static fn (): string => self::translate('capell-frontend::form.enable_lazy_loading_helper'),
+                                static fn (): string => self::translate('capell-theme-foundation::form.enable_lazy_loading_helper'),
                             ),
-                            HelperText::apply(
-                                Checkbox::make('minify_assets')
-                                    ->label(self::translate('capell-frontend::form.minify_assets')),
-                                static fn (): string => self::translate('capell-frontend::form.minify_assets_helper'),
-                            ),
+                            Text::make(static fn (): string => self::translate('capell-theme-foundation::form.minify_assets_helper')),
                         ]),
                 ]),
             Section::make(self::translate('capell-theme-foundation::form.design_tokens'))

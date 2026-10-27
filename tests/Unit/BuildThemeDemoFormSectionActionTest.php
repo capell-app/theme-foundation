@@ -20,5 +20,6 @@ it('builds a stable portable form section for a theme demo', function (): void {
         ->and($section['form_instance_id'])->toBe('studio-index-contact-form')
         ->and($fields)->toHaveCount(4)
         ->and(data_get($fields, '1.type'))->toBe('email')
+        ->and(data_get($fields, '1.label'))->toBe('Email address')
         ->and($section['fallback_url'])->toBe('mailto:desk@example.test');
 });

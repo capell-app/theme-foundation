@@ -46,7 +46,7 @@
                             alt=""
                             width="160"
                             height="120"
-                            loading="lazy"
+                            loading="{{ $secondaryImageLoading ?? 'lazy' }}"
                             decoding="async"
                             sizes="160px"
                             class="aspect-[4/3] w-28 shrink-0 rounded-[var(--theme-radius-value)] object-cover sm:w-40"

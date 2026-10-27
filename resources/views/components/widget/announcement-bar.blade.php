@@ -24,6 +24,7 @@
             :compact="true"
             :content="$content"
             :content-type="$widget->blueprint->content_structure"
+            :block-media-owner="$widget"
             :heading-size="$widget->getMeta('heading_size', 'h3')"
             :title="$title"
             :text-align="$align"

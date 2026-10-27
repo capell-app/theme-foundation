@@ -163,7 +163,7 @@
                         @if ($site->logoInverted)
                             <x-capell::logo
                                 :media="$site->logoInverted"
-                                :class="'header-logo h-10 max-h-10 w-auto' . ($site->logo ? ' hidden dark:widget' : '')"
+                                :class="'header-logo h-10 max-h-10 w-auto' . ($site->logo ? ' hidden dark:block' : '')"
                             />
                         @endif
 

@@ -25,6 +25,7 @@
     'language' => null,
     'layout' => null,
     'pageRecord' => null,
+    'blockMediaOwner' => null,
     'site' => null,
     'size' => '',
     'textAlign' => 'left',
@@ -221,6 +222,7 @@
     @if ($contentType === ContentStructure::Blocks)
         <x-capell-layout-builder::layout-widgets
             :widgets="$content"
+            :context="['record' => $blockMediaOwner ?? $page]"
             :layout="$layout"
             :page="$page"
         />

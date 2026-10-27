@@ -8,7 +8,7 @@ Foundation Theme is an **Available**, **No schema impact** Capell theme in the *
 
 Theme Foundation provides the shared public layouts, runtime design tokens, layout defaults, and override contracts used by Capell themes. It renders host-owned page data and does not introduce a separate content model.
 
-Sites can use Foundation directly or extend it with a child theme, while public pages share predictable layout and token rendering without frontend authoring state.
+Use Preview Foundation Theme on existing content before Apply Foundation Theme, which changes the selected site's public design; reapply its previous theme to restore that selection. Shared Theme Studio settings saves can affect public pages. For fictional demo content, name a disposable target with --site and review --base-url and --language; unscoped setup refuses existing sites, scoped repeats preserve site configuration unless --force deliberately replaces its theme, enabled state, requested site translations and domains, while demo pages, widgets and demo layouts are rewritten on scoped repeats.
 
 Status details:
 
@@ -106,6 +106,7 @@ Desktop, tablet, and mobile variants remain defined in the screenshot contract; 
 
 ### Actions
 
+- `AssertThemeDemoTargetAction`
 - `BuildAssetBannerItemsAction`
 - `BuildBannerImageRenderDataAction`
 - `BuildFooterLatestPageLinksAction`
@@ -130,6 +131,7 @@ Desktop, tablet, and mobile variants remain defined in the screenshot contract; 
 - `MarkPrimaryHeadingRenderedAction`
 - `PrepareFoundationPageWidgetDataAction`
 - `ResolveAuthMenuPayloadsAction`
+- `ResolveFoundationImageLoadingAction`
 - `ResolveFoundationSectionAnchorAction`
 - `ResolveFoundationThemeTokensAction`
 - `ResolveLoadedLayoutContainerBackgroundImageAction`
@@ -139,6 +141,7 @@ Desktop, tablet, and mobile variants remain defined in the screenshot contract; 
 - `ResolveResultsListingAction`
 - `ResolveResultsPaginationLinksAction`
 - `ResolveSafeCssColorTokenAction`
+- `ResolveSectionVariantScopeAction`
 - `ResolveThemeFormEmbedDataAction`
 - `ResolveThemeFrontendScriptDataAction`
 - `ResolveThemeOptionalSectionAvailabilityAction`
@@ -174,6 +177,7 @@ Desktop, tablet, and mobile variants remain defined in the screenshot contract; 
 - `DesignSpecTypographyData`
 - `DesignSpecTypographyRoleData`
 - `FooterLatestPageLinkData`
+- `FoundationImageLoadingData`
 - `FoundationLayoutContainerPresentationData`
 - `FoundationPreparedPageData`
 - `FoundationThemeTokensData`
@@ -184,6 +188,7 @@ Desktop, tablet, and mobile variants remain defined in the screenshot contract; 
 - `ResultsPaginationData`
 - `ResultsPaginationLinkData`
 - `ResultsPaginationRequestData`
+- `SectionVariantScopeData`
 - `ThemeDemoInstallData`
 - `ThemeFormEmbedData`
 - `ThemeFrontendScriptData`
@@ -217,6 +222,7 @@ Desktop, tablet, and mobile variants remain defined in the screenshot contract; 
 ### Manifest contributions
 
 - `console-command: Capell\FoundationTheme\Manifest\FoundationThemeConsoleCommandsContribution`
+- `public-render-data: Capell\FoundationTheme\Support\Render\FoundationImageLoadingContributor`
 
 ### Health checks
 
@@ -413,8 +419,14 @@ This theme has no schema impact. It relies on core Capell site, page, locale, an
 
 1. Install the package: `composer require capell-app/theme-foundation`.
 2. Run the package setup: `php artisan capell:theme-foundation-setup`.
-3. See it working: run `php artisan capell:theme-foundation-demo`.
-4. Open `/theme-default-directory` and confirm the public output renders without admin state.
+3. See it working on a disposable site: run `php artisan capell:theme-foundation-demo --site="Theme demo"`. Choose a new site name for your demo; keep customer sites for the Preview → Apply workflow above.
+4. Run `php artisan list` and verify the package command signatures are registered.
+
+## Upgrading
+
+No manual steps between minor versions.
+
+Read [CHANGELOG.md](CHANGELOG.md) before upgrading.
 
 ## Next Steps
 

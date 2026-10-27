@@ -37,6 +37,7 @@
                 align="center"
                 :content="$widget->translation->content"
                 :content-type="$widget->blueprint->content_structure"
+                :block-media-owner="$widget"
                 :color="$color"
                 :divider="$widget->getMeta('content_divider')"
                 :muted="in_array($containerKey, $theme->secondary_containers)"

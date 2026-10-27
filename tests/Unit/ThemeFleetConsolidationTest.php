@@ -12,6 +12,7 @@ use Capell\FoundationTheme\Tests\Support\FooterContentFixture;
 use function Capell\FoundationTheme\Tests\Support\preparePublicChrome;
 
 use Capell\Frontend\Facades\Frontend;
+use Capell\ThemeBistro\View\Components\ReservationPath;
 use Capell\ThemeEvents\Data\EventsChromeData;
 use Capell\ThemeEvents\Data\EventsFooterData;
 use Capell\ThemeEvents\Data\EventsNavigationData;
@@ -133,6 +134,7 @@ it('renders installed content through every active footer seam', function (): vo
     $site = preparePublicChrome(footerWidgets: true);
     $layout = Frontend::layout();
     Blade::component(FooterContentFixture::class, 'capell::layout.area');
+    Blade::component(ReservationPath::class, 'capell-theme-bistro::reservation-path');
     Blade::componentNamespace('Capell\\ThemePaperdesk\\View\\Components', 'capell-theme-paperdesk');
     $wasBlazeEnabled = Blaze::isEnabled();
     Blaze::disable();

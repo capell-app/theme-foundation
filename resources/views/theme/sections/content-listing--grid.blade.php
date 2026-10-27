@@ -50,7 +50,7 @@
                             alt=""
                             width="900"
                             height="600"
-                            loading="lazy"
+                            loading="{{ $secondaryImageLoading ?? 'lazy' }}"
                             decoding="async"
                             sizes="(min-width: 1024px) 24vw, (min-width: 640px) 46vw, 92vw"
                             class="aspect-[3/2] w-full object-cover transition duration-300 group-hover:scale-[1.02]"

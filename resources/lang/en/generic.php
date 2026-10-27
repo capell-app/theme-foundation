@@ -78,7 +78,7 @@ return [
     'search_results_for_query' => '{0} :count results for ":query"|{1} :count result for ":query"|[2,*] :count results for ":query"',
     'open_map' => 'Open location in Google Maps',
     'name' => 'Name',
-    'email' => 'Email',
+    'email' => 'Email address',
     'message' => 'Message',
     'spotlight' => 'Spotlight',
     'social_link' => 'Social profile',

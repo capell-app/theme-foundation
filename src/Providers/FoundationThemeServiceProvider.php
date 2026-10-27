@@ -23,6 +23,7 @@ use Capell\Core\Models\Layout;
 use Capell\Core\Models\Page;
 use Capell\Core\Models\Site;
 use Capell\Core\Models\Theme;
+use Capell\Core\Support\Extensions\ExtensionContributionReceiptRegistry;
 use Capell\Core\Support\Packages\AbstractPackageServiceProvider;
 use Capell\Core\Support\Renderables\RenderableRegistry;
 use Capell\Core\Support\Themes\ThemeChromeRegistry;
@@ -66,6 +67,7 @@ use Capell\FoundationTheme\Support\FoundationThemeRuntimeManifestContributor;
 use Capell\FoundationTheme\Support\Fragments\FoundationSectionPublicLayoutWidgetPayloadContributor;
 use Capell\FoundationTheme\Support\Interceptors\Themes\FoundationThemeInterceptor;
 use Capell\FoundationTheme\Support\Media\CapellUrlGenerator;
+use Capell\FoundationTheme\Support\Render\FoundationImageLoadingContributor;
 use Capell\FoundationTheme\Support\Tailwind\TailwindAssetsGenerator;
 use Capell\FoundationTheme\Support\View\FoundationThemePublicUrlViewComposer;
 use Capell\FoundationTheme\View\Components\Actions as ActionsComponent;
@@ -90,6 +92,7 @@ use Capell\FoundationTheme\View\Components\Widget\Slot as SlotComponent;
 use Capell\Frontend\Contracts\AssetsRegistryInterface;
 use Capell\Frontend\Contracts\FrontendComponentRegistryInterface;
 use Capell\Frontend\Contracts\FrontendContextReader;
+use Capell\Frontend\Contracts\FrontendOutputCacheInvalidator;
 use Capell\Frontend\Contracts\FrontendResourceContributor;
 use Capell\Frontend\Contracts\FrontendRuntimeManifestContributor;
 use Capell\Frontend\Data\Assets\FrontendPackageDependencyData;
@@ -102,6 +105,7 @@ use Capell\Frontend\Events\FrontendRenderPreparing;
 use Capell\Frontend\Support\Assets\FrontendPackageDependencyRegistry;
 use Capell\Frontend\Support\Loader\PageLoader;
 use Capell\Frontend\Support\Loader\SiteLoader;
+use Capell\Frontend\Support\Render\PublicRenderDataContributorRegistry;
 use Capell\LayoutBuilder\Contracts\Extenders\LayoutContainerSchemaExtender;
 use Capell\LayoutBuilder\Contracts\Extenders\WidgetSchemaExtender;
 use Capell\LayoutBuilder\Contracts\LayoutContainerThemePresentationProjector;
@@ -118,12 +122,15 @@ use Illuminate\Contracts\View\Factory as ViewFactory;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Console\Kernel;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\View as ViewFacade;
 use Livewire\Livewire;
 use Override;
 use ReflectionProperty;
 use Spatie\LaravelPackageTools\Package;
+use Spatie\LaravelSettings\Events\SettingsSaved;
+use WeakMap;
 
 final class FoundationThemeServiceProvider extends AbstractPackageServiceProvider
 {
@@ -322,6 +329,19 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
         $this->registerBlazeComponents();
         $this->registerPublishCommands();
         $this->registerFrontendRuntimeManifestContributors();
+        Event::listen(SettingsSaved::class, function (SettingsSaved $event): void {
+            if (! $event->settings instanceof FoundationThemeSettings) {
+                return;
+            }
+
+            // SettingsPage saves several groups in one transaction. Retire generated
+            // HTML and edge output only once the complete settings save commits.
+            DB::afterCommit(function (): void {
+                if ($this->app->bound(FrontendOutputCacheInvalidator::class)) {
+                    $this->app->make(FrontendOutputCacheInvalidator::class)->invalidateAll();
+                }
+            });
+        });
         $this->registerSharedConsoleCommands();
         $this->app->instance(self::SHARED_RENDERING_BOOTED, true);
         $this->sharedRenderingBooted = true;
@@ -362,18 +382,35 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
     {
         $this->app->tag(FoundationThemeAssetContributor::class, FrontendResourceContributor::TAG);
 
-        if (! $this->app->bound(AssetsRegistryInterface::class)) {
-            return;
+        // Register on a registry that is already bound, as installed boot always did, so the receipt keeps this
+        // provider's activation context. The resolving hook then covers a registry bound later and any replacement.
+        $receipts = $this->app->make(ExtensionContributionReceiptRegistry::class);
+        $contexts = $receipts->activeContexts() ?: $receipts->providerContexts(self::class);
+
+        /** @var WeakMap<AssetsRegistryInterface, true> $initialised */
+        $initialised = new WeakMap;
+        $register = static function (AssetsRegistryInterface $registry) use ($receipts, $contexts, $initialised): void {
+            if (isset($initialised[$registry])) {
+                return;
+            }
+
+            $initialised[$registry] = true;
+
+            $receipts->withContexts($contexts, static function () use ($registry): void {
+                foreach (FoundationThemeAssetEnum::cases() as $asset) {
+                    $registry->registerAsset(
+                        $asset->getAsset(),
+                        new FrontendAssetData(component: $asset->getComponent()),
+                    );
+                }
+            });
+        };
+
+        if ($this->app->bound(AssetsRegistryInterface::class)) {
+            $register($this->app->make(AssetsRegistryInterface::class));
         }
 
-        $registry = $this->app->make(AssetsRegistryInterface::class);
-
-        foreach (FoundationThemeAssetEnum::cases() as $asset) {
-            $registry->registerAsset(
-                $asset->getAsset(),
-                new FrontendAssetData(component: $asset->getComponent()),
-            );
-        }
+        $this->callAfterResolving(AssetsRegistryInterface::class, $register);
     }
 
     private function registerBladeDirectives(): void
@@ -464,6 +501,11 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
     private function registerPublicRuntimeData(): void
     {
+        $this->callAfterResolving(PublicRenderDataContributorRegistry::class, static function (PublicRenderDataContributorRegistry $contributors): void {
+            if (! isset($contributors->all()[FoundationImageLoadingContributor::KEY])) {
+                $contributors->register(new FoundationImageLoadingContributor);
+            }
+        });
         Event::listen(FrontendContextResolved::class, function (FrontendContextResolved $event): void {
             if ($event->context->getFrontendData('foundation.theme.tokens') === null) {
                 $event->context->setFrontendData('foundation.theme.tokens', ResolveFoundationThemeTokensAction::run(

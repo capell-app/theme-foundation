@@ -59,6 +59,7 @@
                     :compact="true"
                     :content="$widget->translation?->content ?: ($showPageContent ? $page->translation->content : null)"
                     :content-type="$widget->translation?->content ? $widget->blueprint->content_structure : ($showPageContent ? ResolvePageContentStructureAction::run($page) : null)"
+                    :block-media-owner="$widget->translation?->content ? $widget : $page"
                     :divider="$widget->getMeta('content_divider')"
                     :color="$color"
                     :muted="in_array($containerKey, $theme->secondary_containers)"

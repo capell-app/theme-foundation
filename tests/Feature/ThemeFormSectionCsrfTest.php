@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+use PHPUnit\Framework\Assert;
 
 /*
  * The raw, CSRF-protected `<form>` markup this test originally
@@ -156,4 +157,14 @@ it('groups pricing spectrum radio tiers in named fieldsets', function (): void {
             ->and($radioInputs)->toHaveCount(2)
             ->and($ungroupedRadioInputs)->toHaveCount(0);
     }
+});
+
+it('labels the contact split email input as an email address', function (): void {
+    $document = foundationFormDocument(renderFoundationFormSection('contact-split', ['action' => '/contact']));
+    $labels = $document->query('//label[input[@name="email" and @type="email"]]');
+    Assert::assertInstanceOf(DOMNodeList::class, $labels);
+    expect($labels)->toHaveCount(1);
+    $label = $labels->item(0);
+    Assert::assertInstanceOf(DOMElement::class, $label);
+    expect(trim($label->textContent))->toBe('Email address');
 });
