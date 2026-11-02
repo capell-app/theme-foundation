@@ -9,12 +9,25 @@ use Capell\Core\Models\Layout;
 use Capell\Core\Models\Site;
 use Capell\Core\Models\Theme;
 use Capell\FoundationTheme\Providers\FoundationThemeServiceProvider;
+use Capell\FoundationTheme\View\Components\Media\Svg;
 use Capell\LayoutBuilder\LayoutBuilderServiceProvider;
 use Capell\Tests\Packages\PackagesTestCase;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\View\Compilers\BladeCompiler;
+use Illuminate\View\Compilers\ComponentTagCompiler;
+use Override;
 
 final class RegisteredFoundationComponentsTest extends PackagesTestCase
 {
+    #[Override]
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        CapellCore::forcePackageInstalled(FoundationThemeServiceProvider::$packageName, false);
+    }
+
     public function test_shared_body_preserves_the_frontend_null_theme_fallback(): void
     {
         $template = '<x-capell::app.body :layout="$layout" :language="$language" :page-record="$pageRecord" :site="$site" :theme="$theme">Fallback content</x-capell::app.body>';
@@ -73,5 +86,28 @@ final class RegisteredFoundationComponentsTest extends PackagesTestCase
         } finally {
             unlink($path);
         }
+    }
+
+    public function test_media_svg_tag_resolves_to_the_svg_component(): void
+    {
+        (new FoundationThemeServiceProvider(app()))->packageBooted();
+
+        $blade = resolve(BladeCompiler::class);
+        $compiler = new ComponentTagCompiler($blade->getClassComponentAliases(), $blade->getClassComponentNamespaces(), $blade);
+
+        expect($blade->getClassComponentAliases())->toHaveKey('capell::media.svg', Svg::class)
+            ->and($compiler->componentClass('capell::media.svg'))->toBe(Svg::class);
+    }
+
+    /**
+     * @param  Application  $app
+     */
+    #[Override]
+    protected function getEnvironmentSetUp(mixed $app): void
+    {
+        parent::getEnvironmentSetUp($app);
+
+        // This test boots Theme Foundation itself, so it starts from an install without it.
+        CapellCore::forcePackageInstalled(FoundationThemeServiceProvider::$packageName, false);
     }
 }

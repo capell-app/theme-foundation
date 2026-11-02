@@ -64,8 +64,13 @@ it('renders suggestions without search counts or unnecessary pagination', functi
         ->and($dom->query('//section[contains(@class, "theme-search")]//p[contains(., "2 results")]'))->toHaveCount(0)
         ->and($dom->query('//section[contains(@class, "theme-pagination")]'))->toHaveCount(0)
         ->and($dom->query('//section[contains(@class, "theme-search")]//p[contains(., "No matching results")]'))->toHaveCount(0)
-        ->and($dom->query('//section[contains(@class, "theme-content-listing")]//a/img/following-sibling::span[contains(concat(" ", @class, " "), " block ") and contains(concat(" ", @class, " "), " p-5 ")]'))->toHaveCount(3)
-        ->and($dom->query('//section[contains(@class, "theme-content-listing")]//a/img/following-sibling::span/span[contains(concat(" ", @class, " "), " mt-2 ") and contains(concat(" ", @class, " "), " block ")]'))->toHaveCount(6);
+        ->and($dom->query('//section[contains(@class, "theme-content-listing")]//a/span[contains(concat(" ", @class, " "), " block ") and contains(concat(" ", @class, " "), " p-5 ")]'))->toHaveCount(3)
+        ->and($dom->query('//section[contains(@class, "theme-content-listing")]//a/span/span[contains(concat(" ", @class, " "), " mt-2 ") and contains(concat(" ", @class, " "), " block ")]'))->toHaveCount(6);
+
+    // The directory uses the Results layout, which lists live pages; only the homepage cards carry demo images.
+    if ($surface === 'homepage') {
+        expect($dom->query('//section[contains(@class, "theme-content-listing")]//a/img/following-sibling::span[contains(concat(" ", @class, " "), " block ") and contains(concat(" ", @class, " "), " p-5 ")]'))->toHaveCount(3);
+    }
 })->with(['homepage', 'directory']);
 
 it('renders inset spaced recovery suggestions on the not found demo', function (): void {

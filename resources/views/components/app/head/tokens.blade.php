@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 use Capell\FoundationTheme\Actions\ResolveFoundationThemeTokensAction;
 use Capell\FoundationTheme\Data\FoundationThemeTokensData;
 use Capell\FoundationTheme\Settings\FoundationThemeSettings;

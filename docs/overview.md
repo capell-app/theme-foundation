@@ -56,10 +56,10 @@ A scoped demo run writes sample pages, widgets and demo layouts, including on re
 
 Lazy loading controls secondary feature, proof and content-listing images. Disable it to load those images eagerly; hero images always remain eager with high priority. CSS and JavaScript use the resource variants supplied by the installed build. There is no save-time asset rebuild switch. Existing saved minification values are retained for compatibility and do not select a different asset build.
 
+A successful Foundation settings save invalidates generated full-page HTML and queues the configured edge-cache purge through the frontend output-cache contract. Rolled-back saves leave that output intact.
+
 ---
 
 For developers: see the [README](../README.md).
 
 <!-- prettier-ignore-end -->
-
-A successful Foundation settings save invalidates generated full-page HTML and queues the configured edge-cache purge through the frontend output-cache contract. Rolled-back saves leave that output intact.

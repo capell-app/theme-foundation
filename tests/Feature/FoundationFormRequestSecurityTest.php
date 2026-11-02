@@ -30,10 +30,73 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Testing\TestResponse;
 use Livewire\Livewire;
 use Livewire\Mechanisms\HandleComponents\Checksum;
+
+use function Livewire\store;
+
 use PHPUnit\Framework\Assert;
 use Symfony\Component\HttpFoundation\Response;
 use Workbench\App\Console\Commands\PrepareFoundationScreenshotEvidenceCommand;
 use Workbench\App\Providers\ScreenshotWorkbenchServiceProvider;
+
+/**
+ * The deferred-form fixture (demo install, evidence preparation and the two Livewire snapshots) costs seconds per
+ * test but is identical for every test, so the first test builds it and later tests restore its database rows.
+ *
+ * @param  array{tables: array<string, list<array<string, mixed>>>, parent: string, child: string, loadedParent: string}|null  $store
+ * @return array{tables: array<string, list<array<string, mixed>>>, parent: string, child: string, loadedParent: string}|null
+ */
+function foundationFormRequestSeed(?array $store = null): ?array
+{
+    static $seed = null;
+
+    if ($store !== null) {
+        $seed = $store;
+    }
+
+    return $seed;
+}
+
+/** @return array<string, list<array<string, mixed>>> */
+function foundationFormRequestDumpTables(): array
+{
+    $tables = [];
+    foreach (DB::select("select name from sqlite_master where type = 'table' and name not like 'sqlite_%'") as $table) {
+        $name = (string) $table->name;
+        // Generated columns (hidden = 2 or 3) are recomputed by the database and cannot be inserted.
+        $generated = [];
+        foreach (DB::select(sprintf('PRAGMA table_xinfo("%s")', $name)) as $column) {
+            if (in_array($column->hidden, [2, 3], true)) {
+                $generated[] = (string) $column->name;
+            }
+        }
+
+        $rows = [];
+        foreach (DB::table($name)->get() as $row) {
+            $rows[] = array_diff_key((array) $row, array_flip($generated));
+        }
+
+        $tables[$name] = $rows;
+    }
+
+    return $tables;
+}
+
+/** @param  array<string, list<array<string, mixed>>>  $tables */
+function foundationFormRequestRestoreTables(array $tables): void
+{
+    // Deferred checks work inside the test transaction, where toggling foreign_keys is ignored. Clear every table
+    // before inserting any so a cascading delete cannot remove rows that were already restored.
+    DB::statement('PRAGMA defer_foreign_keys = ON');
+    foreach (array_keys($tables) as $name) {
+        DB::table($name)->delete();
+    }
+
+    foreach ($tables as $name => $rows) {
+        foreach (array_chunk($rows, 50) as $chunk) {
+            DB::table($name)->insert($chunk);
+        }
+    }
+}
 
 beforeEach(function (): void {
     $this->formRequestEnvironment = [
@@ -47,20 +110,33 @@ beforeEach(function (): void {
 
     new ScreenshotWorkbenchServiceProvider(app())->register();
     resolve(Kernel::class)->registerCommand(new PrepareFoundationScreenshotEvidenceCommand);
-    $this->artisan('capell:theme-foundation-demo', ['--base-url' => 'http://localhost', '--force' => true])->assertSuccessful();
-    $this->artisan('capell:prepare-foundation-screenshot-evidence')->assertSuccessful();
+    $seed = foundationFormRequestSeed();
+
+    if ($seed === null) {
+        $this->artisan('capell:theme-foundation-demo', ['--base-url' => 'http://localhost', '--force' => true])->assertSuccessful();
+        $this->artisan('capell:prepare-foundation-screenshot-evidence')->assertSuccessful();
+
+        $firstUrl = PageUrl::query()->where('url', '/theme-default-contact')->sole();
+        $html = $this->get($firstUrl->full_url)->assertOk()->getContent();
+        Assert::assertIsString($html);
+        $parent = foundationFormRequestSnapshot($html, 'public-form');
+        $loaded = foundationFormRequestUpdate($this, $parent, 'http://localhost', 'loadForm');
+        $loadedHtml = $loaded->json('components.0.effects.html');
+        Assert::assertIsString($loadedHtml);
+        $child = foundationFormRequestSnapshot($loadedHtml, 'public-form-fields');
+        $loadedParent = $loaded->json('components.0.snapshot');
+        Assert::assertIsString($loadedParent);
+        foundationFormRequestSeed(['tables' => foundationFormRequestDumpTables(), 'parent' => $parent, 'child' => $child, 'loadedParent' => $loadedParent]);
+        $seed = ['parent' => $parent, 'child' => $child, 'loadedParent' => $loadedParent];
+    } else {
+        foundationFormRequestRestoreTables($seed['tables']);
+    }
 
     $pageUrl = PageUrl::query()->where('url', '/theme-default-contact')->sole();
     $this->formRequestSite = $pageUrl->site;
-    $html = $this->get($pageUrl->full_url)->assertOk()->getContent();
-    Assert::assertIsString($html);
-    $this->formRequestParent = foundationFormRequestSnapshot($html, 'public-form');
-    $loaded = foundationFormRequestUpdate($this, $this->formRequestParent, 'http://localhost', 'loadForm');
-    $loadedHtml = $loaded->json('components.0.effects.html');
-    Assert::assertIsString($loadedHtml);
-    $this->formRequestChild = foundationFormRequestSnapshot($loadedHtml, 'public-form-fields');
-    $this->formRequestLoadedParent = $loaded->json('components.0.snapshot');
-    Assert::assertIsString($this->formRequestLoadedParent);
+    $this->formRequestParent = $seed['parent'];
+    $this->formRequestChild = $seed['child'];
+    $this->formRequestLoadedParent = $seed['loadedParent'];
 });
 
 afterEach(function (): void {
@@ -208,12 +284,14 @@ it('accepts only the issuing origin and resolved site across the HTTP topology m
     if ($topology === 'reassigned mount') {
         foundationFormUpdateDomains($site, ['path' => '/retired']);
     }
+
     $resolved = null;
     try {
         [$resolved] = SiteResolver::resolve($target . $path, SiteLoader::getSites());
     } catch (Throwable) {
         // Unknown hosts redirect or fail on normal pages; neither grants form authority.
     }
+
     expect($source === $target && $resolved?->getKey() === $site->getKey())->toBe($accepted);
     $response = foundationFormEntryRequest($this, $entryPoint, $target);
     $html = $response->json('components.0.effects.html');
@@ -297,6 +375,7 @@ it('refuses legacy snapshots without an issuing origin at every HTTP entry point
         $snapshot['checksum'] = Checksum::generate($snapshot);
         $this->{$property} = json_encode($snapshot, JSON_THROW_ON_ERROR);
     }
+
     $response = foundationFormEntryRequest($this, $entryPoint, 'http://localhost');
     expect($response->json('components.0.effects.html'))->toContain('role="status"')->not->toContain('<form');
     expect(Submission::query()->count())->toBe(0);
@@ -335,9 +414,10 @@ it('retains form authority through an actual HTML cache hit for another visitor'
     $registry = new RenderHookRegistry;
     app()->instance(RenderHookRegistry::class, $registry);
     app()->instance(RenderHookFragmentRegistry::class, new RenderHookFragmentRegistry);
-    $extension = new class($handle) implements RenderHookExtensionInterface
+
+    $extension = new readonly class($handle) implements RenderHookExtensionInterface
     {
-        public function __construct(private readonly string $handle) {}
+        public function __construct(private string $handle) {}
 
         #[Override]
         public function render(RenderHookContext $context): string
@@ -412,6 +492,7 @@ it('uses trusted proxy origin semantics for HTTP forms without trusting a refere
     if ($previousHeaders < 0 || $previousHeaders > 63) {
         throw new LogicException('Unexpected trusted proxy header mask.');
     }
+
     TrustProxies::at($trusted ? ['127.0.0.1'] : []);
     TrustProxies::withHeaders(Request::HEADER_X_FORWARDED_HOST | Request::HEADER_X_FORWARDED_PROTO | Request::HEADER_X_FORWARDED_PORT);
     try {
@@ -441,6 +522,7 @@ it('retains a trusted proxy mount prefix at every HTTP form entry point', functi
     if ($previousHeaders < 0 || $previousHeaders > 63) {
         throw new LogicException('Unexpected trusted proxy header mask.');
     }
+
     TrustProxies::at(['127.0.0.1']);
     TrustProxies::withHeaders(Request::HEADER_X_FORWARDED_PREFIX);
     try {
@@ -468,6 +550,7 @@ function foundationFormRequestSnapshot(string $html, string $name): string
 
     $document = new DOMDocument;
     $document->loadHTML($html, LIBXML_NOERROR | LIBXML_NOWARNING);
+
     $elements = new DOMXPath($document)->query('//*[@*[name()="wire:snapshot"]]');
     Assert::assertNotFalse($elements);
     foreach ($elements as $element) {
@@ -493,6 +576,7 @@ function foundationFormRequestUpdate(PackagesTestCase $test, string $snapshot, s
         // The HTTP kernel receives the backend path after the proxy strips its prefix.
         $updateUri = substr($updateUri, strlen($basePath));
     }
+
     foundationFormResetRequestState();
 
     return $test->postJson($origin . $updateUri, [
@@ -501,7 +585,7 @@ function foundationFormRequestUpdate(PackagesTestCase $test, string $snapshot, s
             'updates' => $updates === [] ? new stdClass : $updates,
             'calls' => $method === null ? [] : [['path' => '', 'method' => $method, 'params' => []]],
         ]],
-    ], ['X-Livewire' => 'true', 'Host' => (string) parse_url($origin, PHP_URL_HOST) . (parse_url($origin, PHP_URL_PORT) ? ':' . parse_url($origin, PHP_URL_PORT) : '')])->assertOk();
+    ], ['X-Livewire' => 'true', 'Host' => parse_url($origin, PHP_URL_HOST) . (parse_url($origin, PHP_URL_PORT) ? ':' . parse_url($origin, PHP_URL_PORT) : '')])->assertOk();
 }
 
 function foundationFormResetRequestState(): void
@@ -509,7 +593,7 @@ function foundationFormResetRequestState(): void
     // These are separate HTTP requests sharing one test application. Discard
     // the previous kernel's context and Livewire's removed-child bookkeeping.
     Livewire::flushState();
-    \Livewire\store()->unset('removedChildren');
+    store()->unset('removedChildren');
     $state = new FrontendState;
     app()->instance(FrontendState::class, $state);
     app()->instance(FrontendContextReader::class, $state);

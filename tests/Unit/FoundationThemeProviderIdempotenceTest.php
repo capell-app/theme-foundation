@@ -87,7 +87,8 @@ it('completes shared rendering during late installation with a pre-registered co
             $app->make(BladeCompiler::class)->componentNamespace('Capell\\FoundationTheme\\View\\Components', 'capell-theme-foundation');
         }, sourceRoot: dirname(__DIR__, 2));
         $compiler = $app->make(BladeCompiler::class);
-        expect(foundationViewHints($app))->toBe([])
+        // The package's own namespace compiles before install; shared rendering waits for it.
+        expect(foundationViewHints($app))->toHaveCount(1)
             ->and($compiler->getCustomDirectives())->not->toHaveKey('capellBuffer');
 
         InstalledRuntimeTestCase::prepareLateInstallMigrations($app);

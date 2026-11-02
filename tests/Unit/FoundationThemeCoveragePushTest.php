@@ -71,6 +71,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use Spatie\MediaLibrary\Support\PathGenerator\PathGenerator;
 
 beforeEach(function (): void {
@@ -306,7 +307,15 @@ it('compiles foundation blade directives across build tools and buffer expressio
 
     config(['capell-theme-foundation.asset_build_tool' => 'asset']);
 
-    $assetHtml = Blade::render('@buildAssets(["frontend.css", "frontend.js"], "vendor/capell")');
+    // Earlier tests in the same process can leave a resolved site's root URL behind, so pin the root this assertion expects.
+    URL::forceRootUrl('http://localhost');
+
+    try {
+        $assetHtml = Blade::render('@buildAssets(["frontend.css", "frontend.js"], "vendor/capell")');
+    } finally {
+        URL::forceRootUrl(null);
+    }
+
     $buffer = Blade::render(<<<'BLADE'
 @capellBuffer($renderCard, string $title, array $attributes = ['data-value' => 'a,b'])
 <span>{{ $title }} {{ $attributes['data-value'] }}</span>

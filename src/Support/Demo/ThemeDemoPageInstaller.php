@@ -14,10 +14,12 @@ use Capell\Core\Models\Language;
 use Capell\Core\Models\Layout;
 use Capell\Core\Models\Page;
 use Capell\Core\Models\Site;
+use Capell\Core\Models\SiteDomain;
 use Capell\Core\Models\Theme;
 use Capell\Core\Support\Creator\BlueprintCreator;
 use Capell\Core\Support\Creator\LayoutCreator;
 use Capell\Core\Support\Creator\PageCreator;
+use Capell\Core\Support\SiteDomains\SiteDomainAddressing;
 use Capell\Core\ThemeStudio\Theme\ThemeRegistry;
 use Capell\FoundationTheme\Actions\AssertThemeDemoTargetAction;
 use Capell\FoundationTheme\Actions\BuildThemeDemoFormsPayloadAction;
@@ -131,6 +133,8 @@ final class ThemeDemoPageInstaller
         $site = Site::query()->firstOrNew(['name' => $siteName]);
         // Naming a site permits adding demo pages, not replacing its configuration.
         if ($site->exists && ! $data->force) {
+            $this->addMissingLanguageDomains($site, $languages);
+
             return $site;
         }
 
@@ -189,6 +193,70 @@ final class ThemeDemoPageInstaller
         }
 
         return $site->refresh();
+    }
+
+    /**
+     * Demo pages are seeded in every language, so each needs a route. Existing domains are kept;
+     * a language without one is mounted inside the site's own address when that address is free.
+     * A site with no active domain is not public, and the demo never publishes it by inventing one.
+     *
+     * @param  EloquentCollection<int, Language>  $languages
+     */
+    private function addMissingLanguageDomains(Site $site, EloquentCollection $languages): void
+    {
+        $mount = $site->siteDomains()
+            ->where('status', true)
+            ->with('language')
+            ->orderByDesc('default')
+            ->orderBy('id')
+            ->first();
+
+        if (! $mount instanceof SiteDomain) {
+            return;
+        }
+
+        foreach ($languages as $language) {
+            if ($site->siteDomains()->withTrashed()->where('language_id', $language->getKey())->exists()) {
+                continue;
+            }
+
+            $attributes = $mount->getAttributes();
+            $path = $this->languagePath($mount, (string) $language->code);
+            $scheme = SiteDomainAddressing::normalizeScheme($attributes['scheme'] ?? null);
+            $host = SiteDomainAddressing::normalizeHost($attributes['domain'] ?? null);
+            $port = SiteDomainAddressing::normalizeStoredPort($scheme, $attributes['port'] ?? null);
+
+            if (SiteDomain::query()->withTrashed()->where('routing_identity', SiteDomainAddressing::routingIdentity($scheme, $host, $port, $path))->exists()) {
+                continue;
+            }
+
+            $site->siteDomains()->create([
+                'language_id' => $language->getKey(),
+                'scheme' => $attributes['scheme'] ?? null,
+                'domain' => $attributes['domain'] ?? null,
+                'port' => $attributes['port'] ?? null,
+                'path' => $path,
+                'default' => false,
+                'status' => true,
+            ]);
+        }
+    }
+
+    private function languagePath(SiteDomain $mount, string $languageCode): string
+    {
+        $segments = array_values(array_filter(
+            explode('/', SiteDomainAddressing::normalizePath($mount->path)),
+            static fn (string $segment): bool => $segment !== '',
+        ));
+
+        // A mount that is itself a language route (/showcase/en) is not part of the site's address.
+        if ($segments !== [] && $mount->language?->code === end($segments)) {
+            array_pop($segments);
+        }
+
+        $segments[] = $languageCode;
+
+        return '/' . implode('/', $segments);
     }
 
     /**

@@ -1,6 +1,5 @@
 <?php
 
-declare(strict_types=1);
 use Capell\Core\Support\Security\PublicUrlSanitizer;
 use Capell\Navigation\Data\NavigationItemData;
 

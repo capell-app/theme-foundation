@@ -125,6 +125,7 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\View as ViewFacade;
+use Illuminate\View\FileViewFinder;
 use Livewire\Livewire;
 use Override;
 use ReflectionProperty;
@@ -220,6 +221,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
     #[Override]
     public function packageBooted(): void
     {
+        $this->registerOwnViewNamespace();
         $this->bootSharedRendering();
     }
 
@@ -289,6 +291,65 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
     protected function isPackageInstalled(): bool
     {
         return CapellCore::isPackageInstalled(self::$packageName);
+    }
+
+    /**
+     * Other packages' views use `<x-capell-theme-foundation::...>` components, and
+     * `view:cache` compiles every registered view whether or not this package is
+     * installed. The package's own namespace therefore never depends on install
+     * state, for anonymous and class-based components alike. View paths append on
+     * every call, so each is added only when the current view services lack it.
+     */
+    private function registerOwnViewNamespace(): void
+    {
+        $views = __DIR__ . '/../../resources/views';
+        $components = $views . '/components';
+        $finder = $this->app->make(ViewFactory::class)->getFinder();
+
+        $hints = $finder instanceof FileViewFinder ? $finder->getHints() : [];
+
+        if (! in_array($views, $hints['capell-theme-foundation'] ?? [], true)) {
+            $finder->addNamespace('capell-theme-foundation', $views);
+        }
+
+        $this->registerAnonymousComponentPathOnce($components, 'capell-theme-foundation');
+        Blade::componentNamespace(self::COMPONENT_NAMESPACE, 'capell-theme-foundation');
+
+        // This package's views, and other packages' views, use shared `capell::`
+        // components that only this package provides, so they must compile before
+        // install too. Blade resolves aliases, then class namespaces, then anonymous
+        // paths in registration order, so the class namespace stays with installed
+        // rendering, only the three class components nothing else provides are
+        // aliased here, and the anonymous fallback waits until every provider has
+        // booted so any theme's own `capell` components still win.
+        Blade::component(ThemeFormEmbed::class, 'capell::form-embed');
+        Blade::component(FooterSocialLinksComponent::class, 'capell::footer.social-links');
+        $this->registerMediaBladeComponents();
+        $this->app->booted(fn () => $this->registerAnonymousComponentPathOnce($components, 'capell'));
+    }
+
+    /**
+     * Blade keeps the path and the view finder keeps its hashed namespace; either can
+     * be rebuilt without the other, so repair whichever half is missing.
+     */
+    private function registerAnonymousComponentPathOnce(string $path, string $prefix): void
+    {
+        foreach (Blade::getAnonymousComponentPaths() as $registered) {
+            if ($registered['path'] !== $path || $registered['prefix'] !== $prefix) {
+                continue;
+            }
+
+            $finder = $this->app->make(ViewFactory::class)->getFinder();
+            $hints = $finder instanceof FileViewFinder ? $finder->getHints() : [];
+
+            if (! in_array($path, $hints[$registered['prefixHash']] ?? [], true)) {
+                $finder->addNamespace($registered['prefixHash'], $path);
+            }
+
+            return;
+        }
+
+        Blade::anonymousComponentPath($path, $prefix);
     }
 
     /**
@@ -449,14 +510,14 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
     private function registerMediaBladeComponents(): void
     {
-        Blade::component('capell::media.svg', Svg::class);
+        Blade::component(Svg::class, 'capell::media.svg');
     }
 
     private function registerBladeComponents(): void
     {
         $this->app->make(ViewFactory::class)->prependNamespace('capell', __DIR__ . '/../../resources/views');
 
-        Blade::anonymousComponentPath(__DIR__ . '/../../resources/views/components', 'capell');
+        $this->registerAnonymousComponentPathOnce(__DIR__ . '/../../resources/views/components', 'capell');
         $this->registerBladeComponentAliases();
     }
 
@@ -464,11 +525,9 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
     {
         Blade::component(AppBodyComponent::class, 'capell::app.body');
         Blade::component(FooterIndexComponent::class, 'capell::footer.index');
-        Blade::component(FooterSocialLinksComponent::class, 'capell::footer.social-links');
         Blade::component(LayoutIndexComponent::class, 'capell::layout.index');
         Blade::component(LayoutMainComponent::class, 'capell::layout.main');
         Blade::component(NewsletterForm::class, 'capell::newsletter-form');
-        Blade::component(ThemeFormEmbed::class, 'capell::form-embed');
     }
 
     private function registerPublicViewDataComposers(): void
@@ -866,17 +925,11 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
     private function registerLayoutBuilderRendering(): void
     {
         $this->app->make(ViewFactory::class)->addNamespace(
-            'capell-theme-foundation',
-            __DIR__ . '/../../resources/views',
-        );
-
-        $this->app->make(ViewFactory::class)->addNamespace(
             'capell',
             __DIR__ . '/../../resources/views',
         );
 
-        Blade::anonymousComponentPath(__DIR__ . '/../../resources/views/components', 'capell');
-        Blade::anonymousComponentPath(__DIR__ . '/../../resources/views/components', 'capell-theme-foundation');
+        $this->registerAnonymousComponentPathOnce(__DIR__ . '/../../resources/views/components', 'capell');
         $this->registerLayoutBuilderComponentAliases();
 
         $this->registerFoundationSectionWidgetRenderables();
@@ -960,7 +1013,6 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
     private function registerLayoutBuilderComponentAliases(): void
     {
         Blade::componentNamespace(self::COMPONENT_NAMESPACE, 'capell');
-        Blade::componentNamespace(self::COMPONENT_NAMESPACE, 'capell-theme-foundation');
         Blade::component(AssetComponent::class, 'capell::widget.asset');
         Blade::component(AssetAccordionComponent::class, 'capell::widget.asset.accordion');
         Blade::component(AssetComponent::class, 'capell::widget.asset.banners');
