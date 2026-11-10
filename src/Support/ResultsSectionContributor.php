@@ -24,10 +24,18 @@ final readonly class ResultsSectionContributor
     public function contribute(Widget $widget, Layout $layout, Site $site, Language $language, Page $page): ?ResultsListingData
     {
         $meta = is_array($widget->meta) ? $widget->meta : [];
-        $isResultsLayout = $layout->key === LayoutEnum::Results->value
-            || data_get($layout->meta, 'theme_demo.base_layout') === LayoutEnum::Results->value;
+        $isThemeDemoResultsLayout = $layout->key !== LayoutEnum::Results->value
+            && data_get($layout->meta, 'theme_demo.base_layout') === LayoutEnum::Results->value;
+        $isResultsLayout = $layout->key === LayoutEnum::Results->value || $isThemeDemoResultsLayout;
 
         if (($meta['type'] ?? null) !== 'content-listing' || ! $isResultsLayout) {
+            return null;
+        }
+
+        // An installed theme demo ships sample cards; showing the install's live pages instead hides them.
+        // Items this contributor wrote back on an earlier pass are not sample cards, so a widget reused
+        // across requests still resolves its listing for the current page.
+        if ($isThemeDemoResultsLayout && ! array_key_exists('resolvedResults', $meta) && is_array($meta['items'] ?? null) && $meta['items'] !== []) {
             return null;
         }
 

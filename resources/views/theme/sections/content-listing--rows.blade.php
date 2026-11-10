@@ -41,8 +41,8 @@
                     class="group widget flex items-center gap-5 py-5 transition first:pt-0 last:pb-0"
                 >
                     @if (! empty($safeItemImage))
-                        <img
-                            src="{{ $safeItemImage }}"
+                        <x-capell::image-source
+                            :image="$safeItemImage"
                             alt=""
                             width="160"
                             height="120"

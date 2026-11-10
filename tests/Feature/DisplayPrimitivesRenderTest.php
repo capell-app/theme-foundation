@@ -205,6 +205,14 @@ it('renders count-up-stat without throwing', function (): void {
         ->toContain('</span');
 });
 
+it('formats the count-up-stat value for the requested locale', function (): void {
+    $english = renderFoundationPrimitive('capell-theme-foundation::components.display.count-up-stat', ['label' => 'Total', 'statValue' => 1234.5, 'decimals' => 2]);
+    $german = renderFoundationPrimitive('capell-theme-foundation::components.display.count-up-stat', ['label' => 'Total', 'statValue' => 1234.5, 'decimals' => 2, 'locale' => 'de']);
+
+    expect($english)->toContain('1,234.50')
+        ->and($german)->toContain('1.234,50');
+});
+
 it('renders byline-with-metadata without throwing', function (): void {
     $html = renderFoundationPrimitive(
         'capell-theme-foundation::components.display.byline-with-metadata',

@@ -72,8 +72,8 @@
                         <div
                             class="mx-auto mb-4 h-20 w-20 overflow-hidden rounded-full"
                         >
-                            <img
-                                src="{{ $media->getFullUrl() }}"
+                            <x-capell::image-source
+                                :image="$media->getFullUrl()"
                                 alt="{{ $assetRenderData->title }}"
                                 class="h-full w-full object-cover"
                             />

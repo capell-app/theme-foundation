@@ -192,6 +192,7 @@ final class CompileFoundationThemeArtifactAction
     private function providerTemplate(): string
     {
         $path = dirname(__DIR__, 3) . '/resources/compiler/v1/GeneratedFoundationThemeServiceProvider.php.stub';
+        // capell-security-scan: local-stream reads a theme source file inside the theme package
         $contents = file_get_contents($path);
 
         return $contents === false ? throw new RuntimeException('design_spec.compiler.template_unavailable') : $contents;

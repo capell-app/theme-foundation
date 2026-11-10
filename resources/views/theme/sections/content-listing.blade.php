@@ -179,9 +179,9 @@
                             @if (! $loop->first) hidden @endif
                         >
                             @if (! empty($item['image']))
-                                <img
-                                    src="{{ $item['image'] }}"
-                                    @if ($responsiveImageSrcset((string) $item['image']) !== null) srcset="{{ $responsiveImageSrcset((string) $item['image']) }}" @endif
+                                <x-capell::image-source
+                                    :image="$item['image']"
+                                    :srcset="$responsiveImageSrcset((string) $item['image'])"
                                     alt=""
                                     width="1200"
                                     height="675"
@@ -273,9 +273,9 @@
                                     class="group grid h-full overflow-hidden rounded-[var(--theme-radius-value)] border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-slate-950 hover:shadow-xl"
                                 >
                                     @if (! empty($item['image']))
-                                        <img
-                                            src="{{ $item['image'] }}"
-                                            @if ($responsiveImageSrcset((string) $item['image']) !== null) srcset="{{ $responsiveImageSrcset((string) $item['image']) }}" @endif
+                                        <x-capell::image-source
+                                            :image="$item['image']"
+                                            :srcset="$responsiveImageSrcset((string) $item['image'])"
                                             alt=""
                                             width="1200"
                                             height="900"
@@ -405,9 +405,9 @@
                         class="group widget overflow-hidden rounded-[var(--theme-radius-value)] border border-[var(--foundation-border)] bg-[var(--foundation-card-bg)] transition hover:border-[var(--foundation-border-strong)]"
                     >
                         @if (! empty($item['image']))
-                            <img
-                                src="{{ $item['image'] }}"
-                                @if ($responsiveImageSrcset((string) $item['image']) !== null) srcset="{{ $responsiveImageSrcset((string) $item['image']) }}" @endif
+                            <x-capell::image-source
+                                :image="$item['image']"
+                                :srcset="$responsiveImageSrcset((string) $item['image'])"
                                 alt=""
                                 width="1200"
                                 height="720"

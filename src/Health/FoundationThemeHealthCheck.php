@@ -380,6 +380,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
 
             $implementsDemoContent = collect($sourceFiles)->contains(
                 static function (string $filePath): bool {
+                    // capell-security-scan: local-stream reads a theme package's own source file
                     $contents = file_get_contents($filePath) ?: '';
 
                     return str_contains($contents, 'ProvidesThemeDemoContent');
@@ -801,6 +802,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
         }
 
         try {
+            // capell-security-scan: local-stream reads a theme package's own source file
             $contents = file_get_contents($path);
 
             if ($contents === false) {
@@ -827,6 +829,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
         }
 
         try {
+            // capell-security-scan: local-stream reads a theme package's own manifest file
             $contents = file_get_contents($manifestPath);
 
             if ($contents === false) {

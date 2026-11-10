@@ -4,6 +4,8 @@ All notable changes to `capell-app/theme-foundation` will be documented in this 
 
 ## Unreleased
 
+- Hide stored container keys behind deterministic public presentation identifiers.
+
 - Pass the Widget media owner through nested builder content rendering.
 
 - **Important upgrade behaviour — footer containers become public:** the Foundation fallback footer, the affected legacy theme footer sections, and the Grounds and Switchboard custom footers now render the shared Layout Builder `footer` area. Editors who previously assigned a container to that area on any of the 23 affected themes will see its content become live immediately after upgrading. This is deliberate: existing containers are not hidden, unpublished, or gated behind a new setting.

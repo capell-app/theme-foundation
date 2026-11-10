@@ -126,6 +126,7 @@ trait AssertsPublicThemeOutputSafety
         '__',
         'Str',
         'Arr',
+        'Number',
         'PublicUrlSanitizer',
     ];
 
@@ -296,6 +297,7 @@ trait AssertsPublicThemeOutputSafety
 
         sort($paths, SORT_STRING);
 
+        // capell-security-scan: local-stream reads a theme's Blade view files
         return implode(PHP_EOL, array_map(static fn (string $path): string => file_get_contents($path) ?: '', $paths));
     }
 
@@ -306,6 +308,7 @@ trait AssertsPublicThemeOutputSafety
     {
         $paths = glob($globPattern) ?: [];
 
+        // capell-security-scan: local-stream reads a theme's Blade view files
         return implode(PHP_EOL, array_map(static fn (string $path): string => file_get_contents($path) ?: '', $paths));
     }
 }

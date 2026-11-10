@@ -102,6 +102,7 @@ class ThemeCatalogueReportCommand extends Command
                 continue;
             }
 
+            // capell-security-scan: local-stream reads a theme package's stylesheet file
             $contents = file_get_contents($stylesheetFile);
 
             if (! is_string($contents)) {
@@ -143,6 +144,7 @@ class ThemeCatalogueReportCommand extends Command
             return true;
         }
 
+        // capell-security-scan: local-stream reads a theme package's own manifest file
         $manifest = json_decode((string) file_get_contents($manifestPath), true);
 
         if (! is_array($manifest) || ! isset($manifest['kind']) || ! is_string($manifest['kind'])) {
@@ -167,6 +169,7 @@ class ThemeCatalogueReportCommand extends Command
             return ['docs/themes.json not found at ' . $cataloguePath];
         }
 
+        // capell-security-scan: local-stream reads the theme catalogue file in the repository
         $decoded = json_decode((string) file_get_contents($cataloguePath), true);
 
         if (! is_array($decoded) || ! isset($decoded['themes']) || ! is_array($decoded['themes'])) {

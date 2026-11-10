@@ -47,8 +47,8 @@
             <figure
                 class="overflow-hidden rounded-[var(--theme-radius-value)] border border-slate-200 bg-white shadow-sm"
             >
-                <img
-                    src="{{ $safeMediaUrl }}"
+                <x-capell::image-source
+                    :image="$safeMediaUrl"
                     alt="{{ $section->mediaAlt ?? '' }}"
                     width="1200"
                     height="750"

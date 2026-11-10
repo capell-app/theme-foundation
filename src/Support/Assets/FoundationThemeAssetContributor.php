@@ -118,6 +118,7 @@ final class FoundationThemeAssetContributor implements FrontendResourceContribut
             return true;
         }
 
+        // capell-security-scan: local-stream reads a built theme asset manifest in the public build directory
         $contents = @file_get_contents($path);
 
         if (! is_string($contents)) {

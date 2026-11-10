@@ -136,6 +136,7 @@ final readonly class BuildCompiledThemeDistributionAction
                 throw new RuntimeException('design_spec.distribution.archive_close_failed');
             }
 
+            // capell-security-scan: local-stream reads a compiled theme file inside the theme build directory
             $bytes = file_get_contents($path);
 
             return is_string($bytes) && $bytes !== ''

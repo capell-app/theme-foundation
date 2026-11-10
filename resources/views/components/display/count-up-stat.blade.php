@@ -18,7 +18,7 @@
     $numericValue = is_numeric($resolvedValue) ? (float) $resolvedValue : null;
     $displayValue = $numericValue === null
         ? (string) $resolvedValue
-        : number_format($numericValue, $decimalPlaces);
+        : \Illuminate\Support\Number::format($numericValue, precision: $decimalPlaces, locale: is_string($locale) && $locale !== '' ? $locale : app()->getLocale());
 @endphp
 
 {{--

@@ -30,8 +30,8 @@
                     class="overflow-hidden rounded-[var(--theme-radius-value)] border border-white/10 bg-white/[0.04]"
                 >
                     @if (! empty($safeItemImage))
-                        <img
-                            src="{{ $safeItemImage }}"
+                        <x-capell::image-source
+                            :image="$safeItemImage"
                             alt="{{ $item['image_alt'] ?? $item['title'] ?? $item['name'] ?? '' }}"
                             width="800"
                             height="320"

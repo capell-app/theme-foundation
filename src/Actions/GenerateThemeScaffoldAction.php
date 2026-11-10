@@ -39,10 +39,10 @@ final class GenerateThemeScaffoldAction
         'src/Actions/InstallThemeDemoAction.php.stub' => 'src/Actions/Install{{ studlyName }}ThemeDemoAction.php',
         'src/Console/Commands/DemoCommand.php.stub' => 'src/Console/Commands/{{ studlyName }}DemoCommand.php',
         'docs/screenshots.json.stub' => 'docs/screenshots.json',
-        'tests/Pest.php.stub' => 'tests/Pest.php',
-        'tests/Unit/PublicOutputSafetyTest.php.stub' => 'tests/Unit/PublicOutputSafetyTest.php',
-        'tests/Unit/ManifestTest.php.stub' => 'tests/Unit/ManifestTest.php',
-        'tests/Unit/DefinitionTest.php.stub' => 'tests/Unit/DefinitionTest.php',
+        'test-suite/Pest.php.stub' => 'tests/Pest.php',
+        'test-suite/Unit/PublicOutputSafetyTest.php.stub' => 'tests/Unit/PublicOutputSafetyTest.php',
+        'test-suite/Unit/ManifestTest.php.stub' => 'tests/Unit/ManifestTest.php',
+        'test-suite/Unit/DefinitionTest.php.stub' => 'tests/Unit/DefinitionTest.php',
     ];
 
     /**
@@ -64,6 +64,7 @@ final class GenerateThemeScaffoldAction
                 throw new RuntimeException('Missing make-theme stub template at ' . $stubPath . '.');
             }
 
+            // capell-security-scan: local-stream reads a theme scaffold stub shipped in this package
             $stubContents = file_get_contents($stubPath);
 
             if ($stubContents === false) {

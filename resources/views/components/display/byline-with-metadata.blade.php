@@ -22,8 +22,8 @@
     {{ $attributes->merge(['class' => 'byline-with-metadata flex items-center gap-3']) }}
 >
     @if ($safeAuthorAvatar !== null)
-        <img
-            src="{{ $safeAuthorAvatar }}"
+        <x-capell::image-source
+            :image="$safeAuthorAvatar"
             alt="{{ $authorName }}"
             loading="lazy"
             class="h-10 w-10 rounded-full object-cover"

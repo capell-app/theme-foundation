@@ -7,8 +7,8 @@
     class="theme-hero theme-hero--full-bleed relative border-b border-slate-200/80 bg-slate-950"
 >
     @if ($safeMediaUrl)
-        <img
-            src="{{ $safeMediaUrl }}"
+        <x-capell::image-source
+            :image="$safeMediaUrl"
             alt="{{ $section->mediaAlt ?? '' }}"
             width="1920"
             height="960"

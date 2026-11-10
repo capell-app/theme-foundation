@@ -98,7 +98,7 @@
         "riskTier": "standard",
         "publicSurface": {
             "routeNames": [
-                "capell-theme-foundation.dynamic-form-fragments.show"
+                "GET /_capell/foundation-dynamic-form/{reference} (capell-theme-foundation.dynamic-form-fragments.show)"
             ],
             "auth": "public",
             "csrfExemptRoutes": [],
@@ -117,10 +117,10 @@
             "plaintextJustifications": []
         },
         "publicOutput": {
-            "cacheSafe": true,
             "forbidAuthoringSurface": true,
             "forbidSecrets": true,
-            "forbidPublicBladeQueries": true
+            "forbidPublicBladeQueries": true,
+            "cacheSafe": true
         },
         "externalHttpClients": {
             "requiresTimeouts": false,
@@ -165,6 +165,22 @@
     },
     "marketplace": {
         "summary": "The base theme every Capell site and child theme builds on, with shared Blade layouts, runtime design tokens, and a deterministic DesignSpec v1 compiler that produces validated Project Build theme artifacts.",
+        "problem": "Building each theme from scratch leaves site builders to recreate layouts and design settings.",
+        "outcome": "A site has shared layouts and design settings that child themes can build on.",
+        "faq": [
+            {
+                "question": "What does Foundation provide for themes?",
+                "answer": "It provides shared public layouts, design tokens and layout defaults for Capell themes."
+            },
+            {
+                "question": "Can Foundation be previewed before applying it?",
+                "answer": "Yes. Preview the theme on existing content before applying it to the selected site."
+            },
+            {
+                "question": "Will Foundation let me restore the previous theme?",
+                "answer": "Reapply the site’s previous theme to restore its selection. Shared Theme Studio settings saves can affect public pages."
+            }
+        ],
         "screenshots": [
             {
                 "path": "docs/assets/marketplace/extension-card.jpg",

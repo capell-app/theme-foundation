@@ -2,374 +2,56 @@
 
 <!-- prettier-ignore-start -->
 
-## What This Plugin Adds
-
-Foundation Theme is an **Available**, **No schema impact** Capell theme in the **Capell Themes** product group. It ships as `capell-app/theme-foundation` and extends these surfaces: admin, frontend.
+## What It Does
 
 Theme Foundation provides the shared public layouts, runtime design tokens, layout defaults, and override contracts used by Capell themes. It renders host-owned page data and does not introduce a separate content model.
 
+- **Price and availability:** Check current availability and price on the [Capell Marketplace listing](https://capell.app/extensions/theme-foundation).
+- **Licence:** Check the licence terms on the [Capell Marketplace listing](https://capell.app/extensions/theme-foundation).
+- **Requires:** `PHP ^8.4`, `capell-app/admin ^1.0.66`, `capell-app/core ^1.0.75`, `capell-app/frontend ^1.0.72`, `capell-app/layout-builder ^1.0`, `capell-app/navigation ^1.0`, `lorisleiva/laravel-actions ^2.8`, `spatie/laravel-data ^4.0`, `spatie/laravel-package-tools ^1.0`.
+- **Install:** `composer require capell-app/theme-foundation`.
+
 Use Preview Foundation Theme on existing content before Apply Foundation Theme, which changes the selected site's public design; reapply its previous theme to restore that selection. Shared Theme Studio settings saves can affect public pages. For fictional demo content, name a disposable target with --site and review --base-url and --language; unscoped setup refuses existing sites, scoped repeats preserve site configuration unless --force deliberately replaces its theme, enabled state, requested site translations and domains, while demo pages, widgets and demo layouts are rewritten on scoped repeats.
 
-Status details:
-
-- Status: Available
-- Tier: free
-- Bundle: themes
-- Composer package: `capell-app/theme-foundation`
-- Namespace: `Capell\FoundationTheme`
-- Theme key: `default`
-
-## Why It Matters
+## Who It Is For
 
 **For developers:** The package centralizes theme registration, token resolution, layout defaults, and public-output safety contracts for the theme fleet.
 
-**For teams:** Teams get a consistent baseline for site chrome, layout behavior, and design settings across Capell themes.
+**For teams:** Teams get a consistent baseline for site chrome, layout behaviour, and design settings across Capell themes.
+
+## Quick Start
+
+1. Install the package: `composer require capell-app/theme-foundation`.
+2. Run the package setup: `php artisan capell:theme-foundation-setup`.
+3. See it working on a disposable site: run `php artisan capell:theme-foundation-demo --site="Theme demo"`. Choose a new site name for your demo; keep customer sites for the Preview → Apply workflow above.
+4. Run `php artisan list` and verify the package command signatures are registered.
+
+## Configure
+
+- **Configuration files:** `config/capell-theme-foundation.php`.
+- **Admin settings:** `Capell\FoundationTheme\Settings\FoundationThemeSettings`.
+- **Commands:** `php artisan capell:frontend-tailwind-assets`, `php artisan capell:make-foundation-theme`, `php artisan capell:theme-catalogue-report`, `php artisan capell:theme-foundation-demo`, `php artisan capell:theme-foundation-setup`, `php artisan capell:validate-themes`.
+
+## Limits And Pitfalls
+
+- Install the required Capell packages at the versions in `composer.json`: `capell-app/admin ^1.0.66`, `capell-app/core ^1.0.75`, `capell-app/frontend ^1.0.72`, `capell-app/layout-builder ^1.0`, `capell-app/navigation ^1.0`.
+- Keep public Blade and cached HTML free of authoring markers, model IDs, permissions, signed editor URLs, and lazy database queries.
+- Custom write integrations must preserve invalidation for `theme-foundation` cache tags.
 
 ## Screens And Workflow
-
-Screenshot contract: `docs/screenshots.json`.
 
 ![Foundation Directory](docs/screenshots/foundation-directory.webp)
 
 ![Foundation Detail Article](docs/screenshots/foundation-detail.webp)
 
-Desktop, tablet, and mobile variants remain defined in the screenshot contract; this list groups them by workflow.
-
-- Foundation Homepage (frontend, supplementary evidence).
-- Foundation Directory (frontend, required evidence).
-- Foundation Detail Article (frontend, required evidence).
-- Foundation Contact (frontend, required evidence).
-- Foundation Empty State (frontend, required evidence).
-- Foundation Page Not Found (frontend, required evidence).
-- Foundation Call To Action (frontend, required evidence).
-- Foundation Chrome Homepage (frontend, required evidence).
-
-## Technical Shape
-
-### Service providers
-
-- `Capell\FoundationTheme\Providers\FoundationThemeServiceProvider`
-- `Capell\FoundationTheme\Providers\ConsoleServiceProvider`
-- `FoundationSharedFragmentServiceProvider`
-- `FoundationThemeSiteSpecServiceProvider`
-
-### Config files
-
-- `packages/theme-foundation/config/capell-theme-foundation.php`
-
-### Settings migrations
-
-- `packages/theme-foundation/database/settings/2026_05_10_190850_01_create_theme_foundation_settings.php`
-- `packages/theme-foundation/database/settings/2026_05_23_160819_add_theme_foundation_design_tokens.php`
-- `packages/theme-foundation/database/settings/2026_05_23_161002_refresh_theme_foundation_design_token_defaults.php`
-- `packages/theme-foundation/database/settings/2026_05_23_170001_add_theme_foundation_composition_tokens.php`
-- `packages/theme-foundation/database/settings/2026_05_23_171201_quiet_theme_foundation_composition_palette.php`
-- `packages/theme-foundation/database/settings/2026_05_23_180101_add_theme_foundation_image_tokens.php`
-- `packages/theme-foundation/database/settings/2026_06_07_000001_add_theme_foundation_dark_design_tokens.php`
-- `packages/theme-foundation/database/settings/2026_06_07_000002_add_theme_foundation_typography_tokens.php`
-- `packages/theme-foundation/database/settings/2026_07_05_000001_add_theme_foundation_motion_tokens.php`
-- `packages/theme-foundation/database/settings/2026_07_14_210000_refresh_theme_foundation_capell_palette.php`
-- `packages/theme-foundation/database/settings/2026_07_15_210000_add_theme_foundation_responsive_repeatable_layout.php`
-
-### Settings classes
-
-- `FoundationThemeSettings`
-- `FoundationThemeSettingsMigrationProvider`
-
-### Filament classes
-
-- `AuthMenuWidget`
-- `FoundationLayoutContainerSchemaExtender`
-- `SectionVariantSchemaExtender`
-- `FoundationThemeSettingsSchema`
-
-### Livewire components
-
-- `AbstractAssets`
-- `PageAssets`
-- `AbstractWidget`
-- `Pages`
-
-### Extension contracts
-
-- `CompiledThemeReceiptSigningAuthority`
-- `DesignSpecMigrationReader`
-- `InstallsThemeDemo`
-- `OptionalExtensionAvailability`
-- `PaginatesResultsListing`
-- `ProvidesThemeDemoContent`
-- `ResultsListingResolver`
-
-### Listeners
-
-- `RunTailwindAssetsOnPackageChange`
-
-### Actions
-
-- `AssertThemeDemoTargetAction`
-- `BuildAssetBannerItemsAction`
-- `BuildBannerImageRenderDataAction`
-- `BuildFooterLatestPageLinksAction`
-- `BuildHeroRailItemsRenderDataAction`
-- `BuildLayoutNeighborLinksDataAction`
-- `BuildPageContentRenderDataAction`
-- `BuildThemeDemoFormSectionAction`
-- `BuildThemeDemoFormsPayloadAction`
-- `BuildWidgetAssetRenderDataAction`
-- `BuildCompiledThemeDistributionAction`
-- `CanonicalizeDesignSpecAction`
-- `CompileFoundationThemeArtifactAction`
-- `ReadDesignSpecAction`
-- `RenderFoundationDesignTokensAction`
-- `ValidateCompiledThemeArtifactAction`
-- `ValidateCompiledThemeDistributionAction`
-- `ValidateDesignSpecAction`
-- `GenerateThemeScaffoldAction`
-- `HasThemeIntegrationEvidenceAction`
-- `InstallFoundationThemeDemoAction`
-- `InstallFoundationThemeLayoutDefaultsAction`
-- `MarkPrimaryHeadingRenderedAction`
-- `PrepareFoundationPageWidgetDataAction`
-- `ResolveAuthMenuPayloadsAction`
-- `ResolveFoundationImageLoadingAction`
-- `ResolveFoundationSectionAnchorAction`
-- `ResolveFoundationThemeTokensAction`
-- `ResolveLoadedLayoutContainerBackgroundImageAction`
-- `ResolveLoadedWidgetBackgroundImageAction`
-- `ResolveNewsletterFormDataAction`
-- `ResolveResultsArchiveUrlAction`
-- `ResolveResultsListingAction`
-- `ResolveResultsPaginationLinksAction`
-- `ResolveSafeCssColorTokenAction`
-- `ResolveSectionVariantScopeAction`
-- `ResolveThemeFormEmbedDataAction`
-- `ResolveThemeFrontendScriptDataAction`
-- `ResolveThemeOptionalSectionAvailabilityAction`
-- `ResolveWidgetBackgroundImageUrlAction`
-- `SetupFoundationThemePackageAction`
-- `ValidateThemeCatalogueEntryAction`
-- `WidgetIsSlotAction`
-
-### Data objects
-
-- `AssetBannerItemData`
-- `AuthMenuInputData`
-- `AuthMenuRenderData`
-- `BannerImageRenderData`
-- `CanonicalDesignSpecData`
-- `CompiledThemeArtifactData`
-- `CompiledThemeDistributionData`
-- `CompiledThemeDistributionFileData`
-- `CompiledThemeDistributionReceiptData`
-- `CompiledThemeFileData`
-- `DesignSpecAccessibilityData`
-- `DesignSpecAssetData`
-- `DesignSpecBrandData`
-- `DesignSpecColorModeData`
-- `DesignSpecComponentsData`
-- `DesignSpecData`
-- `DesignSpecDisplayData`
-- `DesignSpecLayoutData`
-- `DesignSpecLocaleData`
-- `DesignSpecLocaleTypographyData`
-- `DesignSpecPaletteData`
-- `DesignSpecSiteData`
-- `DesignSpecTypographyData`
-- `DesignSpecTypographyRoleData`
-- `FooterLatestPageLinkData`
-- `FoundationImageLoadingData`
-- `FoundationLayoutContainerPresentationData`
-- `FoundationPreparedPageData`
-- `FoundationThemeTokensData`
-- `LayoutNeighborLinksData`
-- `NewsletterFormData`
-- `PageContentRenderData`
-- `ResultsListingData`
-- `ResultsPaginationData`
-- `ResultsPaginationLinkData`
-- `ResultsPaginationRequestData`
-- `SectionVariantScopeData`
-- `ThemeDemoInstallData`
-- `ThemeFormEmbedData`
-- `ThemeFrontendScriptData`
-- `ThemeScaffoldRequestData`
-- `ThemeValidationResultData`
-- `WidgetAssetRenderData`
-
-### Command signatures
-
-- `capell:frontend-tailwind-assets`
-- `capell:make-foundation-theme`
-- `capell:theme-catalogue-report`
-- `capell:theme-foundation-demo`
-- `capell:theme-foundation-setup`
-- `capell:validate-themes`
-
-### Manifest action API
-
-- `demo: Capell\FoundationTheme\Actions\InstallFoundationThemeDemoAction`
-- `setup: Capell\FoundationTheme\Actions\SetupFoundationThemePackageAction`
-
-### Console command classes
-
-- `DemoCommand`
-- `GenerateTailwindAssetsCommand`
-- `MakeFoundationThemeCommand`
-- `SetupCommand`
-- `ThemeCatalogueReportCommand`
-- `ValidateThemesCommand`
-
-### Manifest contributions
-
-- `console-command: Capell\FoundationTheme\Manifest\FoundationThemeConsoleCommandsContribution`
-- `public-render-data: Capell\FoundationTheme\Support\Render\FoundationImageLoadingContributor`
-
-### Health checks
-
-- `Capell\FoundationTheme\Health\FoundationThemeHealthCheck`
-
-### Blade views
-
-- `packages/theme-foundation/resources/views/app.blade.php`
-- `packages/theme-foundation/resources/views/block/wrapper.blade.php`
-- `packages/theme-foundation/resources/views/components/actions/index.blade.php`
-- `packages/theme-foundation/resources/views/components/app/body.blade.php`
-- `packages/theme-foundation/resources/views/components/app/head/custom.blade.php`
-- `packages/theme-foundation/resources/views/components/app/head/tokens.blade.php`
-- `packages/theme-foundation/resources/views/components/badge.blade.php`
-- `packages/theme-foundation/resources/views/components/block/wrapper.blade.php`
-- `packages/theme-foundation/resources/views/components/button/index.blade.php`
-- `packages/theme-foundation/resources/views/components/content.blade.php`
-- `packages/theme-foundation/resources/views/components/demo/contact-page.blade.php`
-- `packages/theme-foundation/resources/views/components/display/art-directed-picture.blade.php`
-- `packages/theme-foundation/resources/views/components/display/byline-with-metadata.blade.php`
-- `packages/theme-foundation/resources/views/components/display/card-frame-wrapper.blade.php`
-- `packages/theme-foundation/resources/views/components/display/count-up-stat.blade.php`
-- `packages/theme-foundation/resources/views/components/display/hover-video-poster.blade.php`
-- `packages/theme-foundation/resources/views/components/display/map-link.blade.php`
-- `packages/theme-foundation/resources/views/components/display/photo-treatment-filter.blade.php`
-- `packages/theme-foundation/resources/views/components/display/responsive-table-to-cards.blade.php`
-- `packages/theme-foundation/resources/views/components/display/timestamp-metadata-block.blade.php`
-- `packages/theme-foundation/resources/views/components/dropdown/index.blade.php`
-- `packages/theme-foundation/resources/views/components/dropdown/link.blade.php`
-- `packages/theme-foundation/resources/views/components/footer/index.blade.php`
-- `packages/theme-foundation/resources/views/components/footer/latest-pages.blade.php`
-- `packages/theme-foundation/resources/views/components/footer/menu.blade.php`
-- `packages/theme-foundation/resources/views/components/footer/related-sites.blade.php`
-- `packages/theme-foundation/resources/views/components/footer/site-info.blade.php`
-- `packages/theme-foundation/resources/views/components/footer/social-links.blade.php`
-- `packages/theme-foundation/resources/views/components/footer/sub-footer.blade.php`
-- `packages/theme-foundation/resources/views/components/header/index.blade.php`
-- `packages/theme-foundation/resources/views/components/header/menu/dropdown.blade.php`
-- `packages/theme-foundation/resources/views/components/header/menu/item.blade.php`
-- `packages/theme-foundation/resources/views/components/header/menu/languages-dropdown.blade.php`
-- `packages/theme-foundation/resources/views/components/heading/index.blade.php`
-- `packages/theme-foundation/resources/views/components/heading/subheading.blade.php`
-- `packages/theme-foundation/resources/views/components/icon/index.blade.php`
-- `packages/theme-foundation/resources/views/components/icon/spinner.blade.php`
-- `packages/theme-foundation/resources/views/components/languages.blade.php`
-- `packages/theme-foundation/resources/views/components/layout/area.blade.php`
-- `packages/theme-foundation/resources/views/components/layout/container.blade.php`
-- `packages/theme-foundation/resources/views/components/layout/index.blade.php`
-- `packages/theme-foundation/resources/views/components/layout/main.blade.php`
-- `packages/theme-foundation/resources/views/components/layout/widget.blade.php`
-- `packages/theme-foundation/resources/views/components/lightbox.blade.php`
-- `packages/theme-foundation/resources/views/components/list/index.blade.php`
-- `packages/theme-foundation/resources/views/components/list/item.blade.php`
-- `packages/theme-foundation/resources/views/components/list/list-item.blade.php`
-- `packages/theme-foundation/resources/views/components/logo/index.blade.php`
-- `packages/theme-foundation/resources/views/components/logo/title.blade.php`
-- `packages/theme-foundation/resources/views/components/media/background.blade.php`
-- `packages/theme-foundation/resources/views/components/media/svg.blade.php`
-- `packages/theme-foundation/resources/views/components/no-results.blade.php`
-- `packages/theme-foundation/resources/views/components/pagination/hero-summary.blade.php`
-- `packages/theme-foundation/resources/views/components/section/repeatable-carousel.blade.php`
-- `packages/theme-foundation/resources/views/components/section/team-member.blade.php`
-- `packages/theme-foundation/resources/views/components/section/widget.blade.php`
-- `packages/theme-foundation/resources/views/components/structured-data.blade.php`
-- `packages/theme-foundation/resources/views/components/theme/page-shell.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/announcement-bar.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/asset/accordion.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/asset/banners.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/asset/carousel.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/asset/extended-background.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/asset/feature-item.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/asset/features.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/asset/index.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/asset/media.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/asset/pages.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/asset/testimonials.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/asset/widgets.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/banner-image.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/default.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/foundation-section.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/hero.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/kitchen-sink/reference.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/modern/alternating-content.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/modern/card-grid.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/modern/cta-section.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/modern/faq-section.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/modern/feature-list.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/modern/hero-banner.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/modern/image-gallery.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/modern/pricing-table.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/modern/process-steps.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/modern/stats-section.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/modern/team-members.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/modern/testimonials.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/navigation/index.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/navigation/tabs.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/page/breadcrumbs.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/page/content.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/slot.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/snippet.blade.php`
-- `packages/theme-foundation/resources/views/components/widget/wrapper.blade.php`
-- `packages/theme-foundation/resources/views/forms/embed.blade.php`
-- `packages/theme-foundation/resources/views/forms/newsletter.blade.php`
-- `packages/theme-foundation/resources/views/theme/chrome/footer.blade.php`
-- `packages/theme-foundation/resources/views/theme/chrome/navigation.blade.php`
-- `packages/theme-foundation/resources/views/theme/page.blade.php`
-- `packages/theme-foundation/resources/views/theme/partials/mobile-navigation.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/changelog-stream--grid.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/changelog-stream.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/contact-split.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/content-listing--grid.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/content-listing--masonry-safe.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/content-listing--rows.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/content-listing.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/cta--band.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/cta--card.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/cta--inline.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/cta.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/faq-search-discovery--categorised.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/faq-search-discovery.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/features.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/footer.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/form--encouraging.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/form.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/hero--full-bleed.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/hero--split.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/hero--stacked.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/hero.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/navigation.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/pagination.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/partials/contact-split-form-body.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/partials/form-body.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/partials/form-encouraging-body.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/pricing-value-spectrum--compact.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/pricing-value-spectrum.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/proof.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/results-pagination.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/search.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/stats-display-band--light.blade.php`
-- `packages/theme-foundation/resources/views/theme/sections/stats-display-band.blade.php`
-- `packages/theme-foundation/resources/views/widget/kitchen-sink/reference.blade.php`
-- `packages/theme-foundation/resources/views/widgets/auth-menu.blade.php`
-
-### Cache tags
-
-- `theme-foundation`
-
+- Foundation Homepage (frontend).
+- Foundation Directory (frontend).
+- Foundation Detail Article (frontend).
+- Foundation Contact (frontend).
+- Foundation Empty State (frontend).
+- Foundation Page Not Found (frontend).
+- Foundation Call To Action (frontend).
+- Foundation Chrome Homepage (frontend).
 
 ## Child Theme Override Contract
 
@@ -382,10 +64,6 @@ Stable contract points:
 - Runtime tokens: `--foundation-page-bg`, `--foundation-section-spacing`, `--foundation-widget-gap`.
 - Layout Builder chrome areas: `header`.
 - Public-output rule: child themes must not expose authoring metadata, editor controls, model IDs, field paths, permissions, or signed editor URLs.
-
-## Data Model
-
-This theme has no schema impact. It relies on core Capell site, page, locale, and theme records instead of declaring package-owned tables.
 
 ## Install Impact
 
@@ -401,26 +79,12 @@ This theme has no schema impact. It relies on core Capell site, page, locale, an
 - Cache tags: `theme-foundation`.
 - Commands: `capell:frontend-tailwind-assets`, `capell:make-foundation-theme`, `capell:theme-catalogue-report`, `capell:theme-foundation-demo`, `capell:theme-foundation-setup`, `capell:validate-themes`.
 
-## Common Pitfalls
-
-- Keep required Capell packages on compatible v4 releases: `capell-app/admin`, `capell-app/core`, `capell-app/frontend`, `capell-app/layout-builder`, `capell-app/navigation`.
-- Review package configuration before production-like verification: `config/capell-theme-foundation.php`, `Capell\FoundationTheme\Settings\FoundationThemeSettings`.
-- Keep public Blade and cached HTML free of authoring markers, model IDs, permissions, signed editor URLs, and lazy database queries.
-- Custom write integrations must preserve invalidation for `theme-foundation` cache tags.
-
 ## Troubleshooting
 
 | Symptom | Likely cause | Check | Fix |
 | --- | --- | --- | --- |
 | Package surface is missing after install | Provider or manifest is not loaded | Confirm `capell.json`, package `composer.json`, and provider registration | Reinstall the package, refresh Composer autoload, and clear host caches |
 | Public output leaks unexpected state | Render data, cache variation, or authoring boundary has regressed | Check public Blade, cache tags, and public-output safety tests | Move data loading out of Blade and rerun the package public-output tests |
-
-## Quick Start
-
-1. Install the package: `composer require capell-app/theme-foundation`.
-2. Run the package setup: `php artisan capell:theme-foundation-setup`.
-3. See it working on a disposable site: run `php artisan capell:theme-foundation-demo --site="Theme demo"`. Choose a new site name for your demo; keep customer sites for the Preview → Apply workflow above.
-4. Run `php artisan list` and verify the package command signatures are registered.
 
 ## Upgrading
 
@@ -435,7 +99,7 @@ Read [CHANGELOG.md](CHANGELOG.md) before upgrading.
 - [Worked extension examples](docs/extension-contracts.md)
 - Configuration files: [`config/capell-theme-foundation.php`](config/capell-theme-foundation.php).
 - [Troubleshooting](#troubleshooting)
-- [Screenshot contract](docs/screenshots.json)
+- [Developer reference](docs/reference.md)
 - [Marketplace assets](docs/assets/marketplace/)
 - [Capell content language plan](../../docs/CONTENT_LANGUAGE_PLAN.md)
 - [Capell documentation design system](../../docs/DESIGN_SYSTEM.md)

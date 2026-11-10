@@ -55,7 +55,7 @@
 ])
 
 <{{ $tag }}
-    id="{{ $containerKey . '-' . $widget->key . "-{$index}" }}"
+    id="widget-{{ substr(hash('sha256', $containerKey . '-' . $widget->key . "-{$index}"), 0, 16) }}"
     {{
         $attributes->class([
             '@container widget widget-' . $widget->key,

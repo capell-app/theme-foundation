@@ -11,6 +11,7 @@ use Capell\Core\Facades\CapellDatabase;
 use Capell\Core\Models\Layout;
 use Capell\Core\Models\Site;
 use Capell\Core\Models\Theme;
+use Capell\Core\Support\TableName;
 use Capell\FoundationTheme\Data\SectionVariantScopeData;
 use Capell\LayoutBuilder\Data\LayoutContainerSchemaContextData;
 use Capell\LayoutBuilder\Models\Widget;
@@ -37,7 +38,7 @@ final class ResolveSectionVariantScopeAction
         $layouts = Layout::query()->with(['theme', 'site.theme']);
         $grammar = $layouts->getQuery()->getGrammar();
         CapellDatabase::for($layouts->getModel())->queryDialect()->jsonExactSearch(
-            SqlFragment::raw($grammar->wrap('layouts.containers')),
+            SqlFragment::raw($grammar->wrap(TableName::resolve('layouts') . '.containers')),
             SqlFragment::value($widget->key),
             '$.*.widgets[*].widget_key',
         )->applyWhere($layouts->getQuery());
@@ -71,10 +72,10 @@ final class ResolveSectionVariantScopeAction
                 ->leftJoinSub(Theme::query()->select(['id', 'key']), 'variant_site_themes', 'variant_site_themes.id', '=', 'variant_sites.theme_id');
             $grammar = $pages->getQuery()->getGrammar();
             $themeKeyQuery = (clone $pages)->distinct()->toBase();
-            (new SqlFragment(
+            new SqlFragment(
                 'COALESCE(' . $grammar->wrap('variant_layout_themes.key') . ', ' . $grammar->wrap('variant_site_themes.key') . ', ?) AS ' . $grammar->wrap('theme_key'),
                 [$this->fallbackTheme()],
-            ))->applySelect($themeKeyQuery);
+            )->applySelect($themeKeyQuery);
             $themeKeys = $themeKeyQuery->pluck('theme_key');
             foreach ($themeKeys as $key) {
                 $hasUses = true;

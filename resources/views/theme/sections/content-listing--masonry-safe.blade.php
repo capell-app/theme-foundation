@@ -60,8 +60,8 @@
                     class="group widget {{ $masonrySafeRowSpanClasses[$loop->index % 3] }} overflow-hidden rounded-[var(--theme-radius-value)] border border-slate-200 bg-white transition hover:border-slate-950"
                 >
                     @if (! empty($safeItemImage))
-                        <img
-                            src="{{ $safeItemImage }}"
+                        <x-capell::image-source
+                            :image="$safeItemImage"
                             alt=""
                             width="900"
                             height="{{ $masonrySafeImageHeights[$loop->index % 3] }}"

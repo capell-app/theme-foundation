@@ -57,8 +57,8 @@
                                 @endif
                             </span>
                         @elseif ($media)
-                            <img
-                                src="{{ $media->getFullUrl() }}"
+                            <x-capell::image-source
+                                :image="$media->getFullUrl()"
                                 alt="{{ $assetRenderData->title }}"
                                 class="h-full w-full rounded-xl object-cover"
                             />

@@ -26,8 +26,8 @@
                     class="overflow-hidden rounded-[var(--theme-radius-value)] border border-slate-200 bg-[var(--theme-surface)]"
                 >
                     @if (! empty($safeFeatureImage))
-                        <img
-                            src="{{ $safeFeatureImage }}"
+                        <x-capell::image-source
+                            :image="$safeFeatureImage"
                             alt="{{ $feature['image_alt'] ?? $feature['title'] }}"
                             width="800"
                             height="480"

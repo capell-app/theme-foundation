@@ -448,6 +448,7 @@ final class ValidateThemeCatalogueEntryAction
             throw new RuntimeException('Expected JSON file at ' . $path . '.');
         }
 
+        // capell-security-scan: local-stream reads a theme package's own manifest file
         $decoded = json_decode((string) file_get_contents($path), true, flags: JSON_THROW_ON_ERROR);
 
         if (! is_array($decoded)) {

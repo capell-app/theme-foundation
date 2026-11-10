@@ -15,6 +15,7 @@
             name="source"
             value="{{ $form->source }}"
         />
+        @includeIf('capell-newsletter::partials.honeypot')
 
         {{ $slot }}
     </form>

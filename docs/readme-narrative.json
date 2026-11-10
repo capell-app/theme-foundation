@@ -28,7 +28,7 @@
             ]
         },
         "teams": {
-            "text": "Teams get a consistent baseline for site chrome, layout behavior, and design settings across Capell themes.",
+            "text": "Teams get a consistent baseline for site chrome, layout behaviour, and design settings across Capell themes.",
             "evidence": [
                 "src/Settings/FoundationThemeSettings.php",
                 "resources/views/app.blade.php",

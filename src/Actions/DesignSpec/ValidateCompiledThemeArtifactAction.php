@@ -177,6 +177,7 @@ final class ValidateCompiledThemeArtifactAction
         }
 
         $providerPath = dirname(__DIR__, 3) . '/resources/compiler/v1/GeneratedFoundationThemeServiceProvider.php.stub';
+        // capell-security-scan: local-stream reads the compiled theme's provider file inside its build directory
         $provider = file_get_contents($providerPath);
         if ($provider === false || ! hash_equals(hash('sha256', $provider), $files['src/GeneratedFoundationThemeServiceProvider.php']->sha256)) {
             throw new InvalidArgumentException('design_spec.artifact.provider_template_invalid');

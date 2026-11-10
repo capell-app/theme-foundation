@@ -19,7 +19,7 @@
     :root {
         --color-footer: {{ $resolveFooterColor('footer_color', '#244c43') }};
         --color-footer-heading: color-mix(in srgb, var(--color-footer), #020617 18%);
-        --color-footer-muted: color-mix(in srgb, var(--color-footer), var(--bg-color-footer) 28%);
+        --color-footer-muted: color-mix(in srgb, var(--color-footer), var(--bg-color-footer) 14%);
         --color-footer-link: color-mix(in srgb, var(--color-footer), #020617 8%);
         --bg-color-footer: {{ $resolveFooterColor('footer_background_color', '#edf2ee') }};
         --bg-color-footer-panel: color-mix(in srgb, var(--bg-color-footer), #020617 3%);

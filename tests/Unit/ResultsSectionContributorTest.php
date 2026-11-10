@@ -17,7 +17,65 @@ use Capell\LayoutBuilder\Models\Widget;
 use Capell\Tests\Support\RenderedHtml;
 use Illuminate\Http\Request;
 
-it('renders hydrated results for canonical and inherited results layouts', function (array $layoutAttributes): void {
+it('keeps the sample cards of an installed theme demo results layout', function (): void {
+    $layout = (new Layout)->forceFill([
+        'key' => 'theme-demo-knowledge-1-results-directory',
+        'meta' => ['theme_demo' => ['base_layout' => LayoutEnum::Results->value]],
+    ]);
+    $widget = (new Widget)->forceFill([
+        'meta' => ['type' => 'content-listing', 'items' => [['title' => 'Sample card']]],
+    ]);
+    $resolver = new class implements ResultsListingResolver
+    {
+        #[Override]
+        public function handle(Site $site, Language $language, Page $page): ResultsListingData
+        {
+            return new ResultsListingData(items: [['title' => 'Live page', 'summary' => null, 'url' => '/live', 'type' => null, 'image' => null, 'publishedDate' => null]], archiveUrl: '/search');
+        }
+    };
+
+    expect((new ResultsSectionContributor($resolver))->contribute($widget, $layout, new Site, new Language, new Page))->toBeNull()
+        ->and(data_get($widget->meta, 'items.0.title'))->toBe('Sample card')
+        ->and(data_get($widget->meta, 'resolvedResults'))->toBeNull();
+});
+
+it('resolves a theme demo results listing again for each page of a reused widget', function (): void {
+    $layout = (new Layout)->forceFill([
+        'key' => 'theme-demo-knowledge-1-results-directory',
+        'meta' => ['theme_demo' => ['base_layout' => LayoutEnum::Results->value]],
+    ]);
+    // Widgets are reused across requests in one process, and a resolved listing writes its items back into the meta.
+    $widget = (new Widget)->forceFill(['meta' => ['type' => 'content-listing', 'per_page' => 1, 'items' => []]]);
+    $resolver = new class implements PaginatesResultsListing
+    {
+        #[Override]
+        public function handle(Site $site, Language $language, Page $page): ResultsListingData
+        {
+            throw new LogicException('Expected the paginated capability.');
+        }
+
+        #[Override]
+        public function handlePaginated(Site $site, Language $language, Page $page, ResultsPaginationRequestData $pagination): ResultsListingData
+        {
+            return new ResultsListingData(
+                items: [['title' => 'Result ' . $pagination->page, 'summary' => null, 'url' => '/result-' . $pagination->page, 'type' => null, 'image' => null, 'publishedDate' => null]],
+                pagination: new ResultsPaginationData($pagination->page, $pagination->perPage, 2, 2),
+            );
+        }
+    };
+    $contributor = new ResultsSectionContributor($resolver);
+
+    foreach ([1, 2] as $number) {
+        app()->instance('request', Request::create('/directory?page=' . $number));
+
+        $contributor->contribute($widget, $layout, new Site, new Language, new Page);
+
+        expect(data_get($widget->meta, 'items.0.title'))->toBe('Result ' . $number)
+            ->and(data_get($widget->meta, 'resolvedResults.pagination.currentPage'))->toBe($number);
+    }
+});
+
+it('renders hydrated results for the canonical results layout', function (array $layoutAttributes): void {
     $site = new Site;
     $language = new Language;
     $page = new Page;
@@ -71,10 +129,6 @@ it('renders hydrated results for canonical and inherited results layouts', funct
         ->and($document->count('//*[normalize-space(.)="Authored demo item"]'))->toBe(0);
 })->with([
     'canonical' => [['key' => LayoutEnum::Results->value]],
-    'installed theme surface' => [[
-        'key' => 'theme-demo-knowledge-1-results-directory',
-        'meta' => ['theme_demo' => ['base_layout' => LayoutEnum::Results->value]],
-    ]],
 ]);
 
 it('preserves explicit listing items away from the results layout', function (array $layoutAttributes): void {

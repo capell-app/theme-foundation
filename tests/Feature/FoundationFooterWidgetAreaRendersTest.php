@@ -56,7 +56,7 @@ it('renders a stored footer-area widget through each footer seam on a real publi
         static fn (mixed $widget): bool => ! is_array($widget) || ($widget['widget_key'] ?? null) !== 'page-content',
     ));
     $containers['main'] = $main;
-    $containers['footer'] = [
+    $containers['internal-campaign-42'] = [
         'meta' => [
             'area' => 'footer',
             'colspan' => 12,
@@ -95,7 +95,7 @@ it('renders a stored footer-area widget through each footer seam on a real publi
     if ($html === false) {
         throw new RuntimeException('Expected the response to contain HTML.');
     }
-    $footerContainerOffset = strpos($html, 'id="layout-container-footer"');
+    $footerContainerOffset = strpos($html, 'id="layout-container-4a6022fe62353cad"');
 
     // Themes may emit `<footer>` page furniture inside content (folio spreads do),
     // so anchor on the footer element that actually wraps the layout container.
@@ -110,10 +110,14 @@ it('renders a stored footer-area widget through each footer seam on a real publi
 
     expect($html)
         ->toContain('<footer')
-        ->toContain('id="layout-container-footer"')
+        ->toContain('id="layout-container-4a6022fe62353cad"')
         ->toContain(e($pageTitle))
+        ->not->toContain('internal-campaign-42')
         ->and($footerContainerOffset)->toBeGreaterThan($footerOffset)
         ->and($footerContainerOffset)->toBeLessThan($footerEndOffset);
+
+    $repeatResponse = get($pageUrl->full_url)->assertOk();
+    $repeatResponse->assertSee(e($pageTitle), false)->assertDontSee('internal-campaign-42', false);
 
     assertCapellPublicOutputIsSafe($response, "{$themeKey} footer-area public HTML");
 

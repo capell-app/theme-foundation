@@ -127,6 +127,7 @@ trait AssertsPublicThemeAccessibility
                 continue;
             }
 
+            // capell-security-scan: local-stream reads a theme's Blade view file
             $skeleton = self::bladeToHtmlSkeleton((string) file_get_contents($viewPath));
 
             foreach ($contract->inspectSkeletonFragment($skeleton) as $violation) {

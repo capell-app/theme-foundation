@@ -32,8 +32,8 @@
     style="aspect-ratio: {{ $aspectRatio }};"
     data-hover-video-poster
 >
-    <img
-        src="{{ $safePoster }}"
+    <x-capell::image-source
+        :image="$safePoster"
         alt="{{ $alt }}"
         loading="lazy"
         class="absolute inset-0 h-full w-full object-cover"

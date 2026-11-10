@@ -117,6 +117,7 @@ class ValidateThemesCommand extends Command
         $directories = [];
 
         foreach ($manifestPaths as $manifestPath) {
+            // capell-security-scan: local-stream reads a theme package's own manifest file
             $decoded = json_decode((string) file_get_contents($manifestPath), true);
 
             if (! is_array($decoded) || ($decoded['kind'] ?? null) !== 'theme') {

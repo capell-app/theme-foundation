@@ -39,8 +39,8 @@
         />
     @endforeach
 
-    <img
-        src="{{ $safeSrc }}"
+    <x-capell::image-source
+        :image="$safeSrc"
         alt="{{ $alt }}"
         loading="{{ $loading }}"
         class="h-full w-full object-cover"
