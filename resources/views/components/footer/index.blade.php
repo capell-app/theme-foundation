@@ -41,7 +41,7 @@
 
 <button
     type="button"
-    class="capell-scroll-top site-scroll-top scroll-top sticky bottom-0 left-full z-999 hidden h-11 w-11 -translate-x-6 items-center justify-center rounded-t-lg transition motion-reduce:transition-none"
+    class="capell-scroll-top site-scroll-top scroll-top sticky bottom-0 start-full z-999 hidden h-11 w-11 -translate-x-6 rtl:translate-x-6 items-center justify-center rounded-t-lg transition motion-reduce:transition-none"
     aria-label="{{ __('capell-theme-foundation::generic.scroll_to_top') }}"
     title="{{ __('capell-theme-foundation::generic.scroll_to_top') }}"
     onclick="

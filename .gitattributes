@@ -1,3 +1,11 @@
 # Exclude test directory from composer distributions
 /tests export-ignore
-/tests export-ignore
+# Screenshots reach the Marketplace from the source mirrors; ship only the gallery entries capell.json declares.
+/docs/screenshots/* export-ignore
+/docs/screenshots/foundation-chrome-homepage.webp -export-ignore
+/docs/screenshots/foundation-contact.webp -export-ignore
+/docs/screenshots/foundation-cta.webp -export-ignore
+/docs/screenshots/foundation-detail.webp -export-ignore
+/docs/screenshots/foundation-directory.webp -export-ignore
+/docs/screenshots/foundation-empty.webp -export-ignore
+/docs/screenshots/foundation-not-found.webp -export-ignore

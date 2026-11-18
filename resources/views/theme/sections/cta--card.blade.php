@@ -9,7 +9,7 @@
             class="rounded-[var(--theme-radius-value)] border border-slate-200 bg-white p-8 text-center shadow-sm sm:p-12"
         >
             <h2
-                class="text-3xl leading-tight font-[var(--theme-heading-font)] font-semibold text-slate-950 sm:text-4xl"
+                class="text-3xl leading-tight font-(family-name:--theme-heading-font) font-semibold text-slate-950 sm:text-4xl"
             >
                 {{ $section->heading }}
             </h2>

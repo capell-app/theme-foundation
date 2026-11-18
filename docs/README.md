@@ -7,6 +7,7 @@ Start at the [package README](../README.md) when deciding whether to install thi
 ## Guides
 
 - [Safe demo setup](demo-setup.md): Explicit demo targets, preservation, deliberate overwrite and repeat-install behaviour.
+- [Move sites off a retired theme](retired-theme-migration.md): Run `capell:theme-migrate` on every environment before a retired theme's package is removed; preview, shared successors and rollback.
 
 | Doc                                                             | Use it for                                                                         |
 | --------------------------------------------------------------- | ---------------------------------------------------------------------------------- |

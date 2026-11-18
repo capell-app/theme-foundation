@@ -84,7 +84,7 @@
                     >
                         <span> {{ $assetRenderData->title }} </span>
                         <span
-                            class="ml-4 flex-shrink-0 text-xl text-stone-500 transition-transform group-open:rotate-45"
+                            class="ms-4 flex-shrink-0 text-xl text-stone-500 transition-transform group-open:rotate-45"
                         >
                             +
                         </span>

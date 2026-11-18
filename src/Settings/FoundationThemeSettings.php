@@ -31,24 +31,45 @@ class FoundationThemeSettings extends Settings implements SettingsContract
 
     public const array HEADING_SCALE_OPTIONS = [
         'compact' => [
-            'h1' => 'clamp(2rem, 4vw, 3.25rem)',
-            'h2' => 'clamp(1.65rem, 3vw, 2.35rem)',
-            'h3' => 'clamp(1.35rem, 2vw, 1.65rem)',
-            'lineHeight' => '1.12',
+            'h1' => 'clamp(2.5rem, 6vw, 4.5rem)',
+            'h2' => 'clamp(1.75rem, 3.5vw, 2.5rem)',
+            'h3' => '1.25rem',
+            'lineHeight' => '1.05',
+            'statement' => 'clamp(1.25rem, 2vw, 1.5rem)',
         ],
         'balanced' => [
-            'h1' => 'clamp(2.25rem, 5vw, 4rem)',
-            'h2' => 'clamp(1.85rem, 3.5vw, 2.75rem)',
-            'h3' => 'clamp(1.45rem, 2.25vw, 1.85rem)',
-            'lineHeight' => '1.1',
+            'h1' => 'clamp(3rem, 8vw, 6rem)',
+            'h2' => 'clamp(2rem, 4.5vw, 3.25rem)',
+            'h3' => '1.375rem',
+            'lineHeight' => '1.0',
+            'statement' => 'clamp(1.375rem, 2.4vw, 1.75rem)',
         ],
         'expressive' => [
-            'h1' => 'clamp(2.6rem, 6vw, 4.75rem)',
-            'h2' => 'clamp(2rem, 4vw, 3.25rem)',
-            'h3' => 'clamp(1.55rem, 2.5vw, 2rem)',
-            'lineHeight' => '1.06',
+            'h1' => 'clamp(3.5rem, 10vw, 8rem)',
+            'h2' => 'clamp(2.25rem, 5.5vw, 4rem)',
+            'h3' => '1.5rem',
+            'lineHeight' => '0.95',
+            'statement' => 'clamp(1.5rem, 2.8vw, 2.25rem)',
         ],
     ];
+
+    /**
+     * Named type pairings. Choosing one sets the heading and body faces (catalogue keys), the heading scale it was
+     * designed for and its display tracking. Null keeps the brand profile's own fonts and the default tracking.
+     *
+     * @var array<string, array{heading: string, body: string, scale: string, tracking: string}>
+     */
+    public const array TYPE_PAIRING_OPTIONS = [
+        'plain' => ['heading' => 'inter', 'body' => 'inter', 'scale' => 'balanced', 'tracking' => '-0.03em'],
+        'grotesk' => ['heading' => 'archivo', 'body' => 'inter', 'scale' => 'expressive', 'tracking' => '-0.04em'],
+        'editorial' => ['heading' => 'fraunces', 'body' => 'source-serif', 'scale' => 'expressive', 'tracking' => '-0.02em'],
+        'journal' => ['heading' => 'newsreader', 'body' => 'newsreader', 'scale' => 'balanced', 'tracking' => '-0.015em'],
+        'technical' => ['heading' => 'space-grotesk', 'body' => 'ibm-plex-sans', 'scale' => 'compact', 'tracking' => '-0.025em'],
+        'humanist' => ['heading' => 'manrope', 'body' => 'source-sans', 'scale' => 'balanced', 'tracking' => '-0.035em'],
+    ];
+
+    /** Display tracking when no pairing is chosen: the value the Foundation headings used before pairings existed. */
+    public const string DEFAULT_HEADING_TRACKING = '-0.035em';
 
     /**
      * Wave 2.3 motion-tier mapping (programme §0.6): each `motionIntensity`
@@ -152,6 +173,8 @@ class FoundationThemeSettings extends Settings implements SettingsContract
 
     public string $heading_scale = 'balanced';
 
+    public ?string $type_pairing = null;
+
     public string $motion_intensity = 'subtle';
 
     public string $responsive_repeatable_layout = ResponsiveLayoutPattern::DesktopGridMobileCarousel->value;
@@ -179,12 +202,20 @@ class FoundationThemeSettings extends Settings implements SettingsContract
     }
 
     /**
-     * @return array{h1: string, h2: string, h3: string, lineHeight: string}
+     * @return array{h1: string, h2: string, h3: string, lineHeight: string, statement: string}
      */
     public static function headingScaleCssValuesFor(?string $headingScale): array
     {
         return self::HEADING_SCALE_OPTIONS[$headingScale ?? 'balanced']
             ?? self::HEADING_SCALE_OPTIONS['balanced'];
+    }
+
+    /**
+     * @return array{heading: string, body: string, scale: string, tracking: string}|null
+     */
+    public static function typePairingFor(?string $typePairing): ?array
+    {
+        return $typePairing === null ? null : (self::TYPE_PAIRING_OPTIONS[$typePairing] ?? null);
     }
 
     public static function responsiveRepeatableLayoutKeyFor(?string $responsiveRepeatableLayout): string
@@ -203,6 +234,14 @@ class FoundationThemeSettings extends Settings implements SettingsContract
             ?? self::MOTION_INTENSITY_OPTIONS['subtle'];
     }
 
+    /**
+     * @return array{heading: string, body: string, scale: string, tracking: string}|null
+     */
+    public function typePairing(): ?array
+    {
+        return self::typePairingFor($this->type_pairing);
+    }
+
     public function sectionSpacingCssValue(): string
     {
         return self::sectionSpacingCssValueFor($this->section_spacing);
@@ -214,7 +253,7 @@ class FoundationThemeSettings extends Settings implements SettingsContract
     }
 
     /**
-     * @return array{h1: string, h2: string, h3: string, lineHeight: string}
+     * @return array{h1: string, h2: string, h3: string, lineHeight: string, statement: string}
      */
     public function headingScaleCssValues(): array
     {

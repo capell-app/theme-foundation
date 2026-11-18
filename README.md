@@ -2,22 +2,16 @@
 
 <!-- prettier-ignore-start -->
 
-## What It Does
+A documentation site or a general publishing site gets a very pale green-grey page with near-black text, and links and buttons in a deep green-teal. The header stays in view as visitors scroll, and the footer shows your menu, or your latest pages if you have no menu.
 
-Theme Foundation provides the shared public layouts, runtime design tokens, layout defaults, and override contracts used by Capell themes. It renders host-owned page data and does not introduce a separate content model.
+This is the plain starting theme that other Capell themes build on, and they bring it with them when you install them. Pages are put together from ready-made sections. One is a hero, the large opening area at the top, and another is a call to action, which asks visitors to do something. Others cover features, content lists and search results. A form section is there too, and it needs the Form Builder package. You set colours and spacing on the theme's settings page.
+
+Developers get a command that moves sites off a retired theme onto its replacement. It shows a preview first and writes a report that can undo the move, though custom CSS, hero media and differing theme settings are not carried over. The dark version is a very dark green page with mint buttons. It appears when a visitor presses the dark button in the header, and not from the device's own dark setting. The browser remembers the choice for later visits.
 
 - **Price and availability:** Check current availability and price on the [Capell Marketplace listing](https://capell.app/extensions/theme-foundation).
 - **Licence:** Check the licence terms on the [Capell Marketplace listing](https://capell.app/extensions/theme-foundation).
 - **Requires:** `PHP ^8.4`, `capell-app/admin ^1.0.66`, `capell-app/core ^1.0.75`, `capell-app/frontend ^1.0.72`, `capell-app/layout-builder ^1.0`, `capell-app/navigation ^1.0`, `lorisleiva/laravel-actions ^2.8`, `spatie/laravel-data ^4.0`, `spatie/laravel-package-tools ^1.0`.
 - **Install:** `composer require capell-app/theme-foundation`.
-
-Use Preview Foundation Theme on existing content before Apply Foundation Theme, which changes the selected site's public design; reapply its previous theme to restore that selection. Shared Theme Studio settings saves can affect public pages. For fictional demo content, name a disposable target with --site and review --base-url and --language; unscoped setup refuses existing sites, scoped repeats preserve site configuration unless --force deliberately replaces its theme, enabled state, requested site translations and domains, while demo pages, widgets and demo layouts are rewritten on scoped repeats.
-
-## Who It Is For
-
-**For developers:** The package centralizes theme registration, token resolution, layout defaults, and public-output safety contracts for the theme fleet.
-
-**For teams:** Teams get a consistent baseline for site chrome, layout behaviour, and design settings across Capell themes.
 
 ## Quick Start
 
@@ -26,11 +20,15 @@ Use Preview Foundation Theme on existing content before Apply Foundation Theme, 
 3. See it working on a disposable site: run `php artisan capell:theme-foundation-demo --site="Theme demo"`. Choose a new site name for your demo; keep customer sites for the Preview → Apply workflow above.
 4. Run `php artisan list` and verify the package command signatures are registered.
 
+## For Developers
+
+The package centralizes theme registration, token resolution, layout defaults, and public-output safety contracts for the theme fleet.
+
 ## Configure
 
 - **Configuration files:** `config/capell-theme-foundation.php`.
 - **Admin settings:** `Capell\FoundationTheme\Settings\FoundationThemeSettings`.
-- **Commands:** `php artisan capell:frontend-tailwind-assets`, `php artisan capell:make-foundation-theme`, `php artisan capell:theme-catalogue-report`, `php artisan capell:theme-foundation-demo`, `php artisan capell:theme-foundation-setup`, `php artisan capell:validate-themes`.
+- **Commands:** `php artisan capell:frontend-tailwind-assets`, `php artisan capell:make-foundation-theme`, `php artisan capell:theme-catalogue-report`, `php artisan capell:theme-foundation-demo`, `php artisan capell:theme-foundation-setup`, `php artisan capell:theme-migrate`, `php artisan capell:validate-themes`.
 
 ## Limits And Pitfalls
 
@@ -77,7 +75,7 @@ Stable contract points:
 - Settings: `Capell\FoundationTheme\Settings\FoundationThemeSettings`.
 - Queues or schedules: none declared.
 - Cache tags: `theme-foundation`.
-- Commands: `capell:frontend-tailwind-assets`, `capell:make-foundation-theme`, `capell:theme-catalogue-report`, `capell:theme-foundation-demo`, `capell:theme-foundation-setup`, `capell:validate-themes`.
+- Commands: `capell:frontend-tailwind-assets`, `capell:make-foundation-theme`, `capell:theme-catalogue-report`, `capell:theme-foundation-demo`, `capell:theme-foundation-setup`, `capell:theme-migrate`, `capell:validate-themes`.
 
 ## Troubleshooting
 
@@ -104,6 +102,6 @@ Read [CHANGELOG.md](CHANGELOG.md) before upgrading.
 - [Capell content language plan](../../docs/CONTENT_LANGUAGE_PLAN.md)
 - [Capell documentation design system](../../docs/DESIGN_SYSTEM.md)
 - [Capell and package ERD notes](../../docs/erd/capell-and-package-erds.md)
-- Related packages: [Layout Builder](../layout-builder/README.md), [Navigation](../navigation/README.md).
+- Related packages: [Layout Builder](../layout-builder/README.md), [Navigation](../navigation/README.md), [Search](../search/README.md).
 
 <!-- prettier-ignore-end -->

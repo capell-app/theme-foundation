@@ -279,7 +279,7 @@ it('foundation demonstrates a credible site instead of describing its implementa
         ->not->toContain('·');
 });
 
-it('foundation keeps a semantic page title and portable page copy after a subordinate hero', function (): void {
+it('foundation shows the page title once, from the hero when there is one, and keeps the portable page copy', function (): void {
     $definitions = (new FoundationDemoContent)->definitions(
         themeKey: 'default',
         themeName: 'Foundation',
@@ -314,9 +314,14 @@ it('foundation keeps a semantic page title and portable page copy after a subord
             throw new RuntimeException("Foundation surface [{$definition->surface}] page-content widget must contain metadata.");
         }
 
+        $hasHero = collect($containerWidgets)->contains(
+            static fn (mixed $widget): bool => is_array($widget)
+                && str_starts_with(is_string($widget['widget_key'] ?? null) ? $widget['widget_key'] : '', 'foundation-hero-'),
+        );
+
         expect($widgetMeta['page_content'] ?? null)->toBe(
-            ['title', 'content'],
-            "Foundation surface [{$definition->surface}] must include the semantic page title and portable page copy in its page-content widget.",
+            $hasHero ? ['content'] : ['title', 'content'],
+            "Foundation surface [{$definition->surface}] must show the page title in its page-content widget only when no hero owns it.",
         );
     }
 });

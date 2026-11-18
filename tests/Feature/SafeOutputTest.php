@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 use Capell\Core\Models\Page;
 use Capell\Core\Models\Translation;
+use Capell\FoundationTheme\Actions\ResolveHeroHeadingLevelAction;
 use Capell\FoundationTheme\View\Components\Actions;
 use Capell\Frontend\Actions\Performance\RecordExtensionRenderContributionAction;
+use Capell\Frontend\Contracts\FrontendContextReader;
 use Capell\Frontend\Facades\Frontend;
 use Capell\Tests\Support\CssDeclarations;
 use Illuminate\Support\Facades\Blade;
@@ -358,10 +360,15 @@ test('public hero, page content and collection titles honour the primary heading
     $widget = foundationWidgetViewFixture(count: 0);
     $widget->setRelation('backgroundImage', null);
     $data = ['widget' => $widget, 'title' => 'Public hero', 'content' => 'Prepared copy', 'container' => [], 'containerKey' => 'main', 'containerWidth' => null, 'loop' => (object) ['index' => 0], 'assets' => collect(), 'assetRenderDataItems' => []];
-    $html = renderPublicChromeView('widget.modern.hero-banner', $data);
+    // The hero view prints the level the composer hydrates: the page h1 while no
+    // earlier heading has claimed it, and an h2 after one has.
+    $frontendContext = resolve(FrontendContextReader::class);
+    $frontendContext->setFrontendData('has_primary_heading', false);
+    $html = renderPublicChromeView('widget.modern.hero-banner', [...$data, 'headingLevel' => ResolveHeroHeadingLevelAction::run(null, true)]);
     expect(domQueryCount($html, '//h1[normalize-space(.)="Public hero"]'))->toBe(1)
         ->and(domQueryCount($html, '//button[contains(@class, "ap-hero__slideshow-play")]'))->toBe(0);
-    $html = renderPublicChromeView('widget.modern.hero-banner', [...$data, 'hasPrimaryHeading' => true]);
+    expect($frontendContext->getFrontendData('has_primary_heading'))->toBeTrue();
+    $html = renderPublicChromeView('widget.modern.hero-banner', [...$data, 'headingLevel' => ResolveHeroHeadingLevelAction::run(null, true)]);
     expect(domQueryCount($html, '//h2'))->toBe(1)->and(domQueryCount($html, '//h1'))->toBe(0);
     foreach (['image-gallery', 'card-grid'] as $name) {
         $html = renderPublicChromeView('widget.modern.' . $name, $data);

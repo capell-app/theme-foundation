@@ -45,7 +45,7 @@
                     data-billing-toggle
                 >
                     <div
-                        class="billing-toggle-dot absolute top-1 left-1 h-6 w-6 rounded-full bg-white transition-all"
+                        class="billing-toggle-dot absolute top-1 start-1 h-6 w-6 rounded-full bg-white transition-all"
                     ></div>
                 </button>
                 <span class="text-gray-700">

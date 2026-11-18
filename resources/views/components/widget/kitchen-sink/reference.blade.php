@@ -43,15 +43,22 @@
                 </header>
 
                 @if ($isInitialStructuredReference)
-                    <p>{{ $notes['Purpose'] ?? 'Use the default Foundation theme contract for this pattern.' }}</p>
+                    <p>{{ $notes['Purpose'] ?? __('capell-theme-foundation::demo.kitchen_sink_default_note') }}</p>
                 @else
                     <aside aria-label="{{ $heading }} reference notes">
                         <dl class="grid gap-3 md:grid-cols-2">
-                            @foreach (['Purpose', 'Layout', 'Content', 'Variant rules', 'Behavior', 'Accessibility'] as $label)
+                            @foreach ([
+                                'Purpose' => __('capell-theme-foundation::demo.kitchen_sink_label_purpose'),
+                                'Layout' => __('capell-theme-foundation::demo.kitchen_sink_label_layout'),
+                                'Content' => __('capell-theme-foundation::demo.kitchen_sink_label_content'),
+                                'Variant rules' => __('capell-theme-foundation::demo.kitchen_sink_label_variant_rules'),
+                                'Behavior' => __('capell-theme-foundation::demo.kitchen_sink_label_behavior'),
+                                'Accessibility' => __('capell-theme-foundation::demo.kitchen_sink_label_accessibility'),
+                            ] as $noteKey => $label)
                                 <div>
                                     <dt class="font-semibold">{{ $label }}</dt>
                                     <dd>
-                                        {{ $notes[$label] ?? 'Use the default Foundation theme contract for this pattern.' }}
+                                        {{ $notes[$noteKey] ?? __('capell-theme-foundation::demo.kitchen_sink_default_note') }}
                                     </dd>
                                 </div>
                             @endforeach
@@ -68,7 +75,7 @@
                                 aria-controls="faq-panel-demo"
                                 id="faq-button-demo"
                             >
-                                What does this prove?
+                                {{ __('capell-theme-foundation::demo.kitchen_sink_faq_button') }}
                             </button>
                             <div
                                 id="faq-panel-demo"
@@ -76,7 +83,7 @@
                                 aria-labelledby="faq-button-demo"
                                 hidden
                             >
-                                <p>The accordion uses a native button and an explicitly labelled panel.</p>
+                                <p>{{ __('capell-theme-foundation::demo.kitchen_sink_faq_panel') }}</p>
                             </div>
                         </div>
                         @break
@@ -92,7 +99,7 @@
                                 aria-controls="tab-panel-overview"
                                 id="tab-overview"
                             >
-                                Overview
+                                {{ __('capell-theme-foundation::demo.kitchen_sink_tab_overview') }}
                             </button>
                             <button
                                 type="button"
@@ -102,7 +109,7 @@
                                 id="tab-details"
                                 tabindex="-1"
                             >
-                                Details
+                                {{ __('capell-theme-foundation::demo.kitchen_sink_tab_details') }}
                             </button>
                         </div>
                         <div
@@ -110,7 +117,7 @@
                             role="tabpanel"
                             aria-labelledby="tab-overview"
                         >
-                            <p>Tab panels stay labelled and keyboard reachable.</p>
+                            <p>{{ __('capell-theme-foundation::demo.kitchen_sink_tab_overview_panel') }}</p>
                         </div>
                         <div
                             id="tab-panel-details"
@@ -118,7 +125,7 @@
                             aria-labelledby="tab-details"
                             hidden
                         >
-                            <p>Arrow-key support belongs in the frontend runtime when enhanced.</p>
+                            <p>{{ __('capell-theme-foundation::demo.kitchen_sink_tab_details_panel') }}</p>
                         </div>
                         @break
                     @case ('carousel-slider')
@@ -130,17 +137,19 @@
                                 type="button"
                                 aria-label="{{ __('capell-theme-foundation::generic.previous_slide') }}"
                             >
-                                Previous
+                                {{ __('capell-theme-foundation::demo.kitchen_sink_carousel_previous') }}
                             </button>
                             <article tabindex="0">
-                                <h3>Focusable slide</h3>
-                                <p>No autoplay is required for this reference carousel.</p>
+                                <h3>
+                                    {{ __('capell-theme-foundation::demo.kitchen_sink_carousel_slide_title') }}
+                                </h3>
+                                <p>{{ __('capell-theme-foundation::demo.kitchen_sink_carousel_slide_copy') }}</p>
                             </article>
                             <button
                                 type="button"
                                 aria-label="{{ __('capell-theme-foundation::generic.next_slide') }}"
                             >
-                                Next
+                                {{ __('capell-theme-foundation::demo.kitchen_sink_carousel_next') }}
                             </button>
                         </section>
                         @break
@@ -148,22 +157,31 @@
                     @case ('complex-table')
                         <table>
                             <caption>
-                                {{ $heading }} example
+                                {{ __('capell-theme-foundation::demo.kitchen_sink_table_caption', ['heading' => $heading]) }}
                             </caption>
                             <thead>
                                 <tr>
-                                    <th scope="col">Pattern</th>
-                                    <th scope="col">Status</th>
-                                    <th scope="col">Notes</th>
+                                    <th scope="col">
+                                        {{ __('capell-theme-foundation::demo.kitchen_sink_table_pattern') }}
+                                    </th>
+                                    <th scope="col">
+                                        {{ __('capell-theme-foundation::demo.kitchen_sink_table_status') }}
+                                    </th>
+                                    <th scope="col">
+                                        {{ __('capell-theme-foundation::demo.kitchen_sink_table_notes') }}
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <th scope="row">Semantic HTML</th>
-                                    <td>Ready</td>
+                                    <th scope="row">
+                                        {{ __('capell-theme-foundation::demo.kitchen_sink_table_row_pattern') }}
+                                    </th>
                                     <td>
-                                        Captions and scoped headers are
-                                        required.
+                                        {{ __('capell-theme-foundation::demo.kitchen_sink_table_row_status') }}
+                                    </td>
+                                    <td>
+                                        {{ __('capell-theme-foundation::demo.kitchen_sink_table_row_notes') }}
                                     </td>
                                 </tr>
                             </tbody>
@@ -183,8 +201,7 @@
                                 aria-label="{{ __('capell-theme-foundation::generic.demo_video_embed') }}"
                             ></video>
                             <figcaption>
-                                Video embeds include controls and an accessible
-                                label.
+                                {{ __('capell-theme-foundation::demo.kitchen_sink_video_caption') }}
                             </figcaption>
                         </figure>
                         @break
@@ -195,8 +212,7 @@
                                 aria-label="{{ __('capell-theme-foundation::generic.demo_audio_player') }}"
                             ></audio>
                             <figcaption>
-                                Audio players include controls and a text
-                                equivalent.
+                                {{ __('capell-theme-foundation::demo.kitchen_sink_audio_caption') }}
                             </figcaption>
                         </figure>
                         @break
@@ -208,38 +224,51 @@
                                 src="about:blank"
                             ></iframe>
                             <figcaption>
-                                {{ $heading }} includes a title and nearby text
-                                equivalent.
+                                {{ __('capell-theme-foundation::demo.kitchen_sink_embed_caption', ['heading' => $heading]) }}
                             </figcaption>
                         </figure>
                         @break
                     @case ('heading-hierarchy')
-                        <h3>Nested reference heading</h3>
-                        <p>Widget internals continue below the page h1 and section h2.</p>
+                        <h3>
+                            {{ __('capell-theme-foundation::demo.kitchen_sink_heading_title') }}
+                        </h3>
+                        <p>{{ __('capell-theme-foundation::demo.kitchen_sink_heading_copy') }}</p>
                         @break
                     @case ('pre-code-example')
                         <pre><code>&lt;section aria-labelledby="example-heading"&gt;</code></pre>
                         @break
                     @case ('unordered-list')
                         <ul>
-                            <li>First unordered item</li>
-                            <li>Second unordered item</li>
+                            <li>
+                                {{ __('capell-theme-foundation::demo.kitchen_sink_ul_first') }}
+                            </li>
+                            <li>
+                                {{ __('capell-theme-foundation::demo.kitchen_sink_ul_second') }}
+                            </li>
                         </ul>
                         @break
                     @case ('ordered-list')
                         <ol>
-                            <li>First ordered item</li>
-                            <li>Second ordered item</li>
+                            <li>
+                                {{ __('capell-theme-foundation::demo.kitchen_sink_ol_first') }}
+                            </li>
+                            <li>
+                                {{ __('capell-theme-foundation::demo.kitchen_sink_ol_second') }}
+                            </li>
                         </ol>
                         @break
                     @case ('definition-list')
                         <dl>
-                            <dt>Term</dt>
-                            <dd>Definition text.</dd>
+                            <dt>
+                                {{ __('capell-theme-foundation::demo.kitchen_sink_term') }}
+                            </dt>
+                            <dd>
+                                {{ __('capell-theme-foundation::demo.kitchen_sink_definition') }}
+                            </dd>
                         </dl>
                         @break
                     @default
-                        <p>Reference output for {{ $heading }}.</p>
+                        <p>{{ __('capell-theme-foundation::demo.kitchen_sink_default_output', ['heading' => $heading]) }}</p>
                 @endswitch
             </article>
         @endforeach

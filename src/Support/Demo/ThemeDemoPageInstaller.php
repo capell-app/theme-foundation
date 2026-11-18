@@ -25,6 +25,7 @@ use Capell\FoundationTheme\Actions\AssertThemeDemoTargetAction;
 use Capell\FoundationTheme\Actions\BuildThemeDemoFormsPayloadAction;
 use Capell\FoundationTheme\Contracts\ProvidesThemeDemoContent;
 use Capell\FoundationTheme\Data\ThemeDemoInstallData;
+use Capell\FoundationTheme\Support\SearchSwitch;
 use Capell\LayoutBuilder\Support\Creator\WidgetCreator;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -468,7 +469,7 @@ final class ThemeDemoPageInstaller
             'type' => 'search',
             'heading' => 'Try another search',
             'summary' => 'Search again, clear the filter, or use the suggested paths below to continue browsing.',
-            'action' => '/search',
+            'action' => resolve(SearchSwitch::class)->resultsUrl(),
             'query' => 'no matching results',
             'placeholder' => 'Search the archive',
             'results' => [],
@@ -1153,7 +1154,7 @@ final class ThemeDemoPageInstaller
             'fintech-trust' => $this->premiumSurfaces(['verification-flow', 'Verification Flow', 'Explain business identity checks, ownership paths, sanctions screening, and review states.', ['verification-flow', 'compliance-badges', 'metric-cards']], ['security', 'Security Architecture', 'Show audit trails, compliance posture, and operational controls for regulated buyers.', ['security-architecture', 'coverage-map', 'proof']], ['compliance', 'Compliance Hub', 'Collect policy, audit, risk, and support content into a high-trust resource surface.', ['compliance-badges', 'content-listing', 'cta']]),
             'crypto-defi' => $this->premiumSurfaces(['markets', 'Markets', 'Show protocol stats, collateral assets, APY examples, and liquidity context.', ['protocol-stats', 'token-metrics', 'wallet-cta']], ['how-it-works', 'How It Works', 'Explain lending, borrowing, risk, and settlement in a public-safe flow.', ['how-it-works', 'audit-badges', 'proof']], ['audit', 'Audit & Risk', 'Surface audits, disclaimers, risk controls, and governance links.', ['audit-badges', 'content-listing', 'cta']]),
             'quant-trading' => $this->premiumSurfaces(['performance', 'Performance', 'Present static equity curves, drawdown context, and strategy summaries with risk disclosure.', ['performance-chart', 'track-record-table', 'risk-disclosure']], ['strategies', 'Strategies', 'Group systematic strategy cards, markets, and research notes.', ['strategy-cards', 'metric-cards', 'content-listing']], ['risk', 'Risk Disclosure', 'Make risk language, methodology, and investor qualification visible.', ['risk-disclosure', 'proof', 'cta']]),
-            'devtool-oss' => $this->premiumSurfaces(['install', 'Install', 'Lead with install commands, self-host options, and SDK entry points.', ['install-hero', 'quickstart', 'sdk-grid']], ['community', 'Community', 'Show GitHub proof, contributors, changelog, and governance routes.', ['github-proof', 'contributors', 'changelog']], ['cloud', 'Cloud vs Self-host', 'Compare hosted and self-hosted paths for evaluation.', ['self-host-vs-cloud', 'features', 'cta']]),
+            'devtool-oss' => $this->premiumSurfaces(['install', 'Install', 'Lead with install commands, self-host options, and SDK entry points.', ['install-hero', 'quickstart', 'sdk-grid']], ['community', 'Community', 'Show source-host proof, contributors, changelog, and governance routes.', ['github-proof', 'contributors', 'changelog']], ['cloud', 'Cloud vs Self-host', 'Compare hosted and self-hosted paths for evaluation.', ['self-host-vs-cloud', 'features', 'cta']]),
             'robotics-hardware' => $this->premiumSurfaces(['product', 'Product', 'Show a hardware product story with capability cards, preorder CTA, and video-ready media.', ['video-hero', 'capabilities', 'preorder-cta']], ['specs', 'Specs', 'Publish dimensions, reach, battery, safety, and support details.', ['spec-sheet', 'tech-deep-dive', 'proof']], ['preorder', 'Preorder', 'Guide buyers from product confidence into reservation or demo interest.', ['preorder-cta', 'features', 'cta']]),
             'manufacturing' => $this->premiumSurfaces(['capabilities', 'Capabilities', 'Show machining, fabrication, QA, and fulfilment capabilities.', ['capabilities-grid', 'facility-stats', 'certifications']], ['case-studies', 'Case Studies', 'Present production examples, tolerances, lead times, and results.', ['case-studies', 'spec-downloads', 'proof']], ['rfq', 'RFQ', 'Create a conversion path for drawings, materials, volumes, and timelines.', ['rfq-form', 'features', 'cta']]),
             'packaging-supplier' => $this->premiumSurfaces(['products', 'Product Range', 'Group cartons, mailers, labels, inserts, and custom packaging choices.', ['product-range', 'materials', 'industries']], ['sustainability', 'Sustainability', 'Show materials, certifications, lifecycle claims, and responsible sourcing.', ['sustainability', 'proof', 'content-listing']], ['samples', 'Sample Request', 'Route buyers into sample kits, MOQ questions, and quote requests.', ['sample-request', 'features', 'cta']]),

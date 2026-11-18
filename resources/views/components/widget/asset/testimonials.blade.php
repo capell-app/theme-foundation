@@ -138,8 +138,8 @@
                                     @class([
                                     'relative flex w-full shrink-0 basis-full flex-col space-y-4',
                                     'items-center justify-center text-center' => $align === 'center',
-                                    'items-start justify-start text-left' => $align === 'left',
-                                    'items-end justify-end text-right' => $align === 'right',
+                                    'items-start justify-start text-start' => $align === 'left',
+                                    'items-end justify-end text-end' => $align === 'right',
                                 ])
                                 >
                                     @if ($media)

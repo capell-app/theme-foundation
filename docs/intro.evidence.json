@@ -1,0 +1,92 @@
+[
+    {
+        "claim": "A documentation site or a general publishing site gets a very pale green-grey page with near-black text, and links and buttons in a deep green-teal.",
+        "evidence": [
+            "src/Providers/FoundationThemeServiceProvider.php",
+            "src/Actions/ResolveFoundationThemeTokensAction.php",
+            "resources/css/theme-foundation.css",
+            "resources/views/components/app/head/tokens.blade.php"
+        ]
+    },
+    {
+        "claim": "The header stays in view as visitors scroll, and the footer shows your menu, or your latest pages if you have no menu.",
+        "evidence": [
+            "src/Support/Interceptors/Themes/FoundationThemeInterceptor.php",
+            "resources/views/components/header/index.blade.php",
+            "src/View/Components/Footer/Index.php",
+            "resources/views/components/footer/site-info.blade.php"
+        ]
+    },
+    {
+        "claim": "This is the plain starting theme that other Capell themes build on, and they bring it with them when you install them.",
+        "evidence": [
+            "src/Providers/FoundationThemeServiceProvider.php",
+            "stubs/make-theme/composer.json.stub",
+            "stubs/make-theme/capell.json.stub"
+        ]
+    },
+    {
+        "claim": "Pages are put together from ready-made sections.",
+        "evidence": ["src/Providers/FoundationThemeServiceProvider.php"]
+    },
+    {
+        "claim": "A form section is there too, and it needs the Form Builder package.",
+        "evidence": ["src/Actions/ResolveThemeFormEmbedDataAction.php"]
+    },
+    {
+        "claim": "You set colours and spacing on the theme's settings page.",
+        "evidence": [
+            "src/Filament/Settings/FoundationThemeSettingsSchema.php",
+            "src/Providers/FoundationThemeServiceProvider.php"
+        ]
+    },
+    {
+        "claim": "Developers get a command that moves sites off a retired theme onto its replacement.",
+        "evidence": [
+            "src/Console/Commands/MigrateThemeCommand.php",
+            "src/Support/Themes/RetiredThemeSuccessors.php",
+            "src/Actions/MigrateSitesToThemeAction.php"
+        ]
+    },
+    {
+        "claim": "It shows a preview first and writes a report that can undo the move, though custom CSS, hero media and differing theme settings are not carried over.",
+        "evidence": [
+            "src/Console/Commands/MigrateThemeCommand.php",
+            "src/Actions/MigrateSitesToThemeAction.php",
+            "src/Actions/RollbackThemeMigrationAction.php",
+            "src/Actions/PlanThemeMigrationAction.php"
+        ]
+    },
+    {
+        "claim": "The dark version is a very dark green page with mint buttons.",
+        "evidence": [
+            "src/Actions/ResolveFoundationThemeTokensAction.php",
+            "resources/views/components/app/head/tokens.blade.php"
+        ]
+    },
+    {
+        "claim": "It appears when a visitor presses the dark button in the header, and not from the device's own dark setting.",
+        "evidence": [
+            "resources/views/components/app/head/custom.blade.php",
+            "resources/views/components/header/index.blade.php",
+            "src/Support/Interceptors/Themes/FoundationThemeInterceptor.php",
+            "resources/css/variants/variants.css",
+            "capell.json"
+        ]
+    },
+    {
+        "claim": "The browser remembers the choice for later visits.",
+        "evidence": [
+            "resources/views/components/app/head/custom.blade.php",
+            "resources/views/components/header/index.blade.php"
+        ]
+    },
+    {
+        "claim": "One is a hero, the large opening area at the top, and another is a call to action, which asks visitors to do something.",
+        "evidence": ["src/Providers/FoundationThemeServiceProvider.php"]
+    },
+    {
+        "claim": "Others cover features, content lists and search results.",
+        "evidence": ["src/Providers/FoundationThemeServiceProvider.php"]
+    }
+]

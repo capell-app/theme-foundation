@@ -119,13 +119,13 @@
 
                 @if ($assetRenderDataItems->count() > 1)
                     <button
-                        class="carousel-prev absolute top-1/2 left-0 -translate-x-12 -translate-y-1/2 text-2xl text-gray-600 hover:text-gray-900"
+                        class="carousel-prev absolute top-1/2 start-0 -translate-x-12 rtl:translate-x-12 -translate-y-1/2 text-2xl text-gray-600 hover:text-gray-900"
                         data-carousel-direction="-1"
                     >
                         ←
                     </button>
                     <button
-                        class="carousel-next absolute top-1/2 right-0 translate-x-12 -translate-y-1/2 text-2xl text-gray-600 hover:text-gray-900"
+                        class="carousel-next absolute top-1/2 end-0 translate-x-12 rtl:-translate-x-12 -translate-y-1/2 text-2xl text-gray-600 hover:text-gray-900"
                         data-carousel-direction="1"
                     >
                         →

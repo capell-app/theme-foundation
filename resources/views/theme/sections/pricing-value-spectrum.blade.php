@@ -27,7 +27,7 @@
                 {{ __('capell-theme-foundation::generic.pricing_value_spectrum') }}
             </p>
             <h2
-                class="text-3xl leading-tight font-[var(--theme-heading-font)] font-semibold text-slate-950 sm:text-4xl"
+                class="text-3xl leading-tight font-(family-name:--theme-heading-font) font-semibold text-slate-950 sm:text-4xl"
             >
                 {{ $section->heading ?? __('capell-theme-foundation::generic.pricing_value_spectrum') }}
             </h2>
@@ -100,7 +100,7 @@
                     </p>
 
                     <ul
-                        class="pricing-spectrum-tier-features mx-auto mt-6 grid max-w-md gap-2 text-left text-sm text-slate-700"
+                        class="pricing-spectrum-tier-features mx-auto mt-6 grid max-w-md gap-2 text-start text-sm text-slate-700"
                         data-pricing-spectrum-features
                     >
                         @foreach (($activeTier['features'] ?? []) as $feature)

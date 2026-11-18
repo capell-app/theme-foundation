@@ -10,7 +10,7 @@ $theme = Frontend::theme();
 ?>
 
 @props([
-    'linkClass' => 'dropdown-item hover:text-primary focus:text-primary widget w-full bg-transparent px-4 py-3 text-left text-base text-sm leading-none font-medium whitespace-nowrap',
+    'linkClass' => 'dropdown-item hover:text-primary focus:text-primary widget w-full bg-transparent px-4 py-3 text-start text-base text-sm leading-none font-medium whitespace-nowrap',
     'name' => 'languages',
     'dropdownLabelClass' => '',
     'darkMode' => false,
@@ -61,7 +61,7 @@ $theme = Frontend::theme();
                 @wireNavigate
             >
                 <img
-                    class="mr-2 inline-block h-4 w-4 align-top"
+                    class="me-2 inline-block h-4 w-4 align-top"
                     src="{{ asset("vendor/blade-country-flags/4x3-{$siteLanguage['flag']}.svg") }}"
                     alt=""
                     width="16"

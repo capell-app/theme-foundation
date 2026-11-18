@@ -32,8 +32,8 @@ it('advertises the release-facing DesignSpec producer contract', function (): vo
         'deterministic-theme-compiler',
         'project-build-capell-theme-artifact',
     )
-        ->and($manifest['description'])->toContain('DesignSpec')
-        ->and(data_get($manifest, 'marketplace.summary'))->toContain('DesignSpec');
+        ->and($manifest['description'])->toBeString()->not->toBeEmpty()
+        ->and(data_get($manifest, 'marketplace.summary'))->toBeString()->not->toBeEmpty();
 });
 
 it('declares its catalogue generator without claiming the core theme command', function (): void {

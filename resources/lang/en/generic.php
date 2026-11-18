@@ -85,4 +85,7 @@ return [
     'stats_display_band' => 'By the numbers',
     'sub_footer_navigation' => 'Footer utility navigation',
     'view_preview' => 'View preview',
+    'embed_consent_notice' => 'This content is hosted by :provider. Loading it shares your visit with them.',
+    'embed_consent_load' => 'Load :title',
+    'embed_open_elsewhere' => 'View :title on its own site',
 ];

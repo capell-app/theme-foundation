@@ -246,17 +246,26 @@
 
         <div class="theme-demo-contact-gateway">
             <div class="theme-demo-contact-intro">
-                <p class="theme-demo-contact-eyebrow">Contact</p>
-                <h2>Start the right conversation</h2>
-                <p class="theme-demo-contact-lede">Tell us what you are planning, fixing, moving, or partnering on. One contact page routes project scoping, technical support, migrations, and partnerships to the right Capell team.</p>
+                <p class="theme-demo-contact-eyebrow">{{ __('capell-theme-foundation::demo.contact_eyebrow') }}</p>
+                <h2>
+                    {{ __('capell-theme-foundation::demo.contact_heading') }}
+                </h2>
+                <p class="theme-demo-contact-lede">{{ __('capell-theme-foundation::demo.contact_lede') }}</p>
 
                 <div class="theme-demo-contact-details">
-                    <h3>Capell Studio, London</h3>
-                    <p>Remote-first delivery with UK timezone handover. Send an enquiry and the contact form routes it into the right follow-up path.</p>
+                    <h3>
+                        {{ __('capell-theme-foundation::demo.contact_studio_title') }}
+                    </h3>
+                    <p>{{ __('capell-theme-foundation::demo.contact_studio_copy') }}</p>
                 </div>
 
                 <div class="theme-demo-contact-routing">
-                    @foreach ([['Project scoping', 'New implementations', 'Plan content models, package boundaries, layouts, and launch checks before the build starts.'], ['Support', 'Existing site help', 'Route production issues, editor workflow questions, and package troubleshooting to the right owner.'], ['Migration planning', 'Move from legacy CMSs', 'Map pages, redirects, media, structured fields, and verification work into a clear migration path.'], ['Partnerships', 'Agency and technology work', 'Discuss delivery partnerships, packaged integrations, and repeatable theme or content operations.']] as [$label, $title, $copy])
+                    @foreach ([
+                        [__('capell-theme-foundation::demo.contact_routing_scoping_label'), __('capell-theme-foundation::demo.contact_routing_scoping_title'), __('capell-theme-foundation::demo.contact_routing_scoping_copy')],
+                        [__('capell-theme-foundation::demo.contact_routing_support_label'), __('capell-theme-foundation::demo.contact_routing_support_title'), __('capell-theme-foundation::demo.contact_routing_support_copy')],
+                        [__('capell-theme-foundation::demo.contact_routing_migration_label'), __('capell-theme-foundation::demo.contact_routing_migration_title'), __('capell-theme-foundation::demo.contact_routing_migration_copy')],
+                        [__('capell-theme-foundation::demo.contact_routing_partnerships_label'), __('capell-theme-foundation::demo.contact_routing_partnerships_title'), __('capell-theme-foundation::demo.contact_routing_partnerships_copy')],
+                    ] as [$label, $title, $copy])
                         <article>
                             <p>{{ $label }}</p>
                             <div>
@@ -273,9 +282,11 @@
                 class="theme-demo-contact-form theme-demo-contact-form-panel"
             >
                 <div class="theme-demo-contact-form-header">
-                    <p class="theme-demo-contact-eyebrow">Contact form</p>
-                    <h3>Send an enquiry</h3>
-                    <p>Share the context once. We will route it to the right delivery, support, migration, or partnership lead.</p>
+                    <p class="theme-demo-contact-eyebrow">{{ __('capell-theme-foundation::demo.contact_form_eyebrow') }}</p>
+                    <h3>
+                        {{ __('capell-theme-foundation::demo.contact_form_title') }}
+                    </h3>
+                    <p>{{ __('capell-theme-foundation::demo.contact_form_copy') }}</p>
                 </div>
 
                 <x-capell::form-embed
@@ -290,16 +301,22 @@
             aria-label="{{ __('capell-theme-foundation::generic.contact_expectations') }}"
         >
             <p>
-                <strong>Response:</strong>
-                Within 4 business hours
+                <strong
+                    >{{ __('capell-theme-foundation::demo.contact_response_label') }}</strong
+                >
+                {{ __('capell-theme-foundation::demo.contact_response_value') }}
             </p>
             <p>
-                <strong>Location:</strong>
-                London, UK and remote-first
+                <strong
+                    >{{ __('capell-theme-foundation::demo.contact_location_label') }}</strong
+                >
+                {{ __('capell-theme-foundation::demo.contact_location_value') }}
             </p>
             <p>
-                <strong>Handover:</strong>
-                Directly routed to the right team
+                <strong
+                    >{{ __('capell-theme-foundation::demo.contact_handover_label') }}</strong
+                >
+                {{ __('capell-theme-foundation::demo.contact_handover_value') }}
             </p>
         </div>
     </div>

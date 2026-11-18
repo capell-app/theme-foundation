@@ -35,7 +35,7 @@
 
                     @if ($widget->translation->content)
                         <p class="ap-feature-list-description capell-showcase__copy">
-                            {!! strip_tags($widget->translation->content) !!}
+                            {{ html_entity_decode(strip_tags((string) $widget->translation->content), ENT_QUOTES | ENT_HTML5) }}
                         </p>
                     @endif
                 </div>

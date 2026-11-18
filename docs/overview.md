@@ -2,6 +2,12 @@
 
 <!-- prettier-ignore-start -->
 
+A documentation site or a general publishing site gets a very pale green-grey page with near-black text, and links and buttons in a deep green-teal. The header stays in view as visitors scroll, and the footer shows your menu, or your latest pages if you have no menu.
+
+This is the plain starting theme that other Capell themes build on, and they bring it with them when you install them. Pages are put together from ready-made sections. One is a hero, the large opening area at the top, and another is a call to action, which asks visitors to do something. Others cover features, content lists and search results. A form section is there too, and it needs the Form Builder package. You set colours and spacing on the theme's settings page.
+
+Developers get a command that moves sites off a retired theme onto its replacement. It shows a preview first and writes a report that can undo the move, though custom CSS, hero media and differing theme settings are not carried over. The dark version is a very dark green page with mint buttons. It appears when a visitor presses the dark button in the header, and not from the device's own dark setting. The browser remembers the choice for later visits.
+
 ## What this theme gives you
 
 Foundation Theme is the base runtime and visual system that Capell themes build on. It provides shared Blade layouts, public design tokens, media/SVG handling, the Tailwind asset pipeline, and the stable override contract for child themes. On its own it is a neutral starting point; vertical themes extend it with their own design and registered sections.

@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Capell\Core\ThemeStudio\Data\ThemeDefinitionData;
+use Capell\Core\ThemeStudio\Data\ThemePresetData;
 use Capell\FoundationTheme\Actions\ValidateThemeCatalogueEntryAction;
 use Capell\FoundationTheme\Providers\FoundationThemeServiceProvider;
 use Illuminate\Filesystem\Filesystem;
@@ -44,7 +46,7 @@ it('accepts either package-local or foundation fleet safety evidence', function 
 /**
  * @return array{root: string, packagesRoot: string, packageRoot: string}
  */
-function createCommercialReadinessFixture(Filesystem $filesystem): array
+function createCommercialReadinessFixture(Filesystem $filesystem, string $providerClass = FoundationThemeServiceProvider::class): array
 {
     $root = sys_get_temp_dir() . '/capell-theme-readiness-' . bin2hex(random_bytes(8));
     $packagesRoot = $root . '/packages';
@@ -60,7 +62,7 @@ function createCommercialReadinessFixture(Filesystem $filesystem): array
         'themeKey' => 'default',
         'extends' => null,
         'product' => ['tier' => 'free'],
-        'providers' => ['runtime' => [FoundationThemeServiceProvider::class]],
+        'providers' => ['runtime' => [$providerClass]],
         'dependencies' => ['supports' => []],
         'marketplace' => ['screenshots' => []],
     ]);
@@ -118,4 +120,52 @@ function writeCommercialReadinessJson(Filesystem $filesystem, string $path, arra
         $path,
         json_encode($payload, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n",
     );
+}
+
+it('reports preset fonts that are not catalogue keys', function (): void {
+    $filesystem = new Filesystem;
+    $fixture = createCommercialReadinessFixture($filesystem, UnknownFontPresetFixtureProvider::class);
+
+    try {
+        $result = ValidateThemeCatalogueEntryAction::run('theme-fixture', $fixture['packagesRoot']);
+
+        expect($result->violations)
+            ->toContain('default: preset bad-heading headingFont (source-serif-4) is not a font catalogue key.')
+            ->toContain('default: preset bad-pairing bodyFont (comic-sans) is not a font catalogue key.')
+            ->not->toContain('default: preset good bodyFont (source-serif) is not a font catalogue key.');
+    } finally {
+        $filesystem->deleteDirectory($fixture['root']);
+    }
+});
+
+final class UnknownFontPresetFixtureProvider
+{
+    public static function definition(): ThemeDefinitionData
+    {
+        $definition = FoundationThemeServiceProvider::definition();
+        $preset = static fn (string $key, array $values = [], ?string $pairing = null): ThemePresetData => new ThemePresetData(
+            key: $key,
+            name: $key,
+            description: $key,
+            previewImage: '/fixture.webp',
+            values: $values,
+            typePairing: $pairing,
+        );
+
+        return new ThemeDefinitionData(
+            key: $definition->key,
+            name: $definition->name,
+            description: $definition->description,
+            package: $definition->package,
+            previewImage: $definition->previewImage,
+            tags: $definition->tags,
+            bestFit: $definition->bestFit,
+            presets: [
+                $preset('good', ['headingFont' => 'fraunces', 'bodyFont' => 'source-serif']),
+                $preset('bad-heading', ['headingFont' => 'source-serif-4', 'bodyFont' => 'inter']),
+                $preset('bad-pairing', pairing: 'fraunces+comic-sans'),
+            ],
+            extends: $definition->extends,
+        );
+    }
 }

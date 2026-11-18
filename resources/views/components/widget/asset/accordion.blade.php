@@ -81,7 +81,7 @@
                             "
                             class="hover:text-primary focus:text-primary group flex cursor-pointer items-center"
                         >
-                            <div class="ml-2 flex w-10 justify-center">
+                            <div class="ms-2 flex w-10 justify-center">
                                 @svg('heroicon-o-chevron-right', [
                                     'class' => 'text-link group-hover:text-primary group-focus:text-primary h-6 w-6',
                                     ':class' => "{ 'rotate-90': isActive(" . $loop->iteration . "), 'rotate-0': !isActive(" . $loop->iteration . ') }',
@@ -100,7 +100,7 @@
                             "
                             class="relative max-h-0 overflow-hidden transition-all duration-700"
                         >
-                            <div class="ml-4 px-1 pt-1 pr-4">
+                            <div class="ms-4 px-1 pt-1 pe-4">
                                 <div class="flex gap-6">
                                     @if ($assetRenderData->content)
                                         <x-capell::content

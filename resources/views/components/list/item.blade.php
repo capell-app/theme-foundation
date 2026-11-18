@@ -37,7 +37,7 @@ use Capell\Navigation\Data\NavigationItemData;
     </a>
     @if ($item->children->count() > 0)
         <x-capell::list
-            class="ml-2"
+            class="ms-2"
             gap="gap-y-0.5"
         >
             @foreach ($item->children as $child)

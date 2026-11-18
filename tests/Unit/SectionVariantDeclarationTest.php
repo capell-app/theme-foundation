@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Capell\Frontend\Contracts\FrontendContextReader;
 use Capell\Tests\Support\RenderedDocument;
 
 /*
@@ -107,7 +108,7 @@ it('resolves every declared section variant to a real Blade view file', function
     expect($checked)->toBeGreaterThan(0);
 });
 
-it('ships every Foundation hero variant as a subordinate heading with stable media and premium interaction states', function (): void {
+it('ships every Foundation hero variant as the page heading with stable media and premium interaction states', function (): void {
     $themeRoot = dirname(__DIR__, 2);
     $heroViews = [
         'hero.blade.php',
@@ -117,13 +118,14 @@ it('ships every Foundation hero variant as a subordinate heading with stable med
     ];
 
     foreach ($heroViews as $heroView) {
+        resolve(FrontendContextReader::class)->setFrontendData('has_primary_heading', false);
         $html = view()->file($themeRoot . '/resources/views/theme/sections/' . $heroView, ['section' => (object) [
-            'eyebrow' => 'Introduction', 'heading' => 'A subordinate hero', 'summary' => 'Helpful copy',
+            'eyebrow' => 'Introduction', 'heading' => 'A primary hero', 'summary' => 'Helpful copy',
             'mediaUrl' => '/media/hero.jpg', 'mediaAlt' => 'Hero photograph',
             'actions' => [['url' => '/contact', 'label' => 'Contact us']],
         ]])->render();
-        expect(domQueryCount($html, '//h2[normalize-space(.)="A subordinate hero"]'))->toBe(1)
-            ->and(domQueryCount($html, '//h1'))->toBe(0)
+        expect(domQueryCount($html, '//h1[normalize-space(.)="A primary hero"]'))->toBe(1)
+            ->and(domQueryCount($html, '//h2'))->toBe(0)
             ->and(domQueryCount($html, '//img[@src="/media/hero.jpg"][@alt="Hero photograph"][number(@width) > 0][number(@height) > 0][@loading="eager"][@fetchpriority="high"]'))->toBe(1)
             ->and(domQueryCount($html, '//a[@href="/contact"][normalize-space(.)="Contact us"]'))->toBe(1);
     }

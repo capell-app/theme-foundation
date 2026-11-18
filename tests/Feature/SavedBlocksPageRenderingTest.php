@@ -101,7 +101,7 @@ it('renders catalogue blocks and translation-owned media through the public HTTP
     $keys = [(string) Str::uuid(), (string) Str::uuid()];
     $images = [];
     foreach ($keys as $index => $key) {
-        $images[] = $translation->addMedia(UploadedFile::fake()->image('portrait-' . $index . '.png'))
+        $images[] = $translation->mediaOwner()->addMedia(UploadedFile::fake()->image('portrait-' . $index . '.png'))
             ->toMediaCollection(ResolveBuilderBlockMediaAction::collection($key) ?? throw new LogicException('Expected a block collection.'), 'public');
     }
 
@@ -205,7 +205,7 @@ it('renders Article and Event layouts with prepared Widget media in exception mo
 
     $translation = $widget->translations()->create(['language_id' => $site->language_id, 'title' => 'Pageable Widget']);
     $key = (string) Str::uuid();
-    $image = $translation->addMedia(UploadedFile::fake()->image('pageable.png'))->toMediaCollection(ResolveBuilderBlockMediaAction::collection($key) ?? throw new LogicException('Expected a collection.'), 'public');
+    $image = $translation->mediaOwner()->addMedia(UploadedFile::fake()->image('pageable.png'))->toMediaCollection(ResolveBuilderBlockMediaAction::collection($key) ?? throw new LogicException('Expected a collection.'), 'public');
     $translation->update(['content' => json_encode([
         ['type' => 'hero', 'data' => ['title' => 'Leftover media ignored', 'media_key' => (string) Str::uuid()]],
         ['type' => 'logos', 'data' => ['media_key' => $key, 'logos' => [['name' => 'Pageable partner', 'image' => $image->uuid]]]],
@@ -234,7 +234,7 @@ it('evicts a real static page artifact through the media invalidation observer',
 
     $translation = $page->translations()->firstOrFail();
     $key = (string) Str::uuid();
-    $image = $translation->addMedia(UploadedFile::fake()->image('evict.png'))->toMediaCollection(ResolveBuilderBlockMediaAction::collection($key) ?? throw new LogicException('Expected a collection.'), 'public');
+    $image = $translation->mediaOwner()->addMedia(UploadedFile::fake()->image('evict.png'))->toMediaCollection(ResolveBuilderBlockMediaAction::collection($key) ?? throw new LogicException('Expected a collection.'), 'public');
     $translation->update(['content' => json_encode([['type' => 'logos', 'data' => ['title' => 'Eviction logos', 'media_key' => $key, 'logos' => [['name' => 'Partner', 'image' => $image->uuid]]]]], JSON_THROW_ON_ERROR)]);
     CapellLayoutManager::clearContainerWidgets();
     try {

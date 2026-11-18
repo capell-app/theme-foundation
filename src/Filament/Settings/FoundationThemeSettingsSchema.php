@@ -14,6 +14,7 @@ use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Text;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Override;
 
@@ -110,6 +111,27 @@ class FoundationThemeSettingsSchema implements HasSchema
                                 ->default('balanced')
                                 ->in(array_keys(FoundationThemeSettings::WIDGET_GAP_OPTIONS))
                                 ->required(),
+                            Select::make('type_pairing')
+                                ->label(self::translate('capell-theme-foundation::form.type_pairing'))
+                                ->helperText(self::translate('capell-theme-foundation::form.type_pairing_helper'))
+                                ->placeholder(self::translate('capell-theme-foundation::form.type_pairing_placeholder'))
+                                ->options(array_combine(
+                                    array_keys(FoundationThemeSettings::TYPE_PAIRING_OPTIONS),
+                                    array_map(
+                                        static fn (string $pairing): string => self::translate('capell-theme-foundation::form.type_pairing_options.' . $pairing),
+                                        array_keys(FoundationThemeSettings::TYPE_PAIRING_OPTIONS),
+                                    ),
+                                ))
+                                ->in(array_keys(FoundationThemeSettings::TYPE_PAIRING_OPTIONS))
+                                ->nullable()
+                                ->live()
+                                ->afterStateUpdated(static function (?string $state, Set $set): void {
+                                    $pairing = FoundationThemeSettings::typePairingFor($state);
+
+                                    if ($pairing !== null) {
+                                        $set('heading_scale', $pairing['scale']);
+                                    }
+                                }),
                             Select::make('heading_scale')
                                 ->label(self::translate('capell-theme-foundation::form.heading_scale'))
                                 ->helperText(self::translate('capell-theme-foundation::form.heading_scale_helper'))

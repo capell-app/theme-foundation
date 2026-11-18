@@ -24,7 +24,7 @@
                 {{ __('capell-theme-foundation::generic.faq_search_discovery') }}
             </p>
             <h2
-                class="text-3xl leading-tight font-[var(--theme-heading-font)] font-semibold text-slate-950 sm:text-4xl"
+                class="text-3xl leading-tight font-(family-name:--theme-heading-font) font-semibold text-slate-950 sm:text-4xl"
             >
                 {{ $section->heading ?? __('capell-theme-foundation::generic.faq_search_discovery') }}
             </h2>
@@ -98,7 +98,7 @@
                             >{{ $faq['question'] ?? '' }}</span
                         >
                         <span
-                            class="ml-4 flex-shrink-0 text-xl text-slate-500 transition-transform group-open:rotate-45"
+                            class="ms-4 flex-shrink-0 text-xl text-slate-500 transition-transform group-open:rotate-45"
                             aria-hidden="true"
                         >
                             +

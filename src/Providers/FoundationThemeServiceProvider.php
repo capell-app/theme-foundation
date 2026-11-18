@@ -8,6 +8,7 @@ use Capell\Admin\Data\Extensions\ExtensionManagementSurfaceData;
 use Capell\Admin\Facades\CapellAdmin;
 use Capell\Core\Actions\RegisterBlazeOptimizedViewsAction;
 use Capell\Core\Contracts\ProjectBuild\ProjectBuildArtifactHandler;
+use Capell\Core\Contracts\SiteSpec\SiteSpecApplier;
 use Capell\Core\Data\RenderableDefinitionData;
 use Capell\Core\Data\VendorAssetData;
 use Capell\Core\Enums\BlueprintGroupEnum;
@@ -34,9 +35,11 @@ use Capell\FoundationTheme\Actions\PrepareFoundationPageWidgetDataAction;
 use Capell\FoundationTheme\Actions\ResolveAuthMenuPayloadsAction;
 use Capell\FoundationTheme\Actions\ResolveFoundationThemeTokensAction;
 use Capell\FoundationTheme\Actions\ResolveResultsListingAction;
+use Capell\FoundationTheme\Actions\SiteSpec\ApplyFoundationThemeSiteSpecAction;
 use Capell\FoundationTheme\Console\Commands\DemoCommand;
 use Capell\FoundationTheme\Console\Commands\GenerateTailwindAssetsCommand;
 use Capell\FoundationTheme\Console\Commands\MakeFoundationThemeCommand;
+use Capell\FoundationTheme\Console\Commands\MigrateThemeCommand;
 use Capell\FoundationTheme\Console\Commands\SetupCommand;
 use Capell\FoundationTheme\Console\Commands\ThemeCatalogueReportCommand;
 use Capell\FoundationTheme\Console\Commands\ValidateThemesCommand;
@@ -61,6 +64,7 @@ use Capell\FoundationTheme\Support\Assets\ThemeFrontendScriptRegistry;
 use Capell\FoundationTheme\Support\AuthMenuWidget as AuthMenuWidgetDefinition;
 use Capell\FoundationTheme\Support\Blade\BladeDirectives;
 use Capell\FoundationTheme\Support\CapellOptionalExtensionAvailability;
+use Capell\FoundationTheme\Support\Demo\SelfHostedDemoMedia;
 use Capell\FoundationTheme\Support\DesignSpec\FoundationThemeProjectBuildArtifactHandler;
 use Capell\FoundationTheme\Support\FoundationLayoutContainerThemePresentationProjector;
 use Capell\FoundationTheme\Support\FoundationThemeRuntimeManifestContributor;
@@ -69,6 +73,7 @@ use Capell\FoundationTheme\Support\Interceptors\Themes\FoundationThemeIntercepto
 use Capell\FoundationTheme\Support\Media\CapellUrlGenerator;
 use Capell\FoundationTheme\Support\Render\FoundationImageLoadingContributor;
 use Capell\FoundationTheme\Support\Tailwind\TailwindAssetsGenerator;
+use Capell\FoundationTheme\Support\Themes\ActivePresetSectionVariants;
 use Capell\FoundationTheme\Support\View\FoundationThemePublicUrlViewComposer;
 use Capell\FoundationTheme\View\Components\Actions as ActionsComponent;
 use Capell\FoundationTheme\View\Components\App\Body as AppBodyComponent;
@@ -89,6 +94,7 @@ use Capell\FoundationTheme\View\Components\Widget\Page\Content as PageContentCom
 use Capell\FoundationTheme\View\Components\Widget\Page\Latest as PageLatestComponent;
 use Capell\FoundationTheme\View\Components\Widget\Page\Siblings as PageSiblingsComponent;
 use Capell\FoundationTheme\View\Components\Widget\Slot as SlotComponent;
+use Capell\FoundationTheme\View\Composers\HeroHeadingLevelViewComposer;
 use Capell\Frontend\Contracts\AssetsRegistryInterface;
 use Capell\Frontend\Contracts\FrontendComponentRegistryInterface;
 use Capell\Frontend\Contracts\FrontendContextReader;
@@ -214,6 +220,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
                 SetupCommand::class,
                 ThemeCatalogueReportCommand::class,
                 MakeFoundationThemeCommand::class,
+                MigrateThemeCommand::class,
                 ValidateThemesCommand::class,
             ]);
     }
@@ -251,6 +258,8 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
         $this->app->tag([FoundationThemeProjectBuildArtifactHandler::class], ProjectBuildArtifactHandler::TAG);
         $this->app->scoped(FoundationThemeAssetContributor::class);
+        $this->app->scoped(ActivePresetSectionVariants::class);
+        $this->app->tag([ApplyFoundationThemeSiteSpecAction::class], SiteSpecApplier::TAG);
         $this->app->singleton(ThemeFrontendScriptRegistry::class);
         $this->app->scoped(ThemeFrontendScriptContributor::class);
         $this->app->tag(ThemeFrontendScriptContributor::class, FrontendResourceContributor::TAG);
@@ -307,8 +316,9 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
         $finder = $this->app->make(ViewFactory::class)->getFinder();
 
         $hints = $finder instanceof FileViewFinder ? $finder->getHints() : [];
+        $canonicalViews = realpath($views) ?: $views;
 
-        if (! in_array($views, $hints['capell-theme-foundation'] ?? [], true)) {
+        if (! in_array($canonicalViews, $hints['capell-theme-foundation'] ?? [], true)) {
             $finder->addNamespace('capell-theme-foundation', $views);
         }
 
@@ -341,8 +351,9 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
             $finder = $this->app->make(ViewFactory::class)->getFinder();
             $hints = $finder instanceof FileViewFinder ? $finder->getHints() : [];
+            $canonicalPath = realpath($path) ?: $path;
 
-            if (! in_array($path, $hints[$registered['prefixHash']] ?? [], true)) {
+            if (! in_array($canonicalPath, $hints[$registered['prefixHash']] ?? [], true)) {
                 $finder->addNamespace($registered['prefixHash'], $path);
             }
 
@@ -544,6 +555,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
             'capell::components.widget.modern.hero-banner',
             'capell-theme-foundation::components.widget.modern.hero-banner',
         ], FoundationThemePublicUrlViewComposer::class);
+        HeroHeadingLevelViewComposer::register();
     }
 
     private function registerSettingsSchemas(): void
@@ -895,6 +907,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
         $this->publishes([
             __DIR__ . '/../../publishes/build' => public_path('vendor/capell-theme-foundation'),
             __DIR__ . '/../../resources/fonts' => public_path('vendor/capell-theme-foundation/fonts'),
+            ...$this->demoMediaPublishes(),
         ], 'capell-theme-foundation-assets');
 
         $previewImages = [];
@@ -920,6 +933,36 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
         if ($previewImages !== []) {
             $this->publishes($previewImages, 'capell-theme-preview-images');
         }
+    }
+
+    /**
+     * Self-hosted demo images: Foundation's shared pools plus each installed
+     * theme's own first-screen image, all served from the site's origin.
+     *
+     * @return array<string, string>
+     */
+    private function demoMediaPublishes(): array
+    {
+        $publishes = [];
+        $target = public_path(SelfHostedDemoMedia::PUBLIC_PATH);
+
+        if (is_dir(__DIR__ . '/../../publishes/demo-media')) {
+            $publishes[__DIR__ . '/../../publishes/demo-media'] = $target;
+        }
+
+        foreach (glob(dirname(__DIR__, 3) . '/theme-*/publishes/demo-media/*.webp') ?: [] as $source) {
+            $themeKey = substr(basename(dirname($source, 3)), strlen('theme-'));
+
+            if ($themeKey === 'foundation') {
+                continue;
+            }
+
+            $publishes[$source] = basename($source) === 'first-screen.webp'
+                ? $target . '/first-screen/' . $themeKey . '.webp'
+                : $target . '/' . $themeKey . '/' . basename($source);
+        }
+
+        return $publishes;
     }
 
     private function registerLayoutBuilderRendering(): void

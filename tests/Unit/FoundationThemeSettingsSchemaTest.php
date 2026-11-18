@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 use Capell\FoundationTheme\Filament\Settings\FoundationThemeSettingsSchema;
+use Capell\FoundationTheme\Settings\FoundationThemeSettings;
 use Filament\Forms\Components\Field;
+use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Text;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
@@ -91,4 +93,28 @@ it('offers an image loading control and build guidance without an editable minif
     $names = $fields->map(static fn (Field $field): string => $field->getName())->all();
     expect($names)->toContain('enable_lazy_loading')->not->toContain('minify_assets');
     expect(collect($components)->filter(static fn (Component $component): bool => $component instanceof Text)->isNotEmpty())->toBeTrue();
+});
+
+it('offers every type pairing as the first typography control, ahead of the scale it sets', function (): void {
+    $livewire = new class extends LivewireComponent implements HasSchemas
+    {
+        use InteractsWithSchemas;
+    };
+    $schema = Schema::make($livewire);
+    /** @var array<int, Htmlable|string> $settingsComponents */
+    $settingsComponents = FoundationThemeSettingsSchema::make($schema);
+    $schema->components($settingsComponents);
+
+    $fields = collect(flattenFoundationThemeSettingsComponents(array_values(array_filter(
+        $schema->getComponents(withHidden: true),
+        static fn (mixed $component): bool => $component instanceof Component,
+    ))))->filter(static fn (Component $component): bool => $component instanceof Field)->values();
+    $names = $fields->map(static fn (Field $field): string => $field->getName())->all();
+    $pairing = $fields->first(static fn (Field $field): bool => $field->getName() === 'type_pairing');
+
+    Assert::assertInstanceOf(Select::class, $pairing);
+
+    expect(array_search('type_pairing', $names, true))->toBe(array_search('heading_scale', $names, true) - 1)
+        ->and(array_keys($pairing->getOptions()))->toEqualCanonicalizing(array_keys(FoundationThemeSettings::TYPE_PAIRING_OPTIONS))
+        ->and($pairing->getOptions())->each->not->toStartWith('capell-theme-foundation::');
 });

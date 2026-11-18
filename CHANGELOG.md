@@ -4,6 +4,16 @@ All notable changes to `capell-app/theme-foundation` will be documented in this 
 
 ## Unreleased
 
+- `capell:theme-migrate --from curated --to minimalist` no longer blocks on Curated's `form` and `lightbox-carousel-viewer` sections: they map onto Minimalist's new `form` and `gallery` sections, the preview lists the fields they do not show, and rollback restores them.
+
+- `capell:theme-migrate` now maps the retired Showreel, Submissions, Magazine, Curated and SaaS sections that have no same-named section onto the closest section of their successor (Awards, Editorial, Minimalist and Catalogue). Saved data stays, the preview lists the fields the new section does not show, and rollback restores the original section. A coverage test checks every retired theme's sections, Agency and Onepage included.
+
+- A SiteSpec that chooses the Foundation theme now sets the primary action colour from its primary brand colour, when that colour keeps white button text and surface text readable.
+
+- Moved the hard-coded English in the Foundation demo contact page, modern CTA section and kitchen-sink reference views into `capell-theme-foundation::demo` translation keys, with a guard test.
+
+- Added the Foundation consent-embed component (`<x-capell-theme-foundation::consent-embed>`). It renders a third-party embed only when the active theme declares the source origin for that widget in `frontend['embedOrigins']`, and inserts the iframe only after the visitor presses a keyboard-operable load button. Visitors who never consent keep a fallback link.
+
 - Hide stored container keys behind deterministic public presentation identifiers.
 
 - Pass the Widget media owner through nested builder content rendering.

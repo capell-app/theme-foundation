@@ -9,7 +9,7 @@
     >
         <div class="min-w-0">
             <h2
-                class="text-xl leading-tight font-[var(--theme-heading-font)] font-semibold text-slate-950 sm:text-2xl"
+                class="text-xl leading-tight font-(family-name:--theme-heading-font) font-semibold text-slate-950 sm:text-2xl"
             >
                 {{ $section->heading }}
             </h2>

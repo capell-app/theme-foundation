@@ -13,7 +13,7 @@
                 <span class="sr-only">{{ $renderData->displayName }}</span>
             </summary>
             <div
-                class="absolute right-0 z-20 mt-2 min-w-40 rounded-md bg-white p-2 shadow-lg dark:bg-slate-900"
+                class="absolute end-0 z-20 mt-2 min-w-40 rounded-md bg-white p-2 shadow-lg dark:bg-slate-900"
             >
                 @if ($renderData->accountUrl !== null)
                     <a

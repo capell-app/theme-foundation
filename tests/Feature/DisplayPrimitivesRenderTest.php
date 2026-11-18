@@ -253,8 +253,8 @@ it('renders photo-treatment-filter without throwing', function (): void {
 
     expect($html)
         ->toContain('aspect-ratio: 4/3')
-        ->toContain('filter: var(--foundation-photo-filter, none)')
-        ->toContain('mix-blend-mode: var(--foundation-photo-tint-blend, normal)')
+        ->toContain('[filter:var(--foundation-photo-filter,none)]')
+        ->toContain('photo-treatment-filter-tint')
         ->toContain('/images/mountain.jpg');
 });
 
@@ -265,9 +265,14 @@ it('is an inert no-op by default with all token fallbacks unset', function (): v
         '<img src="/images/mountain.jpg" alt="" />',
     );
 
+    $stylesheet = file_get_contents(dirname(__DIR__, 2) . '/resources/css/widgets/foundation-widgets.css');
+
     expect($html)
-        ->toContain('var(--foundation-photo-filter, none)')
+        ->toContain('[filter:var(--foundation-photo-filter,none)]')
+        ->toContain('photo-treatment-filter-tint')
+        ->and($stylesheet)
         ->toContain('var(--foundation-photo-tint, transparent)')
+        ->toContain('var(--foundation-photo-tint-blend, normal)')
         ->toContain('var(--foundation-photo-tint-opacity, 0)');
 });
 

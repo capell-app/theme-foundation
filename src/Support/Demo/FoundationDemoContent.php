@@ -9,6 +9,7 @@ use Capell\Core\Enums\PageTypeEnum;
 use Capell\FoundationTheme\Actions\BuildThemeDemoFormSectionAction;
 use Capell\FoundationTheme\Contracts\ProvidesThemeDemoContent;
 use Capell\FoundationTheme\Enums\FoundationSectionWidgetComponentEnum;
+use Capell\FoundationTheme\Support\SearchSwitch;
 
 /**
  * A complete general-purpose site that demonstrates Foundation without
@@ -56,14 +57,14 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
             ];
 
             if ($sectionWidget['type'] === 'hero') {
-                $containerWidgets[] = $this->pageContentWidgetReference();
+                $containerWidgets[] = $this->pageContentWidgetReference(afterHero: true);
                 $pageContentInserted = true;
             }
         }
 
         if (! $pageContentInserted) {
             $contentPosition = ($sectionWidgets[0]['type'] ?? null) === 'navigation' ? 1 : 0;
-            array_splice($containerWidgets, $contentPosition, 0, [$this->pageContentWidgetReference()]);
+            array_splice($containerWidgets, $contentPosition, 0, [$this->pageContentWidgetReference(afterHero: false)]);
         }
 
         $widgets = [['method' => 'pageContentWidget']];
@@ -95,17 +96,17 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
     }
 
     /**
-     * Keep the semantic page title and portable page copy visible alongside
-     * Foundation's subordinate hero heading.
+     * Keep the portable page copy after Foundation's hero, which owns the page title,
+     * and show the title only when no hero precedes it.
      *
      * @return array{widget_key: string, occurrence: int, meta: array{page_content: list<string>}}
      */
-    private function pageContentWidgetReference(): array
+    private function pageContentWidgetReference(bool $afterHero): array
     {
         return [
             'widget_key' => 'page-content',
             'occurrence' => 1,
-            'meta' => ['page_content' => ['title', 'content']],
+            'meta' => ['page_content' => $afterHero ? ['content'] : ['title', 'content']],
         ];
     }
 
@@ -574,7 +575,7 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
             'type' => 'search',
             'heading' => $heading,
             'summary' => $summary,
-            'action' => '/search',
+            'action' => resolve(SearchSwitch::class)->resultsUrl(),
             'placeholder' => 'Search field notes and projects',
             'query' => $query,
             'results' => $results,

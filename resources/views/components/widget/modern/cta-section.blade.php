@@ -31,7 +31,7 @@
                 @endif
 
                 @if ($content)
-                    <p class="ap-cta-description capell-showcase__copy">{!! strip_tags($content) !!}</p>
+                    <p class="ap-cta-description capell-showcase__copy">{{ html_entity_decode(strip_tags((string) $content), ENT_QUOTES | ENT_HTML5) }}</p>
                 @endif
 
                 @if ($primaryButtonText || $secondaryButtonText)
@@ -64,21 +64,21 @@
                     <span class="ap-showcase-cta__proof-mark">
                         @svg('heroicon-o-check', 'h-4 w-4')
                     </span>
-                    <p class="ap-showcase-cta__proof-text">Homepage content is widget, media, and layout driven.</p>
+                    <p class="ap-showcase-cta__proof-text">{{ __('capell-theme-foundation::demo.cta_proof_content') }}</p>
                 </div>
 
                 <div class="ap-showcase-cta__proof-row">
                     <span class="ap-showcase-cta__proof-mark">
                         @svg('heroicon-o-check', 'h-4 w-4')
                     </span>
-                    <p class="ap-showcase-cta__proof-text">Runtime assets are package-owned and doctor verified.</p>
+                    <p class="ap-showcase-cta__proof-text">{{ __('capell-theme-foundation::demo.cta_proof_assets') }}</p>
                 </div>
 
                 <div class="ap-showcase-cta__proof-row">
                     <span class="ap-showcase-cta__proof-mark">
                         @svg('heroicon-o-check', 'h-4 w-4')
                     </span>
-                    <p class="ap-showcase-cta__proof-text">Built for growing teams that need a dependable publishing workflow.</p>
+                    <p class="ap-showcase-cta__proof-text">{{ __('capell-theme-foundation::demo.cta_proof_workflow') }}</p>
                 </div>
             </div>
         </div>

@@ -31,16 +31,12 @@
     @endif
 
     <div class="flex flex-col">
-        <span
-            class="text-sm font-semibold"
-            style="color: var(--foundation-body-fg)"
-        >
+        <span class="text-sm font-semibold text-(color:--foundation-body-fg)">
             {{ $authorName }}
         </span>
 
         <div
-            class="flex items-center gap-2 text-xs"
-            style="color: var(--foundation-border-strong)"
+            class="flex items-center gap-2 text-xs text-(color:--foundation-border-strong)"
         >
             @if ($date)
                 <span>{{ $date }}</span>

@@ -170,7 +170,6 @@ it('keeps each theme package within its frozen @php block baseline', function ()
             'Image',
             'Language',
             'LayoutWidgetData',
-            'MarkPrimaryHeadingRenderedAction',
             'OpaqueWidgetReference',
             'PageChildrenComponent',
             'PageContentComponent',

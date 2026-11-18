@@ -46,7 +46,7 @@
                 @foreach ($ancestors as $ancestor)
                     <li>
                         <div class="flex items-center">
-                            @svg('heroicon-m-chevron-right', 'mr-1 h-4 w-4 text-gray-400')
+                            @svg('heroicon-m-chevron-right', 'me-1 h-4 w-4 text-gray-400')
                             <a
                                 class="hover:text-primary focus:text-primary text-gray line-clamp-1 text-sm font-medium dark:text-gray-400"
                                 href="{{ $ancestor->pageUrl->full_url }}"
@@ -62,7 +62,7 @@
                 @if ($showCurrentPage)
                     <li aria-current="page">
                         <div class="flex items-center">
-                            @svg('heroicon-m-chevron-right', 'mr-1 h-4 w-4 text-gray-400')
+                            @svg('heroicon-m-chevron-right', 'me-1 h-4 w-4 text-gray-400')
                             <span
                                 class="text-sm font-light text-gray-500"
                                 title="{{ htmlspecialchars(strip_tags($currentPageLabel)) }}"

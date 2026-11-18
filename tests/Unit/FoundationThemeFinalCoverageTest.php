@@ -13,7 +13,6 @@ use Capell\Core\Models\Site;
 use Capell\Core\Models\SiteDomain;
 use Capell\Core\Models\Theme;
 use Capell\FoundationTheme\Actions\BuildLayoutNeighborLinksDataAction;
-use Capell\FoundationTheme\Actions\MarkPrimaryHeadingRenderedAction;
 use Capell\FoundationTheme\Actions\PrepareFoundationPageWidgetDataAction;
 use Capell\FoundationTheme\Actions\ResolveLoadedWidgetBackgroundImageAction;
 use Capell\FoundationTheme\Actions\WidgetIsSlotAction;
@@ -488,15 +487,12 @@ it('covers content neighbor links and small frontend context helper branches', f
 
     foundationThemeFinalFrontendState($language, $site, $theme, $layout, $page->load('blueprint', 'layout'));
 
-    MarkPrimaryHeadingRenderedAction::run();
-
     $content = new Content([], 'main', 0, new stdClass, $widget);
 
     expect($content->previousPage)->toBeInstanceOf(Page::class)
         ->and($content->nextPage)->toBeInstanceOf(Page::class)
         ->and(WidgetIsSlotAction::run($slotWidget))->toBeTrue()
-        ->and(ResolveLoadedWidgetBackgroundImageAction::run($backgroundWidget))->toBe($media)
-        ->and(Frontend::getFrontendData('has_primary_heading'))->toBeTrue();
+        ->and(ResolveLoadedWidgetBackgroundImageAction::run($backgroundWidget))->toBe($media);
 });
 
 /**

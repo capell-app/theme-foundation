@@ -6,6 +6,8 @@ namespace Capell\FoundationTheme\Listeners;
 
 use Capell\Core\Events\PackageInstalled;
 use Capell\Core\Events\PackageUninstalled;
+use Capell\Core\Facades\CapellCore;
+use Capell\FoundationTheme\Providers\FoundationThemeServiceProvider;
 use Capell\FoundationTheme\Support\Tailwind\TailwindAssetsGenerator;
 use Illuminate\Support\Facades\Log;
 
@@ -15,12 +17,31 @@ class RunTailwindAssetsOnPackageChange
 
     public function handleInstalled(PackageInstalled $event): void
     {
+        if (! $this->shouldRespondTo($event->package->name)) {
+            return;
+        }
+
         $this->generateAssets();
     }
 
     public function handleUninstalled(PackageUninstalled $event): void
     {
+        if (! $this->shouldRespondTo($event->package->name)) {
+            return;
+        }
+
         $this->generateAssets();
+    }
+
+    /**
+     * Core records the new lifecycle state before it dispatches the package event, so
+     * Foundation Theme's own uninstall arrives when the package no longer counts as enabled
+     * and must still regenerate the assets. Other packages' events are ignored while it is disabled.
+     */
+    private function shouldRespondTo(string $changedPackageName): bool
+    {
+        return $changedPackageName === FoundationThemeServiceProvider::$packageName
+            || CapellCore::isPackageEnabled(FoundationThemeServiceProvider::$packageName);
     }
 
     /**

@@ -76,6 +76,10 @@ test('theme screenshot declarations match their implemented colour schemes', fun
         'theme-curated' => ['light', 'dark'],
         'theme-platform' => ['dark'],
     ];
+    // Preset entries render a light preset over the dark-only base theme, so they capture both schemes.
+    $presetEntrySchemes = [
+        'platform-homepage-daylight' => ['light', 'dark'],
+    ];
 
     foreach ($expectedSchemes as $packageDirectory => $schemes) {
         $manifestPath = $packagesPath . '/' . $packageDirectory . '/docs/screenshots.json';
@@ -92,7 +96,7 @@ test('theme screenshot declarations match their implemented colour schemes', fun
                 : 'unknown';
 
             expect(is_array($entry) ? ($entry['colorSchemes'] ?? null) : null)->toBe(
-                $schemes,
+                $presetEntrySchemes[$entryId] ?? $schemes,
                 sprintf('%s entry %s does not declare its implemented colour schemes.', $packageDirectory, $entryId),
             );
         }

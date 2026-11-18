@@ -7,6 +7,7 @@ namespace Capell\FoundationTheme\Actions;
 use Capell\Core\Enums\DefaultColorEnum;
 use Capell\Core\Models\Site;
 use Capell\Core\Models\Theme;
+use Capell\Core\ThemeStudio\Typography\ThemeFontCatalogue;
 use Capell\FoundationTheme\Data\FoundationThemeTokensData;
 use Capell\FoundationTheme\Settings\FoundationThemeSettings;
 use Capell\Frontend\Facades\Frontend;
@@ -38,6 +39,8 @@ final class ResolveFoundationThemeTokensAction
         $headingScale = $settings instanceof FoundationThemeSettings
             ? $settings->headingScaleCssValues()
             : FoundationThemeSettings::headingScaleCssValuesFor(null);
+
+        $typePairing = $settings instanceof FoundationThemeSettings ? $settings->typePairing() : null;
 
         $motionIntensityKey = $settings instanceof FoundationThemeSettings
             ? $settings->motionIntensityKey()
@@ -92,6 +95,10 @@ final class ResolveFoundationThemeTokensAction
             headingSizeH2: $headingScale['h2'],
             headingSizeH3: $headingScale['h3'],
             headingLineHeight: $headingScale['lineHeight'],
+            statementSize: $headingScale['statement'],
+            headingTracking: $typePairing['tracking'] ?? FoundationThemeSettings::DEFAULT_HEADING_TRACKING,
+            headingFontStack: $typePairing === null ? null : ThemeFontCatalogue::stack($typePairing['heading']),
+            bodyFontStack: $typePairing === null ? null : ThemeFontCatalogue::stack($typePairing['body']),
             motionIntensity: $motionIntensityKey,
             motionDuration: $motion['duration'],
             motionEase: $motion['ease'],

@@ -10,7 +10,7 @@
     $linkedPageUrl = $assetRenderData->linkUrl;
     $image = $assetRenderData->image;
     $icon = $assetRenderData->icon;
-    $textAlign = $assetRenderData->textAlign ?? ('text-left' . ((int) $column === 1 && $widget->image ? ' lg:text-right' : ''));
+    $textAlign = $assetRenderData->textAlign ?? ('text-start' . ((int) $column === 1 && $widget->image ? ' lg:text-right' : ''));
 @endphp
 
 <div

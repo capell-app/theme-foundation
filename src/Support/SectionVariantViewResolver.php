@@ -21,10 +21,14 @@ namespace Capell\FoundationTheme\Support;
 final class SectionVariantViewResolver
 {
     /**
+     * An editor's own choice always wins, including an explicit `default`.
+     * When the editor has not chosen, `$presetVariant` (the active preset's
+     * variant for this section type) composes the whole look.
+     *
      * @param  array<array-key, mixed>  $section  Widget meta, as stored under the `meta` state path.
      * @return string|null The view name relative to `{$namespace}::sections.`, or null when nothing renders.
      */
-    public static function resolve(string $namespace, array $section): ?string
+    public static function resolve(string $namespace, array $section, ?string $presetVariant = null): ?string
     {
         $type = $section['type'] ?? null;
 
@@ -33,6 +37,10 @@ final class SectionVariantViewResolver
         }
 
         $variant = $section['variant'] ?? null;
+
+        if ((! is_string($variant) || $variant === '') && $presetVariant !== null) {
+            $variant = $presetVariant;
+        }
 
         if (is_string($variant) && $variant !== '' && $variant !== 'default') {
             $variantView = $type . '--' . $variant;

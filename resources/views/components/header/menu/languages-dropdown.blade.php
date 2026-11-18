@@ -50,10 +50,10 @@
         >
             <button
                 type="button"
-                class="flex w-full cursor-pointer items-center bg-gray-100 px-6 py-2 text-left text-gray-800 transition-colors focus-visible:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 lg:px-3 lg:py-1.5 dark:bg-gray-800 dark:text-gray-200 dark:focus-visible:bg-gray-800"
+                class="flex w-full cursor-pointer items-center bg-gray-100 px-6 py-2 text-start text-gray-800 transition-colors focus-visible:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 lg:px-3 lg:py-1.5 dark:bg-gray-800 dark:text-gray-200 dark:focus-visible:bg-gray-800"
                 x-on:click="close($refs.button)"
             >
-                @svg('heroicon-o-arrow-left', 'mr-1 h-5 w-5 stroke-current')
+                @svg('heroicon-o-arrow-left', 'me-1 h-5 w-5 stroke-current')
                 <span> {{ $language->name }} </span>
             </button>
         </li>
@@ -66,7 +66,7 @@
                     class="focus:text-primary hover:text-primary font-heading group flex w-full cursor-pointer items-center gap-x-2 px-6 py-3 text-sm font-semibold focus-visible:bg-gray-50 lg:gap-x-1 lg:!bg-transparent lg:px-4 lg:py-1.5 dark:hover:bg-gray-800 dark:focus-visible:bg-gray-800"
                 >
                     <img
-                        class="mr-2 inline-block h-4 w-4 align-top"
+                        class="me-2 inline-block h-4 w-4 align-top"
                         src="{{ asset("vendor/blade-country-flags/4x3-{$pageLanguage['flag']}.svg") }}"
                         alt=""
                         width="16"

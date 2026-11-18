@@ -48,7 +48,7 @@
     );
     $responsiveLayoutPattern = $responsiveLayoutOptions->pattern;
     $assetLayoutKey = sprintf('%s-%s-%s', $containerKey, $widget->id ?? $widget->key, $loop->index);
-    $assetGridId = "asset-grid-{$assetLayoutKey}";
+    $assetGridId = ResponsiveAssetLayoutOptions::safeGridId("asset-grid-{$assetLayoutKey}");
     $assetCarouselId = "asset-carousel-{$assetLayoutKey}";
     $maxWidthStyle = $maxWidth && ! in_array($maxWidth, ['none', 'sm', 'md', 'lg', 'xl'], true)
         ? '--max-max-width: ' . $maxWidth . ';'

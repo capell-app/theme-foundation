@@ -47,7 +47,7 @@ it('reports a compatible capell api version', function (): void {
 it('runs real diagnostics returning check results', function (): void {
     $results = FoundationThemeHealthCheck::runDiagnostics($this->publishedManifestPath);
 
-    expect($results)->toHaveCount(10)
+    expect($results)->toHaveCount(11)
         ->and($results->every(static fn (mixed $result): bool => $result instanceof DoctorCheckResultData))->toBeTrue()
         ->and($results->pluck('id')->all())->toBe([
             'legacy.foundation.theme.package.installation',
@@ -60,6 +60,7 @@ it('runs real diagnostics returning check results', function (): void {
             'legacy.fleet.theme.catalogue.coverage',
             'legacy.fleet.demo.content.coverage',
             'legacy.fleet.screenshot.freshness',
+            'legacy.foundation.theme.retired.theme.sites',
         ]);
 });
 

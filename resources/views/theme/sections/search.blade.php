@@ -1,3 +1,5 @@
+@inject('searchSwitch', 'Capell\FoundationTheme\Support\SearchSwitch')
+
 @php
     use Capell\Core\Support\Security\PublicUrlSanitizer;
 
@@ -5,98 +7,103 @@
     $query = trim((string) ($section->query ?? ''));
     $resultCount = count($searchResults);
     $safeAction = PublicUrlSanitizer::sanitize($section->action ?? '') ?? '';
+    $searchBlocked = $searchSwitch->blocksAction($safeAction);
 @endphp
 
-<section
-    class="theme-search border-b border-[var(--foundation-border)] bg-[var(--foundation-section-muted-bg)]"
->
-    <div class="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:py-16">
-        <div class="mb-8">
-            <p class="mb-3 text-xs font-semibold tracking-[0.16em] text-[var(--theme-primary)] uppercase">
-                {{ __('capell-theme-foundation::generic.search') }}
-            </p>
-            <h2
-                class="text-3xl leading-tight font-[var(--theme-heading-font)] font-semibold text-[var(--foundation-heading-fg)] sm:text-4xl"
-            >
-                {{ $section->heading ?? __('capell-theme-foundation::generic.search') }}
-            </h2>
-            @if (! empty($section->summary))
-                <p class="mt-3 max-w-2xl text-sm leading-7 text-[var(--foundation-muted-fg)] sm:text-base">{{ $section->summary }}</p>
+@unless ($searchBlocked && $searchResults === [])
+    <section
+        class="theme-search border-b border-[var(--foundation-border)] bg-[var(--foundation-section-muted-bg)]"
+    >
+        <div class="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:py-16">
+            <div class="mb-8">
+                <p class="mb-3 text-xs font-semibold tracking-[0.16em] text-[var(--theme-primary)] uppercase">
+                    {{ __('capell-theme-foundation::generic.search') }}
+                </p>
+                <h2
+                    class="text-3xl leading-tight font-(family-name:--theme-heading-font) font-semibold text-[var(--foundation-heading-fg)] sm:text-4xl"
+                >
+                    {{ $section->heading ?? __('capell-theme-foundation::generic.search') }}
+                </h2>
+                @if (! empty($section->summary))
+                    <p class="mt-3 max-w-2xl text-sm leading-7 text-[var(--foundation-muted-fg)] sm:text-base">{{ $section->summary }}</p>
+                @endif
+            </div>
+
+            @unless ($searchBlocked)
+                <form
+                    method="get"
+                    action="{{ $safeAction }}"
+                    class="flex flex-col gap-3 sm:flex-row"
+                    role="search"
+                >
+                    <label
+                        for="theme-search-query"
+                        class="sr-only"
+                    >
+                        {{ __('capell-theme-foundation::generic.search') }}
+                    </label>
+                    <input
+                        type="search"
+                        id="theme-search-query"
+                        name="{{ $section->queryParameter ?? 'q' }}"
+                        value="{{ $section->query ?? '' }}"
+                        placeholder="{{ $section->placeholder ?? __('capell-theme-foundation::generic.search') }}"
+                        class="w-full rounded-[var(--theme-radius-value)] border border-[var(--foundation-border)] bg-[var(--foundation-card-bg)] px-4 py-3 text-sm text-[var(--foundation-body-fg)] placeholder:text-[var(--foundation-muted-fg)] focus:border-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:outline-none"
+                    />
+                    <button
+                        type="submit"
+                        class="shrink-0 rounded-full bg-[var(--theme-primary)] px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90"
+                    >
+                        {{ __('capell-theme-foundation::generic.search') }}
+                    </button>
+                </form>
+            @endunless
+
+            @if ($query !== '')
+                <p class="mt-5 text-sm font-medium text-[var(--foundation-muted-fg)]">
+                    {{ trans_choice('capell-theme-foundation::generic.search_results_for_query', $resultCount, ['count' => $resultCount, 'query' => $query]) }}
+                </p>
             @endif
-        </div>
 
-        <form
-            method="get"
-            action="{{ $safeAction }}"
-            class="flex flex-col gap-3 sm:flex-row"
-            role="search"
-        >
-            <label
-                for="theme-search-query"
-                class="sr-only"
-            >
-                {{ __('capell-theme-foundation::generic.search') }}
-            </label>
-            <input
-                type="search"
-                id="theme-search-query"
-                name="{{ $section->queryParameter ?? 'q' }}"
-                value="{{ $section->query ?? '' }}"
-                placeholder="{{ $section->placeholder ?? __('capell-theme-foundation::generic.search') }}"
-                class="w-full rounded-[var(--theme-radius-value)] border border-[var(--foundation-border)] bg-[var(--foundation-card-bg)] px-4 py-3 text-sm text-[var(--foundation-body-fg)] placeholder:text-[var(--foundation-muted-fg)] focus:border-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:outline-none"
-            />
-            <button
-                type="submit"
-                class="shrink-0 rounded-full bg-[var(--theme-primary)] px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90"
-            >
-                {{ __('capell-theme-foundation::generic.search') }}
-            </button>
-        </form>
-
-        @if ($query !== '')
-            <p class="mt-5 text-sm font-medium text-[var(--foundation-muted-fg)]">
-                {{ trans_choice('capell-theme-foundation::generic.search_results_for_query', $resultCount, ['count' => $resultCount, 'query' => $query]) }}
-            </p>
-        @endif
-
-        @if ($searchResults !== [])
-            <ul class="mt-8 divide-y divide-[var(--foundation-border)]">
-                @foreach ($searchResults as $result)
-                    @php
+            @if ($searchResults !== [])
+                <ul class="mt-8 divide-y divide-[var(--foundation-border)]">
+                    @foreach ($searchResults as $result)
+                        @php
                         $safeResultUrl = PublicUrlSanitizer::sanitize($result['url'] ?? null) ?? '#';
                     @endphp
-                    <li class="py-5 first:pt-0 last:pb-0">
-                        <a
-                            href="{{ $safeResultUrl }}"
-                            class="group widget block"
-                        >
-                            <span
-                                class="widget block text-lg font-semibold text-[var(--foundation-heading-fg)] group-hover:underline"
+                        <li class="py-5 first:pt-0 last:pb-0">
+                            <a
+                                href="{{ $safeResultUrl }}"
+                                class="group widget block"
                             >
-                                {{ $result['title'] ?? '' }}
-                            </span>
-                            @if (! empty($result['summary']))
                                 <span
-                                    class="widget mt-1 block text-sm leading-6 text-[var(--foundation-muted-fg)]"
+                                    class="widget block text-lg font-semibold text-[var(--foundation-heading-fg)] group-hover:underline"
                                 >
-                                    {{ $result['summary'] }}
+                                    {{ $result['title'] ?? '' }}
                                 </span>
-                            @endif
-                        </a>
-                    </li>
-                @endforeach
-            </ul>
-        @else
-            <div
-                class="mt-8 rounded-[var(--theme-radius-value)] border border-dashed border-[var(--foundation-border-strong)] bg-[var(--foundation-card-bg)] p-6"
-            >
-                <p class="text-base font-semibold text-[var(--foundation-heading-fg)]">
-                    {{ $section->emptyTitle ?? __('capell-theme-foundation::generic.search_empty_title') }}
-                </p>
-                <p class="mt-2 max-w-2xl text-sm leading-6 text-[var(--foundation-muted-fg)]">
-                    {{ $section->emptyBody ?? __('capell-theme-foundation::generic.search_empty_body') }}
-                </p>
-            </div>
-        @endif
-    </div>
-</section>
+                                @if (! empty($result['summary']))
+                                    <span
+                                        class="widget mt-1 block text-sm leading-6 text-[var(--foundation-muted-fg)]"
+                                    >
+                                        {{ $result['summary'] }}
+                                    </span>
+                                @endif
+                            </a>
+                        </li>
+                    @endforeach
+                </ul>
+            @else
+                <div
+                    class="mt-8 rounded-[var(--theme-radius-value)] border border-dashed border-[var(--foundation-border-strong)] bg-[var(--foundation-card-bg)] p-6"
+                >
+                    <p class="text-base font-semibold text-[var(--foundation-heading-fg)]">
+                        {{ $section->emptyTitle ?? __('capell-theme-foundation::generic.search_empty_title') }}
+                    </p>
+                    <p class="mt-2 max-w-2xl text-sm leading-6 text-[var(--foundation-muted-fg)]">
+                        {{ $section->emptyBody ?? __('capell-theme-foundation::generic.search_empty_body') }}
+                    </p>
+                </div>
+            @endif
+        </div>
+    </section>
+@endunless

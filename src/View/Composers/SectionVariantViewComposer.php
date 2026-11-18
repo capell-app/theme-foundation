@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Capell\FoundationTheme\View\Composers;
 
 use Capell\FoundationTheme\Support\SectionVariantViewResolver;
+use Capell\FoundationTheme\Support\Themes\ActivePresetSectionVariants;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\View as ViewFacade;
 
@@ -29,7 +30,12 @@ final class SectionVariantViewComposer
                     : [];
 
                 $view->with('sectionMeta', $section);
-                $view->with('sectionView', SectionVariantViewResolver::resolve($viewNamespace, $section));
+                $type = $section['type'] ?? null;
+                $presetVariant = is_string($type) && $type !== ''
+                    ? resolve(ActivePresetSectionVariants::class)->for($type)
+                    : null;
+
+                $view->with('sectionView', SectionVariantViewResolver::resolve($viewNamespace, $section, $presetVariant));
             },
         );
     }

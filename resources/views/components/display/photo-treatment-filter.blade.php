@@ -23,19 +23,13 @@
     style="@if ($aspectRatio) aspect-ratio: {{ $aspectRatio }}; @endif {{ $attributes->get('style') }}"
 >
     <div
-        class="photo-treatment-filter-media h-full w-full"
-        style="filter: var(--foundation-photo-filter, none)"
+        class="photo-treatment-filter-media h-full w-full [filter:var(--foundation-photo-filter,none)]"
     >
         {{ $slot }}
     </div>
 
     <div
         class="photo-treatment-filter-tint pointer-events-none absolute inset-0"
-        style="
-            background-color: var(--foundation-photo-tint, transparent);
-            mix-blend-mode: var(--foundation-photo-tint-blend, normal);
-            opacity: var(--foundation-photo-tint-opacity, 0);
-        "
         aria-hidden="true"
     ></div>
 </div>

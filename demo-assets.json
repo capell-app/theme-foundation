@@ -1,0 +1,1412 @@
+{
+    "assets": [
+        {
+            "id": "first-screen/foundation",
+            "file": "publishes/demo-media/first-screen.webp",
+            "role": "first-screen",
+            "width": 1600,
+            "height": 900,
+            "sha256": "19b120b6bb3fed49727426db508fb477188bfd53dde8d23d73d3f34fb34456de",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "a light-filled documentation workspace with pale green accents; wide hero image. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/agency/contact-1",
+            "file": "publishes/demo-media/agency/contact-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "c7244bc45ec6cc9c40ea0f458aeb5a3c99e1d04fef1718d1ae85436f80538b07",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "a creative studio: pinned sketches, material swatches, collaborative tables; contact image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/agency/cta-1",
+            "file": "publishes/demo-media/agency/cta-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "d68b3b5ca183b7c33b5966eae5e2d23aa0dddbc1ecc35b254291f8d8e391c627",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "a creative studio: pinned sketches, material swatches, collaborative tables; cta image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/agency/detail-1",
+            "file": "publishes/demo-media/agency/detail-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "f4c85bf1180d1f7a7d9ff56d37278d46246bf8b613a6130e7e6162f63420cb64",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "a creative studio: pinned sketches, material swatches, collaborative tables; detail image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/agency/listing-1",
+            "file": "publishes/demo-media/agency/listing-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "8f671ed16bb2ea7df79fbb5756a42219ee511029446c4a3f40c9bba10155547b",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "a creative studio: pinned sketches, material swatches, collaborative tables; listing image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/agency/proof-1",
+            "file": "publishes/demo-media/agency/proof-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "12c634ebd3c77ea69c23a0d74f485b3bc8269190f21851fb9ea84da1754e5751",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "a creative studio: pinned sketches, material swatches, collaborative tables; proof image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/bistro/contact-1",
+            "file": "publishes/demo-media/bistro/contact-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "4c96dba343dd5360a6ce0ccedc76f20b25ed05f46536ac190b93d5d7d970d63d",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "a neighbourhood bistro: plated seasonal dishes, warm wood tables, kitchen pass; contact image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/bistro/cta-1",
+            "file": "publishes/demo-media/bistro/cta-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "37b613ae4b2fa11dcdc7801e5d20642ec2ff79633797fb11388284cb1deea419",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "a neighbourhood bistro: plated seasonal dishes, warm wood tables, kitchen pass; cta image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/bistro/detail-1",
+            "file": "publishes/demo-media/bistro/detail-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "182b94e9fe70b97a1919e748769da893d8b85fc8e80495fe90fa7f9fcde2abdb",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "a neighbourhood bistro: plated seasonal dishes, warm wood tables, kitchen pass; detail image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/bistro/listing-1",
+            "file": "publishes/demo-media/bistro/listing-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "ada0ed991367bc917b37ba18cfc3da2d9abd3dd91425abf8bbb25a1d30eb2d9e",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "a neighbourhood bistro: plated seasonal dishes, warm wood tables, kitchen pass; listing image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/bistro/proof-1",
+            "file": "publishes/demo-media/bistro/proof-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "daddedcecd1662989296ec3779ab783e83d1d73a7acd0a8dd43847ee6553a947",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "a neighbourhood bistro: plated seasonal dishes, warm wood tables, kitchen pass; proof image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/commerce/contact-1",
+            "file": "publishes/demo-media/commerce/contact-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "f06608060e9c4149aece7d2740566ff428df74c8024cbbf66bdcd175bba4b583",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "small-batch products styled on plinths and textured backdrops; contact image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/commerce/cta-1",
+            "file": "publishes/demo-media/commerce/cta-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "3de6e6919c141ebdf763c88d0bea6a971b4e8378a00b8e48fa94200b244d82e4",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "small-batch products styled on plinths and textured backdrops; cta image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/commerce/detail-1",
+            "file": "publishes/demo-media/commerce/detail-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "724afabe798cc5de8b449e5a05495a79351c7743cfeb9490d94dcaa282736a0b",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "small-batch products styled on plinths and textured backdrops; detail image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/commerce/listing-1",
+            "file": "publishes/demo-media/commerce/listing-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "b3672b6a99687067e96d4bdc2768b1d0ab71d1264db773bd999d452b6afb3c18",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "small-batch products styled on plinths and textured backdrops; listing image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/commerce/proof-1",
+            "file": "publishes/demo-media/commerce/proof-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "35a708567e108b9024f573b37ce12e5ea1a8f46353bb6c3d2c10a3280208c37c",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "small-batch products styled on plinths and textured backdrops; proof image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/corporate/contact-1",
+            "file": "publishes/demo-media/corporate/contact-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "e7d62d4a88103a78c56d7dd55b25598641939a72ff27a16aaa69922cc55ebe4e",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "contemporary offices, meeting rooms and architectural interiors; contact image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/corporate/cta-1",
+            "file": "publishes/demo-media/corporate/cta-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "955596f2b0886a4fc4be67f0aa13fad1230a88ddd682757a65bc24069717f690",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "contemporary offices, meeting rooms and architectural interiors; cta image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/corporate/detail-1",
+            "file": "publishes/demo-media/corporate/detail-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "e989a7ac89dbfc7b1c55597ff4f1928e2fb7c6f796e35d30ef1d1c002775682b",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "contemporary offices, meeting rooms and architectural interiors; detail image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/corporate/listing-1",
+            "file": "publishes/demo-media/corporate/listing-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "249d274ae40d5b4092d84deecc625808c380f2f87dadc86b5e93b46789c213da",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "contemporary offices, meeting rooms and architectural interiors; listing image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/corporate/proof-1",
+            "file": "publishes/demo-media/corporate/proof-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "95131d95b9806bab3ede3b143746e61e1e9b284f3514c5270fbd7882458096fd",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "contemporary offices, meeting rooms and architectural interiors; proof image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/default/contact-1",
+            "file": "publishes/demo-media/default/contact-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "46b4981b329370e541e0a2e66c339cd8669fecd29ecda6bc6aacc3df33e1a7cf",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "a calm modern workspace with paper, plants and daylight; contact image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/default/cta-1",
+            "file": "publishes/demo-media/default/cta-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "8cb4f8a6505db7ac171abafdbbc7edb9cd132e77b1a30929b1ab5cb5746789ed",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "a calm modern workspace with paper, plants and daylight; cta image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/default/detail-1",
+            "file": "publishes/demo-media/default/detail-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "e9e5486d2628872ba36e00d3cad421fc627917a5d8890036329e18f04aa1afda",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "a calm modern workspace with paper, plants and daylight; detail image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/default/listing-1",
+            "file": "publishes/demo-media/default/listing-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "9cd45eb74b0924b4254cf1fa5b8c5b04a08f0ef0210e3d068e2ddd216f24f223",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "a calm modern workspace with paper, plants and daylight; listing image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/default/proof-1",
+            "file": "publishes/demo-media/default/proof-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "9346c00097a0f095c0264ee94e79a0b3930eedbf93b1cc419d09cd34421fe191",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "a calm modern workspace with paper, plants and daylight; proof image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/education/contact-1",
+            "file": "publishes/demo-media/education/contact-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "ba6b39bb9cc2fb1b29578035cefbc5b07e3250d96ddd64f12be4565cfc53c2ed",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "libraries, lecture rooms, study tables and campus courtyards; contact image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/education/cta-1",
+            "file": "publishes/demo-media/education/cta-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "390cf1378c5961f05f0641ddbad022b8c74f65c2250220a79be64f2f9707fbb1",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "libraries, lecture rooms, study tables and campus courtyards; cta image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/education/detail-1",
+            "file": "publishes/demo-media/education/detail-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "f9fc8a507b3085ee0ce3c3c09dc355f014654e03d7007591637377c8bb64852b",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "libraries, lecture rooms, study tables and campus courtyards; detail image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/education/listing-1",
+            "file": "publishes/demo-media/education/listing-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "9749263cf92e8be230dfd9b87cafafa141c92859c547aee84dad3176f464ea34",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "libraries, lecture rooms, study tables and campus courtyards; listing image 1 of 3. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/education/listing-2",
+            "file": "publishes/demo-media/education/listing-2.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "795d9401101cb2df050ee403121d84b99def93f0128bd14a3ecfbb11008bbdf8",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "libraries, lecture rooms, study tables and campus courtyards; listing image 2 of 3. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/education/listing-3",
+            "file": "publishes/demo-media/education/listing-3.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "95aea8b0d41a946b38fcc29a0e8593e5042c35c763fad57dd32e25e36763e126",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "libraries, lecture rooms, study tables and campus courtyards; listing image 3 of 3. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/education/proof-1",
+            "file": "publishes/demo-media/education/proof-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "03f96711f7bfec82223d726518b77d2e14f5ed46abb95d192ff1a256d7d5abbd",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "libraries, lecture rooms, study tables and campus courtyards; proof image 1 of 2. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/education/proof-2",
+            "file": "publishes/demo-media/education/proof-2.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "fffb96d2ef3f6bf096080a772ac3c0d09e427bead10192ddb52313d74b97c2c0",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "libraries, lecture rooms, study tables and campus courtyards; proof image 2 of 2. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/healthcare/contact-1",
+            "file": "publishes/demo-media/healthcare/contact-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "cfce68f5945511659ec1311ca4da1c2eca09fad4bb2ffeafbb80b06816b9b27c",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "bright clinic interiors, care equipment and reassuring waiting spaces; contact image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/healthcare/cta-1",
+            "file": "publishes/demo-media/healthcare/cta-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "eec385530769c338065052bf4a9595be291e18b9d765909f23ae0d9c249da762",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "bright clinic interiors, care equipment and reassuring waiting spaces; cta image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/healthcare/detail-1",
+            "file": "publishes/demo-media/healthcare/detail-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "950c3462b36a60748cfed34cf3edc0e69c13046a77a7f61fca9528a2174f5ba9",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "bright clinic interiors, care equipment and reassuring waiting spaces; detail image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/healthcare/listing-1",
+            "file": "publishes/demo-media/healthcare/listing-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "9d9880b19a8aee5c2e92da83907e3c9d44e68c98eb9b5ea80f782f04e1ee8e23",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "bright clinic interiors, care equipment and reassuring waiting spaces; listing image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/healthcare/proof-1",
+            "file": "publishes/demo-media/healthcare/proof-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "90bd51a334c65800cc176df1ea09f28a837820a9912199a4bd69ac76856e5f8d",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "bright clinic interiors, care equipment and reassuring waiting spaces; proof image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/knowledge/contact-1",
+            "file": "publishes/demo-media/knowledge/contact-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "4b9c50c354157f2d7273052084a5c0f48622094c6524773cbc130b3456c90dce",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "reading rooms, open books, archives and writing desks; contact image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/knowledge/cta-1",
+            "file": "publishes/demo-media/knowledge/cta-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "d1433872e6fdb65158b63570749b952c0fa7a35bfbaed293e1b14fc59c352caa",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "reading rooms, open books, archives and writing desks; cta image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/knowledge/detail-1",
+            "file": "publishes/demo-media/knowledge/detail-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "11d799212cbff7de4cf7dd6b81178ee98c03d7548b0731cdb1b8d09c52193787",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "reading rooms, open books, archives and writing desks; detail image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/knowledge/listing-1",
+            "file": "publishes/demo-media/knowledge/listing-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "cffbf277535f3cb7bee6eaf341d8c40f556904b9898eb106822f9821863083fb",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "reading rooms, open books, archives and writing desks; listing image 1 of 3. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/knowledge/listing-2",
+            "file": "publishes/demo-media/knowledge/listing-2.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "517fe94bf4a9519c29f7f65fe20ac78ac1fdb77a4b7c7e7830f95c41f98a9e81",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "reading rooms, open books, archives and writing desks; listing image 2 of 3. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/knowledge/listing-3",
+            "file": "publishes/demo-media/knowledge/listing-3.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "24ac567b69da071be6af518e6e15595f05fab73ff747ed4359e54bf97118976c",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "reading rooms, open books, archives and writing desks; listing image 3 of 3. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/knowledge/proof-1",
+            "file": "publishes/demo-media/knowledge/proof-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "ec861c12a459096461977af47c0b79d9191138e3ba44caded1e0290503e9a47a",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "reading rooms, open books, archives and writing desks; proof image 1 of 2. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/knowledge/proof-2",
+            "file": "publishes/demo-media/knowledge/proof-2.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "1cca466db19e77e15a36e3e43bab1b03db5d215d90b76cbfc44547e7c57e77b6",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "reading rooms, open books, archives and writing desks; proof image 2 of 2. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/local-services/contact-1",
+            "file": "publishes/demo-media/local-services/contact-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "8320b89cf5a64e1bca613b280f2a9f04c48baac12621a30451c72ae521e9a68f",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "tradespeople's tools, vans, workshops and finished home repairs; contact image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/local-services/cta-1",
+            "file": "publishes/demo-media/local-services/cta-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "5de0f930eaa0c0b1c213c0c522bfe442af279c7c6d6b90a41ebb3e2ec7249dd9",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "tradespeople's tools, vans, workshops and finished home repairs; cta image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/local-services/detail-1",
+            "file": "publishes/demo-media/local-services/detail-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "f77ba54561ec4f399feb2e0cd069280f4e0a0e4c51a893edecf79b7bf7f7ff56",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "a dripping, corroded pipe joint beneath a kitchen sink before repair. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/local-services/detail-2",
+            "file": "publishes/demo-media/local-services/detail-2.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "ea79da4331dee44ea459cc93120796777bd4e77a47c6ec84b50c5eb3b054ba6d",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "an old, dated household fuse box with worn fittings before replacement, no labels. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/local-services/listing-1",
+            "file": "publishes/demo-media/local-services/listing-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "464873e51a0aa52d9ef34a9f4b6c806a012ae3fc41a81a5276d9a96379851a72",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "tradespeople's tools, vans, workshops and finished home repairs; listing image 1 of 3. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/local-services/listing-2",
+            "file": "publishes/demo-media/local-services/listing-2.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "4fd4592586ce51bf30dcb5e7c36adb3c0520644ebf07806f56caff4651a63eec",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "tradespeople's tools, vans, workshops and finished home repairs; listing image 2 of 3. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/local-services/listing-3",
+            "file": "publishes/demo-media/local-services/listing-3.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "b64f836496cdfa23923ca88ff844ba43c967bcf7757dfe0b7a5b0b2cebcce52d",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "tradespeople's tools, vans, workshops and finished home repairs; listing image 3 of 3. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/local-services/proof-1",
+            "file": "publishes/demo-media/local-services/proof-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "bb863dcd03bebcb74aa2befb88bfc37fc25d5c36b314f354b0e48247a5ebb0cc",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "the same under-sink pipework after a neat repair with new copper fittings. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/local-services/proof-2",
+            "file": "publishes/demo-media/local-services/proof-2.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "c531e14706d4d89fb29f80a98074383a2c18d330db156e33a9641e8a51c4322f",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "a new, tidy household consumer unit freshly installed, blank labels. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/nonprofit/contact-1",
+            "file": "publishes/demo-media/nonprofit/contact-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "4841a46d45ddb1ba22024794f376dc43ab943af336f5bd7d46f9a46593943d15",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "community gardens, volunteer tables, event halls and gatherings seen from behind; contact image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/nonprofit/cta-1",
+            "file": "publishes/demo-media/nonprofit/cta-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "cee5d695b2c3306c3a1ae37b90b72041074228d0c6e97e566a17dff1bebb7200",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "community gardens, volunteer tables, event halls and gatherings seen from behind; cta image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/nonprofit/detail-1",
+            "file": "publishes/demo-media/nonprofit/detail-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "ead5ddbe70d1e5148ab072ab4959ae6b28f923790b44a5ace11f709ca2f4c16e",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "community gardens, volunteer tables, event halls and gatherings seen from behind; detail image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/nonprofit/listing-1",
+            "file": "publishes/demo-media/nonprofit/listing-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "c43a913801d34e824c66fccb2073e615458fe52e63c418255c053758e729cd06",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "community gardens, volunteer tables, event halls and gatherings seen from behind; listing image 1 of 3. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/nonprofit/listing-2",
+            "file": "publishes/demo-media/nonprofit/listing-2.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "e3adf132c45c4b5f0b3171eb975b53a0c252b51f46ecf48b90035da31214416d",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "community gardens, volunteer tables, event halls and gatherings seen from behind; listing image 2 of 3. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/nonprofit/listing-3",
+            "file": "publishes/demo-media/nonprofit/listing-3.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "35dfba7ab7be4d52b8227192b140e583f6714268780a7f0fc4d628bd0e8f8e33",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "community gardens, volunteer tables, event halls and gatherings seen from behind; listing image 3 of 3. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/nonprofit/proof-1",
+            "file": "publishes/demo-media/nonprofit/proof-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "1a394710ae8de0e185a7b3fc28888b5c9f2d6b40099a7fd022784e43a7a263a2",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "community gardens, volunteer tables, event halls and gatherings seen from behind; proof image 1 of 2. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/nonprofit/proof-2",
+            "file": "publishes/demo-media/nonprofit/proof-2.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "fad33dd75421f43fff276596f80731f8f7651c84ee3e6152fc57616196807f1a",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "community gardens, volunteer tables, event halls and gatherings seen from behind; proof image 2 of 2. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/paperdesk/contact-1",
+            "file": "publishes/demo-media/paperdesk/contact-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "35f5dba9477873dde15edf30f2e06665ee579a129de24526e2b310b8ac0d143b",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "stationery, notebooks, desk objects and paper textures seen from above; contact image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/paperdesk/cta-1",
+            "file": "publishes/demo-media/paperdesk/cta-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "b370abf52cf3308033b866eb7840cb8dd47ffb9363866040c892a698badeaeb1",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "stationery, notebooks, desk objects and paper textures seen from above; cta image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/paperdesk/detail-1",
+            "file": "publishes/demo-media/paperdesk/detail-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "e5590b88b118edbf2991ad3a3dd2bb8f050e878a3bbe3bd4a2fc8759dd2c6b5a",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "a vintage alphabet specimen of carved wooden type on weathered wood, shapes only, no readable words. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/paperdesk/detail-2",
+            "file": "publishes/demo-media/paperdesk/detail-2.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "fdc5b9d571dc6bf306f58122c6c45f31b8115312d70c992a9063738ab861a46d",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "cream-coloured book pages fanned open, any print too soft to read. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/paperdesk/detail-3",
+            "file": "publishes/demo-media/paperdesk/detail-3.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "de6a734030e7d6e01e56e02005747d5a15b9f1b7417e38ef3abd4947d2799f10",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "decorated old book bindings stacked on a leather case. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/paperdesk/detail-4",
+            "file": "publishes/demo-media/paperdesk/detail-4.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "425861e9bbc2739fd5cf171398e970d50ce99dfd5036e845feb74973baaf1bf4",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "a handwritten vintage postcard, script faded and unreadable. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/paperdesk/detail-5",
+            "file": "publishes/demo-media/paperdesk/detail-5.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "1946a4f7fd93f5c9b3deb3b6b22b55e512cd85b593f0810c3527387c85b87ea5",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "an old bookbinding press with two plant pots. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/paperdesk/listing-1",
+            "file": "publishes/demo-media/paperdesk/listing-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "a6fda195d76164d4f36924ce00a89c7720f0f3a38dc02419bac3fc2cdd763f75",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "vintage wooden letterpress type blocks on a table, letters too worn to read. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/paperdesk/listing-2",
+            "file": "publishes/demo-media/paperdesk/listing-2.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "8e7531ed2499141c32058119e70c16385826642e367b88dfa078708050b5a149",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "historic leather book bindings with tooled spines and no titles. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/paperdesk/listing-3",
+            "file": "publishes/demo-media/paperdesk/listing-3.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "a6bb763e44a57cb5804f4fe99c0e8bf3e7afa6dd29e9240332ee1553a28500bc",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "an old handwritten postcard with faded unreadable script and a postage stamp without legible text. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/paperdesk/proof-1",
+            "file": "publishes/demo-media/paperdesk/proof-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "ac018140e5de86f2c00e59b2cf0bfe3591547e2b78d94db2416baac4bf909aa7",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "stationery, notebooks, desk objects and paper textures seen from above; proof image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/portfolio/contact-1",
+            "file": "publishes/demo-media/portfolio/contact-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "1327210c1d98195a0c192b1cf1df1f5d4a373e37750643e8b834522325808699",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "gallery walls, framed prints, ceramics and studio still lifes; contact image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/portfolio/cta-1",
+            "file": "publishes/demo-media/portfolio/cta-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "8712e5acb46cb4b3a1055463c82ac363a08d74313d7457336a3997c56db3ba48",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "gallery walls, framed prints, ceramics and studio still lifes; cta image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/portfolio/detail-1",
+            "file": "publishes/demo-media/portfolio/detail-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "cd4b1a56a2c84d84c4eac4c9a5e818718fae1cf4b44a8046ee95160798472815",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "gallery walls, framed prints, ceramics and studio still lifes; detail image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/portfolio/listing-1",
+            "file": "publishes/demo-media/portfolio/listing-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "7626ced0a3e3b64a0a23d6175c35f318271182a1c5a0f7500fab685076b66107",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "gallery walls, framed prints, ceramics and studio still lifes; listing image 1 of 3. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/portfolio/listing-2",
+            "file": "publishes/demo-media/portfolio/listing-2.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "b9a2fadd364a49713887bb867d085b088df24cc917276b25b10a0582c740cdd9",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "gallery walls, framed prints, ceramics and studio still lifes; listing image 2 of 3. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/portfolio/listing-3",
+            "file": "publishes/demo-media/portfolio/listing-3.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "4c914a1119b54154ac1ec3ab181a7f243dc946bc766a78ab287a3b723a470b19",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "gallery walls, framed prints, ceramics and studio still lifes; listing image 3 of 3. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/portfolio/proof-1",
+            "file": "publishes/demo-media/portfolio/proof-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "e75356ad77d30ef8782ececd28f98c1138f0d2b68e438ecf2fcfb9e73c714d2a",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "gallery walls, framed prints, ceramics and studio still lifes; proof image 1 of 2. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/portfolio/proof-2",
+            "file": "publishes/demo-media/portfolio/proof-2.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "6f867b9e0dea54b9e78d7899ccf5e51341c5c2153ac24944ee878adc371d1dcf",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "gallery walls, framed prints, ceramics and studio still lifes; proof image 2 of 2. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/saas/contact-1",
+            "file": "publishes/demo-media/saas/contact-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "b6e84eeb32f299a6c6226d4c58414c39d7b54429de3a81f23e42f8d60330689d",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "product teams at work, abstract hardware details and soft gradient light; contact image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/saas/cta-1",
+            "file": "publishes/demo-media/saas/cta-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "854b46a563b22a3e7904a3fb6c9a8e6ff5f1668d1a9daddc420785ffc14694d2",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "product teams at work, abstract hardware details and soft gradient light; cta image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/saas/detail-1",
+            "file": "publishes/demo-media/saas/detail-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "1e77e15657614c818ffd1f292e219cb4f13e0dcf884cbb7ab8fffd7c4dbd89c3",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "product teams at work, abstract hardware details and soft gradient light; detail image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/saas/listing-1",
+            "file": "publishes/demo-media/saas/listing-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "02fc5bf96163aa44e7aa355882e1d42467875c9c1fbc670acd8d76a1f3bbf272",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "product teams at work, abstract hardware details and soft gradient light; listing image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        },
+        {
+            "id": "pool/saas/proof-1",
+            "file": "publishes/demo-media/saas/proof-1.webp",
+            "role": "section",
+            "width": 1600,
+            "height": 900,
+            "sha256": "4d650a41e649139d4d18a0ecf7f72e9064d62f102e5f86e4368e9c4be50638f6",
+            "licence": "Capell-owned original artwork",
+            "rights": "Generated for Capell demo content. Capell holds all rights; no third-party licence applies.",
+            "provenance": {
+                "provider": "codex",
+                "model": "codex image_generation",
+                "prompt": "product teams at work, abstract hardware details and soft gradient light; proof image 1 of 1. Original editorial photograph-style image. Natural light, considered composition, a quiet area for overlaid copy. No text, lettering, logos, watermarks, signage, readable screens, brand marks or recognisable real people.",
+                "generatedAt": "2026-11-15"
+            }
+        }
+    ]
+}

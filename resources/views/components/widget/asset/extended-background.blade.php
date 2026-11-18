@@ -8,8 +8,8 @@
         'capell-asset-extended-background',
         'absolute top-0 -z-1 h-full w-1/2',
         match ($position) {
-            'left' => 'left-0',
-            'right' => 'right-0',
+            'left' => 'start-0',
+            'right' => 'end-0',
         },
         match ($color) {
             'danger' => 'bg-danger',

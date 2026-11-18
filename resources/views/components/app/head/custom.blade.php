@@ -15,11 +15,31 @@
 
 <script>
     (function () {
+        // A visitor's own choice wins; with none stored, follow the OS.
+        const darkScheme = window.matchMedia?.('(prefers-color-scheme: dark)');
+
+        function storedTheme() {
+            try {
+                return localStorage.theme;
+            } catch (error) {
+                return undefined;
+            }
+        }
+
         function setupTheme() {
-            const isDarkMode = localStorage.theme === 'dark';
+            const stored = storedTheme();
+            const isDarkMode = stored === 'dark' || (stored !== 'light' && darkScheme?.matches === true);
 
             document.documentElement.classList.toggle('dark', isDarkMode);
         }
+
+        darkScheme?.addEventListener?.('change', () => {
+            const stored = storedTheme();
+
+            if (stored !== 'dark' && stored !== 'light') {
+                setupTheme();
+            }
+        });
 
         function updateHeaderSticky() {
             document.body.classList.toggle('header-sticky', window.scrollY > 0);

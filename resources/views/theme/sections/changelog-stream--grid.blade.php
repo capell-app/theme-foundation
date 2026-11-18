@@ -16,7 +16,7 @@
                 {{ __('capell-theme-foundation::generic.changelog_stream') }}
             </p>
             <h2
-                class="text-3xl leading-tight font-[var(--theme-heading-font)] font-semibold text-slate-950 sm:text-4xl"
+                class="text-3xl leading-tight font-(family-name:--theme-heading-font) font-semibold text-slate-950 sm:text-4xl"
             >
                 {{ $section->heading ?? __('capell-theme-foundation::generic.changelog_stream') }}
             </h2>

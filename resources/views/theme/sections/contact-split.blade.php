@@ -16,7 +16,7 @@
                 {{ __('capell-theme-foundation::generic.contact') }}
             </p>
             <h2
-                class="text-4xl leading-tight font-[var(--theme-heading-font)] font-semibold text-slate-950 sm:text-5xl"
+                class="text-4xl leading-tight font-(family-name:--theme-heading-font) font-semibold text-slate-950 sm:text-5xl"
             >
                 {{ $section->heading ?? __('capell-theme-foundation::generic.contact') }}
             </h2>

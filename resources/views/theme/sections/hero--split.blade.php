@@ -16,11 +16,11 @@
                 </p>
             @endif
 
-            <h2
-                class="max-w-4xl text-4xl leading-tight font-[var(--theme-heading-font)] font-semibold text-slate-950 sm:text-5xl lg:text-6xl"
+            <{{ $headingLevel ?? 'h1' }}
+                class="max-w-4xl text-4xl leading-tight font-(family-name:--theme-heading-font) font-semibold text-slate-950 sm:text-5xl lg:text-6xl"
             >
                 {{ $section->heading }}
-            </h2>
+            </{{ $headingLevel ?? 'h1' }}>
 
             @if ($section->summary)
                 <p class="max-w-2xl text-base leading-8 text-slate-600 sm:text-lg">{{ $section->summary }}</p>

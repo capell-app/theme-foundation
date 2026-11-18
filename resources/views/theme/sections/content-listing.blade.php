@@ -18,20 +18,6 @@
     $sectionHash = substr(hash('xxh128', (string) $section->heading), 0, 10);
     $carouselId = 'theme-gallery-' . $sectionHash;
     $spotlightId = 'theme-spotlight-' . $sectionHash;
-    $responsiveImageSrcset = static function (string $url): ?string {
-        if (! str_contains($url, 'images.unsplash.com')) {
-            return null;
-        }
-
-        return collect([480, 800, 1200, 1600])
-            ->map(static function (int $width) use ($url): string {
-                $imageUrl = preg_replace('/([?&])w=\d+/', '$1w=' . $width, $url);
-                $imageUrl ??= $url . (str_contains($url, '?') ? '&' : '?') . 'w=' . $width;
-
-                return $imageUrl . ' ' . $width . 'w';
-            })
-            ->implode(', ');
-    };
 @endphp
 
 <section
@@ -91,7 +77,7 @@
                     @endif
                 </p>
                 <h2
-                    class="text-3xl leading-tight font-[var(--theme-heading-font)] font-semibold text-slate-950 sm:text-4xl"
+                    class="text-3xl leading-tight font-(family-name:--theme-heading-font) font-semibold text-slate-950 sm:text-4xl"
                     data-theme-section-heading
                 >
                     {{ $section->heading }}
@@ -181,7 +167,6 @@
                             @if (! empty($item['image']))
                                 <x-capell::image-source
                                     :image="$item['image']"
-                                    :srcset="$responsiveImageSrcset((string) $item['image'])"
                                     alt=""
                                     width="1200"
                                     height="675"
@@ -197,7 +182,7 @@
                                     {{ $item['type'] ?? __('capell-theme-foundation::generic.spotlight') }}
                                 </p>
                                 <h3
-                                    class="text-2xl leading-tight font-[var(--theme-heading-font)] font-semibold text-slate-950 sm:text-3xl"
+                                    class="text-2xl leading-tight font-(family-name:--theme-heading-font) font-semibold text-slate-950 sm:text-3xl"
                                 >
                                     {{ $item['title'] }}
                                 </h3>
@@ -275,7 +260,6 @@
                                     @if (! empty($item['image']))
                                         <x-capell::image-source
                                             :image="$item['image']"
-                                            :srcset="$responsiveImageSrcset((string) $item['image'])"
                                             alt=""
                                             width="1200"
                                             height="900"
@@ -407,7 +391,6 @@
                         @if (! empty($item['image']))
                             <x-capell::image-source
                                 :image="$item['image']"
-                                :srcset="$responsiveImageSrcset((string) $item['image'])"
                                 alt=""
                                 width="1200"
                                 height="720"

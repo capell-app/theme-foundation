@@ -1,7 +1,7 @@
 @props([
     'id' => null,
     'itemClass',
-    'dropdownItemClass' => 'text-secondary hover:bg-primary/10 focus-visible:bg-primary/10 focus-visible:ring-primary/40 dark:text-secondary dark:hover:bg-primary/20 dark:focus-visible:bg-primary/20 flex w-full items-center px-4 py-2 text-left text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 lg:px-3 lg:py-1.5',
+    'dropdownItemClass' => 'text-secondary hover:bg-primary/10 focus-visible:bg-primary/10 focus-visible:ring-primary/40 dark:text-secondary dark:hover:bg-primary/20 dark:focus-visible:bg-primary/20 flex w-full items-center px-4 py-2 text-start text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 lg:px-3 lg:py-1.5',
     'dropdownName' => 'header-menu',
     'menu',
     'item',
@@ -51,13 +51,13 @@
 
         <span
             @class([
-            'mr-1 lg:sr-only' => ! empty($item->data['hide_label']),
+            'me-1 lg:sr-only' => ! empty($item->data['hide_label']),
         ])
         >
             {{ $item->label }}
         </span>
 
-        @svg('heroicon-o-chevron-right', '-mr-2 ml-auto h-4 w-4 text-gray-400 group-hover:text-inherit group-focus:text-inherit lg:rotate-90')
+        @svg('heroicon-o-chevron-right', '-me-2 ms-auto h-4 w-4 text-gray-400 group-hover:text-inherit group-focus:text-inherit lg:rotate-90')
     </x-slot:trigger>
 
     <li
@@ -71,7 +71,7 @@
             ])
             x-on:click="close($refs['{{ $currentDropdownName }}_toggle'])"
         >
-            @svg('heroicon-o-arrow-left', 'mr-1 h-5 w-5 stroke-current')
+            @svg('heroicon-o-arrow-left', 'me-1 h-5 w-5 stroke-current')
             <span> {{ $item->label }} </span>
         </button>
     </li>

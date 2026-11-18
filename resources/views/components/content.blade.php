@@ -184,8 +184,7 @@
     @if ($divider === 'above_heading' && $title)
         <div
             aria-hidden="true"
-            class="not-prose mb-4 border-t"
-            style="border-color: var(--color-divider)"
+            class="not-prose mb-4 border-t border-(color:--color-divider)"
         ></div>
     @endif
 
@@ -214,8 +213,7 @@
     @if ($divider === 'below_heading' && $title)
         <div
             aria-hidden="true"
-            class="not-prose mb-4 border-t"
-            style="border-color: var(--color-divider)"
+            class="not-prose mb-4 border-t border-(color:--color-divider)"
         ></div>
     @endif
 
@@ -235,8 +233,7 @@
     @if ($divider === 'below_content')
         <div
             aria-hidden="true"
-            class="not-prose mt-4 border-t"
-            style="border-color: var(--color-divider)"
+            class="not-prose mt-4 border-t border-(color:--color-divider)"
         ></div>
     @endif
 </div>

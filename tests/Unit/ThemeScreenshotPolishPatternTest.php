@@ -16,15 +16,20 @@ test('directory card density container queries compile without comma warnings', 
         ->not->toContain('@container pfd-tokens style(--theme-card-density: compact),');
 });
 
-test('catalogue onepage and saas navigation ctas fall back from empty labels', function (string $theme): void {
+test('catalogue onepage and saas navigation ctas render only with a label', function (string $theme): void {
     View::addNamespace('capell-theme-' . $theme, dirname(__DIR__, 3) . '/theme-' . $theme . '/resources/views');
     /** @var view-string $navigationView */
     $navigationView = implode('', ['capell-theme-', $theme, '::sections.navigation']);
-    $html = view($navigationView, ['section' => [
+
+    $empty = view($navigationView, ['section' => [
         'items' => [], 'ctaLabel' => '', 'ctaUrl' => '/contact',
     ]])->render();
+    $labelled = view($navigationView, ['section' => [
+        'items' => [], 'ctaLabel' => 'Book a demo', 'ctaUrl' => '/contact',
+    ]])->render();
 
-    expect($html)->toContain(__('capell-theme-' . $theme . '::sections.navigation.cta'), 'href="/contact"');
+    expect($empty)->not->toContain('href="/contact"')
+        ->and($labelled)->toContain('Book a demo', 'href="/contact"');
 })->with(['catalogue', 'onepage', 'saas']);
 
 test('theme section navigations expose the shared mobile disclosure menu', function (): void {

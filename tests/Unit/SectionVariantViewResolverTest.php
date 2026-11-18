@@ -54,3 +54,22 @@ it('ignores a non-string variant', function (): void {
         'variant' => ['compact'],
     ]))->toBe('hero');
 });
+
+it('uses the active preset variant when the editor has not chosen one', function (): void {
+    expect(SectionVariantViewResolver::resolve('capell-section-variant-fixture', ['type' => 'hero'], 'compact'))
+        ->toBe('hero--compact')
+        ->and(SectionVariantViewResolver::resolve('capell-section-variant-fixture', ['type' => 'hero', 'variant' => ''], 'compact'))
+        ->toBe('hero--compact');
+});
+
+it('keeps the editor choice over the active preset variant, including an explicit default', function (): void {
+    expect(SectionVariantViewResolver::resolve('capell-section-variant-fixture', ['type' => 'hero', 'variant' => 'default'], 'compact'))
+        ->toBe('hero')
+        ->and(SectionVariantViewResolver::resolve('capell-section-variant-fixture', ['type' => 'hero', 'variant' => 'compact'], 'from-another-theme'))
+        ->toBe('hero--compact');
+});
+
+it('falls back to the base view when the preset variant is not shipped', function (): void {
+    expect(SectionVariantViewResolver::resolve('capell-section-variant-fixture', ['type' => 'hero'], 'from-another-theme'))
+        ->toBe('hero');
+});

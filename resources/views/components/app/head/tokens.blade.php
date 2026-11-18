@@ -52,12 +52,22 @@ $noneMotionTokens = FoundationThemeSettings::MOTION_INTENSITY_OPTIONS['none'];
         --foundation-heading-size-h2: {{ $tokens->headingSizeH2 }};
         --foundation-heading-size-h3: {{ $tokens->headingSizeH3 }};
         --foundation-heading-line-height: {{ $tokens->headingLineHeight }};
+        --foundation-heading-tracking: {{ $tokens->headingTracking }};
+        --foundation-statement-size: {{ $tokens->statementSize }};
         --foundation-radius: 0.5rem;
         --foundation-motion-duration: {{ $tokens->motionDuration }};
         --foundation-motion-ease: {{ $tokens->motionEase }};
         --foundation-motion-stagger: {{ $tokens->motionStagger }};
         --foundation-motion-distance: {{ $tokens->motionDistance }};
     }
+
+    @if ($tokens->headingFontStack !== null && $tokens->bodyFontStack !== null)
+    /* A chosen type pairing outranks the brand profile's fonts, whichever stylesheet the head emits first. */
+    :root:root {
+        --theme-heading-font: {!! $tokens->headingFontStack !!};
+        --theme-body-font: {!! $tokens->bodyFontStack !!};
+    }
+    @endif
 
     .dark:root {
         /* Content typography consumes RGB channels, including outside the default theme wrapper. */

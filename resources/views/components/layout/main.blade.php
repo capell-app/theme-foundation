@@ -148,7 +148,7 @@
 
     {{-- Recovery hooks may ship unlayered list resets, so the inset and rhythm use important utilities. --}}
     @if ($isError)
-        <div class="capell-error-recovery pb-12 text-[var(--foundation-body-fg)] [&_h2]:font-[var(--theme-heading-font)] [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:text-[var(--foundation-heading-fg)] [&_ul]:mt-4 [&_ul]:list-disc! [&_ul]:ps-5! [&_ul]:space-y-3! [&_a]:text-[var(--theme-primary)] dark:[&_a]:text-[var(--foundation-body-fg)] [&_a]:underline [&_a]:underline-offset-4">
+        <div class="capell-error-recovery pb-12 text-[var(--foundation-body-fg)] [&_h2]:font-(family-name:--theme-heading-font) [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:text-[var(--foundation-heading-fg)] [&_ul]:mt-4 [&_ul]:list-disc! [&_ul]:ps-5! [&_ul]:space-y-3! [&_a]:text-[var(--theme-primary)] dark:[&_a]:text-[var(--foundation-body-fg)] [&_a]:underline [&_a]:underline-offset-4">
     @endif
     {!! app(RenderHookRegistry::class)->renderAll(
         RenderHookLocation::AfterContent,

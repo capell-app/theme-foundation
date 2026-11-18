@@ -80,6 +80,45 @@ it('boots shared rendering once per application and reapplies Blade aliases for 
     });
 });
 
+it('registers one canonical view hint per foundation namespace at fresh boot', function (): void {
+    InstalledRuntimeState::run(static function (): void {
+        $app = InstalledRuntimeTestCase::boot(InstalledRuntimeParity::manifest('theme-foundation'), true, sourceRoot: dirname(__DIR__, 2));
+        $finder = $app->make(Factory::class)->getFinder();
+        throw_unless($finder instanceof FileViewFinder, LogicException::class);
+        $views = realpath(dirname(__DIR__, 2) . '/resources/views');
+        throw_unless(is_string($views), LogicException::class);
+
+        expect($finder->getHints()['capell-theme-foundation'] ?? [])->toBe([$views]);
+        foreach (['capell-theme-foundation', 'capell'] as $prefix) {
+            expect($finder->getHints()[hash('xxh128', $prefix)] ?? [])->toBe([$views . '/components']);
+        }
+    });
+});
+
+it('repairs foundation namespaces without duplicating hints or changing Blade path identities', function (string $prefix): void {
+    InstalledRuntimeState::run(static function () use ($prefix): void {
+        $app = InstalledRuntimeTestCase::boot(InstalledRuntimeParity::manifest('theme-foundation'), true, sourceRoot: dirname(__DIR__, 2));
+        $finder = $app->make(Factory::class)->getFinder();
+        throw_unless($finder instanceof FileViewFinder, LogicException::class);
+        $compiler = $app->make(BladeCompiler::class);
+        $paths = $compiler->getAnonymousComponentPaths();
+        $views = realpath(dirname(__DIR__, 2) . '/resources/views');
+        throw_unless(is_string($views), LogicException::class);
+        $namespace = hash('xxh128', $prefix);
+
+        $finder->replaceNamespace('capell-theme-foundation', []);
+        $finder->replaceNamespace($namespace, []);
+
+        foreach ([1, 2] as $registration) {
+            $app->register(FoundationThemeServiceProvider::class, force: true);
+
+            expect($finder->getHints()['capell-theme-foundation'] ?? [])->toBe([$views], 'View namespace registration ' . $registration)
+                ->and($finder->getHints()[$namespace] ?? [])->toBe([$views . '/components'], 'Component namespace registration ' . $registration)
+                ->and($compiler->getAnonymousComponentPaths())->toBe($paths);
+        }
+    });
+})->with(['own components' => 'capell-theme-foundation', 'shared components' => 'capell']);
+
 it('completes shared rendering during late installation with a pre-registered component namespace', function (): void {
     InstalledRuntimeState::run(static function (): void {
         $app = InstalledRuntimeTestCase::boot(InstalledRuntimeParity::manifest('theme-foundation'), false, static function (Application $app): void {

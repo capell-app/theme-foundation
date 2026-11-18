@@ -119,7 +119,7 @@
                         <x-capell::page.neighbor-link
                             :neighbor-page="$nextPage"
                             neighbor="next"
-                            class="ml-auto"
+                            class="ms-auto"
                         />
                     @endif
                 </nav>

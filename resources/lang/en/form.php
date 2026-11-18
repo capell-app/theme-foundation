@@ -78,6 +78,17 @@ return [
     'section_variant_stale' => 'The saved variant is unavailable in this scope. It is preserved until you select a supported option; themes without that variant use their base section.',
     'section_variant_helper' => 'Choose an alternative layout supported by the themes of this widget’s tracked pages and layouts.',
     'surface_background_color' => 'Surface background colour',
+    'type_pairing' => 'Type pairing',
+    'type_pairing_helper' => 'Sets the heading and body fonts, their spacing and a matching heading scale. Leave empty to keep the fonts from your brand profile.',
+    'type_pairing_placeholder' => 'Use brand profile fonts',
+    'type_pairing_options' => [
+        'editorial' => 'Editorial: Fraunces with Source Serif',
+        'grotesk' => 'Grotesk: Archivo with Inter',
+        'humanist' => 'Humanist: Manrope with Source Sans',
+        'journal' => 'Journal: Newsreader throughout',
+        'plain' => 'Plain: Inter throughout',
+        'technical' => 'Technical: Space Grotesk with IBM Plex Sans',
+    ],
     'widget_gap' => 'Widget gap',
     'widget_gap_options' => [
         'airy' => 'Airy',

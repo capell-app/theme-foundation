@@ -60,7 +60,7 @@
                 style="{{ $backgroundImage ? 'background-image:url('.$backgroundImage->getAvailableUrl([MediaConversionEnum::Large->value]).');' : '' }}"
             @endif
             @class([
-                "absolute top-0 bottom-0 left-0 w-1/2 -z-1 h-full bg-cover bg-center bg-no-repeat",
+                "absolute top-0 bottom-0 start-0 w-1/2 -z-1 h-full bg-cover bg-center bg-no-repeat",
             ])
         >
         </div>

@@ -16,6 +16,7 @@ use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Psr\Log\LoggerInterface;
@@ -24,10 +25,10 @@ beforeEach(function (): void {
     OwnedTestbenchSkeleton::useStorageProject(app());
 });
 
-function foundationTailwindPackageChange(bool $installed): void
+function foundationTailwindPackageChange(bool $installed, string $packageName = ''): void
 {
     $package = new PackageData(
-        name: FoundationThemeServiceProvider::$packageName,
+        name: $packageName !== '' ? $packageName : FoundationThemeServiceProvider::$packageName,
         type: PackageTypeEnum::Theme,
         serviceProviderClass: FoundationThemeServiceProvider::class,
         path: __DIR__,
@@ -79,6 +80,45 @@ describe('package change without a writable source tree', function (): void {
 
         expect($this->filesystem->exists($this->root . '/css/frontend.css'))->toBeTrue();
         $this->log->shouldNotHaveReceived('notice');
+    })->with(['installed' => [true], 'uninstalled' => [false]]);
+
+    it('generates nothing for another package\'s change while Foundation Theme is disabled, and generates once re-enabled', function (bool $installed): void {
+        app()->instance('env', 'testing');
+
+        CapellCore::markPackageDisabled(FoundationThemeServiceProvider::$packageName);
+        foundationTailwindPackageChange($installed, 'capell-app/other-package');
+
+        expect($this->filesystem->exists($this->root . '/css/frontend.css'))->toBeFalse();
+
+        CapellCore::markPackageInstalled(FoundationThemeServiceProvider::$packageName);
+        foundationTailwindPackageChange($installed, 'capell-app/other-package');
+
+        expect($this->filesystem->exists($this->root . '/css/frontend.css'))->toBeTrue();
+    })->with(['installed' => [true], 'uninstalled' => [false]]);
+
+    it('generates the assets for Foundation Theme\'s own install and uninstall, in Core\'s real lifecycle order', function (bool $installed): void {
+        app()->instance('env', 'testing');
+
+        $package = new PackageData(
+            name: FoundationThemeServiceProvider::$packageName,
+            type: PackageTypeEnum::Theme,
+            serviceProviderClass: FoundationThemeServiceProvider::class,
+            path: __DIR__,
+        );
+
+        // InstallPackageAction and UninstallPackageAction record the new lifecycle state
+        // first and dispatch the package event afterwards, so the listener sees the
+        // package in its post-change state: enabled after install, not enabled after uninstall.
+        if ($installed) {
+            CapellCore::markPackageInstalling($package->name);
+            CapellCore::markPackageInstalled($package->name);
+            Event::dispatch(new PackageInstalled($package));
+        } else {
+            CapellCore::markPackageUninstalled($package->name);
+            Event::dispatch(new PackageUninstalled($package));
+        }
+
+        expect($this->filesystem->exists($this->root . '/css/frontend.css'))->toBeTrue();
     })->with(['installed' => [true], 'uninstalled' => [false]]);
 
     it('skips generation in production even when the tree is writable', function (bool $installed): void {

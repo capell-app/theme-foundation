@@ -19,7 +19,6 @@ use Capell\Core\Models\Theme;
 use Capell\Core\Support\Tailwind\TailwindAssetsRegistry;
 use Capell\FoundationTheme\Actions\BuildBannerImageRenderDataAction;
 use Capell\FoundationTheme\Actions\BuildLayoutNeighborLinksDataAction;
-use Capell\FoundationTheme\Actions\MarkPrimaryHeadingRenderedAction;
 use Capell\FoundationTheme\Actions\ResolveLoadedLayoutContainerBackgroundImageAction;
 use Capell\FoundationTheme\Actions\WidgetIsSlotAction;
 use Capell\FoundationTheme\Console\Commands\GenerateTailwindAssetsCommand;
@@ -249,7 +248,7 @@ it('declares foundation settings schema and settings migrations', function (): v
         ->and($performanceComponents)->toHaveCount(2)
         ->and($performanceComponents[0])->toBeInstanceOf(Checkbox::class)
         ->and($performanceComponents[1])->toBeInstanceOf(Text::class)
-        ->and($designTokenComponents)->toHaveCount(19)
+        ->and($designTokenComponents)->toHaveCount(20)
         ->and($designTokenComponents[0])->toBeInstanceOf(ColorPicker::class)
         ->and($designTokenComponents[12])->toBeInstanceOf(ColorPicker::class)
         ->and($designTokenComponents[13])->toBeInstanceOf(Select::class)
@@ -258,6 +257,7 @@ it('declares foundation settings schema and settings migrations', function (): v
         ->and($designTokenComponents[16])->toBeInstanceOf(Select::class)
         ->and($designTokenComponents[17])->toBeInstanceOf(Select::class)
         ->and($designTokenComponents[18])->toBeInstanceOf(Select::class)
+        ->and($designTokenComponents[19])->toBeInstanceOf(Select::class)
         ->and($darkDesignTokenComponents)->toHaveCount(13)
         ->and($darkDesignTokenComponents[0])->toBeInstanceOf(ColorPicker::class)
         ->and($darkDesignTokenComponents[12])->toBeInstanceOf(ColorPicker::class)
@@ -273,6 +273,7 @@ it('declares foundation settings schema and settings migrations', function (): v
             '2026_07_05_000001_add_theme_foundation_motion_tokens',
             '2026_07_14_210000_refresh_theme_foundation_capell_palette',
             '2026_07_15_210000_add_theme_foundation_responsive_repeatable_layout',
+            '2026_11_15_000001_add_theme_foundation_type_pairing',
         ])
         ->and($provider->migrations())->toBe([
             '2026_05_10_190850_01_create_theme_foundation_settings',
@@ -286,6 +287,7 @@ it('declares foundation settings schema and settings migrations', function (): v
             '2026_07_05_000001_add_theme_foundation_motion_tokens',
             '2026_07_14_210000_refresh_theme_foundation_capell_palette',
             '2026_07_15_210000_add_theme_foundation_responsive_repeatable_layout',
+            '2026_11_15_000001_add_theme_foundation_type_pairing',
         ])
         ->and(FoundationThemeSettings::group())->toBe('theme_foundation')
         ->and(FoundationThemeSettings::schema())->toBe(FoundationThemeSettingsSchema::class)
@@ -360,8 +362,6 @@ it('covers small foundation layout helper actions', function (): void {
 
     $plainWidget = new Widget;
     $plainWidget->meta = [];
-
-    MarkPrimaryHeadingRenderedAction::run();
 
     capell_expect(WidgetIsSlotAction::run($slotWidget))->toBeTrue()
         ->and(WidgetIsSlotAction::run($plainWidget))->toBeFalse();

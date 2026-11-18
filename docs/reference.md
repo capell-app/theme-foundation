@@ -6,7 +6,7 @@ Developer reference for `capell-app/theme-foundation`. Start with the [README](.
 
 ## Package Details
 
-Foundation Theme is an **Available**, **No schema impact** Capell theme in the **Capell Themes** product group. It ships as `capell-app/theme-foundation` and extends these surfaces: admin, frontend.
+Foundation Theme is an **Available** Capell theme in the **Capell Themes** product group. It ships as `capell-app/theme-foundation` and extends these surfaces: admin, frontend.
 
 - Status: Available
 - Tier: free
@@ -41,6 +41,7 @@ Foundation Theme is an **Available**, **No schema impact** Capell theme in the *
 - `packages/theme-foundation/database/settings/2026_07_05_000001_add_theme_foundation_motion_tokens.php`
 - `packages/theme-foundation/database/settings/2026_07_14_210000_refresh_theme_foundation_capell_palette.php`
 - `packages/theme-foundation/database/settings/2026_07_15_210000_add_theme_foundation_responsive_repeatable_layout.php`
+- `packages/theme-foundation/database/settings/2026_11_15_000001_add_theme_foundation_type_pairing.php`
 
 ### Settings classes
 
@@ -99,12 +100,15 @@ Foundation Theme is an **Available**, **No schema impact** Capell theme in the *
 - `HasThemeIntegrationEvidenceAction`
 - `InstallFoundationThemeDemoAction`
 - `InstallFoundationThemeLayoutDefaultsAction`
-- `MarkPrimaryHeadingRenderedAction`
+- `MigrateSitesToThemeAction`
+- `PlanThemeMigrationAction`
 - `PrepareFoundationPageWidgetDataAction`
+- `RefreshMigratedThemeOutputAction`
 - `ResolveAuthMenuPayloadsAction`
 - `ResolveFoundationImageLoadingAction`
 - `ResolveFoundationSectionAnchorAction`
 - `ResolveFoundationThemeTokensAction`
+- `ResolveHeroHeadingLevelAction`
 - `ResolveLoadedLayoutContainerBackgroundImageAction`
 - `ResolveLoadedWidgetBackgroundImageAction`
 - `ResolveNewsletterFormDataAction`
@@ -117,7 +121,9 @@ Foundation Theme is an **Available**, **No schema impact** Capell theme in the *
 - `ResolveThemeFrontendScriptDataAction`
 - `ResolveThemeOptionalSectionAvailabilityAction`
 - `ResolveWidgetBackgroundImageUrlAction`
+- `RollbackThemeMigrationAction`
 - `SetupFoundationThemePackageAction`
+- `ApplyFoundationThemeSiteSpecAction`
 - `ValidateThemeCatalogueEntryAction`
 - `WidgetIsSlotAction`
 
@@ -163,6 +169,8 @@ Foundation Theme is an **Available**, **No schema impact** Capell theme in the *
 - `ThemeDemoInstallData`
 - `ThemeFormEmbedData`
 - `ThemeFrontendScriptData`
+- `ThemeMigrationPlanData`
+- `ThemeMigrationResultData`
 - `ThemeScaffoldRequestData`
 - `ThemeValidationResultData`
 - `WidgetAssetRenderData`
@@ -174,6 +182,7 @@ Foundation Theme is an **Available**, **No schema impact** Capell theme in the *
 - `capell:theme-catalogue-report`
 - `capell:theme-foundation-demo`
 - `capell:theme-foundation-setup`
+- `capell:theme-migrate`
 - `capell:validate-themes`
 
 ### Manifest action API
@@ -186,6 +195,7 @@ Foundation Theme is an **Available**, **No schema impact** Capell theme in the *
 - `DemoCommand`
 - `GenerateTailwindAssetsCommand`
 - `MakeFoundationThemeCommand`
+- `MigrateThemeCommand`
 - `SetupCommand`
 - `ThemeCatalogueReportCommand`
 - `ValidateThemesCommand`
@@ -295,6 +305,7 @@ Foundation Theme is an **Available**, **No schema impact** Capell theme in the *
 - `packages/theme-foundation/resources/views/components/widget/slot.blade.php`
 - `packages/theme-foundation/resources/views/components/widget/snippet.blade.php`
 - `packages/theme-foundation/resources/views/components/widget/wrapper.blade.php`
+- `packages/theme-foundation/resources/views/embeds/consent.blade.php`
 - `packages/theme-foundation/resources/views/forms/embed.blade.php`
 - `packages/theme-foundation/resources/views/forms/newsletter.blade.php`
 - `packages/theme-foundation/resources/views/theme/chrome/footer.blade.php`

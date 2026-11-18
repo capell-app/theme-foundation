@@ -33,8 +33,7 @@
     {{ $attributes->merge(['class' => 'count-up-stat flex flex-col items-center text-center']) }}
 >
     <span
-        class="text-4xl font-bold"
-        style="color: var(--foundation-body-fg)"
+        class="text-4xl font-bold text-(color:--foundation-body-fg)"
         data-count-up="{{ $resolvedValue }}"
         data-count-up-duration="{{ $duration }}"
         @if ($locale) data-count-up-locale="{{ $locale }}" @endif
@@ -46,10 +45,7 @@
         >{{ $prefix }}{{ $displayValue }}{{ $suffix }}</span
     >
 
-    <span
-        class="mt-2 text-sm"
-        style="color: var(--foundation-muted-fg)"
-    >
+    <span class="mt-2 text-sm text-(color:--foundation-muted-fg)">
         {{ $resolvedLabel }}
     </span>
 </div>

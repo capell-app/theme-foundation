@@ -60,6 +60,11 @@ const optionalFrontendModules = [
         selector: '[data-hover-video-poster]',
         load: () => import('./widgets/widget/hover-video-poster'),
     },
+    {
+        key: 'consent-embed',
+        selector: '[data-capell-consent-embed]',
+        load: () => import('./widgets/widget/consent-embed'),
+    },
 ]
 
 const optionalModuleLoads = new Map()

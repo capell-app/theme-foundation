@@ -1,6 +1,6 @@
 # Install fictional theme demo content safely
 
-For existing content, use private theme Preview first. For sample pages, use a disposable local site and run `php artisan capell:theme-agency-demo --sites="Disposable demo" --url="https://demo.test"`. Review the target name, URL and languages before running it.
+For existing content, use private theme Preview first. For sample pages, use a disposable local site and run `php artisan capell:theme-foundation-demo --sites="Disposable demo" --url="https://demo.test"`. Review the target name, URL and languages before running it.
 
 An unscoped run is refused when any site already exists, even with `--force`; an empty installation can create its first Demo site. A named existing target receives demo pages while retaining its theme, enabled state, site translations and domains. Scoped setup writes fictional demo page content, widgets and demo layouts, including on repeat runs; keep authored work outside those demo pages. It can also adopt the site recovery page, so prefer a new disposable target.
 

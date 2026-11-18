@@ -12,7 +12,7 @@
                 {{ __('capell-theme-foundation::generic.content') }}
             </p>
             <h2
-                class="text-3xl leading-tight font-[var(--theme-heading-font)] font-semibold text-slate-950 sm:text-4xl"
+                class="text-3xl leading-tight font-(family-name:--theme-heading-font) font-semibold text-slate-950 sm:text-4xl"
             >
                 {{ $section->heading }}
             </h2>

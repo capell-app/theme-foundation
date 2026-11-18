@@ -10,13 +10,12 @@
     'container',
     'containerKey',
     'containerWidth' => null,
-    'hasPrimaryHeading' => false,
+    'headingLevel' => 'h1',
     'loop',
     'widget',
 ])
 @php
     use Capell\FoundationTheme\Actions\BuildHeroRailItemsRenderDataAction;
-    use Capell\FoundationTheme\Actions\MarkPrimaryHeadingRenderedAction;
     use Capell\Frontend\Facades\Frontend;
 
     $page = Frontend::page();
@@ -42,15 +41,6 @@
 
     $heroStyleAttribute = implode(' ', $heroStyleRules);
     $heroItems = BuildHeroRailItemsRenderDataAction::run($widget, $page, $heroAssetSource);
-
-    $configuredHeadingTag = (string) $widget->getMeta('heading_tag', '');
-    $headingTag = in_array($configuredHeadingTag, ['h1', 'h2', 'h3'], true)
-        ? $configuredHeadingTag
-        : ($hasPrimaryHeading ? 'h2' : 'h1');
-
-    if ($title && $headingTag === 'h1') {
-        MarkPrimaryHeadingRenderedAction::run();
-    }
 @endphp
 
 <x-capell-theme-foundation::widget.wrapper
@@ -73,15 +63,15 @@
         <div class="ap-hero__inner capell-showcase__inner">
             <div class="ap-hero__content">
                 @if ($title)
-                    <{{ $headingTag }}
+                    <{{ $headingLevel }}
                         class="ap-hero__title capell-showcase__heading ap-headline"
                     >
                         {{ $title }}
-                    </{{ $headingTag }}>
+                    </{{ $headingLevel }}>
                 @endif
 
                 @if ($content)
-                    <p class="ap-hero__copy capell-showcase__copy">{!! strip_tags($content) !!}</p>
+                    <p class="ap-hero__copy capell-showcase__copy">{{ html_entity_decode(strip_tags((string) $content), ENT_QUOTES | ENT_HTML5) }}</p>
                 @endif
 
                 @if ($primaryButtonText || $secondaryButtonText)

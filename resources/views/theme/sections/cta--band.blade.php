@@ -8,7 +8,7 @@
         class="mx-auto flex max-w-7xl flex-col items-center gap-5 px-4 py-14 text-center sm:px-6 lg:py-20"
     >
         <h2
-            class="max-w-3xl text-3xl leading-tight font-[var(--theme-heading-font)] font-semibold text-white sm:text-4xl"
+            class="max-w-3xl text-3xl leading-tight font-(family-name:--theme-heading-font) font-semibold text-white sm:text-4xl"
         >
             {{ $section->heading }}
         </h2>

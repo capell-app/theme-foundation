@@ -30,7 +30,7 @@ it('provides public safe demo media urls', function (): void {
 
     foreach ($urls as $url) {
         expect($url)
-            ->toStartWith('https://')
+            ->toStartWith('/vendor/capell-theme-foundation/demo-media/')
             ->not->toContain('admin')
             ->not->toContain('signed')
             ->not->toContain('filament');
@@ -62,12 +62,11 @@ it('keeps Bistro preview media relevant to hospitality', function (): void {
 
     expect($media)->not->toBe(ThemeDemoMedia::groupedForTheme('default'));
 
+    expect(array_intersect(ThemeDemoMedia::forTheme('bistro'), ThemeDemoMedia::forTheme('default')))->toBe([]);
+
     foreach ($media as $urls) {
         foreach ($urls as $url) {
-            expect($url)
-                ->not->toContain('photo-1497366754035-f200968a6e72')
-                ->not->toContain('photo-1497215842964-222b430dc094')
-                ->not->toContain('photo-1497366811353-6870744d04b2');
+            expect($url)->toStartWith('/vendor/capell-theme-foundation/demo-media/');
         }
     }
 });
@@ -77,12 +76,12 @@ it('keeps local service proof media relevant to plumbing and electrical work', f
 
     expect($businessMedia['detail'])
         ->toHaveCount(2)
-        ->and($businessMedia['detail'][0])->toContain('photo-1676210134188-4c05dd172f89')
-        ->and($businessMedia['detail'][1])->toContain('photo-1758101755915-462eddc23f57')
+        ->and($businessMedia['detail'][0])->toBe(themeDemoInstallMediaUrl('local-services/detail-1.webp'))
+        ->and($businessMedia['detail'][1])->toBe(themeDemoInstallMediaUrl('local-services/detail-2.webp'))
         ->and($businessMedia['proof'])
         ->toHaveCount(3)
-        ->and($businessMedia['proof'][0])->toContain('photo-1676210133055-eab6ef033ce3')
-        ->and($businessMedia['proof'][1])->toContain('photo-1566417110090-6b15a06ec800');
+        ->and($businessMedia['proof'][0])->toBe(themeDemoInstallMediaUrl('local-services/proof-1.webp'))
+        ->and($businessMedia['proof'][1])->toBe(themeDemoInstallMediaUrl('local-services/proof-2.webp'));
 });
 
 it('keeps Paperdesk reference photographs separate from the default office pool', function (): void {
@@ -96,7 +95,7 @@ it('keeps Paperdesk reference photographs separate from the default office pool'
         expect($urls)->not->toBeEmpty();
 
         foreach ($urls as $url) {
-            expect($url)->toStartWith('https://images.unsplash.com/photo-');
+            expect($url)->toStartWith('/vendor/capell-theme-foundation/demo-media/');
             expect($defaultUrls)->not->toContain($url);
         }
     }
@@ -108,11 +107,11 @@ it('describes the selected Paperdesk photographs without claiming they show its 
     $homepage = $content->sections('homepage', $media);
     $detail = $content->sections('detail', $media);
     $subjects = [
-        ['photo-1532153389802-6e84e367ed5e', 'alphabet specimen'],
-        ['photo-1530951517437-1b43a7349b10', 'book pages'],
-        ['photo-1595123336219-5eedd543bc4a', 'book bindings'],
-        ['photo-1565893181327-cd3a5d5752b5', 'postcard'],
-        ['photo-1574935905666-e5754382b0b5', 'bookbinding press'],
+        ['paperdesk/detail-1.webp', 'alphabet specimen'],
+        ['paperdesk/detail-2.webp', 'book pages'],
+        ['paperdesk/detail-3.webp', 'book bindings'],
+        ['paperdesk/detail-4.webp', 'postcard'],
+        ['paperdesk/detail-5.webp', 'bookbinding press'],
     ];
 
     expect($homepage[0]['mediaAlt'])->toContain('reference photograph', 'bookbinding press');
@@ -125,7 +124,7 @@ it('describes the selected Paperdesk photographs without claiming they show its 
     foreach ($subjects as $index => [$photo, $subject]) {
         $item = $detailItems[$index];
         $this->assertIsArray($item);
-        expect($item['imageUrl'])->toContain($photo);
+        expect($item['imageUrl'])->toBe(themeDemoInstallMediaUrl($photo));
         expect($item['imageAlt'])->toContain('Reference photograph', $subject);
     }
 
@@ -135,3 +134,8 @@ it('describes the selected Paperdesk photographs without claiming they show its 
         expect($item['summary'])->toContain('Fictional', 'not');
     }
 });
+
+function themeDemoInstallMediaUrl(string $path): string
+{
+    return '/vendor/capell-theme-foundation/demo-media/' . $path;
+}

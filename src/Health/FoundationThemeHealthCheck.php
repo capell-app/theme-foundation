@@ -16,6 +16,8 @@ use Capell\FoundationTheme\Filament\Settings\FoundationThemeSettingsSchema;
 use Capell\FoundationTheme\Providers\FoundationThemeServiceProvider;
 use Capell\FoundationTheme\Settings\FoundationThemeSettings;
 use Capell\FoundationTheme\Support\Assets\FoundationThemeAssetContributor;
+use Capell\FoundationTheme\Support\Themes\RetiredThemeReferenceScanner;
+use Capell\FoundationTheme\Support\Themes\RetiredThemeSuccessors;
 use FilesystemIterator;
 use Illuminate\Support\Collection;
 use JsonException;
@@ -130,6 +132,7 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
             $check->fleetCatalogueCoverageCheck(),
             $check->fleetDemoContentCoverageCheck(),
             $check->fleetScreenshotFreshnessCheck(),
+            $check->retiredThemeSitesCheck(),
         ]);
     }
 
@@ -323,6 +326,69 @@ final class FoundationThemeHealthCheck implements ChecksExtensionHealth
                 ? null
                 : 'Capture and commit docs/screenshots.json entries for each listed theme before it ships.',
             id: 'legacy.fleet.screenshot.freshness',
+        );
+    }
+
+    /**
+     * The residual-reference scan behind `capell:theme-migrate`: every place
+     * the installation can still name a retired theme or one of its section
+     * renderables (sites, layouts and their containers, widgets, blueprints and
+     * the Theme Studio active theme), soft-deleted records included because
+     * restoring one would bring the reference back. A retired theme's package
+     * is safe to remove only when its counts are all zero. While the package is
+     * installed this is a reminder; once it is gone the check fails.
+     */
+    public function retiredThemeSitesCheck(): DoctorCheckResultData
+    {
+        $scanner = resolve(RetiredThemeReferenceScanner::class);
+        $references = [];
+
+        foreach (array_keys(resolve(RetiredThemeSuccessors::class)->all()) as $themeKey) {
+            $blocking = $scanner->blocking($scanner->scan($themeKey));
+
+            if ($blocking !== []) {
+                $references[$themeKey] = $blocking;
+            }
+        }
+
+        ksort($references);
+        $remaining = array_keys($references);
+        $uninstalled = array_values(array_filter(
+            $remaining,
+            static fn (string $themeKey): bool => ! resolve(ThemeRegistry::class)->has($themeKey),
+        ));
+        $summary = implode('; ', array_map(
+            static fn (string $themeKey): string => sprintf('%s (%s)', $themeKey, implode(', ', array_map(
+                static fn (string $location, int $count): string => sprintf('%s: %d', $location, $count),
+                array_keys($references[$themeKey]),
+                $references[$themeKey],
+            ))),
+            $remaining,
+        ));
+        $countAt = static fn (string $location): array => array_filter(array_map(
+            static fn (array $locations): int => $locations[$location] ?? 0,
+            $references,
+        ));
+
+        return new DoctorCheckResultData(
+            label: 'Foundation Theme: nothing left on removed retired themes',
+            passed: $uninstalled === [],
+            message: match (true) {
+                $remaining === [] => 'No known location refers to a retired theme. Rerun php artisan capell:theme-migrate for a retired theme for the schema-wide verdict before removing its package.',
+                $uninstalled !== [] => 'Records refer to retired themes whose package has been removed: ' . $summary . '.',
+                default => 'Records still refer to retired themes: ' . $summary . '. Their packages are not safe to remove yet.',
+            },
+            remediation: $remaining === []
+                ? null
+                : 'Reinstall any removed retired theme package, then run php artisan capell:theme-migrate for each retired theme on every environment. Remove a package only once a rerun of that command reports it safe to remove, which adds a schema-wide search to these counts, then run php artisan view:clear.',
+            id: 'legacy.foundation.theme.retired.theme.sites',
+            evidence: [
+                'warning_count' => count($remaining),
+                'references_by_retired_theme' => $references,
+                'sites_by_retired_theme' => $countAt('sites.theme_id'),
+                'layouts_by_retired_theme' => $countAt('layouts.theme_id'),
+                'theme_studio_active_retired_theme' => array_key_first($countAt('theme_studio.active_theme')),
+            ],
         );
     }
 

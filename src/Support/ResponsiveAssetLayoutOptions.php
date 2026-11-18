@@ -78,6 +78,17 @@ class ResponsiveAssetLayoutOptions
         );
     }
 
+    /**
+     * Reduce a grid id to characters that are safe both as an HTML id and as a
+     * CSS selector inside an inline style block.
+     */
+    public static function safeGridId(string $gridId): string
+    {
+        $safe = (string) preg_replace('/[^A-Za-z0-9_-]/', '', $gridId);
+
+        return $safe === '' || ctype_digit($safe[0]) ? '' : $safe;
+    }
+
     public function shouldUseResponsiveGrid(): bool
     {
         return $this->hasGridOverrides || $this->pattern !== ResponsiveLayoutPattern::Grid;
@@ -97,7 +108,9 @@ class ResponsiveAssetLayoutOptions
 
     public function gridRowsStyle(string $gridId): ?HtmlString
     {
-        if ($this->gridRows < 1) {
+        $gridId = self::safeGridId($gridId);
+
+        if ($this->gridRows < 1 || $gridId === '') {
             return null;
         }
 
@@ -176,13 +189,7 @@ HTML);
      */
     private static function hasAnyMeta(Widget $widget, array $keys): bool
     {
-        foreach ($keys as $key) {
-            if (self::meta($widget, $key) !== null) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any($keys, fn (string $key): bool => self::meta($widget, $key) !== null);
     }
 
     private static function intMeta(Widget $widget, string $key, int $default, int $min, int $max): int

@@ -43,6 +43,10 @@ function preparePublicChrome(string $title = 'Public site', array $themeMeta = [
     $layout = new Layout(['containers' => $footerWidgets ? ['footer' => ['widgets' => [['key' => 'footer-content']]]] : []]);
     // An absent optional package contributes neither navigation hooks nor installed-state capabilities.
     CapellCore::forcePackageInstalled('capell-app/navigation', false);
+    // A request boots after the extension table exists, so its first installed-package
+    // check has already read the lifecycle rows before any view renders. These tests
+    // migrate after boot, so take that read here rather than inside the measured render.
+    CapellCore::isPackageInstalled('capell-app/navigation');
     app()->instance(RenderHookRegistry::class, new RenderHookRegistry);
     app()->instance(OptionalExtensionAvailability::class, new NoOptionalExtensions);
     $page = new Page;

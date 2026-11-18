@@ -14,6 +14,7 @@ declare(strict_types=1);
 use Capell\Core\ThemeStudio\Data\ThemeDefinitionData;
 use Capell\Core\ThemeStudio\Data\ThemePresetData;
 use Capell\FoundationTheme\Actions\ValidateThemeCatalogueEntryAction;
+use Capell\FoundationTheme\Support\Themes\RetiredThemeSuccessors;
 use Illuminate\Contracts\Console\Kernel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -111,6 +112,30 @@ it('declares a versioned catalogue envelope', function (): void {
         ->and($catalogue['lastReviewed'])->toBeString()
         ->and($catalogue['themes'])->toBeArray()
         ->and($catalogue['themes'])->not->toBeEmpty();
+});
+
+it('marks exactly the retired themes as retired with their successor', function (): void {
+    $retired = new RetiredThemeSuccessors()->all();
+    $statuses = [];
+    $successors = [];
+
+    foreach (themeCatalogueThemeEntries() as $entry) {
+        $key = $entry['themeKey'] ?? null;
+        throw_unless(is_string($key), RuntimeException::class, 'Catalogue theme key must be a string.');
+        $statuses[$key] = $entry['status'] ?? null;
+        $successors[$key] = $entry['successor'] ?? null;
+    }
+
+    foreach ($retired as $retiredKey => $successorKey) {
+        expect($statuses[$retiredKey] ?? null)->toBe('retired', "Theme {$retiredKey} must be retired.")
+            ->and($successors[$retiredKey])->toBe($successorKey)
+            ->and($statuses[$successorKey] ?? null)->toBe('active');
+    }
+
+    $retiredInCatalogue = array_keys(array_filter($statuses, static fn (mixed $status): bool => $status === 'retired'));
+
+    expect($retiredInCatalogue)->toEqualCanonicalizing(array_keys($retired))
+        ->and($retiredInCatalogue)->toHaveCount(23);
 });
 
 it('lists every shipped theme package exactly once', function (): void {

@@ -6,7 +6,7 @@
     "kind": "theme",
     "capellApiVersion": "^1.0",
     "version": "1.0.0",
-    "description": "Capell's foundation theme: base Blade layouts, runtime design tokens, a deterministic DesignSpec v1 compiler, Project Build theme artefacts, and the override contracts that all vertical Capell themes extend.",
+    "description": "Pale green theme for documentation and general publishing sites that developers can build on, with a dark version and a command for retired themes.",
     "product": {
         "group": "Capell Themes",
         "tier": "free",
@@ -22,7 +22,7 @@
             "capell-app/layout-builder",
             "capell-app/navigation"
         ],
-        "supports": [],
+        "supports": ["capell-app/search"],
         "conflicts": []
     },
     "providers": {
@@ -53,6 +53,7 @@
                 "capell:theme-catalogue-report",
                 "capell:theme-foundation-demo",
                 "capell:theme-foundation-setup",
+                "capell:theme-migrate",
                 "capell:validate-themes"
             ],
             "commandClasses": [
@@ -61,6 +62,7 @@
                 "Capell\\FoundationTheme\\Console\\Commands\\ThemeCatalogueReportCommand",
                 "Capell\\FoundationTheme\\Console\\Commands\\DemoCommand",
                 "Capell\\FoundationTheme\\Console\\Commands\\SetupCommand",
+                "Capell\\FoundationTheme\\Console\\Commands\\MigrateThemeCommand",
                 "Capell\\FoundationTheme\\Console\\Commands\\ValidateThemesCommand"
             ]
         }
@@ -79,6 +81,7 @@
         "tailwindAssets": "capell:frontend-tailwind-assets",
         "catalogueReport": "capell:theme-catalogue-report",
         "makeTheme": "capell:make-foundation-theme",
+        "migrateTheme": "capell:theme-migrate",
         "validateThemes": "capell:validate-themes"
     },
     "actions": {
@@ -111,16 +114,15 @@
             "encryptedFields": [],
             "hashedTokenFields": [],
             "redactedOutputClasses": [
-                "Capell\\FoundationTheme\\Actions\\DesignSpec\\CompileFoundationThemeArtifactAction",
-                "Capell\\FoundationTheme\\Actions\\MarkPrimaryHeadingRenderedAction"
+                "Capell\\FoundationTheme\\Actions\\DesignSpec\\CompileFoundationThemeArtifactAction"
             ],
             "plaintextJustifications": []
         },
         "publicOutput": {
+            "cacheSafe": true,
             "forbidAuthoringSurface": true,
             "forbidSecrets": true,
-            "forbidPublicBladeQueries": true,
-            "cacheSafe": true
+            "forbidPublicBladeQueries": true
         },
         "externalHttpClients": {
             "requiresTimeouts": false,
@@ -164,63 +166,68 @@
         "privateDocsRequested": false
     },
     "marketplace": {
-        "summary": "The base theme every Capell site and child theme builds on, with shared Blade layouts, runtime design tokens, and a deterministic DesignSpec v1 compiler that produces validated Project Build theme artifacts.",
-        "problem": "Building each theme from scratch leaves site builders to recreate layouts and design settings.",
-        "outcome": "A site has shared layouts and design settings that child themes can build on.",
+        "summary": "A header that stays in view, ready-made page sections and a settings page for colours and spacing.",
+        "description": "A plain starting theme for documentation and general publishing sites, with a very pale green-grey page, near-black text and deep green-teal links. A dark version switches on from a header button and not from the device setting. Other Capell themes are built on it and install it with them, and developers use its command to move sites off retired themes. Its form section needs the Form Builder package.",
+        "problem": "I want a plain, tidy theme for a documentation or general site without starting from nothing.",
+        "outcome": "Your documentation or general site gets a pale green page, a header that stays put and ready-made sections to build pages from.",
         "faq": [
             {
-                "question": "What does Foundation provide for themes?",
-                "answer": "It provides shared public layouts, design tokens and layout defaults for Capell themes."
+                "question": "Do I need to install Foundation Theme myself?",
+                "answer": "Usually not. Capell's other themes are built on it and install it along with themselves. You can also use it on its own as a plain starting theme."
             },
             {
-                "question": "Can Foundation be previewed before applying it?",
-                "answer": "Yes. Preview the theme on existing content before applying it to the selected site."
+                "question": "Does Foundation Theme have a dark version?",
+                "answer": "Yes. Visitors press the dark button in the header to switch. It does not follow the device's own dark setting, and the browser remembers the choice for later visits."
             },
             {
-                "question": "Will Foundation let me restore the previous theme?",
-                "answer": "Reapply the site’s previous theme to restore its selection. Shared Theme Studio settings saves can affect public pages."
+                "question": "Can the form section work without Form Builder?",
+                "answer": "No. The form section depends on the Form Builder package. The hero and call to action sections do not."
+            },
+            {
+                "question": "Can it move my sites off a retired theme?",
+                "answer": "Yes. A command previews the move before changing anything and saves a report that can reverse it. Anything that cannot be carried across is left behind."
             }
         ],
         "screenshots": [
             {
                 "path": "docs/assets/marketplace/extension-card.jpg",
-                "alt": "Foundation Theme extension preview image",
-                "caption": "Foundation Theme extension preview"
+                "alt": "A marketplace card titled Foundation Theme with two search page previews and a row of three numbered boxes",
+                "caption": "The card shows that other Capell themes build on this one."
             },
             {
                 "path": "docs/screenshots/foundation-chrome-homepage.webp",
-                "alt": "Foundation Theme homepage rendered as a Capell public page.",
-                "caption": "Foundation homepage public theme surface"
+                "alt": "A consultancy home page with a white header, a green logo, three feature cards, a search box, note cards and a dark band",
+                "caption": "The default look pairs a pale page with deep green-teal buttons and labels."
             },
             {
                 "path": "docs/screenshots/foundation-directory.webp",
-                "alt": "Foundation Theme directory listing with card grid and filtering rhythm.",
-                "caption": "Foundation directory listing public theme surface"
+                "alt": "A page of field notes with a search box and a three-card grid of notes with photos, then a dark call to action",
+                "caption": "A content list shows notes as cards, newest first."
             },
             {
                 "path": "docs/screenshots/foundation-detail.webp",
-                "alt": "Foundation Theme detail article with hero, content, and related links.",
-                "caption": "Foundation detail article public theme surface"
+                "alt": "A single article page with a headline beside a photo, three feature cards and an enquiry form",
+                "caption": "A page built from ready-made sections, here a hero, features and a form."
             },
             {
                 "path": "docs/screenshots/foundation-contact.webp",
-                "alt": "Foundation Theme contact page with form fields and supporting content.",
-                "caption": "Foundation contact page public theme surface"
+                "alt": "An enquiry page with a hero, an empty form for name, email and message, three feature cards and a dark call to action",
+                "caption": "The form section is where visitors send an enquiry."
             },
             {
                 "path": "docs/screenshots/foundation-empty.webp",
-                "alt": "Foundation Theme empty state with recovery actions.",
-                "caption": "Foundation empty state public theme surface"
+                "alt": "A search results page saying no notes match the search night shifts, with the search box and a dark call to action",
+                "caption": "This is what visitors see when a search finds nothing, with ways to carry on."
             },
             {
                 "path": "docs/screenshots/foundation-not-found.webp",
-                "alt": "Foundation Theme not-found page with navigation recovery actions.",
-                "caption": "Foundation page not found public theme surface"
+                "alt": "A page not found message with a link home, a short list of suggested links and a pale green footer",
+                "caption": "A missing page points visitors back to useful places on the site."
             },
             {
                 "path": "docs/screenshots/foundation-cta.webp",
-                "alt": "Foundation Theme call-to-action page section.",
-                "caption": "Foundation call to action public theme surface"
+                "alt": "A start-a-project page with a hero, three feature cards, an empty enquiry form and a dark call to action band",
+                "caption": "A dark band asks visitors to browse or search once they have read the page."
             }
         ],
         "categories": ["admin", "foundation", "frontend"]
@@ -228,6 +235,99 @@
     "extends": null,
     "themeKey": "default",
     "contributionTraceability": {
-        "deferredContributions": []
-    }
+        "deferredContributions": [],
+        "contributions": [
+            {
+                "type": "content-widget",
+                "key": "renderable:layout-widget:capell.widget.foundation.navigation",
+                "providerBucket": "runtime"
+            },
+            {
+                "type": "content-widget",
+                "key": "renderable:layout-widget:capell.widget.foundation.hero",
+                "providerBucket": "runtime"
+            },
+            {
+                "type": "content-widget",
+                "key": "renderable:layout-widget:capell.widget.foundation.features",
+                "providerBucket": "runtime"
+            },
+            {
+                "type": "content-widget",
+                "key": "renderable:layout-widget:capell.widget.foundation.proof",
+                "providerBucket": "runtime"
+            },
+            {
+                "type": "content-widget",
+                "key": "renderable:layout-widget:capell.widget.foundation.content-listing",
+                "providerBucket": "runtime"
+            },
+            {
+                "type": "content-widget",
+                "key": "renderable:layout-widget:capell.widget.foundation.search",
+                "providerBucket": "runtime"
+            },
+            {
+                "type": "content-widget",
+                "key": "renderable:layout-widget:capell.widget.foundation.pagination",
+                "providerBucket": "runtime"
+            },
+            {
+                "type": "content-widget",
+                "key": "renderable:layout-widget:capell.widget.foundation.form",
+                "providerBucket": "runtime"
+            },
+            {
+                "type": "content-widget",
+                "key": "renderable:layout-widget:capell.widget.foundation.contact-split",
+                "providerBucket": "runtime"
+            },
+            {
+                "type": "content-widget",
+                "key": "renderable:layout-widget:capell.widget.foundation.cta",
+                "providerBucket": "runtime"
+            },
+            {
+                "type": "content-widget",
+                "key": "renderable:layout-widget:capell.widget.foundation.footer",
+                "providerBucket": "runtime"
+            },
+            {
+                "type": "asset",
+                "key": "frontend-asset:Page",
+                "providerBucket": "runtime"
+            },
+            {
+                "type": "model",
+                "key": "model-interceptor:Capell\\Core\\Models\\Theme:Capell\\FoundationTheme\\Support\\Interceptors\\Themes\\FoundationThemeInterceptor:default",
+                "providerBucket": "runtime"
+            },
+            {
+                "type": "setting",
+                "key": "settings-class:theme_foundation",
+                "providerBucket": "runtime"
+            },
+            {
+                "type": "setting",
+                "key": "settings-schema:theme_foundation:FoundationThemeSettingsSchema",
+                "providerBucket": "runtime"
+            },
+            {
+                "type": "admin-page",
+                "key": "extension-management-surface:capell-app/theme-foundation:settings:theme_foundation",
+                "providerBucket": "runtime"
+            },
+            {
+                "type": "public-render-data",
+                "key": "foundation_image_loading",
+                "providerBucket": "runtime"
+            },
+            {
+                "type": "content-widget",
+                "key": "capell-app.auth-menu",
+                "providerBucket": "runtime"
+            }
+        ]
+    },
+    "roles": ["default-theme"]
 }

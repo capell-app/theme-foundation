@@ -81,3 +81,16 @@ it('preserves explicit grid responsive pattern as the mobile stack opt out', fun
         ->and($options->pattern->usesMobileCarousel())->toBeFalse()
         ->and($options->pattern->usesDesktopGrid())->toBeTrue();
 });
+
+it('keeps hostile grid ids out of the inline grid row style', function (): void {
+    $options = ResponsiveAssetLayoutOptions::fromWidget(new Widget(['meta' => ['responsive_grid_rows' => 1]]), 4);
+
+    $style = (string) $options->gridRowsStyle('grid</style><script>alert(1)</script>{}');
+
+    expect($style)->not->toContain('</style><script', 'alert(1)</script>', '{}')
+        ->and($style)->toContain('#gridstylescriptalert1script > :nth-child')
+        ->and(ResponsiveAssetLayoutOptions::safeGridId('asset-grid-main-1-0'))->toBe('asset-grid-main-1-0')
+        ->and(ResponsiveAssetLayoutOptions::safeGridId('9grid'))->toBe('')
+        ->and(ResponsiveAssetLayoutOptions::safeGridId('<>'))->toBe('')
+        ->and($options->gridRowsStyle('<>'))->toBeNull();
+});

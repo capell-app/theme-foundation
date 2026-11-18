@@ -4,12 +4,12 @@
     "scenarios": {
         "default": {
             "source": {
-                "ref": "HEAD",
-                "commit": "adac26b4ce1e9e1de545f68a1ff272ff73111696",
+                "ref": "origin/main",
+                "commit": "0c7b0222578449e592ed4adea4c6fe0b2745d5b3",
                 "providers": {
                     "Providers/ConsoleServiceProvider.php": "7b6ab3803e67e2c3d80ae23856b783f462b4cf410bcb5db844cc06ae7e90d59c",
                     "Providers/FoundationSharedFragmentServiceProvider.php": "7063bc32126695fda1ca9029c70d8f4ba193e09371534b45f84b739cb00e9e81",
-                    "Providers/FoundationThemeServiceProvider.php": "fc2d2088df1154890795a58bc0748043e63e98d416d12eb40fafdc92d0ee700b",
+                    "Providers/FoundationThemeServiceProvider.php": "9f42d3ad0f2754b6314225c86e465098ea346229037f05fe1f27e741eea0284e",
                     "Providers/FoundationThemeSiteSpecServiceProvider.php": "153ffe018acec8144fe6f662ff0cd9fa666f07954bd9b773eefb6fb58c8c1c00",
                     "Support/Providers/AbstractThemeServiceProvider.php": "28d166b2c28a2db2c161965df34ff1370a944bc314fffa583de2368d208b1dd9"
                 },
@@ -106,6 +106,17 @@
                         ],
                         "shared": true
                     },
+                    "Capell\\FoundationTheme\\Support\\Themes\\ActivePresetSectionVariants": {
+                        "concrete": [
+                            "<vendor>/laravel/framework/src/Illuminate/Container/Container.php",
+                            "Illuminate\\Container\\Container( $container,  $parameters): bound=Illuminate\\Foundation\\Application",
+                            {
+                                "abstract": "Capell\\FoundationTheme\\Support\\Themes\\ActivePresetSectionVariants",
+                                "concrete": "Capell\\FoundationTheme\\Support\\Themes\\ActivePresetSectionVariants"
+                            }
+                        ],
+                        "shared": true
+                    },
                     "capell.tailwind.generator": {
                         "concrete": [
                             "<package>/src/Providers/FoundationThemeServiceProvider.php",
@@ -155,6 +166,7 @@
                     "capell:theme-catalogue-report": "Capell\\FoundationTheme\\Console\\Commands\\ThemeCatalogueReportCommand",
                     "capell:theme-foundation-demo": "Capell\\FoundationTheme\\Console\\Commands\\DemoCommand",
                     "capell:theme-foundation-setup": "Capell\\FoundationTheme\\Console\\Commands\\SetupCommand",
+                    "capell:theme-migrate": "Capell\\FoundationTheme\\Console\\Commands\\MigrateThemeCommand",
                     "capell:validate-themes": "Capell\\FoundationTheme\\Console\\Commands\\ValidateThemesCommand"
                 },
                 "config-defaults": {
@@ -1045,8 +1057,11 @@
                                             {
                                                 "description": "Balanced neutral defaults with clear hierarchy and quiet content surfaces.",
                                                 "key": "default",
+                                                "layout": null,
                                                 "name": "Foundation",
                                                 "previewImage": "/vendor/capell/themes/foundation.webp",
+                                                "sectionVariants": [],
+                                                "typePairing": null,
                                                 "values": {
                                                     "accentColor": "#0e91b2",
                                                     "bodyFont": "inter",
@@ -1063,7 +1078,8 @@
                                                     "radius": "sm",
                                                     "spacing": "balanced",
                                                     "surfaceColor": "#f5f7f4"
-                                                }
+                                                },
+                                                "version": 1
                                             }
                                         ]
                                     ],
@@ -1443,6 +1459,9 @@
                     "capell.project-build.artifact-handler": [
                         "Capell\\FoundationTheme\\Support\\DesignSpec\\FoundationThemeProjectBuildArtifactHandler"
                     ],
+                    "capell.site-spec.applier": [
+                        "Capell\\FoundationTheme\\Actions\\SiteSpec\\ApplyFoundationThemeSiteSpecAction"
+                    ],
                     "capell.widget_schema.extenders": [
                         "Capell\\FoundationTheme\\Filament\\Extenders\\SectionVariantSchemaExtender"
                     ]
@@ -1466,6 +1485,9 @@
                     ],
                     "capell.project-build.artifact-handler": [
                         "Capell\\FoundationTheme\\Support\\DesignSpec\\FoundationThemeProjectBuildArtifactHandler"
+                    ],
+                    "capell.site-spec.applier": [
+                        "Capell\\FoundationTheme\\Actions\\SiteSpec\\ApplyFoundationThemeSiteSpecAction"
                     ],
                     "capell.widget_schema.extenders": [
                         "Capell\\FoundationTheme\\Filament\\Extenders\\SectionVariantSchemaExtender"
@@ -1545,17 +1567,15 @@
                 ],
                 "views": {
                     "612a1cd988c9a1bc502a7b2face1af01": [
-                        "<package>/src/Providers/../../resources/views/components"
+                        "<package>/resources/views/components"
                     ],
                     "capell": [
-                        "<package>/src/Providers/../../resources/views",
-                        "<package>/src/Providers/../../resources/views"
+                        "<package>/resources/views",
+                        "<package>/resources/views"
                     ],
-                    "capell-theme-foundation": [
-                        "<package>/src/Providers/../../resources/views"
-                    ],
+                    "capell-theme-foundation": ["<package>/resources/views"],
                     "d5308ed143a49921d8191587abc7798b": [
-                        "<package>/src/Providers/../../resources/views/components"
+                        "<package>/resources/views/components"
                     ]
                 }
             },
@@ -1615,6 +1635,17 @@
                             }
                         ],
                         "shared": true
+                    },
+                    "Capell\\FoundationTheme\\Support\\Themes\\ActivePresetSectionVariants": {
+                        "concrete": [
+                            "<vendor>/laravel/framework/src/Illuminate/Container/Container.php",
+                            "Illuminate\\Container\\Container( $container,  $parameters): bound=Illuminate\\Foundation\\Application",
+                            {
+                                "abstract": "Capell\\FoundationTheme\\Support\\Themes\\ActivePresetSectionVariants",
+                                "concrete": "Capell\\FoundationTheme\\Support\\Themes\\ActivePresetSectionVariants"
+                            }
+                        ],
+                        "shared": true
                     }
                 },
                 "blade": {
@@ -1656,6 +1687,7 @@
                     "capell:theme-catalogue-report": "Capell\\FoundationTheme\\Console\\Commands\\ThemeCatalogueReportCommand",
                     "capell:theme-foundation-demo": "Capell\\FoundationTheme\\Console\\Commands\\DemoCommand",
                     "capell:theme-foundation-setup": "Capell\\FoundationTheme\\Console\\Commands\\SetupCommand",
+                    "capell:theme-migrate": "Capell\\FoundationTheme\\Console\\Commands\\MigrateThemeCommand",
                     "capell:validate-themes": "Capell\\FoundationTheme\\Console\\Commands\\ValidateThemesCommand"
                 },
                 "config-defaults": {
@@ -2473,6 +2505,9 @@
                     ],
                     "capell.project-build.artifact-handler": [
                         "Capell\\FoundationTheme\\Support\\DesignSpec\\FoundationThemeProjectBuildArtifactHandler"
+                    ],
+                    "capell.site-spec.applier": [
+                        "Capell\\FoundationTheme\\Actions\\SiteSpec\\ApplyFoundationThemeSiteSpecAction"
                     ]
                 },
                 "tags": {
@@ -2487,21 +2522,22 @@
                     ],
                     "capell.project-build.artifact-handler": [
                         "Capell\\FoundationTheme\\Support\\DesignSpec\\FoundationThemeProjectBuildArtifactHandler"
+                    ],
+                    "capell.site-spec.applier": [
+                        "Capell\\FoundationTheme\\Actions\\SiteSpec\\ApplyFoundationThemeSiteSpecAction"
                     ]
                 },
                 "views": {
                     "612a1cd988c9a1bc502a7b2face1af01": [
-                        "<package>/src/Providers/../../resources/views/components"
+                        "<package>/resources/views/components"
                     ],
                     "capell": [
-                        "<package>/src/Providers/../../resources/views",
-                        "<package>/src/Providers/../../resources/views"
+                        "<package>/resources/views",
+                        "<package>/resources/views"
                     ],
-                    "capell-theme-foundation": [
-                        "<package>/src/Providers/../../resources/views"
-                    ],
+                    "capell-theme-foundation": ["<package>/resources/views"],
                     "d5308ed143a49921d8191587abc7798b": [
-                        "<package>/src/Providers/../../resources/views/components"
+                        "<package>/resources/views/components"
                     ]
                 }
             },

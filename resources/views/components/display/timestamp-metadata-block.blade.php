@@ -15,8 +15,7 @@
 
 <time
     datetime="{{ $datetime }}"
-    {{ $attributes->merge(['class' => 'text-sm']) }}
-    style="color: var(--foundation-border-strong)"
+    {{ $attributes->merge(['class' => 'text-sm text-(color:--foundation-border-strong)']) }}
 >
     {{ $label }}
 </time>

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Capell\FoundationTheme\Actions;
 
 use Capell\Core\ThemeStudio\Data\ThemeDefinitionData;
+use Capell\Core\ThemeStudio\Data\ThemePresetData;
+use Capell\Core\ThemeStudio\Typography\ThemeFontCatalogue;
 use Capell\FoundationTheme\Data\ThemeValidationResultData;
 use Lorisleiva\Actions\Concerns\AsFake;
 use Lorisleiva\Actions\Concerns\AsObject;
@@ -56,6 +58,9 @@ final class ValidateThemeCatalogueEntryAction
         'not-found',
         'cta',
     ];
+
+    /** Preset values that must name a Core font catalogue key. */
+    private const array PRESET_FONT_FIELDS = ['headingFont', 'bodyFont'];
 
     /**
      * @var list<string>
@@ -289,7 +294,40 @@ final class ValidateThemeCatalogueEntryAction
             $violations[] = "{$themeKey}: ThemeDefinitionData extends ({$this->describe($definition->extends)}) does not match capell.json extends ({$this->describe($manifestExtends)}).";
         }
 
+        foreach ($definition->presets as $preset) {
+            foreach ($this->presetFontKeys($preset) as $field => $fontKey) {
+                if (! is_string($fontKey) || ! ThemeFontCatalogue::has($fontKey)) {
+                    $violations[] = "{$themeKey}: preset {$preset->key} {$field} ({$this->describe($fontKey)}) is not a font catalogue key.";
+                }
+            }
+        }
+
         return $violations;
+    }
+
+    /**
+     * The font keys a preset names, read from its raw values and from its heading+body typePairing.
+     * The pairing is read as written because resolvedValues() silently drops keys the catalogue lacks.
+     *
+     * @return array<string, mixed>
+     */
+    private function presetFontKeys(ThemePresetData $preset): array
+    {
+        $fontKeys = [];
+
+        if ($preset->typePairing !== null) {
+            $fonts = explode('+', $preset->typePairing, 2);
+            $fontKeys['headingFont'] = trim($fonts[0]);
+            $fontKeys['bodyFont'] = trim($fonts[1] ?? $fonts[0]);
+        }
+
+        foreach (self::PRESET_FONT_FIELDS as $field) {
+            if (array_key_exists($field, $preset->values)) {
+                $fontKeys[$field] = $preset->values[$field];
+            }
+        }
+
+        return $fontKeys;
     }
 
     /**

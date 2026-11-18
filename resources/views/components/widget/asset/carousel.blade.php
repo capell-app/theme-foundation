@@ -208,18 +208,16 @@
                         <button
                             aria-label="{{ __('capell-frontend::generic.previous') }}"
                             @class([
-                                'swiper-button-prev rounded-r-md',
+                                'swiper-button-prev rounded-e-md h-[60px] w-[50px] -mt-[30px]',
                                 $carouselButtonClass,
                             ])
-                            style="width: 50px; height: 60px; margin-top: -30px"
                         ></button>
                         <button
                             aria-label="{{ __('capell-frontend::generic.next') }}"
                             @class([
-                                'swiper-button-next rounded-l-md',
+                                'swiper-button-next rounded-s-md h-[60px] w-[50px] -mt-[30px]',
                                 $carouselButtonClass,
                             ])
-                            style="width: 50px; height: 60px; margin-top: -30px"
                         ></button>
                     @endif
 
