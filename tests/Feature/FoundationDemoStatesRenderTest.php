@@ -12,6 +12,9 @@ use Capell\FoundationTheme\Actions\ResolveThemeFormEmbedDataAction;
 use Capell\FoundationTheme\Support\CapellOptionalExtensionAvailability;
 use Capell\Smart404\Actions\ResolveSmart404SuggestionsAction;
 use Capell\Tests\Fixtures\Models\User;
+use Capell\Tests\Support\RenderedDocument;
+use GuzzleHttp\Psr7\Uri;
+use GuzzleHttp\Psr7\UriResolver;
 use Illuminate\Http\Request;
 use Livewire\LivewireManager;
 
@@ -72,6 +75,38 @@ it('renders suggestions without search counts or unnecessary pagination', functi
         expect($dom->query('//section[contains(@class, "theme-content-listing")]//a/img/following-sibling::span[contains(concat(" ", @class, " "), " block ") and contains(concat(" ", @class, " "), " p-5 ")]'))->toHaveCount(3);
     }
 })->with(['homepage', 'directory']);
+
+it('follows every sample search result to the matching field note', function (string $surface, bool $signedIn): void {
+    if ($signedIn) {
+        $this->actingAs(User::factory()->create());
+    }
+
+    [$pageUrl] = layoutNativeThemeCreatePage('default', 'Field Notes', $surface, '/practice');
+    $source = new Uri($pageUrl->full_url);
+    $document = new RenderedDocument((string) $this->get((string) $source)->assertOk()->getContent());
+    $results = $document->elements('//section[contains(@class, "theme-search")]//li');
+    expect($results)->toHaveCount(2);
+
+    $authoring = '//*[@data-editor or @data-capell-editor or @data-widget-id or @contenteditable]';
+    expect($document->elements($authoring))->toBeEmpty();
+    $titles = [];
+    foreach ($results as $result) {
+        $link = $result->getElementsByTagName('a')->item(0);
+        Assert::assertInstanceOf(DOMElement::class, $link);
+        $title = trim($link->getElementsByTagName('span')->item(0)->textContent ?? '');
+        $titles[] = $title;
+        $target = UriResolver::resolve($source, new Uri($link->getAttribute('href')));
+        expect($target->getHost())->toBe($source->getHost())
+            ->and($target->getPath())->toStartWith('/practice/')
+            ->and($target->getPath())->not->toBe($source->getPath());
+
+        $destination = new RenderedDocument((string) $this->get((string) $target)->assertOk()->getContent());
+        expect(trim($destination->element('//main//h1')->textContent))->toBe($title)
+            ->and($destination->elements($authoring))->toBeEmpty();
+    }
+
+    expect($titles)->toEqualCanonicalizing(['A practical brief for a shared workshop', 'Planning a useful first walk-through']);
+})->with(['homepage', 'directory'])->with([false, true]);
 
 it('renders inset spaced recovery suggestions on the not found demo', function (): void {
     [$pageUrl] = layoutNativeThemeCreatePage('default', 'Not Found State', 'not-found');

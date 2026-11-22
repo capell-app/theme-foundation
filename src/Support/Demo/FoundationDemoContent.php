@@ -36,6 +36,7 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
             $this->empty($themeKey),
             $this->notFound($themeKey),
             $this->cta($themeKey),
+            $this->walkThrough($themeKey),
         ];
 
         return array_map(
@@ -194,7 +195,7 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
                     $this->searchSection(
                         heading: 'Find a useful field note',
                         summary: 'Search our practical notes on briefs, walk-throughs, workshops, and handovers.',
-                        results: $this->suggestedSearchResults(),
+                        results: $this->suggestedSearchResults($themeKey),
                     ),
                     $this->contentListingSection(
                         heading: 'Notes from the field',
@@ -257,7 +258,7 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
                     $this->searchSection(
                         heading: 'Search the field notes',
                         summary: 'Try a place type, project stage, or practical question.',
-                        results: $this->suggestedSearchResults(),
+                        results: $this->suggestedSearchResults($themeKey),
                     ),
                     $this->contentListingSection(
                         heading: 'All field notes',
@@ -334,6 +335,23 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
                         secondaryIsPath: true,
                     ),
                 ],
+            ],
+        );
+    }
+
+    private function walkThrough(string $themeKey): ThemeDemoPageDefinition
+    {
+        return new ThemeDemoPageDefinition(
+            surface: 'walk-through',
+            name: self::BRAND . ' Walk-through',
+            title: 'Planning a useful first walk-through',
+            slug: 'theme-' . $themeKey . '-walk-through',
+            content: '<p>Walk the route with someone who opens the building and someone visiting for the first time. Ask each person where they stop, what they carry, and which signs they rely on.</p>'
+                . '<p>Mark those stops on a floor plan. Before leaving, agree which observation to check on the next visit and who will follow it up.</p>',
+            renderData: [
+                'summary' => 'Prompts for looking, listening, and recording what matters on a site visit.',
+                'navigation' => $this->navigation($themeKey),
+                'footer' => $this->footer($themeKey),
             ],
         );
     }
@@ -566,7 +584,7 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
     }
 
     /**
-     * @param  list<array{title: string, summary: string}>  $results
+     * @param  list<array{title: string, summary: string, pageSlug: string}>  $results
      * @return array<string, mixed>
      */
     private function searchSection(string $heading, string $summary, array $results, string $query = ''): array
@@ -582,12 +600,12 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
         ];
     }
 
-    /** @return list<array{title: string, summary: string}> */
-    private function suggestedSearchResults(): array
+    /** @return list<array{title: string, summary: string, pageSlug: string}> */
+    private function suggestedSearchResults(string $themeKey): array
     {
         return [
-            ['title' => 'A practical brief for a shared workshop', 'summary' => 'Frame the people, activities, constraints, and decisions before fixing the answer.'],
-            ['title' => 'Planning a useful first walk-through', 'summary' => 'A short set of prompts for looking, listening, and recording what matters.'],
+            ['title' => 'A practical brief for a shared workshop', 'pageSlug' => 'theme-' . $themeKey . '-detail', 'summary' => 'Frame the people, activities, constraints, and decisions before fixing the answer.'],
+            ['title' => 'Planning a useful first walk-through', 'pageSlug' => 'theme-' . $themeKey . '-walk-through', 'summary' => 'A short set of prompts for looking, listening, and recording what matters.'],
         ];
     }
 

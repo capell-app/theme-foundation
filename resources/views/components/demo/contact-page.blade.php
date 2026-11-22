@@ -246,7 +246,7 @@
 
         <div class="theme-demo-contact-gateway">
             <div class="theme-demo-contact-intro">
-                <p class="theme-demo-contact-eyebrow">{{ __('capell-theme-foundation::demo.contact_eyebrow') }}</p>
+                <p class="theme-demo-contact-eyebrow">{{ __('capell-theme-foundation::demo.contact_label') }}</p>
                 <h2>
                     {{ __('capell-theme-foundation::demo.contact_heading') }}
                 </h2>
@@ -282,7 +282,7 @@
                 class="theme-demo-contact-form theme-demo-contact-form-panel"
             >
                 <div class="theme-demo-contact-form-header">
-                    <p class="theme-demo-contact-eyebrow">{{ __('capell-theme-foundation::demo.contact_form_eyebrow') }}</p>
+                    <p class="theme-demo-contact-eyebrow">{{ __('capell-theme-foundation::demo.contact_form_label') }}</p>
                     <h3>
                         {{ __('capell-theme-foundation::demo.contact_form_title') }}
                     </h3>

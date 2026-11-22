@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Capell\FoundationTheme\Support\Assets;
 
-use Capell\Frontend\Contracts\FrontendResourceContributor;
-use Capell\Frontend\Data\Assets\FrontendResourceContributionData;
-use Capell\Frontend\Data\Assets\FrontendResourceData;
+use Capell\Core\Contracts\Rendering\FrontendResourceContributor;
+use Capell\Core\Data\Rendering\Assets\FrontendResourceContributionData;
+use Capell\Core\Data\Rendering\Assets\FrontendResourceData;
+use Capell\Core\Data\Rendering\FrontendResourceContextData;
+use Capell\Core\Enums\Rendering\FrontendResourcePlacement;
 use Capell\Frontend\Data\Assets\ViteResourceSourceData;
-use Capell\Frontend\Data\FrontendResourceContextData;
-use Capell\Frontend\Enums\FrontendResourcePlacement;
 
 final readonly class ThemeFrontendScriptContributor implements FrontendResourceContributor
 {

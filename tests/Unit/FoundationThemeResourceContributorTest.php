@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
+use Capell\Core\Data\Rendering\FrontendResourceContextData;
+use Capell\Core\Data\Rendering\FrontendRuntimeManifestData;
+use Capell\Core\Enums\Rendering\FrontendResourceKind;
+use Capell\Core\Enums\Rendering\RenderingStrategyEnum;
 use Capell\Core\Models\Theme;
 use Capell\Core\ThemeStudio\Preview\ThemePreviewContext;
 use Capell\FoundationTheme\Support\Assets\FoundationThemeAssetContributor;
 use Capell\FoundationTheme\Support\Tailwind\TailwindAssetsGenerator;
 use Capell\Frontend\Data\Assets\ViteResourceSourceData;
-use Capell\Frontend\Data\FrontendResourceContextData;
-use Capell\Frontend\Data\FrontendRuntimeManifestData;
-use Capell\Frontend\Enums\FrontendResourceKind;
-use Capell\Frontend\Enums\RenderingStrategyEnum;
 use Capell\Tests\Support\OwnedTestbenchSkeleton;
 use Illuminate\Filesystem\Filesystem;
 

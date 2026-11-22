@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
+use Capell\Core\Data\Rendering\Assets\FrontendResourceContributionData;
+use Capell\Core\Data\Rendering\FrontendResourceContextData;
+use Capell\Core\Data\Rendering\FrontendRuntimeManifestData;
+use Capell\Core\Enums\Rendering\RenderingStrategyEnum;
 use Capell\Core\Models\Theme;
 use Capell\FoundationTheme\Actions\ResolveThemeFrontendScriptDataAction;
 use Capell\FoundationTheme\Data\ThemeFrontendScriptData;
 use Capell\FoundationTheme\Support\Assets\ThemeFrontendScriptContributor;
 use Capell\FoundationTheme\Support\Assets\ThemeFrontendScriptRegistry;
-use Capell\Frontend\Data\Assets\FrontendResourceContributionData;
 use Capell\Frontend\Data\Assets\ViteResourceSourceData;
-use Capell\Frontend\Data\FrontendResourceContextData;
-use Capell\Frontend\Data\FrontendRuntimeManifestData;
-use Capell\Frontend\Enums\RenderingStrategyEnum;
 
 it('resolves a safe Vite theme frontend entry', function (): void {
     $script = ResolveThemeFrontendScriptDataAction::run(

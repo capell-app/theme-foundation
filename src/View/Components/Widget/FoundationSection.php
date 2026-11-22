@@ -6,8 +6,9 @@ namespace Capell\FoundationTheme\View\Components\Widget;
 
 use Capell\FoundationTheme\Actions\ResolveFoundationImageLoadingAction;
 use Capell\FoundationTheme\Actions\ResolveFoundationSectionAnchorAction;
-use Capell\FoundationTheme\Support\Render\FoundationImageLoadingContributor;
+use Capell\FoundationTheme\Data\FoundationImageLoadingData;
 use Capell\Frontend\Data\PublicPageRenderData;
+use Capell\Frontend\Facades\Frontend;
 use Capell\Frontend\Support\Render\PublicRenderDataScope;
 use Capell\LayoutBuilder\Actions\Fragments\BuildLayoutBuilderFragmentReferenceAction;
 use Illuminate\Support\Fluent;
@@ -65,6 +66,7 @@ final class FoundationSection extends AbstractWidget
      *     sectionAnchor: string,
      *     section: Fluent<array-key, mixed>,
      *     sectionType: string,
+     *     searchSiteUrl: string|null,
      *     secondaryImageLoading: string,
      *     sectionView: string|null,
      *     formDeliveryFragmentUrl: string|null
@@ -92,7 +94,10 @@ final class FoundationSection extends AbstractWidget
         $usesFormEmbed = (is_string($formHandle) && $formHandle !== '')
             || ($sectionType === 'form' && is_int($formHandle));
 
+        $site = $sectionType === 'search' ? Frontend::site() : null;
+
         return [
+            'searchSiteUrl' => $site?->relationLoaded('siteDomain') ? $site->siteDomain?->full_url : null,
             'anchorable' => in_array($sectionType, self::ANCHORABLE_SECTION_TYPES, true),
             'sectionAnchor' => $sectionAnchor,
             'section' => new Fluent($sectionMeta),
@@ -107,7 +112,7 @@ final class FoundationSection extends AbstractWidget
     {
         $scope = PublicRenderDataScope::current();
         if ($scope instanceof PublicPageRenderData) {
-            return data_get($scope->extensionData(FoundationImageLoadingContributor::KEY), 'loading') === 'eager' ? 'eager' : 'lazy';
+            return FoundationImageLoadingData::fromRenderData($scope)?->secondaryImageLoading() ?? 'lazy';
         }
 
         return ResolveFoundationImageLoadingAction::run();

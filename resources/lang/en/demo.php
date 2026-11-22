@@ -5,7 +5,7 @@ declare(strict_types=1);
 return [
     'foundation_help' => 'Use --site=Disposable to choose a reviewed demo target, --language=en for each requested language and --base-url=https://demo.test for its domain. Existing site configuration is preserved unless --force is supplied. With an explicit target, --force selects Foundation, enables the site and replaces its requested site translations and domains. Scoped setup reseeds demo pages, widgets and demo layouts, including on repeats; use a disposable site or private theme Preview for existing content.',
     'target_required' => 'Demo setup needs an explicit target when sites already exist: --sites (Foundation uses --site). Use private theme Preview for existing content, or name a disposable demo site. Existing site configuration is preserved unless you deliberately combine an explicit target with --force.',
-    'contact_eyebrow' => 'Contact',
+    'contact_label' => 'Contact',
     'contact_heading' => 'Start the right conversation',
     'contact_lede' => 'Tell us what you are planning, fixing, moving, or partnering on. One contact page routes project scoping, technical support, migrations, and partnerships to the right Capell team.',
     'contact_studio_title' => 'Capell Studio, London',
@@ -22,7 +22,7 @@ return [
     'contact_routing_partnerships_label' => 'Partnerships',
     'contact_routing_partnerships_title' => 'Agency and technology work',
     'contact_routing_partnerships_copy' => 'Discuss delivery partnerships, packaged integrations, and repeatable theme or content operations.',
-    'contact_form_eyebrow' => 'Contact form',
+    'contact_form_label' => 'Contact form',
     'contact_form_title' => 'Send an enquiry',
     'contact_form_copy' => 'Share the context once. We will route it to the right delivery, support, migration, or partnership lead.',
     'contact_response_label' => 'Response:',

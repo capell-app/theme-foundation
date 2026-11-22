@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
+use Capell\Core\Contracts\Rendering\FrontendResourceContributor;
+use Capell\Core\Data\Rendering\Assets\FrontendResourceContributionData;
+use Capell\Core\Data\Rendering\FrontendResourceContextData;
+use Capell\Core\Data\Rendering\FrontendRuntimeManifestData;
+use Capell\Core\Enums\Rendering\RenderingStrategyEnum;
 use Capell\Core\Models\Theme;
 use Capell\FoundationTheme\Tests\Fixtures\RegistersThemeFrontendScriptTestProvider;
 use Capell\Frontend\Actions\ResolveFrontendResourcePlanAction;
-use Capell\Frontend\Contracts\FrontendResourceContributor;
 use Capell\Frontend\Contracts\FrontendResourcePlanRenderer;
-use Capell\Frontend\Data\Assets\FrontendResourceContributionData;
 use Capell\Frontend\Data\Assets\ViteResourceSourceData;
-use Capell\Frontend\Data\FrontendResourceContextData;
-use Capell\Frontend\Data\FrontendRuntimeManifestData;
-use Capell\Frontend\Enums\RenderingStrategyEnum;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\ServiceProvider;
 

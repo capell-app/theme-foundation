@@ -128,6 +128,8 @@ it('generates a complete theme scaffold with correct manifest, namespace, and pr
     expect($demoCommandContents)->toContain("'capell:theme-business-demo");
 
     $screenshotsManifest = decodeThemeScaffoldJson($packageDirectory . '/docs/screenshots.json');
+    expect($screenshotsManifest['generatedFor'] ?? null)->toBe('shared-capell-screenshot-runner')
+        ->and($screenshotsManifest['provenancePolicy'] ?? null)->toBe('runner-only-v1');
 
     $screenshotEntries = $screenshotsManifest['entries'] ?? [];
     $screenshotSurfaceIds = is_array($screenshotEntries) ? array_column($screenshotEntries, 'id') : [];

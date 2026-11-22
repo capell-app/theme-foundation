@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 use Capell\Core\Contracts\Pageable;
+use Capell\Core\Data\Rendering\FrontendRuntimeManifestData;
 use Capell\Core\Enums\MediaCollectionEnum;
+use Capell\Core\Enums\Rendering\RenderingStrategyEnum;
 use Capell\Core\Models\Language;
 use Capell\Core\Models\Layout;
 use Capell\Core\Models\Media;
@@ -11,8 +13,6 @@ use Capell\Core\Models\Page;
 use Capell\Core\Models\Site;
 use Capell\FoundationTheme\Support\AuthMenuWidget;
 use Capell\FoundationTheme\Support\FoundationThemeRuntimeManifestContributor;
-use Capell\Frontend\Data\FrontendRuntimeManifestData;
-use Capell\Frontend\Enums\RenderingStrategyEnum;
 use Capell\Frontend\Support\State\FrontendState;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;

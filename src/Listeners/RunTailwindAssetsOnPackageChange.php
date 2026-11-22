@@ -40,6 +40,8 @@ class RunTailwindAssetsOnPackageChange
      */
     private function shouldRespondTo(string $changedPackageName): bool
     {
+        // Kept on the cached check, not Core package admission: the Tailwind build is a long
+        // process, and admission would hold the lifecycle lock (blocking disable) for its whole run.
         return $changedPackageName === FoundationThemeServiceProvider::$packageName
             || CapellCore::isPackageEnabled(FoundationThemeServiceProvider::$packageName);
     }

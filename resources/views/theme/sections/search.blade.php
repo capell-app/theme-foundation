@@ -69,12 +69,17 @@
                 <ul class="mt-8 divide-y divide-[var(--foundation-border)]">
                     @foreach ($searchResults as $result)
                         @php
-                        $safeResultUrl = PublicUrlSanitizer::sanitize($result['url'] ?? null) ?? '#';
-                    @endphp
+                            $pageSlug = $result['pageSlug'] ?? null;
+                            $resultUrl = isset($searchSiteUrl) && is_string($pageSlug) && $pageSlug !== ''
+                                ? rtrim($searchSiteUrl, '/') . '/' . rawurlencode($pageSlug)
+                                : ($result['url'] ?? null);
+                            $safeResultUrl = PublicUrlSanitizer::sanitize($resultUrl);
+                            $resultTag = $safeResultUrl !== null && $safeResultUrl !== '#' ? 'a' : 'div';
+                        @endphp
                         <li class="py-5 first:pt-0 last:pb-0">
-                            <a
-                                href="{{ $safeResultUrl }}"
-                                class="group widget block"
+                            <{{ $resultTag }}
+                                @if ($resultTag === 'a') href="{{ $safeResultUrl }}" @endif
+                                @class(['widget block', 'group' => $resultTag === 'a'])
                             >
                                 <span
                                     class="widget block text-lg font-semibold text-[var(--foundation-heading-fg)] group-hover:underline"
@@ -88,7 +93,7 @@
                                         {{ $result['summary'] }}
                                     </span>
                                 @endif
-                            </a>
+                            </{{ $resultTag }}>
                         </li>
                     @endforeach
                 </ul>

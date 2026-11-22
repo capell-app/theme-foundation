@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
+use Capell\Core\Contracts\Rendering\RenderHookExtensionInterface;
+use Capell\Core\Data\Rendering\RenderHookContext;
 use Capell\Core\Models\PageUrl;
 use Capell\Core\Models\Site;
 use Capell\FormBuilder\Models\Submission;
 use Capell\Frontend\Contracts\FrontendContextReader;
 use Capell\Frontend\Contracts\FrontendKernelInterface;
-use Capell\Frontend\Contracts\RenderHookExtensionInterface;
-use Capell\Frontend\Data\RenderHookContext;
 use Capell\Frontend\Data\RenderHookContributionData;
 use Capell\Frontend\Enums\RenderHookLocation;
 use Capell\Frontend\Facades\Frontend;
@@ -24,6 +24,7 @@ use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Middleware\TrustProxies;
 use Illuminate\Http\Request;
+use Illuminate\Support\Defer\DeferredCallbackCollection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -234,6 +235,9 @@ it('performs one persisted site check on rejected HTTP form requests', function 
         'status' => true, 'default' => true,
     ])->create();
     SiteResolver::resolve('http://tenant-b.example.test/contact', SiteLoader::getSites());
+    // Creating the site defers its sitemap regeneration to the end of the next request.
+    // Run it now so the count below covers only the form request's own site checks.
+    resolve(DeferredCallbackCollection::class)->invoke();
     DB::enableQueryLog();
     DB::flushQueryLog();
     foundationFormEntryRequest($this, $entryPoint, 'http://tenant-b.example.test');

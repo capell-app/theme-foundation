@@ -8,6 +8,7 @@ use Capell\Admin\Data\Extensions\ExtensionManagementSurfaceData;
 use Capell\Admin\Facades\CapellAdmin;
 use Capell\Core\Actions\RegisterBlazeOptimizedViewsAction;
 use Capell\Core\Contracts\ProjectBuild\ProjectBuildArtifactHandler;
+use Capell\Core\Contracts\Rendering\FrontendResourceContributor;
 use Capell\Core\Contracts\SiteSpec\SiteSpecApplier;
 use Capell\Core\Data\RenderableDefinitionData;
 use Capell\Core\Data\VendorAssetData;
@@ -99,7 +100,6 @@ use Capell\Frontend\Contracts\AssetsRegistryInterface;
 use Capell\Frontend\Contracts\FrontendComponentRegistryInterface;
 use Capell\Frontend\Contracts\FrontendContextReader;
 use Capell\Frontend\Contracts\FrontendOutputCacheInvalidator;
-use Capell\Frontend\Contracts\FrontendResourceContributor;
 use Capell\Frontend\Contracts\FrontendRuntimeManifestContributor;
 use Capell\Frontend\Data\Assets\FrontendPackageDependencyData;
 use Capell\Frontend\Data\FrontendAssetData;
@@ -936,8 +936,9 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
     }
 
     /**
-     * Self-hosted demo images: Foundation's shared pools plus each installed
-     * theme's own first-screen image, all served from the site's origin.
+     * Self-hosted demo images: Foundation's shared pools, the pools a single
+     * theme ships itself, and each installed theme's own first-screen image,
+     * all served from the site's origin.
      *
      * @return array<string, string>
      */
@@ -948,6 +949,10 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
 
         if (is_dir(__DIR__ . '/../../publishes/demo-media')) {
             $publishes[__DIR__ . '/../../publishes/demo-media'] = $target;
+        }
+
+        foreach (SelfHostedDemoMedia::themePoolFiles() as $source => $relative) {
+            $publishes[$source] = $target . '/' . $relative;
         }
 
         foreach (glob(dirname(__DIR__, 3) . '/theme-*/publishes/demo-media/*.webp') ?: [] as $source) {

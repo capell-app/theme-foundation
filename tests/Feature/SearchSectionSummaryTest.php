@@ -2,6 +2,25 @@
 
 declare(strict_types=1);
 
+use Capell\Tests\Support\RenderedDocument;
+
+it('keeps suggestions without a destination readable and outside the tab order', function (): void {
+    $document = new RenderedDocument(view('capell-theme-foundation::theme.sections.search', ['section' => (object) [
+        'results' => [
+            ['title' => 'Title only'],
+            ['title' => 'Empty URL', 'url' => '', 'summary' => 'Still readable'],
+            ['title' => 'Placeholder', 'url' => '#'],
+            ['title' => 'Rejected URL', 'url' => 'javascript:void(0)'],
+        ],
+    ]])->render());
+
+    expect($document->elements('//li'))->toHaveCount(4);
+    foreach (['Title only', 'Empty URL', 'Still readable', 'Placeholder', 'Rejected URL'] as $text) {
+        expect($document->elements('//li//*[normalize-space(text())="' . $text . '"]'))->toHaveCount(1);
+    }
+    expect($document->elements('//li//a | //li//*[@tabindex or @role="link"]'))->toBeEmpty();
+});
+
 it('does not invent a search query when rendering suggested results', function (): void {
     $html = view('capell-theme-foundation::theme.sections.search', ['section' => (object) [
         'heading' => 'Useful field notes',

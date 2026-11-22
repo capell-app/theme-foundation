@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Capell\FoundationTheme\Support;
 
 use Capell\Core\Contracts\Pageable;
+use Capell\Core\Data\Rendering\FrontendRuntimeManifestData;
 use Capell\Core\Models\Layout;
 use Capell\Core\Models\Media;
 use Capell\Core\Models\Site;
 use Capell\Frontend\Contracts\FrontendContextReader;
 use Capell\Frontend\Contracts\FrontendRuntimeManifestContributor;
-use Capell\Frontend\Data\FrontendRuntimeManifestData;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;

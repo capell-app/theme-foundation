@@ -8,16 +8,16 @@ This is the plain starting theme that other Capell themes build on, and they bri
 
 Developers get a command that moves sites off a retired theme onto its replacement. It shows a preview first and writes a report that can undo the move, though custom CSS, hero media and differing theme settings are not carried over. The dark version is a very dark green page with mint buttons. It appears when a visitor presses the dark button in the header, and not from the device's own dark setting. The browser remembers the choice for later visits.
 
-- **Price and availability:** Check current availability and price on the [Capell Marketplace listing](https://capell.app/extensions/theme-foundation).
-- **Licence:** Check the licence terms on the [Capell Marketplace listing](https://capell.app/extensions/theme-foundation).
-- **Requires:** `PHP ^8.4`, `capell-app/admin ^1.0.66`, `capell-app/core ^1.0.75`, `capell-app/frontend ^1.0.72`, `capell-app/layout-builder ^1.0`, `capell-app/navigation ^1.0`, `lorisleiva/laravel-actions ^2.8`, `spatie/laravel-data ^4.0`, `spatie/laravel-package-tools ^1.0`.
+- **Price and availability:** Check current availability and price on the [Capell Marketplace listing](https://capell.app/marketplace/extensions/theme-foundation).
+- **Licence:** Check the licence terms on the [Capell Marketplace listing](https://capell.app/marketplace/extensions/theme-foundation).
+- **Requires:** `PHP ^8.4`, `capell-app/admin ^1.0.66`, `capell-app/core ^1.0.79`, `capell-app/frontend ^1.0.79`, `capell-app/layout-builder ^1.0`, `capell-app/navigation ^1.0`, `lorisleiva/laravel-actions ^2.8`, `spatie/laravel-data ^4.0`, `spatie/laravel-package-tools ^1.0`.
 - **Install:** `composer require capell-app/theme-foundation`.
 
 ## Quick Start
 
 1. Install the package: `composer require capell-app/theme-foundation`.
 2. Run the package setup: `php artisan capell:theme-foundation-setup`.
-3. See it working on a disposable site: run `php artisan capell:theme-foundation-demo --site="Theme demo"`. Choose a new site name for your demo; keep customer sites for the Preview → Apply workflow above.
+3. See it working on a disposable site: run `php artisan capell:theme-foundation-demo --site="Theme demo"`. Choose a new site name so the demo never touches a customer site.
 4. Run `php artisan list` and verify the package command signatures are registered.
 
 ## For Developers
@@ -32,7 +32,7 @@ The package centralizes theme registration, token resolution, layout defaults, a
 
 ## Limits And Pitfalls
 
-- Install the required Capell packages at the versions in `composer.json`: `capell-app/admin ^1.0.66`, `capell-app/core ^1.0.75`, `capell-app/frontend ^1.0.72`, `capell-app/layout-builder ^1.0`, `capell-app/navigation ^1.0`.
+- Install the required Capell packages at the versions in `composer.json`: `capell-app/admin ^1.0.66`, `capell-app/core ^1.0.79`, `capell-app/frontend ^1.0.79`, `capell-app/layout-builder ^1.0`, `capell-app/navigation ^1.0`.
 - Keep public Blade and cached HTML free of authoring markers, model IDs, permissions, signed editor URLs, and lazy database queries.
 - Custom write integrations must preserve invalidation for `theme-foundation` cache tags.
 

@@ -6,13 +6,18 @@
     "require": {
         "php": "^8.4",
         "capell-app/admin": "^1.0.66",
-        "capell-app/core": "^1.0.75",
-        "capell-app/frontend": "^1.0.72",
+        "capell-app/core": "^1.0.79",
+        "capell-app/frontend": "^1.0.79",
         "capell-app/layout-builder": "^1.0",
         "capell-app/navigation": "^1.0",
         "lorisleiva/laravel-actions": "^2.8",
         "spatie/laravel-data": "^4.0",
         "spatie/laravel-package-tools": "^1.0"
+    },
+    "conflict": {
+        "capell-app/theme-bistro": "<=1.0.20",
+        "capell-app/theme-business": "<=1.0.55",
+        "capell-app/theme-paperdesk": "<=1.0.21"
     },
     "suggest": {
         "capell-app/search": "Follows the public search switch and results path when Search is installed."
