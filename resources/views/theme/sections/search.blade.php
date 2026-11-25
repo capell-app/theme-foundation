@@ -16,7 +16,7 @@
     >
         <div class="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:py-16">
             <div class="mb-8">
-                <p class="mb-3 text-xs font-semibold tracking-[0.16em] text-[var(--theme-primary)] uppercase">
+                <p class="mb-3 text-base font-semibold text-[var(--theme-primary)] dark:text-[var(--foundation-primary-action)]">
                     {{ __('capell-theme-foundation::generic.search') }}
                 </p>
                 <h2
@@ -48,7 +48,7 @@
                         name="{{ $section->queryParameter ?? 'q' }}"
                         value="{{ $section->query ?? '' }}"
                         placeholder="{{ $section->placeholder ?? __('capell-theme-foundation::generic.search') }}"
-                        class="w-full rounded-[var(--theme-radius-value)] border border-[var(--foundation-border)] bg-[var(--foundation-card-bg)] px-4 py-3 text-sm text-[var(--foundation-body-fg)] placeholder:text-[var(--foundation-muted-fg)] focus:border-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:outline-none"
+                        class="w-full rounded-[var(--theme-radius-value)] border border-[var(--foundation-control-border)] bg-[var(--foundation-card-bg)] px-4 py-3 text-sm text-[var(--foundation-body-fg)] placeholder:text-[var(--foundation-muted-fg)] focus:border-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:outline-none"
                     />
                     <button
                         type="submit"

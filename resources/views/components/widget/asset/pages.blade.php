@@ -93,7 +93,7 @@
                     'grid',
                     ...($isArticleListWidget && $columns <= 1
                     ? [
-                        'divide-y divide-slate-200/45 dark:divide-slate-700/70',
+                        'divide-y divide-[var(--foundation-border)]',
                     ]
                     : ($containerKey === 'sidebar' && (! $columns && $columns !== 0)
                     ? [
@@ -139,7 +139,7 @@
                                         title="{{ htmlspecialchars(strip_tags($itemTranslation?->title ?? '')) }}"
                                         @class([
                                             'widget min-w-0 overflow-hidden after:!hidden after:!content-none',
-                                            'aspect-[16/8] rounded-md bg-slate-100 dark:bg-slate-800' => $containerKey !== 'sidebar',
+                                            'aspect-[16/8] rounded-md bg-[var(--foundation-muted-bg)]' => $containerKey !== 'sidebar',
                                             'aspect-[16/7] rounded-[4px]' => $containerKey === 'sidebar',
                                         ])
                                         @wireNavigate
@@ -161,7 +161,7 @@
                                         href="{{ $itemPageUrl?->full_url }}"
                                         title="{{ htmlspecialchars(strip_tags($itemTranslation?->title ?? '')) }}"
                                         @class([
-                                            'hover:text-primary focus:text-primary line-clamp-3 leading-snug font-semibold text-slate-950 no-underline transition after:!hidden after:!content-none dark:text-white',
+                                            'hover:text-primary focus:text-primary line-clamp-3 leading-snug font-semibold text-[var(--foundation-heading-fg)] no-underline transition after:!hidden after:!content-none dark:text-white',
                                             'text-[0.95rem]' => $containerKey !== 'sidebar',
                                             'text-[0.92rem]' => $containerKey === 'sidebar',
                                         ])
@@ -173,7 +173,7 @@
                                     @if ($withSummary && $itemTranslation?->summary)
                                         <p
                                             @class([
-                                            'line-clamp-2 text-slate-600 dark:text-slate-300',
+                                            'line-clamp-2 text-[var(--foundation-muted-fg)]',
                                             'text-sm leading-6' => $containerKey !== 'sidebar',
                                             'text-[0.86rem] leading-5' => $containerKey === 'sidebar',
                                         ])
@@ -184,7 +184,7 @@
 
                                     @if ($itemDate)
                                         <time
-                                            class="pt-1 text-xs font-medium tracking-[0.08em] text-slate-500 uppercase dark:text-slate-400"
+                                            class="pt-1 text-xs font-medium tracking-[0.08em] text-[var(--foundation-muted-fg)] uppercase"
                                             datetime="{{ $itemDate->toW3cString() }}"
                                         >
                                             {{ $itemDate->format(config('capell-frontend.date_format')) }}

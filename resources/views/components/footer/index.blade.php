@@ -86,7 +86,7 @@
                 @class([
                     'shrink-0',
                     'max-w-xl text-center' => ! $hasFooterPrimaryContent,
-                    'order-1 text-start lg:col-span-4 lg:pr-8 xl:col-span-3' => $hasFooterPrimaryContent,
+                    'order-1 text-start lg:col-span-4 lg:pe-8 xl:col-span-3' => $hasFooterPrimaryContent,
                 ])
             />
 

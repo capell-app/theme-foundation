@@ -59,12 +59,15 @@ final readonly class FoundationThemePublicUrlViewComposer
         $widget = $data['widget'] ?? null;
 
         return is_object($widget) && method_exists($widget, 'getMeta')
-            ? $widget->getMeta($metaKey, '#')
-            : '#';
+            ? $widget->getMeta($metaKey)
+            : null;
     }
 
-    private function safeUrl(mixed $url): string
+    /** A button with no safe destination is not rendered, so there is no placeholder URL. */
+    private function safeUrl(mixed $url): ?string
     {
-        return PublicUrlSanitizer::sanitize($url) ?? '#';
+        $safeUrl = PublicUrlSanitizer::sanitize($url);
+
+        return $safeUrl === '#' ? null : $safeUrl;
     }
 }

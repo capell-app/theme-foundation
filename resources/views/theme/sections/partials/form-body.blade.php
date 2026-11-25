@@ -31,7 +31,7 @@
             @if ($fieldType !== 'checkbox')
                 <label
                     for="{{ $fieldId }}"
-                    class="text-sm font-semibold text-slate-800"
+                    class="text-sm font-semibold text-[var(--foundation-body-fg)]"
                 >
                     {{ $fieldLabel }}
                     @if ($fieldRequired)
@@ -47,7 +47,7 @@
                         name="{{ $fieldName }}"
                         rows="5"
                         @if ($fieldRequired) required @endif
-                        class="rounded-[var(--theme-radius-value)] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-950 focus:border-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:outline-none"
+                        class="rounded-[var(--theme-radius-value)] border border-[var(--foundation-control-border)] bg-white dark:bg-[var(--foundation-card-bg)] px-4 py-3 text-sm text-[var(--foundation-heading-fg)] focus:border-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:outline-none"
                     ></textarea>
                     @break
                 @case ('select')
@@ -55,7 +55,7 @@
                         id="{{ $fieldId }}"
                         name="{{ $fieldName }}"
                         @if ($fieldRequired) required @endif
-                        class="rounded-[var(--theme-radius-value)] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-950 focus:border-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:outline-none"
+                        class="rounded-[var(--theme-radius-value)] border border-[var(--foundation-control-border)] bg-white dark:bg-[var(--foundation-card-bg)] px-4 py-3 text-sm text-[var(--foundation-heading-fg)] focus:border-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:outline-none"
                     >
                         @foreach (($field['options'] ?? []) as $option)
                             <option value="{{ $option['value'] ?? $option }}">
@@ -67,7 +67,7 @@
                 @case ('checkbox')
                     <label
                         for="{{ $fieldId }}"
-                        class="flex items-center gap-2 text-sm text-slate-800"
+                        class="flex items-center gap-2 text-sm text-[var(--foundation-body-fg)]"
                     >
                         <input
                             type="checkbox"
@@ -75,7 +75,7 @@
                             name="{{ $fieldName }}"
                             value="1"
                             @if ($fieldRequired) required @endif
-                            class="h-4 w-4 rounded border-slate-300 text-[var(--theme-primary)] focus:ring-[var(--theme-primary)]"
+                            class="h-4 w-4 rounded border-[var(--foundation-control-border)] text-[var(--theme-primary)] focus:ring-[var(--theme-primary)]"
                         />
                         {{ $fieldLabel }}
                         @if ($fieldRequired)
@@ -89,7 +89,7 @@
                         id="{{ $fieldId }}"
                         name="{{ $fieldName }}"
                         @if ($fieldRequired) required @endif
-                        class="rounded-[var(--theme-radius-value)] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-950 focus:border-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:outline-none"
+                        class="rounded-[var(--theme-radius-value)] border border-[var(--foundation-control-border)] bg-white dark:bg-[var(--foundation-card-bg)] px-4 py-3 text-sm text-[var(--foundation-heading-fg)] focus:border-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:outline-none"
                     />
                     @break
                 @default
@@ -98,7 +98,7 @@
                         id="{{ $fieldId }}"
                         name="{{ $fieldName }}"
                         @if ($fieldRequired) required @endif
-                        class="rounded-[var(--theme-radius-value)] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-950 focus:border-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:outline-none"
+                        class="rounded-[var(--theme-radius-value)] border border-[var(--foundation-control-border)] bg-white dark:bg-[var(--foundation-card-bg)] px-4 py-3 text-sm text-[var(--foundation-heading-fg)] focus:border-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:outline-none"
                     />
             @endswitch
         </div>

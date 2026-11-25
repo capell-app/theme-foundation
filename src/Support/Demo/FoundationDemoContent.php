@@ -201,6 +201,7 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
                         heading: 'Notes from the field',
                         summary: 'Short, practical guidance drawn from the questions we hear most often.',
                         media: $media,
+                        themeKey: $themeKey,
                     ),
                     $this->proofSection(
                         heading: 'A clear way of working',
@@ -264,6 +265,7 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
                         heading: 'All field notes',
                         summary: 'The newest notes appear first. Every note is written to be used, shared, and adapted.',
                         media: $media,
+                        themeKey: $themeKey,
                     ),
                     $this->paginationSection(
                         currentPage: 1,
@@ -660,12 +662,13 @@ final class FoundationDemoContent implements ProvidesThemeDemoContent
      * @param  array{hero: list<string>, listing: list<string>, detail: list<string>, proof: list<string>, contact: list<string>, cta: list<string>}  $media
      * @return array<string, mixed>
      */
-    private function contentListingSection(string $heading, string $summary, array $media): array
+    private function contentListingSection(string $heading, string $summary, array $media, string $themeKey): array
     {
         $images = array_values(array_unique(array_merge($media['listing'], $media['proof'])));
 
         $entries = [
-            ['title' => 'A practical brief for a shared workshop', 'summary' => 'Start with the people, activities, constraints, and decisions the room needs to support.'],
+            // Only the first note has a demo page; the others render as cards without a link.
+            ['title' => 'A practical brief for a shared workshop', 'summary' => 'Start with the people, activities, constraints, and decisions the room needs to support.', 'url' => '/theme-' . $themeKey . '-detail'],
             ['title' => 'Planning a useful first walk-through', 'summary' => 'A compact set of prompts for looking, listening, and recording what matters.'],
             ['title' => 'Questions to ask before the brief', 'summary' => 'Surface assumptions early and give every stakeholder a clearer role in the next decision.'],
         ];

@@ -7,26 +7,26 @@
     payload's ordered entry list, no live release-notes integration.
 --}}
 <section
-    class="theme-changelog-stream border-b border-slate-200/80 bg-[var(--theme-surface)]"
+    class="theme-changelog-stream border-b border-[var(--foundation-border)] bg-[var(--theme-surface)] dark:bg-[var(--foundation-section-bg)]"
 >
     <div class="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:py-16">
         <div class="mb-10 max-w-2xl">
-            <p class="mb-3 text-xs font-semibold tracking-[0.16em] text-[var(--theme-primary)] uppercase">
+            <p class="mb-3 text-base font-semibold text-[var(--theme-primary)] dark:text-[var(--foundation-primary-action)]">
                 {{ __('capell-theme-foundation::generic.changelog_stream') }}
             </p>
             <h2
-                class="text-3xl leading-tight font-(family-name:--theme-heading-font) font-semibold text-slate-950 sm:text-4xl"
+                class="text-3xl leading-tight font-(family-name:--theme-heading-font) font-semibold text-[var(--foundation-heading-fg)] sm:text-4xl"
             >
                 {{ $section->heading ?? __('capell-theme-foundation::generic.changelog_stream') }}
             </h2>
             @if (! empty($section->summary))
-                <p class="mt-3 text-sm leading-7 text-slate-600 sm:text-base">{{ $section->summary }}</p>
+                <p class="mt-3 text-sm leading-7 text-[var(--foundation-muted-fg)] sm:text-base">{{ $section->summary }}</p>
             @endif
         </div>
 
         @if (count($entries) > 0)
             <ol
-                class="changelog-stream-list relative grid gap-8 border-s border-slate-200 ps-8"
+                class="changelog-stream-list relative grid gap-8 border-s border-[var(--foundation-border)] ps-8"
             >
                 @foreach ($entries as $entry)
                     <li class="changelog-stream-entry relative">
@@ -38,7 +38,7 @@
                         <div class="mb-1 flex flex-wrap items-center gap-3">
                             @if (! empty($entry['version']))
                                 <span
-                                    class="font-mono text-sm font-semibold text-slate-900"
+                                    class="font-mono text-sm font-semibold text-[var(--foundation-heading-fg)]"
                                 >
                                     {{ $entry['version'] }}
                                 </span>
@@ -46,7 +46,7 @@
 
                             @if (! empty($entry['date']))
                                 <time
-                                    class="text-xs text-slate-500"
+                                    class="text-xs text-[var(--foundation-muted-fg)]"
                                     datetime="{{ $entry['date'] }}"
                                 >
                                     {{ $entry['date'] }}
@@ -55,25 +55,27 @@
 
                             @if (! empty($entry['tag']))
                                 <span
-                                    class="rounded-full bg-[var(--theme-primary)]/10 px-2 py-0.5 text-xs font-semibold text-[var(--theme-primary)]"
+                                    class="rounded-full bg-[var(--theme-primary)]/10 px-2 py-0.5 text-xs font-semibold text-[var(--theme-primary)] dark:text-[var(--foundation-primary-action)]"
                                 >
                                     {{ $entry['tag'] }}
                                 </span>
                             @endif
                         </div>
 
-                        <h3 class="text-base font-semibold text-slate-950">
+                        <h3
+                            class="text-base font-semibold text-[var(--foundation-heading-fg)]"
+                        >
                             {{ $entry['title'] ?? '' }}
                         </h3>
 
                         @if (! empty($entry['summary']))
-                            <p class="mt-2 text-sm leading-6 text-slate-600">{{ $entry['summary'] }}</p>
+                            <p class="mt-2 text-sm leading-6 text-[var(--foundation-muted-fg)]">{{ $entry['summary'] }}</p>
                         @endif
                     </li>
                 @endforeach
             </ol>
         @else
-            <p class="text-slate-500">{{ __('capell-theme-foundation::generic.empty_changelog') }}</p>
+            <p class="text-[var(--foundation-muted-fg)]">{{ __('capell-theme-foundation::generic.empty_changelog') }}</p>
         @endif
     </div>
 </section>

@@ -48,6 +48,12 @@
 
     $backgroundImageUrl = $backgroundImage?->getAvailableUrl(['large'])
         ?? ResolveWidgetBackgroundImageUrlAction::run($widget);
+
+    // Per-widget values travel as custom properties; the classes below read them.
+    $widgetBackgroundStyle = implode(' ', array_filter([
+        $safeBackgroundColor ? '--widget-background-color: ' . $safeBackgroundColor . ';' : null,
+        $backgroundImageUrl ? '--widget-background-image: url(' . $backgroundImageUrl . ');' : null,
+    ]));
 @endphp
 
 @aware([
@@ -111,10 +117,12 @@
             'bg-fixed' => $backgroundAttachment === 'fixed' && $backgroundImageUrl,
             'bg-scroll' => $backgroundAttachment === 'scroll' && $backgroundImageUrl,
             'relative overflow-hidden' => $backgroundOverlay,
+            'bg-(--widget-background-color)' => $safeBackgroundColor,
+            'bg-(image:--widget-background-image)' => $backgroundImageUrl,
         ])
     }}
     @if ($safeBackgroundColor || $backgroundImageUrl)
-        style="{{ $safeBackgroundColor ? 'background-color:' . $safeBackgroundColor . ';' : '' }}{{ $backgroundImageUrl ? 'background-image:url(' . $backgroundImageUrl . ');' : '' }}"
+        style="{{ $widgetBackgroundStyle }}"
     @endif
 >
     @if ($backgroundOverlay)

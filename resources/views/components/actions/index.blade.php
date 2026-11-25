@@ -30,7 +30,7 @@
 
                 <button
                     type="submit"
-                    class="{{ 'action-item max-w-full rounded-full px-3.5 py-2 text-xs font-semibold whitespace-normal transition sm:px-5 sm:py-3 sm:text-sm ' . (($action['color'] ?? $buttonColor) === 'secondary' ? 'border border-slate-300 text-slate-800 hover:border-slate-950 dark:border-white/15 dark:text-slate-200 dark:hover:border-white' : 'bg-[var(--theme-accent)] text-slate-950 hover:bg-white') . ' ' . ($actionItemClass ?? '') }}"
+                    class="{{ 'action-item max-w-full rounded-full px-3.5 py-2 text-xs font-semibold whitespace-normal transition sm:px-5 sm:py-3 sm:text-sm ' . (($action['color'] ?? $buttonColor) === 'secondary' ? 'border border-[var(--foundation-border)] text-[var(--foundation-body-fg)] hover:border-[var(--foundation-heading-fg)]' : 'bg-[var(--theme-accent)] text-[var(--foundation-inverse-bg)] hover:bg-white') . ' ' . ($actionItemClass ?? '') }}"
                 >
                     {{ $action['label'] }}
                 </button>
@@ -39,8 +39,11 @@
         @endif
 
         @if (($action['kind'] ?? null) === 'video_popup')
+            {{-- The trigger links to the film itself, so it still opens when the lightbox script has not loaded; an unsafe URL renders no trigger. --}}
+            @continue(\Capell\Core\Support\Security\PublicUrlSanitizer::sanitize($action['video_url'] ?? null) === null)
+
             <x-capell::button
-                url="#"
+                :url="\Capell\Core\Support\Security\PublicUrlSanitizer::sanitize($action['video_url'])"
                 :color="$action['color'] ?? $buttonColor"
                 :icon="$action['icon'] ?? 'heroicon-o-play-circle'"
                 :outline="$buttonOutline === false"
@@ -48,7 +51,7 @@
                 :weight="$buttonWeight"
                 :wire-navigation="false"
                 :class="'lightbox action-item max-w-full whitespace-normal' . ' ' . ($actionItemClass ?? '')"
-                :data-lightbox="$action['video_url']"
+                :data-lightbox="\Capell\Core\Support\Security\PublicUrlSanitizer::sanitize($action['video_url'])"
                 data-type="video"
                 :data-title="$action['label'] ?? ''"
                 :data-group="$action['group'] ?? 'action-videos'"

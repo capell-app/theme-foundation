@@ -26,7 +26,7 @@
         href="{{ $mapUrl }}"
         target="_blank"
         rel="noopener noreferrer"
-        {{ $attributes->merge(['class' => 'group block overflow-hidden rounded-[var(--theme-radius-value)] border border-slate-200 bg-white']) }}
+        {{ $attributes->merge(['class' => 'group block overflow-hidden rounded-[var(--theme-radius-value)] border border-[var(--foundation-border)] bg-white dark:bg-[var(--foundation-card-bg)]']) }}
     >
         <svg
             viewBox="0 0 640 360"
@@ -40,7 +40,7 @@
                 </pattern>
             </defs>
             <rect width="640" height="360" fill="var(--theme-surface, Canvas)" />
-            <rect width="640" height="360" fill="url(#theme-map-grid)" class="text-slate-900" />
+            <rect width="640" height="360" fill="url(#theme-map-grid)" class="text-[var(--foundation-heading-fg)]" />
             <circle cx="320" cy="180" r="20" fill="var(--theme-primary, LinkText)" />
             <circle cx="320" cy="180" r="8" fill="Canvas" />
         </svg>

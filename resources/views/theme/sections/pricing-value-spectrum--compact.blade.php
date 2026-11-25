@@ -10,7 +10,7 @@
     beneath a hero rather than as a full standalone section.
 --}}
 <section
-    class="theme-pricing-value-spectrum theme-pricing-value-spectrum--compact border-b border-slate-200/80 bg-[var(--theme-surface)]"
+    class="theme-pricing-value-spectrum theme-pricing-value-spectrum--compact border-b border-[var(--foundation-border)] bg-[var(--theme-surface)] dark:bg-[var(--foundation-section-bg)]"
     data-pricing-spectrum
 >
     <div class="mx-auto max-w-5xl px-4 py-8 sm:px-6">
@@ -19,7 +19,7 @@
                 class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between"
             >
                 <div class="flex-1">
-                    <p class="mb-2 text-xs font-semibold tracking-[0.16em] text-[var(--theme-primary)] uppercase">
+                    <p class="mb-2 text-base font-semibold text-[var(--theme-primary)] dark:text-[var(--foundation-primary-action)]">
                         {{ $section->heading ?? __('capell-theme-foundation::generic.pricing_value_spectrum') }}
                     </p>
 
@@ -43,7 +43,7 @@
                         </legend>
                         @foreach ($tiers as $index => $tier)
                             <label
-                                class="pricing-spectrum-tier-option cursor-pointer rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-700 has-[:checked]:border-[var(--theme-primary)] has-[:checked]:bg-[var(--theme-primary)] has-[:checked]:text-white"
+                                class="pricing-spectrum-tier-option cursor-pointer rounded-full border border-[var(--foundation-border)] px-3 py-1 text-xs font-semibold text-[var(--foundation-body-fg)] has-[:checked]:border-[var(--theme-primary)] has-[:checked]:bg-[var(--theme-primary)] has-[:checked]:text-white"
                             >
                                 <input
                                     type="radio"
@@ -59,17 +59,17 @@
                 </div>
 
                 <div
-                    class="pricing-spectrum-display shrink-0 rounded-[var(--theme-radius-value)] border border-slate-200 bg-white px-6 py-4 text-center"
+                    class="pricing-spectrum-display shrink-0 rounded-[var(--theme-radius-value)] border border-[var(--foundation-border)] bg-white dark:bg-[var(--foundation-card-bg)] px-6 py-4 text-center"
                     data-pricing-spectrum-display
                 >
                     <p
-                        class="pricing-spectrum-tier-label text-xs font-semibold tracking-[0.12em] text-[var(--theme-primary)] uppercase"
+                        class="pricing-spectrum-tier-label text-xs font-semibold tracking-[0.12em] text-[var(--theme-primary)] dark:text-[var(--foundation-primary-action)] uppercase"
                         data-pricing-spectrum-label
                     >
                         {{ $activeTier['label'] ?? '' }}
                     </p>
                     <p
-                        class="pricing-spectrum-tier-price mt-1 text-3xl font-bold text-slate-950"
+                        class="pricing-spectrum-tier-price mt-1 text-3xl font-bold text-[var(--foundation-heading-fg)]"
                         data-pricing-spectrum-price
                     >
                         {{ $activeTier['price'] ?? '' }}
@@ -81,7 +81,7 @@
                 </template>
             </div>
         @else
-            <p class="text-center text-slate-500">{{ __('capell-theme-foundation::generic.empty_pricing_plans') }}</p>
+            <p class="text-center text-[var(--foundation-muted-fg)]">{{ __('capell-theme-foundation::generic.empty_pricing_plans') }}</p>
         @endif
     </div>
 </section>

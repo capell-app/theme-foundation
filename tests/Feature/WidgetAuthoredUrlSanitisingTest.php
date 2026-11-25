@@ -169,11 +169,12 @@ it('drops a javascript: scheme CTA from the rendered pricing table', function ()
         urlSafetyPricingTableData(HOSTILE_WIDGET_URL),
     );
 
+    // A plan whose only URL is hostile has nowhere safe to go, so it renders no button.
     expect($html)
-        ->toContain('<a')
+        ->not->toContain('<a')
         ->not->toContain('javascript:')
         ->not->toContain('alert(1)')
-        ->and($html)->toContain('href="#"');
+        ->not->toContain('href="#"');
 });
 
 it('keeps a legitimate https CTA in the rendered pricing table', function (): void {

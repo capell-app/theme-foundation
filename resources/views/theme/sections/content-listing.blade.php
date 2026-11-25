@@ -63,7 +63,7 @@
         >
             <div>
                 <p
-                    class="mb-3 text-xs font-semibold tracking-[0.16em] text-[var(--theme-primary)] uppercase"
+                    class="mb-3 text-base font-semibold text-[var(--theme-primary)] dark:text-[var(--foundation-primary-action)]"
                     data-theme-section-label
                 >
                     @if ($isGallery)
@@ -77,14 +77,14 @@
                     @endif
                 </p>
                 <h2
-                    class="text-3xl leading-tight font-(family-name:--theme-heading-font) font-semibold text-slate-950 sm:text-4xl"
+                    class="text-3xl leading-tight font-(family-name:--theme-heading-font) font-semibold text-[var(--foundation-heading-fg)] sm:text-4xl"
                     data-theme-section-heading
                 >
                     {{ $section->heading }}
                 </h2>
             </div>
             @if ($section->summary)
-                <p class="max-w-2xl text-sm leading-7 text-slate-600 sm:text-base" data-theme-section-summary>
+                <p class="max-w-2xl text-sm leading-7 text-[var(--foundation-muted-fg)] sm:text-base" data-theme-section-summary>
                     {{ $section->summary }}
                 </p>
             @endif
@@ -127,7 +127,7 @@
                         <button
                             type="button"
                             id="{{ $spotlightId }}-tab-{{ $loop->index }}"
-                            class="min-w-[17rem] rounded-[var(--theme-radius-value)] border border-slate-200 p-4 text-start transition hover:border-slate-950 focus:ring-2 focus:ring-[var(--theme-primary)] focus:ring-offset-2 focus:outline-none lg:min-w-0 lg:p-5"
+                            class="min-w-[17rem] rounded-[var(--theme-radius-value)] border border-[var(--foundation-border)] p-4 text-start transition hover:border-[var(--foundation-heading-fg)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:ring-offset-2 focus:outline-none lg:min-w-0 lg:p-5"
                             role="tab"
                             aria-controls="{{ $spotlightId }}-panel-{{ $loop->index }}"
                             aria-selected="{{ $loop->first ? 'true' : 'false' }}"
@@ -137,7 +137,7 @@
                             @if (! $loop->first) tabindex="-1" @endif
                         >
                             <span
-                                class="mb-3 inline-flex rounded-full bg-white px-3 py-1 text-xs font-semibold tracking-[0.12em] text-[var(--theme-primary)] uppercase ring-1 ring-slate-200"
+                                class="mb-3 inline-flex rounded-full bg-white dark:bg-[var(--foundation-card-bg)] px-3 py-1 text-xs font-semibold tracking-[0.12em] text-[var(--theme-primary)] dark:text-[var(--foundation-primary-action)] uppercase ring-1 ring-[var(--foundation-border)]"
                             >
                                 {{ $item['type'] ?? str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}
                             </span>
@@ -157,7 +157,7 @@
                     @foreach ($listingItems as $item)
                         <div
                             id="{{ $spotlightId }}-panel-{{ $loop->index }}"
-                            class="overflow-hidden rounded-[var(--theme-radius-value)] border border-slate-200 bg-white shadow-xl shadow-slate-950/8"
+                            class="overflow-hidden rounded-[var(--theme-radius-value)] border border-[var(--foundation-border)] bg-white dark:bg-[var(--foundation-card-bg)] shadow-xl shadow-slate-950/8"
                             role="tabpanel"
                             aria-labelledby="{{ $spotlightId }}-tab-{{ $loop->index }}"
                             data-spotlight-index="{{ $loop->index }}"
@@ -178,16 +178,16 @@
                             @endif
 
                             <div class="grid gap-4 p-6 sm:p-8">
-                                <p class="text-xs font-semibold tracking-[0.14em] text-[var(--theme-primary)] uppercase">
+                                <p class="text-xs font-semibold tracking-[0.14em] text-[var(--theme-primary)] dark:text-[var(--foundation-primary-action)] uppercase">
                                     {{ $item['type'] ?? __('capell-theme-foundation::generic.spotlight') }}
                                 </p>
                                 <h3
-                                    class="text-2xl leading-tight font-(family-name:--theme-heading-font) font-semibold text-slate-950 sm:text-3xl"
+                                    class="text-2xl leading-tight font-(family-name:--theme-heading-font) font-semibold text-[var(--foundation-heading-fg)] sm:text-3xl"
                                 >
                                     {{ $item['title'] }}
                                 </h3>
                                 @if (! empty($item['summary']))
-                                    <p class="max-w-2xl text-base leading-7 text-slate-600">{{ $item['summary'] }}</p>
+                                    <p class="max-w-2xl text-base leading-7 text-[var(--foundation-muted-fg)]">{{ $item['summary'] }}</p>
                                 @endif
 
                                 @if (! empty($item['url']))
@@ -253,9 +253,9 @@
                     <div class="swiper-wrapper">
                         @foreach ($listingItems as $item)
                             <article class="swiper-slide h-auto pe-4">
-                                <a
-                                    href="{{ $item['url'] ?? '#' }}"
-                                    class="group grid h-full overflow-hidden rounded-[var(--theme-radius-value)] border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-slate-950 hover:shadow-xl"
+                                <{{ ($item['url'] ?? null) ? 'a' : 'div' }}
+                                    @if ($item['url'] ?? null) href="{{ $item['url'] }}" @endif
+                                    class="group grid h-full overflow-hidden rounded-[var(--theme-radius-value)] border border-[var(--foundation-border)] bg-white dark:bg-[var(--foundation-card-bg)] shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--foundation-heading-fg)] hover:shadow-xl"
                                 >
                                     @if (! empty($item['image']))
                                         <x-capell::image-source
@@ -272,24 +272,24 @@
 
                                     <span class="grid content-start p-5">
                                         <span
-                                            class="text-xs font-semibold tracking-[0.12em] text-[var(--theme-primary)] uppercase"
+                                            class="text-xs font-semibold tracking-[0.12em] text-[var(--theme-primary)] dark:text-[var(--foundation-primary-action)] uppercase"
                                         >
                                             {{ $item['type'] ?? $item['publishedDate'] ?? '' }}
                                         </span>
                                         <span
-                                            class="widget mt-3 text-lg font-semibold text-slate-950"
+                                            class="widget mt-3 text-lg font-semibold text-[var(--foundation-heading-fg)]"
                                         >
                                             {{ $item['title'] }}
                                         </span>
                                         @if (! empty($item['summary']))
                                             <span
-                                                class="widget mt-2 text-sm leading-6 text-slate-600"
+                                                class="widget mt-2 text-sm leading-6 text-[var(--foundation-muted-fg)]"
                                             >
                                                 {{ $item['summary'] }}
                                             </span>
                                         @endif
                                     </span>
-                                </a>
+                                </{{ ($item['url'] ?? null) ? 'a' : 'div' }}>
                             </article>
                         @endforeach
                     </div>
@@ -303,7 +303,7 @@
                     <div class="flex items-center gap-2">
                         <button
                             type="button"
-                            class="swiper-button-prev relative inset-auto m-0 flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white text-slate-950 after:hidden hover:border-slate-950"
+                            class="swiper-button-prev relative inset-auto m-0 flex h-10 w-10 items-center justify-center rounded-full border border-[var(--foundation-border)] bg-white dark:bg-[var(--foundation-card-bg)] text-[var(--foundation-heading-fg)] after:hidden hover:border-[var(--foundation-heading-fg)]"
                             aria-label="{{ __('capell-theme-foundation::generic.previous') }}"
                         >
                             <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 20 20" fill="none">
@@ -318,7 +318,7 @@
                         </button>
                         <button
                             type="button"
-                            class="swiper-button-next relative inset-auto m-0 flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white text-slate-950 after:hidden hover:border-slate-950"
+                            class="swiper-button-next relative inset-auto m-0 flex h-10 w-10 items-center justify-center rounded-full border border-[var(--foundation-border)] bg-white dark:bg-[var(--foundation-card-bg)] text-[var(--foundation-heading-fg)] after:hidden hover:border-[var(--foundation-heading-fg)]"
                             aria-label="{{ __('capell-theme-foundation::generic.next') }}"
                         >
                             <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 20 20" fill="none">
@@ -341,7 +341,7 @@
             >
                 @foreach ($listingItems as $item)
                     <details
-                        class="group rounded-[var(--theme-radius-value)] border border-slate-200 bg-white p-5 shadow-sm transition open:border-slate-950 open:shadow-lg"
+                        class="group rounded-[var(--theme-radius-value)] border border-[var(--foundation-border)] bg-white dark:bg-[var(--foundation-card-bg)] p-5 shadow-sm transition open:border-[var(--foundation-heading-fg)] open:shadow-lg"
                         data-active="{{ $loop->first ? 'true' : 'false' }}"
                         data-pathway-panel
                         @if ($loop->first) open @endif
@@ -351,19 +351,19 @@
                         >
                             <span>
                                 <span
-                                    class="mb-3 inline-flex rounded-full bg-[var(--theme-surface)] px-3 py-1 text-xs font-semibold tracking-[0.12em] text-[var(--theme-primary)] uppercase"
+                                    class="mb-3 inline-flex rounded-full bg-[var(--theme-surface)] dark:bg-[var(--foundation-section-bg)] px-3 py-1 text-xs font-semibold tracking-[0.12em] text-[var(--theme-primary)] dark:text-[var(--foundation-primary-action)] uppercase"
                                     data-theme-pathway-badge
                                 >
                                     {{ $item['type'] ?? str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}
                                 </span>
                                 <span
-                                    class="widget text-lg font-semibold text-slate-950"
+                                    class="widget text-lg font-semibold text-[var(--foundation-heading-fg)]"
                                 >
                                     {{ $item['title'] }}
                                 </span>
                             </span>
                             <span
-                                class="mt-1 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition group-open:rotate-45 group-open:border-slate-950 group-open:text-slate-950"
+                                class="mt-1 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--foundation-border)] text-[var(--foundation-muted-fg)] transition group-open:rotate-45 group-open:border-[var(--foundation-heading-fg)] group-open:text-[var(--foundation-heading-fg)]"
                             >
                                 <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 20 20" fill="none">
                                     <path
@@ -376,7 +376,7 @@
                             </span>
                         </summary>
                         @if (! empty($item['summary']))
-                            <p class="mt-4 max-w-2xl text-sm leading-7 text-slate-600">{{ $item['summary'] }}</p>
+                            <p class="mt-4 max-w-2xl text-sm leading-7 text-[var(--foundation-muted-fg)]">{{ $item['summary'] }}</p>
                         @endif
                     </details>
                 @endforeach
@@ -384,8 +384,8 @@
         @else
             <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 @foreach ($listingItems as $item)
-                    <a
-                        href="{{ $item['url'] ?? '#' }}"
+                    <{{ ($item['url'] ?? null) ? 'a' : 'div' }}
+                        @if ($item['url'] ?? null) href="{{ $item['url'] }}" @endif
                         class="group widget overflow-hidden rounded-[var(--theme-radius-value)] border border-[var(--foundation-border)] bg-[var(--foundation-card-bg)] transition hover:border-[var(--foundation-border-strong)]"
                     >
                         @if (! empty($item['image']))
@@ -420,7 +420,7 @@
                                 </span>
                             @endif
                         </span>
-                    </a>
+                    </{{ ($item['url'] ?? null) ? 'a' : 'div' }}>
                 @endforeach
             </div>
         @endif

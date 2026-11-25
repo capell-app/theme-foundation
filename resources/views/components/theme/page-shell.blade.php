@@ -7,6 +7,13 @@
     'content' => '',
 ])
 
+@php
+    // The brand profile's tokens are all custom properties.
+    $brandTokenStyle = collect($brand->tokens())
+        ->map(fn (mixed $value, string $token): string => $token . ':' . $value)
+        ->implode(';');
+@endphp
+
 <a
     href="#main-content"
     class="{{ $themePrefix }}-skip-link"
@@ -15,7 +22,7 @@
 </a>
 
 <div
-    style="{{ collect($brand->tokens())->map(fn (mixed $value, string $token): string => $token . ':' . $value)->implode(';') }}"
+    style="{{ $brandTokenStyle }}"
     class="{{ $themePrefix }}-shell min-h-screen antialiased"
 >
     @if ($chromeHeader !== null || $chromeFooter !== null)

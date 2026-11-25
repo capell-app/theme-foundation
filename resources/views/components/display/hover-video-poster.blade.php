@@ -28,8 +28,8 @@
 @endphp
 
 <div
-    {{ $attributes->merge(['class' => 'group relative isolate overflow-hidden']) }}
-    style="aspect-ratio: {{ $aspectRatio }};"
+    {{ $attributes->merge(['class' => 'group relative isolate aspect-(--poster-aspect-ratio) overflow-hidden']) }}
+    style="--poster-aspect-ratio: {{ $aspectRatio }};"
     data-hover-video-poster
 >
     <x-capell::image-source

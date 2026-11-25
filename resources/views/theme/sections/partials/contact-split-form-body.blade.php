@@ -19,30 +19,36 @@
     action="{{ $safeAction }}"
 >
     @csrf
-    <label class="grid gap-2 text-sm font-semibold text-slate-800">
+    <label
+        class="grid gap-2 text-sm font-semibold text-[var(--foundation-body-fg)]"
+    >
         {{ __('capell-theme-foundation::generic.name') }}
         <input
-            class="rounded-[var(--theme-radius-value)] border border-slate-300 bg-white px-4 py-3"
+            class="rounded-[var(--theme-radius-value)] border border-[var(--foundation-control-border)] bg-white dark:bg-[var(--foundation-card-bg)] px-4 py-3"
             name="name"
             type="text"
             autocomplete="name"
             required
         />
     </label>
-    <label class="grid gap-2 text-sm font-semibold text-slate-800">
+    <label
+        class="grid gap-2 text-sm font-semibold text-[var(--foundation-body-fg)]"
+    >
         {{ __('capell-theme-foundation::generic.email') }}
         <input
-            class="rounded-[var(--theme-radius-value)] border border-slate-300 bg-white px-4 py-3"
+            class="rounded-[var(--theme-radius-value)] border border-[var(--foundation-control-border)] bg-white dark:bg-[var(--foundation-card-bg)] px-4 py-3"
             name="email"
             type="email"
             autocomplete="email"
             required
         />
     </label>
-    <label class="grid gap-2 text-sm font-semibold text-slate-800">
+    <label
+        class="grid gap-2 text-sm font-semibold text-[var(--foundation-body-fg)]"
+    >
         {{ __('capell-theme-foundation::generic.message') }}
         <textarea
-            class="rounded-[var(--theme-radius-value)] border border-slate-300 bg-white px-4 py-3"
+            class="rounded-[var(--theme-radius-value)] border border-[var(--foundation-control-border)] bg-white dark:bg-[var(--foundation-card-bg)] px-4 py-3"
             name="message"
             rows="5"
             required

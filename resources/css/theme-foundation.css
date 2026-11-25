@@ -3,6 +3,7 @@
 @import './theme/theme.css';
 @import './layout/layout.css';
 @import './widgets/foundation-widgets.css';
+@import './theme/error-recovery.css';
 
 .capell-public-skip-link:focus {
     outline: 3px solid var(--foundation-focus-ring, #1d4ed8) !important;

@@ -5,11 +5,11 @@
         "default": {
             "source": {
                 "ref": "HEAD",
-                "commit": "ebcd458e0a9ad46f7c93be498066a4c04dc6e896",
+                "commit": "ac9cd8d8dd3882bd034db7b18b54741482847e94",
                 "providers": {
                     "Providers/ConsoleServiceProvider.php": "7b6ab3803e67e2c3d80ae23856b783f462b4cf410bcb5db844cc06ae7e90d59c",
                     "Providers/FoundationSharedFragmentServiceProvider.php": "7063bc32126695fda1ca9029c70d8f4ba193e09371534b45f84b739cb00e9e81",
-                    "Providers/FoundationThemeServiceProvider.php": "dcb8f7995d51cd47f40d05a8b9a1e8ff3fd88fb4721d0e14618cf2df5b7958f0",
+                    "Providers/FoundationThemeServiceProvider.php": "b5fc720e8821f1df0da125db5a018c86882573ad0431a95fe714a8931e8b1eb2",
                     "Providers/FoundationThemeSiteSpecServiceProvider.php": "153ffe018acec8144fe6f662ff0cd9fa666f07954bd9b773eefb6fb58c8c1c00",
                     "Support/Providers/AbstractThemeServiceProvider.php": "28d166b2c28a2db2c161965df34ff1370a944bc314fffa583de2368d208b1dd9"
                 },
@@ -1462,6 +1462,9 @@
                     "capell.site-spec.applier": [
                         "Capell\\FoundationTheme\\Actions\\SiteSpec\\ApplyFoundationThemeSiteSpecAction"
                     ],
+                    "capell.upgrade-steps": [
+                        "Capell\\FoundationTheme\\Support\\Upgrade\\MoveHeroEyebrowToKickerUpgradeStep"
+                    ],
                     "capell.widget_schema.extenders": [
                         "Capell\\FoundationTheme\\Filament\\Extenders\\SectionVariantSchemaExtender"
                     ]
@@ -1488,6 +1491,9 @@
                     ],
                     "capell.site-spec.applier": [
                         "Capell\\FoundationTheme\\Actions\\SiteSpec\\ApplyFoundationThemeSiteSpecAction"
+                    ],
+                    "capell.upgrade-steps": [
+                        "Capell\\FoundationTheme\\Support\\Upgrade\\MoveHeroEyebrowToKickerUpgradeStep"
                     ],
                     "capell.widget_schema.extenders": [
                         "Capell\\FoundationTheme\\Filament\\Extenders\\SectionVariantSchemaExtender"
@@ -2508,6 +2514,9 @@
                     ],
                     "capell.site-spec.applier": [
                         "Capell\\FoundationTheme\\Actions\\SiteSpec\\ApplyFoundationThemeSiteSpecAction"
+                    ],
+                    "capell.upgrade-steps": [
+                        "Capell\\FoundationTheme\\Support\\Upgrade\\MoveHeroEyebrowToKickerUpgradeStep"
                     ]
                 },
                 "tags": {
@@ -2525,6 +2534,9 @@
                     ],
                     "capell.site-spec.applier": [
                         "Capell\\FoundationTheme\\Actions\\SiteSpec\\ApplyFoundationThemeSiteSpecAction"
+                    ],
+                    "capell.upgrade-steps": [
+                        "Capell\\FoundationTheme\\Support\\Upgrade\\MoveHeroEyebrowToKickerUpgradeStep"
                     ]
                 },
                 "views": {

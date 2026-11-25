@@ -18,21 +18,21 @@
     and never validates or submits anything itself.
 --}}
 <section
-    class="theme-form theme-form--encouraging border-b border-slate-200/80 bg-[var(--theme-surface)]"
+    class="theme-form theme-form--encouraging border-b border-[var(--foundation-border)] bg-[var(--theme-surface)] dark:bg-[var(--foundation-section-bg)]"
     data-form-encouraging
 >
     <div class="mx-auto max-w-2xl px-4 py-12 sm:px-6 lg:py-16">
         <div class="mb-8">
-            <p class="mb-3 text-xs font-semibold tracking-[0.16em] text-[var(--theme-primary)] uppercase">
+            <p class="mb-3 text-base font-semibold text-[var(--theme-primary)] dark:text-[var(--foundation-primary-action)]">
                 {{ __('capell-theme-foundation::generic.form') }}
             </p>
             <h2
-                class="text-3xl leading-tight font-(family-name:--theme-heading-font) font-semibold text-slate-950 sm:text-4xl"
+                class="text-3xl leading-tight font-(family-name:--theme-heading-font) font-semibold text-[var(--foundation-heading-fg)] sm:text-4xl"
             >
                 {{ $section->heading ?? __('capell-theme-foundation::generic.form') }}
             </h2>
             @if (! empty($section->summary))
-                <p class="mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">{{ $section->summary }}</p>
+                <p class="mt-3 max-w-2xl text-sm leading-7 text-[var(--foundation-muted-fg)] sm:text-base">{{ $section->summary }}</p>
             @endif
         </div>
 

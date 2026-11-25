@@ -12,24 +12,24 @@
     $safeArchiveUrl = PublicUrlSanitizer::sanitize(data_get($section, 'resolvedResults.archiveUrl'));
 @endphp
 <section
-    class="theme-content-listing theme-content-listing--masonry-safe border-b border-slate-200/80 bg-[var(--theme-surface)]"
+    class="theme-content-listing theme-content-listing--masonry-safe border-b border-[var(--foundation-border)] bg-[var(--theme-surface)] dark:bg-[var(--foundation-section-bg)]"
 >
     <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16">
         <div
             class="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between"
         >
             <div>
-                <p class="mb-3 text-xs font-semibold tracking-[0.16em] text-[var(--foundation-muted-fg)] uppercase">
+                <p class="mb-3 text-base font-semibold text-[var(--foundation-muted-fg)]">
                     {{ __('capell-theme-foundation::generic.content') }}
                 </p>
                 <h2
-                    class="text-3xl leading-tight font-(family-name:--theme-heading-font) font-semibold text-slate-950 sm:text-4xl"
+                    class="text-3xl leading-tight font-(family-name:--theme-heading-font) font-semibold text-[var(--foundation-heading-fg)] sm:text-4xl"
                 >
                     {{ $section->heading }}
                 </h2>
             </div>
             @if ($section->summary)
-                <p class="max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">{{ $section->summary }}</p>
+                <p class="max-w-2xl text-sm leading-7 text-[var(--foundation-muted-fg)] sm:text-base">{{ $section->summary }}</p>
             @endif
         </div>
 
@@ -52,12 +52,12 @@
 
             @foreach (data_get($section, 'resolvedResults.items', data_get($section, 'items', [])) as $item)
                 @php
-                    $safeItemUrl = PublicUrlSanitizer::sanitize($item['url'] ?? null) ?? '#';
+                    $safeItemUrl = PublicUrlSanitizer::sanitize($item['url'] ?? null);
                     $safeItemImage = PublicUrlSanitizer::sanitize($item['image'] ?? null);
                 @endphp
-                <a
-                    href="{{ $safeItemUrl }}"
-                    class="group widget {{ $masonrySafeRowSpanClasses[$loop->index % 3] }} overflow-hidden rounded-[var(--theme-radius-value)] border border-slate-200 bg-white transition hover:border-slate-950"
+                <{{ $safeItemUrl ? 'a' : 'span' }}
+                    @if ($safeItemUrl) href="{{ $safeItemUrl }}" @endif
+                    class="group widget {{ $masonrySafeRowSpanClasses[$loop->index % 3] }} overflow-hidden rounded-[var(--theme-radius-value)] border border-[var(--foundation-border)] bg-white dark:bg-[var(--foundation-card-bg)] transition hover:border-[var(--foundation-heading-fg)]"
                 >
                     @if (! empty($safeItemImage))
                         <x-capell::image-source
@@ -73,23 +73,25 @@
                     @endif
 
                     <span class="widget block p-5">
-                        <span class="text-xs font-medium text-slate-500">
+                        <span
+                            class="text-xs font-medium text-[var(--foundation-muted-fg)]"
+                        >
                             {{ $item['type'] ?? $item['publishedDate'] ?? '' }}
                         </span>
                         <span
-                            class="widget mt-2 block text-base font-semibold text-slate-950"
+                            class="widget mt-2 block text-base font-semibold text-[var(--foundation-heading-fg)]"
                         >
                             {{ $item['title'] }}
                         </span>
                         @if (! empty($item['summary']))
                             <span
-                                class="widget mt-2 block text-sm leading-6 text-slate-600"
+                                class="widget mt-2 block text-sm leading-6 text-[var(--foundation-muted-fg)]"
                             >
                                 {{ $item['summary'] }}
                             </span>
                         @endif
                     </span>
-                </a>
+                </{{ $safeItemUrl ? 'a' : 'span' }}>
             @endforeach
         </div>
         @include('capell-theme-foundation::theme.sections.results-pagination', ['section' => $section])

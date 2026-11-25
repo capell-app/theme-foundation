@@ -13,12 +13,12 @@
                 <span class="sr-only">{{ $renderData->displayName }}</span>
             </summary>
             <div
-                class="absolute end-0 z-20 mt-2 min-w-40 rounded-md bg-white p-2 shadow-lg dark:bg-slate-900"
+                class="absolute end-0 z-20 mt-2 min-w-40 rounded-md bg-[var(--foundation-card-bg)] p-2 shadow-lg"
             >
                 @if ($renderData->accountUrl !== null)
                     <a
                         href="{{ $renderData->accountUrl }}"
-                        class="block rounded px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800"
+                        class="block rounded px-3 py-2 hover:bg-[var(--foundation-muted-bg)]"
                         >{{ __('capell-theme-foundation::generic.account') }}</a
                     >
                 @endif

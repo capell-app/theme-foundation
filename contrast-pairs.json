@@ -1,0 +1,90 @@
+{
+    "defaults": {
+        "brandColor": "rgb(16, 23, 21)",
+        "linkColor": "rgb(8, 119, 101)",
+        "linkColorActive": "rgb(5, 95, 83)",
+        "dividerColor": "rgb(207, 217, 211)",
+        "pageBackground": "rgb(245, 247, 244)",
+        "surfaceBackground": "rgb(252, 255, 251)",
+        "mutedBackground": "rgb(237, 242, 238)",
+        "headerBackground": "rgb(252, 255, 251)",
+        "borderColor": "rgb(207, 217, 211)",
+        "borderStrongColor": "rgb(174, 189, 181)",
+        "cardBackground": "rgb(252, 255, 251)",
+        "primaryAction": "rgb(8, 119, 101)",
+        "bandBackground": "rgb(245, 247, 244)",
+        "bandAlternateBackground": "rgb(237, 242, 238)",
+        "bandAccentBackground": "rgb(224, 242, 236)",
+        "bandBorder": "rgb(207, 217, 211)",
+        "imageBorder": "rgb(207, 217, 211)",
+        "darkPageBackground": "rgb(11, 23, 22)",
+        "darkSurfaceBackground": "rgb(16, 29, 26)",
+        "darkMutedBackground": "rgb(23, 38, 33)",
+        "darkHeaderBackground": "rgb(11, 23, 22)",
+        "darkBorderColor": "rgb(49, 66, 60)",
+        "darkBorderStrongColor": "rgb(82, 97, 91)",
+        "darkCardBackground": "rgb(16, 29, 26)",
+        "darkPrimaryAction": "rgb(121, 215, 194)",
+        "darkBandBackground": "rgb(11, 23, 22)",
+        "darkBandAlternateBackground": "rgb(16, 29, 26)",
+        "darkBandAccentBackground": "rgb(23, 53, 46)",
+        "darkBandBorder": "rgb(49, 66, 60)",
+        "darkImageBorder": "rgb(49, 66, 60)"
+    },
+    "pairs": [
+        {
+            "use": "Headings on the page",
+            "text": "--foundation-heading-fg",
+            "surface": "--foundation-page-bg",
+            "minimum": 4.5
+        },
+        {
+            "use": "Headings on a section or card",
+            "text": "--foundation-heading-fg",
+            "surface": "--foundation-card-bg",
+            "minimum": 4.5
+        },
+        {
+            "use": "Body copy on the page",
+            "text": "--foundation-body-fg",
+            "surface": "--foundation-page-bg",
+            "minimum": 4.5
+        },
+        {
+            "use": "Body copy on a muted section",
+            "text": "--foundation-body-fg",
+            "surface": "--foundation-section-muted-bg",
+            "minimum": 4.5
+        },
+        {
+            "use": "Supporting copy on a section or card",
+            "text": "--foundation-muted-fg",
+            "surface": "--foundation-section-bg",
+            "minimum": 4.5
+        },
+        {
+            "use": "Supporting copy on a muted section",
+            "text": "--foundation-muted-fg",
+            "surface": "--foundation-section-muted-bg",
+            "minimum": 4.5
+        },
+        {
+            "use": "Supporting copy on an accent band",
+            "text": "--foundation-muted-fg",
+            "surface": "--foundation-band-accent-bg",
+            "minimum": 4.5
+        },
+        {
+            "use": "Links and primary actions",
+            "text": "--foundation-primary-action",
+            "surface": "--foundation-card-bg",
+            "minimum": 4.5
+        },
+        {
+            "use": "Focus ring against the page",
+            "text": "--foundation-focus-ring",
+            "surface": "--foundation-page-bg",
+            "minimum": 3
+        }
+    ]
+}

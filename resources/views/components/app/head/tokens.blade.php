@@ -38,6 +38,9 @@ $noneMotionTokens = FoundationThemeSettings::MOTION_INTENSITY_OPTIONS['none'];
         --foundation-header-bg: {{ $tokens->headerBackground }};
         --foundation-border: {{ $tokens->borderColor }};
         --foundation-border-strong: {{ $tokens->borderStrongColor }};
+        /* Form control boundary: half way from the card to the body colour, which
+           keeps 3:1 against the card in both schemes. */
+        --foundation-control-border: color-mix(in srgb, var(--foundation-body-fg) 50%, var(--foundation-card-bg));
         --foundation-card-bg: {{ $tokens->cardBackground }};
         --foundation-primary-action: {{ $tokens->primaryAction }};
         --foundation-band-bg: {{ $tokens->bandBackground }};

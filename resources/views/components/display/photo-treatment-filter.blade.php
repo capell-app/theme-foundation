@@ -19,8 +19,8 @@
 --}}
 
 <div
-    {{ $attributes->except(['style'])->merge(['class' => 'photo-treatment-filter relative isolate overflow-hidden']) }}
-    style="@if ($aspectRatio) aspect-ratio: {{ $aspectRatio }}; @endif {{ $attributes->get('style') }}"
+    {{ $attributes->except(['style'])->merge(['class' => 'photo-treatment-filter relative isolate overflow-hidden' . ($aspectRatio ? ' aspect-(--photo-aspect-ratio)' : '')]) }}
+    style="{{ $aspectRatio ? '--photo-aspect-ratio: ' . $aspectRatio : '' }}; {{ $attributes->get('style') }}"
 >
     <div
         class="photo-treatment-filter-media h-full w-full [filter:var(--foundation-photo-filter,none)]"

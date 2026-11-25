@@ -38,7 +38,7 @@
             @if ($fieldType !== 'checkbox')
                 <label
                     for="{{ $fieldId }}"
-                    class="text-sm font-semibold text-slate-800"
+                    class="text-sm font-semibold text-[var(--foundation-body-fg)]"
                 >
                     {{ $fieldLabel }}
                     @if ($fieldRequired)
@@ -54,7 +54,7 @@
                         name="{{ $fieldName }}"
                         rows="5"
                         @if ($fieldRequired) required @endif
-                        class="rounded-[var(--theme-radius-value)] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-950 focus:border-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:outline-none"
+                        class="rounded-[var(--theme-radius-value)] border border-[var(--foundation-control-border)] bg-white dark:bg-[var(--foundation-card-bg)] px-4 py-3 text-sm text-[var(--foundation-heading-fg)] focus:border-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:outline-none"
                         data-form-hint-field
                         data-form-hint-encouragement="{{ $fieldHint }}"
                     ></textarea>
@@ -65,7 +65,7 @@
                         id="{{ $fieldId }}"
                         name="{{ $fieldName }}"
                         @if ($fieldRequired) required @endif
-                        class="rounded-[var(--theme-radius-value)] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-950 focus:border-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:outline-none"
+                        class="rounded-[var(--theme-radius-value)] border border-[var(--foundation-control-border)] bg-white dark:bg-[var(--foundation-card-bg)] px-4 py-3 text-sm text-[var(--foundation-heading-fg)] focus:border-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:outline-none"
                         data-form-hint-field
                         data-form-hint-encouragement="{{ $fieldHint }}"
                     />
@@ -76,7 +76,7 @@
                         id="{{ $fieldId }}"
                         name="{{ $fieldName }}"
                         @if ($fieldRequired) required @endif
-                        class="rounded-[var(--theme-radius-value)] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-950 focus:border-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:outline-none"
+                        class="rounded-[var(--theme-radius-value)] border border-[var(--foundation-control-border)] bg-white dark:bg-[var(--foundation-card-bg)] px-4 py-3 text-sm text-[var(--foundation-heading-fg)] focus:border-[var(--theme-primary)] focus:ring-2 focus:ring-[var(--theme-primary)] focus:outline-none"
                         data-form-hint-field
                         data-form-hint-encouragement="{{ $fieldHint }}"
                     />

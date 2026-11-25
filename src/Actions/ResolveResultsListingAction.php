@@ -248,7 +248,7 @@ final readonly class ResolveResultsListingAction implements PaginatesResultsList
         ));
     }
 
-    /** @return array{title: string, summary: string|null, url: string, type: string|null, image: string|null, publishedDate: string|null} */
+    /** @return array{title: string, summary: string|null, url: string|null, type: string|null, image: string|null, publishedDate: string|null} */
     private function toItem(Pageable&Model $result): array
     {
         $translation = $result->relationLoaded('translation') ? $result->getRelation('translation') : null;
@@ -265,7 +265,7 @@ final readonly class ResolveResultsListingAction implements PaginatesResultsList
             'summary' => $translation instanceof Translation && is_string(data_get($translation, 'meta.description'))
                 ? data_get($translation, 'meta.description')
                 : null,
-            'url' => $pageUrl instanceof PageUrl && is_string($pageUrl->full_url) ? $pageUrl->full_url : '#',
+            'url' => $pageUrl instanceof PageUrl && is_string($pageUrl->full_url) ? $pageUrl->full_url : null,
             'type' => $blueprint instanceof Blueprint && is_string($blueprint->name) ? $blueprint->name : null,
             'image' => is_string(data_get($image, 'original_url')) ? data_get($image, 'original_url') : null,
             'publishedDate' => $publishedAt instanceof DateTimeInterface ? $publishedAt->format('Y-m-d') : null,

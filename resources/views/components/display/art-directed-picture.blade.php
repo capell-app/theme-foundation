@@ -28,8 +28,8 @@
 @endphp
 
 <picture
-    {{ $attributes->except(['style'])->merge(['class' => 'block overflow-hidden']) }}
-    style="aspect-ratio: {{ $aspectRatio }}; {{ $attributes->get('style') }}"
+    {{ $attributes->except(['style'])->merge(['class' => 'block aspect-(--picture-aspect-ratio) overflow-hidden']) }}
+    style="--picture-aspect-ratio: {{ $aspectRatio }}; {{ $attributes->get('style') }}"
 >
     @foreach ($sources as $source)
         <source
@@ -43,7 +43,7 @@
         :image="$safeSrc"
         alt="{{ $alt }}"
         loading="{{ $loading }}"
-        class="h-full w-full object-cover"
-        style="--focal-x: {{ $focalX }}; --focal-y: {{ $focalY }}; object-position: var(--focal-x) var(--focal-y);"
+        class="h-full w-full object-cover object-[var(--focal-x)_var(--focal-y)]"
+        style="--focal-x: {{ $focalX }}; --focal-y: {{ $focalY }};"
     />
 </picture>

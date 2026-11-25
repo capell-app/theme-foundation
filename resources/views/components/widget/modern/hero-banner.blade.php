@@ -2,11 +2,11 @@
     'title' => $widget->translation?->title,
     'content' => $widget->translation?->content,
     'primaryButtonText' => $widget->getMeta('primary_button_text'),
-    'primaryButtonUrl' => $widget->getMeta('primary_button_url', '#'),
-    'safePrimaryButtonUrl' => '#',
+    'primaryButtonUrl' => $widget->getMeta('primary_button_url'),
+    'safePrimaryButtonUrl' => null,
     'secondaryButtonText' => $widget->getMeta('secondary_button_text'),
-    'secondaryButtonUrl' => $widget->getMeta('secondary_button_url', '#'),
-    'safeSecondaryButtonUrl' => '#',
+    'secondaryButtonUrl' => $widget->getMeta('secondary_button_url'),
+    'safeSecondaryButtonUrl' => null,
     'container',
     'containerKey',
     'containerWidth' => null,
@@ -74,9 +74,9 @@
                     <p class="ap-hero__copy capell-showcase__copy">{{ html_entity_decode(strip_tags((string) $content), ENT_QUOTES | ENT_HTML5) }}</p>
                 @endif
 
-                @if ($primaryButtonText || $secondaryButtonText)
+                @if (($primaryButtonText && $safePrimaryButtonUrl) || ($secondaryButtonText && $safeSecondaryButtonUrl))
                     <div class="ap-hero__actions">
-                        @if ($primaryButtonText)
+                        @if ($primaryButtonText && $safePrimaryButtonUrl)
                             <a
                                 href="{{ $safePrimaryButtonUrl }}"
                                 class="ap-hero__button ap-hero__button--primary ap-cta-primary"
@@ -86,7 +86,7 @@
                             </a>
                         @endif
 
-                        @if ($secondaryButtonText)
+                        @if ($secondaryButtonText && $safeSecondaryButtonUrl)
                             <a
                                 href="{{ $safeSecondaryButtonUrl }}"
                                 class="ap-hero__button ap-hero__button--secondary ap-cta-secondary"

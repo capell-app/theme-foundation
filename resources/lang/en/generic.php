@@ -88,4 +88,5 @@ return [
     'embed_consent_notice' => 'This content is hosted by :provider. Loading it shares your visit with them.',
     'embed_consent_load' => 'Load :title',
     'embed_open_elsewhere' => 'View :title on its own site',
+    'upgrade_move_hero_eyebrow_to_kicker' => 'Keep hero labels saved before the label field was renamed',
 ];

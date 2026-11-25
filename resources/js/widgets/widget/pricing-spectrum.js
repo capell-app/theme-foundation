@@ -11,9 +11,11 @@
  * - `[data-pricing-spectrum]` (section root)
  * - `[data-pricing-spectrum-slider]`: the `<input type="range">`
  * - `[data-pricing-spectrum-tier-data]`: a `<template>` holding the JSON
- *   tier array (`{label, price, features[], ctaLabel, ctaUrl}[]`)
+ *   tier array (`{label, price, features[], ctaLabel, ctaUrl}[]`); `ctaUrl`
+ *   is already sanitised by the view and is null when the tier has no link
  * - `[data-pricing-spectrum-label]` / `-price]` / `-features]` / `-cta]`:
- *   the display panel nodes updated as the slider moves
+ *   the display panel nodes updated as the slider moves; the CTA is hidden
+ *   (and loses its `href`) while the active tier has no link
  * - radio inputs named `pricing-spectrum-tier*`: the no-JS/discrete-tier
  *   fallback, kept in sync with the slider in both directions
  */
@@ -26,7 +28,10 @@ function readTierData(root) {
     }
 
     try {
-        const parsed = JSON.parse(template.textContent?.trim() ?? '[]')
+        // A <template> keeps its parsed text in `.content`; its own
+        // textContent is always empty.
+        const json = (template.content ?? template).textContent?.trim()
+        const parsed = JSON.parse(json || '[]')
 
         return Array.isArray(parsed) ? parsed : []
     } catch {
@@ -51,17 +56,40 @@ function renderTier(root, tier) {
     if (features) {
         const featureList = Array.isArray(tier?.features) ? tier.features : []
 
-        features.innerHTML = featureList
-            .map(
-                (feature) =>
-                    `<li class="flex items-center gap-2"><span class="font-bold text-emerald-600" aria-hidden="true">&check;</span><span>${String(feature)}</span></li>`,
-            )
-            .join('')
+        features.replaceChildren(
+            ...featureList.map((feature) => {
+                const item = document.createElement('li')
+                const tick = document.createElement('span')
+                const text = document.createElement('span')
+
+                item.className = 'flex items-center gap-2'
+                tick.className =
+                    'font-bold text-emerald-700 dark:text-emerald-400'
+                tick.setAttribute('aria-hidden', 'true')
+                tick.textContent = '\u2713'
+                text.textContent = String(feature)
+                item.append(tick, text)
+
+                return item
+            }),
+        )
     }
 
-    if (cta && tier?.ctaLabel) {
-        cta.textContent = tier.ctaLabel
-        cta.setAttribute('href', tier.ctaUrl ?? '#')
+    if (cta) {
+        // The server only emits ctaUrl values that passed its public URL
+        // sanitiser; a tier without one shows no call to action rather than a
+        // link that goes nowhere.
+        const ctaUrl = typeof tier?.ctaUrl === 'string' ? tier.ctaUrl : ''
+        const ctaLabel = typeof tier?.ctaLabel === 'string' ? tier.ctaLabel : ''
+
+        if (ctaUrl !== '' && ctaLabel !== '') {
+            cta.textContent = ctaLabel
+            cta.setAttribute('href', ctaUrl)
+            cta.hidden = false
+        } else {
+            cta.removeAttribute('href')
+            cta.hidden = true
+        }
     }
 }
 

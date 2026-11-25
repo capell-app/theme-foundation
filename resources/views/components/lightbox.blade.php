@@ -28,7 +28,7 @@
             class="relative mx-auto min-h-[10vh] max-w-[95%] min-w-[50%] rounded bg-white p-1 md:max-w-[85%] md:p-3"
         >
             <button
-                class="hover:text-primary focus:text-primary fixed top-6 end-6 z-[8888] flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-black text-white md:absolute md:-top-6 md:-right-6"
+                class="hover:text-primary focus:text-primary fixed top-6 end-6 z-[8888] flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-black text-white md:absolute md:-end-6 md:-top-6"
                 aria-label="{{ __('capell-frontend::generic.close') }}"
                 type="button"
                 @click="close()"

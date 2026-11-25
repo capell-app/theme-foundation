@@ -82,7 +82,7 @@
                         @endif
                     </article>
                 @empty
-                    <div class="py-12 text-slate-300">
+                    <div class="py-12 text-[var(--foundation-muted-fg)]">
                         {{ __('capell-theme-foundation::generic.empty_features') }}
                     </div>
                 @endforelse

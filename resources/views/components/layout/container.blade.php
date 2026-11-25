@@ -57,10 +57,10 @@
     <div class="site-layout-container-background relative">
         <div
             @if ($backgroundImage)
-                style="{{ $backgroundImage ? 'background-image:url('.$backgroundImage->getAvailableUrl([MediaConversionEnum::Large->value]).');' : '' }}"
+                style="{{ '--container-background-image: url(' . $backgroundImage->getAvailableUrl([MediaConversionEnum::Large->value]) . ')' }}"
             @endif
             @class([
-                "absolute top-0 bottom-0 start-0 w-1/2 -z-1 h-full bg-cover bg-center bg-no-repeat",
+                "absolute top-0 bottom-0 start-0 w-1/2 -z-1 h-full bg-(image:--container-background-image) bg-cover bg-center bg-no-repeat",
             ])
         >
         </div>

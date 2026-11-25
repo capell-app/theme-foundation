@@ -88,4 +88,5 @@ return [
     'embed_consent_notice' => 'Dieser Inhalt wird von :provider bereitgestellt. Durch das Laden wird Ihr Besuch an diesen Anbieter übermittelt.',
     'embed_consent_load' => ':title laden',
     'embed_open_elsewhere' => ':title auf der eigenen Website ansehen',
+    'upgrade_move_hero_eyebrow_to_kicker' => 'Hero-Beschriftungen erhalten, die vor der Umbenennung des Beschriftungsfelds gespeichert wurden',
 ];

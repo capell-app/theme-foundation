@@ -75,6 +75,7 @@ use Capell\FoundationTheme\Support\Media\CapellUrlGenerator;
 use Capell\FoundationTheme\Support\Render\FoundationImageLoadingContributor;
 use Capell\FoundationTheme\Support\Tailwind\TailwindAssetsGenerator;
 use Capell\FoundationTheme\Support\Themes\ActivePresetSectionVariants;
+use Capell\FoundationTheme\Support\Upgrade\MoveHeroEyebrowToKickerUpgradeStep;
 use Capell\FoundationTheme\Support\View\FoundationThemePublicUrlViewComposer;
 use Capell\FoundationTheme\View\Components\Actions as ActionsComponent;
 use Capell\FoundationTheme\View\Components\App\Body as AppBodyComponent;
@@ -260,6 +261,7 @@ final class FoundationThemeServiceProvider extends AbstractPackageServiceProvide
         $this->app->scoped(FoundationThemeAssetContributor::class);
         $this->app->scoped(ActivePresetSectionVariants::class);
         $this->app->tag([ApplyFoundationThemeSiteSpecAction::class], SiteSpecApplier::TAG);
+        $this->app->tag([MoveHeroEyebrowToKickerUpgradeStep::class], MoveHeroEyebrowToKickerUpgradeStep::TAG);
         $this->app->singleton(ThemeFrontendScriptRegistry::class);
         $this->app->scoped(ThemeFrontendScriptContributor::class);
         $this->app->tag(ThemeFrontendScriptContributor::class, FrontendResourceContributor::TAG);

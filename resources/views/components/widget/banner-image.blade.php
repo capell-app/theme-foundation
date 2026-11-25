@@ -48,8 +48,8 @@
             'md:w-1/2' => $hasContent,
             'md:absolute' => $hasContent,
             'md:inset-y-0' => $hasContent,
-            'md:left-0' => $hasContent && $reverseOrder,
-            'md:right-0' => $hasContent && ! $reverseOrder,
+            'md:start-0' => $hasContent && $reverseOrder,
+            'md:end-0' => $hasContent && ! $reverseOrder,
         ])
         >
             <x-capell::media
@@ -82,8 +82,8 @@
                 @class([
                 'w-full',
                 'md:w-1/2' => $backgroundImage,
-                'md:pl-10' => $backgroundImage && $reverseOrder,
-                'md:pr-10' => $backgroundImage && ! $reverseOrder,
+                'md:ps-10' => $backgroundImage && $reverseOrder,
+                'md:pe-10' => $backgroundImage && ! $reverseOrder,
             ])
             >
                 <div

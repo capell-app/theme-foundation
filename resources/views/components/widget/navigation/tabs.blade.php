@@ -23,19 +23,30 @@
         >
             @foreach ($items as $item)
                 @php
-                    $safeItemUrl = PublicUrlSanitizer::sanitize($item->data['url'] ?? null) ?? '#';
+                    $safeItemUrl = PublicUrlSanitizer::sanitize($item->data['url'] ?? null);
                 @endphp
                 <li class="tab-item -mb-px">
-                    <a
-                        href="{{ $safeItemUrl }}"
-                        @class([
-                            'hover:bg-primary inline-block rounded-t border-b-2 border-transparent px-4 py-3 hover:text-white',
-                            'border-b-primary' => $item->active,
-                        ])
-                        @wireNavigate
-                    >
-                        {{ $item->label }}
-                    </a>
+                    @if ($safeItemUrl)
+                        <a
+                            href="{{ $safeItemUrl }}"
+                            @class([
+                                'hover:bg-primary inline-block rounded-t border-b-2 border-transparent px-4 py-3 hover:text-white',
+                                'border-b-primary' => $item->active,
+                            ])
+                            @wireNavigate
+                        >
+                            {{ $item->label }}
+                        </a>
+                    @else
+                        <span
+                            @class([
+                                'inline-block rounded-t border-b-2 border-transparent px-4 py-3',
+                                'border-b-primary' => $item->active,
+                            ])
+                        >
+                            {{ $item->label }}
+                        </span>
+                    @endif
                 </li>
             @endforeach
         </ul>

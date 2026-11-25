@@ -53,6 +53,9 @@
     $maxWidthStyle = $maxWidth && ! in_array($maxWidth, ['none', 'sm', 'md', 'lg', 'xl'], true)
         ? '--max-max-width: ' . $maxWidth . ';'
         : '';
+    $assetGridStyle = $responsiveLayoutOptions->shouldUseResponsiveGrid()
+        ? $responsiveLayoutOptions->gridColumnsStyle($maxWidthStyle)
+        : '--columns: ' . ($columns ?: $total) . ';' . $maxWidthStyle;
 @endphp
 
 @if ($assets->isNotEmpty() || ! config('capell-layout-builder.widget.skip_render_empty', true))
@@ -153,7 +156,7 @@
 
                 <div
                     id="{{ $assetGridId }}"
-                    style="{{ $responsiveLayoutOptions->shouldUseResponsiveGrid() ? $responsiveLayoutOptions->gridColumnsStyle($maxWidthStyle) : '--columns: ' . ($columns ?: $total) . ';' . $maxWidthStyle }}"
+                    style="{{ $assetGridStyle }}"
                     @class([
                         'grid',
                         'md:grid-cols-[repeat(var(--columns),minmax(0,1fr))]' => ! $responsiveLayoutOptions->shouldUseResponsiveGrid(),

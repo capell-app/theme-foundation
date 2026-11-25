@@ -6,22 +6,22 @@
 @endphp
 
 <section
-    class="theme-contact-split border-b border-slate-200/80 bg-[var(--theme-surface)]"
+    class="theme-contact-split border-b border-[var(--foundation-border)] bg-[var(--theme-surface)] dark:bg-[var(--foundation-section-bg)]"
 >
     <div
         class="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.6fr)] lg:py-16"
     >
         <div>
-            <p class="mb-3 text-xs font-semibold tracking-[0.16em] text-[var(--theme-primary)] uppercase">
+            <p class="mb-3 text-base font-semibold text-[var(--theme-primary)] dark:text-[var(--foundation-primary-action)]">
                 {{ __('capell-theme-foundation::generic.contact') }}
             </p>
             <h2
-                class="text-4xl leading-tight font-(family-name:--theme-heading-font) font-semibold text-slate-950 sm:text-5xl"
+                class="text-4xl leading-tight font-(family-name:--theme-heading-font) font-semibold text-[var(--foundation-heading-fg)] sm:text-5xl"
             >
                 {{ $section->heading ?? __('capell-theme-foundation::generic.contact') }}
             </h2>
             @if (! empty($section->summary))
-                <p class="mt-4 max-w-2xl text-base leading-7 text-slate-600">{{ $section->summary }}</p>
+                <p class="mt-4 max-w-2xl text-base leading-7 text-[var(--foundation-muted-fg)]">{{ $section->summary }}</p>
             @endif
 
             <div class="mt-8">
@@ -52,7 +52,7 @@
         <aside class="grid content-start gap-5">
             @if ($addressLines !== [])
                 <address
-                    class="rounded-[var(--theme-radius-value)] border border-slate-200 bg-white p-6 text-sm leading-7 text-slate-600 not-italic"
+                    class="rounded-[var(--theme-radius-value)] border border-[var(--foundation-border)] bg-white dark:bg-[var(--foundation-card-bg)] p-6 text-sm leading-7 text-[var(--foundation-muted-fg)] not-italic"
                 >
                     @foreach ($addressLines as $line)
                         <div>{{ $line }}</div>

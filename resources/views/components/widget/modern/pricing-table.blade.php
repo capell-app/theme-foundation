@@ -72,10 +72,10 @@
                     // Author-supplied. Blade escaping does not neutralise a `javascript:`
                     // scheme in href context, so the URL is passed through
                     // PublicUrlSanitizer, which rejects anything outside the allowed
-                    // schemes; a rejected URL falls back to '#'.
+                    // schemes; a plan without a safe URL renders no button.
                     $ctaUrl = \Capell\Core\Support\Security\PublicUrlSanitizer::sanitize(
                         $assetRenderData->meta['cta_url'] ?? null,
-                    ) ?? '#';
+                    );
                     $features = $asset?->getMeta('features', []) ?? [];
                 @endphp
 
@@ -85,7 +85,7 @@
                         data-price-monthly="{{ $price }}"
                         data-price-annual="{{ $priceAnnual }}"
                     >
-                        <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+                        <div class="absolute inset-x-0 -top-3 mx-auto w-fit">
                             <span
                                 class="rounded-full bg-amber-400 px-4 py-1 text-xs font-bold text-amber-900"
                             >
@@ -135,12 +135,14 @@
                             </ul>
                         @endif
 
-                        <a
-                            href="{{ $ctaUrl }}"
-                            class="widget w-full rounded-lg bg-white px-6 py-3 text-center font-semibold text-stone-900 transition-opacity hover:opacity-90"
-                        >
-                            {{ $ctaLabel }}
-                        </a>
+                        @if ($ctaUrl)
+                            <a
+                                href="{{ $ctaUrl }}"
+                                class="widget w-full rounded-lg bg-white px-6 py-3 text-center font-semibold text-stone-900 transition-opacity hover:opacity-90"
+                            >
+                                {{ $ctaLabel }}
+                            </a>
+                        @endif
                     </div>
                 @else
                     <div
@@ -190,12 +192,14 @@
                             </ul>
                         @endif
 
-                        <a
-                            href="{{ $ctaUrl }}"
-                            class="widget w-full rounded-lg border border-stone-200 bg-white px-6 py-3 text-center font-semibold text-gray-700 transition-colors hover:border-emerald-300 hover:text-emerald-700"
-                        >
-                            {{ $ctaLabel }}
-                        </a>
+                        @if ($ctaUrl)
+                            <a
+                                href="{{ $ctaUrl }}"
+                                class="widget w-full rounded-lg border border-stone-200 bg-white px-6 py-3 text-center font-semibold text-gray-700 transition-colors hover:border-emerald-300 hover:text-emerald-700"
+                            >
+                                {{ $ctaLabel }}
+                            </a>
+                        @endif
                     </div>
                 @endif
             @empty

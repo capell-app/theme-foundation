@@ -11,7 +11,7 @@
     >
         <div class="space-y-5">
             @if ($section->eyebrow)
-                <p class="text-xs font-semibold tracking-[0.12em] text-[var(--theme-primary)] uppercase">
+                <p class="text-base font-semibold text-[var(--theme-primary)] dark:text-[var(--foundation-primary-action)]">
                     {{ $section->eyebrow }}
                 </p>
             @endif
@@ -30,8 +30,11 @@
                 <div class="flex flex-wrap gap-3">
                     @foreach ($section->actions as $action)
                         @php
-                            $safeActionUrl = PublicUrlSanitizer::sanitize($action['url'] ?? null) ?? '#';
+                            $safeActionUrl = PublicUrlSanitizer::sanitize($action['url'] ?? null);
                         @endphp
+
+                        @continue($safeActionUrl === null)
+
                         <a
                             href="{{ $safeActionUrl }}"
                             class="{{ ($action['style'] ?? 'primary') === 'secondary' ? 'border border-[var(--foundation-border-strong)] text-[var(--foundation-body-fg)] hover:border-[var(--foundation-primary-action)]' : 'bg-[var(--theme-primary)] text-white hover:opacity-90' }} rounded-full px-5 py-3 text-sm font-semibold transition"

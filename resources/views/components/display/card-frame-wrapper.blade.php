@@ -14,20 +14,14 @@
 
 @php
     $variantClasses = match ($variant) {
-        'elevated' => 'shadow-lg',
+        'elevated' => 'border border-[var(--foundation-border-strong)] shadow-lg',
         'flat' => '',
-        default => 'ring-1',
+        default => 'border border-[var(--foundation-border)] ring-1',
     };
 @endphp
 
 <div
-    {{ $attributes->merge(['class' => 'card-frame-wrapper card-frame-wrapper-' . $variant . ' card-frame-wrapper-hover-' . $hoverEffect . ' ' . $variantClasses]) }}
-    style="
-        background-color: var(--foundation-card-bg);
-        border-radius: var(--foundation-radius);
-        @if ($variant === 'bordered') border: 1px solid var(--foundation-border); @endif
-        @if ($variant === 'elevated') border: 1px solid var(--foundation-border-strong); @endif
-    "
+    {{ $attributes->merge(['class' => 'card-frame-wrapper card-frame-wrapper-' . $variant . ' card-frame-wrapper-hover-' . $hoverEffect . ' rounded-[var(--foundation-radius)] bg-[var(--foundation-card-bg)] ' . $variantClasses]) }}
 >
     {{ $slot }}
 </div>

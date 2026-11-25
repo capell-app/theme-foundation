@@ -77,7 +77,7 @@
                                 />
                                 <figcaption class="ap-gallery-caption">
                                     <span>{{ $caption }}</span>
-                                    @svg('heroicon-o-arrows-pointing-out', 'h-4 w-4 text-slate-400')
+                                    @svg('heroicon-o-arrows-pointing-out', 'h-4 w-4 text-[var(--foundation-muted-fg)]')
                                 </figcaption>
                             </figure>
                         @else
@@ -105,7 +105,7 @@
                                 </div>
                                 <figcaption class="ap-gallery-caption">
                                     <span>{{ $caption }}</span>
-                                    @svg('heroicon-o-arrows-pointing-out', 'h-4 w-4 text-slate-400')
+                                    @svg('heroicon-o-arrows-pointing-out', 'h-4 w-4 text-[var(--foundation-muted-fg)]')
                                 </figcaption>
                             </figure>
                         @endif
@@ -130,7 +130,7 @@
                         />
                         <figcaption class="ap-gallery-caption">
                             <span>{{ $widget->image->name }}</span>
-                            @svg('heroicon-o-arrows-pointing-out', 'h-4 w-4 text-slate-400')
+                            @svg('heroicon-o-arrows-pointing-out', 'h-4 w-4 text-[var(--foundation-muted-fg)]')
                         </figcaption>
                     </figure>
                 </div>

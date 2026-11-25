@@ -607,7 +607,7 @@ it('renders video popup actions as lightbox triggers', function (): void {
         ->and($trigger->getAttribute('data-title'))->toBe('Watch the film')
         ->and($trigger->getAttribute('data-group'))->toBe('customer-films')
         ->and(trim($trigger->textContent))->toBe('Watch the film')
-        ->and($trigger->getAttribute('href'))->toBe('#')
+        ->and($trigger->getAttribute('href'))->toBe('https://example.test/film.mp4')
         ->and($trigger->hasAttribute('wire:navigate'))->toBeFalse();
 });
 

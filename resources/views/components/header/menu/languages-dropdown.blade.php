@@ -42,7 +42,7 @@
         "
         :id="$id('dropdown-button')"
         x-cloak
-        class="capell-menu-languages-dropdown lg:right:-0 absolute inset-0 z-10 origin-top-left bg-white transition-[translate,visibility] duration-300 ease-in-out outline-none lg:top-full lg:bottom-auto lg:left-auto lg:-mt-2 lg:min-w-48 lg:translate-none lg:rounded-lg lg:border lg:border-gray-200 lg:p-1.5 lg:shadow-sm lg:transition-none dark:bg-gray-900 dark:lg:border-gray-700"
+        class="capell-menu-languages-dropdown absolute inset-0 z-10 origin-top-left lg:end-0 bg-white transition-[translate,visibility] duration-300 ease-in-out outline-none lg:top-full lg:bottom-auto lg:start-auto lg:-mt-2 lg:min-w-48 lg:translate-none lg:rounded-lg lg:border lg:border-gray-200 lg:p-1.5 lg:shadow-sm lg:transition-none dark:bg-gray-900 dark:lg:border-gray-700"
         x-bind:class="open ? 'visible opacity-100' : 'pointer-events-none invisible opacity-0'"
     >
         <li

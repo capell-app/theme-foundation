@@ -101,6 +101,7 @@ Foundation Theme is an **Available** Capell theme in the **Capell Themes** produ
 - `InstallFoundationThemeDemoAction`
 - `InstallFoundationThemeLayoutDefaultsAction`
 - `MigrateSitesToThemeAction`
+- `MoveStoredHeroEyebrowToKickerAction`
 - `PlanThemeMigrationAction`
 - `PrepareFoundationPageWidgetDataAction`
 - `RefreshMigratedThemeOutputAction`

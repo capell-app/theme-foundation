@@ -4,37 +4,40 @@
     $safeMediaUrl = PublicUrlSanitizer::sanitize($section->mediaUrl ?? null);
 @endphp
 <section
-    class="theme-hero theme-hero--split border-b border-slate-200/80 bg-[var(--theme-surface)]"
+    class="theme-hero theme-hero--split border-b border-[var(--foundation-border)] bg-[var(--theme-surface)] dark:bg-[var(--foundation-section-bg)]"
 >
     <div
         class="mx-auto grid max-w-7xl items-center gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:py-20"
     >
         <div class="space-y-5">
             @if ($section->eyebrow)
-                <p class="text-xs font-semibold tracking-[0.12em] text-[var(--theme-primary)] uppercase">
+                <p class="text-base font-semibold text-[var(--theme-primary)] dark:text-[var(--foundation-primary-action)]">
                     {{ $section->eyebrow }}
                 </p>
             @endif
 
             <{{ $headingLevel ?? 'h1' }}
-                class="max-w-4xl text-4xl leading-tight font-(family-name:--theme-heading-font) font-semibold text-slate-950 sm:text-5xl lg:text-6xl"
+                class="max-w-4xl text-4xl leading-tight font-(family-name:--theme-heading-font) font-semibold text-[var(--foundation-heading-fg)] sm:text-5xl lg:text-6xl"
             >
                 {{ $section->heading }}
             </{{ $headingLevel ?? 'h1' }}>
 
             @if ($section->summary)
-                <p class="max-w-2xl text-base leading-8 text-slate-600 sm:text-lg">{{ $section->summary }}</p>
+                <p class="max-w-2xl text-base leading-8 text-[var(--foundation-muted-fg)] sm:text-lg">{{ $section->summary }}</p>
             @endif
 
             @if ($section->actions !== [])
                 <div class="flex flex-wrap gap-3">
                     @foreach ($section->actions as $action)
                         @php
-                            $safeActionUrl = PublicUrlSanitizer::sanitize($action['url'] ?? null) ?? '#';
+                            $safeActionUrl = PublicUrlSanitizer::sanitize($action['url'] ?? null);
                         @endphp
+
+                        @continue($safeActionUrl === null)
+
                         <a
                             href="{{ $safeActionUrl }}"
-                            class="{{ ($action['style'] ?? 'primary') === 'secondary' ? 'border border-slate-300 text-slate-800 hover:border-slate-950' : 'bg-[var(--theme-primary)] text-white hover:opacity-90' }} rounded-full px-5 py-3 text-sm font-semibold transition"
+                            class="{{ ($action['style'] ?? 'primary') === 'secondary' ? 'border border-[var(--foundation-border)] text-[var(--foundation-body-fg)] hover:border-[var(--foundation-heading-fg)]' : 'bg-[var(--theme-primary)] text-white hover:opacity-90' }} rounded-full px-5 py-3 text-sm font-semibold transition"
                         >
                             {{ $action['label'] }}
                         </a>
@@ -45,7 +48,7 @@
 
         @if ($safeMediaUrl)
             <figure
-                class="overflow-hidden rounded-[var(--theme-radius-value)] border border-slate-200 bg-white shadow-sm"
+                class="overflow-hidden rounded-[var(--theme-radius-value)] border border-[var(--foundation-border)] bg-white dark:bg-[var(--foundation-card-bg)] shadow-sm"
             >
                 <x-capell::image-source
                     :image="$safeMediaUrl"

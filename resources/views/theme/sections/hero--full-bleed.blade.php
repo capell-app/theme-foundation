@@ -4,7 +4,7 @@
     $safeMediaUrl = PublicUrlSanitizer::sanitize($section->mediaUrl ?? null);
 @endphp
 <section
-    class="theme-hero theme-hero--full-bleed relative border-b border-slate-200/80 bg-slate-950"
+    class="theme-hero theme-hero--full-bleed relative border-b border-[var(--foundation-border)] bg-[var(--foundation-inverse-bg)]"
 >
     @if ($safeMediaUrl)
         <x-capell::image-source
@@ -24,7 +24,7 @@
         class="relative mx-auto flex min-h-[28rem] max-w-7xl flex-col justify-end gap-5 px-4 py-12 sm:px-6 lg:py-20"
     >
         @if ($section->eyebrow)
-            <p class="text-xs font-semibold tracking-[0.12em] text-white uppercase">{{ $section->eyebrow }}</p>
+            <p class="text-base font-semibold text-white">{{ $section->eyebrow }}</p>
         @endif
 
         <{{ $headingLevel ?? 'h1' }}
@@ -34,18 +34,21 @@
         </{{ $headingLevel ?? 'h1' }}>
 
         @if ($section->summary)
-            <p class="max-w-2xl text-base leading-8 text-slate-200 sm:text-lg">{{ $section->summary }}</p>
+            <p class="max-w-2xl text-base leading-8 text-white/80 sm:text-lg">{{ $section->summary }}</p>
         @endif
 
         @if ($section->actions !== [])
             <div class="flex flex-wrap gap-3">
                 @foreach ($section->actions as $action)
                     @php
-                        $safeActionUrl = PublicUrlSanitizer::sanitize($action['url'] ?? null) ?? '#';
+                        $safeActionUrl = PublicUrlSanitizer::sanitize($action['url'] ?? null);
                     @endphp
+
+                    @continue($safeActionUrl === null)
+
                     <a
                         href="{{ $safeActionUrl }}"
-                        class="{{ ($action['style'] ?? 'primary') === 'secondary' ? 'border border-white/60 text-white hover:border-white' : 'bg-white text-slate-950 hover:opacity-90' }} rounded-full px-5 py-3 text-sm font-semibold transition"
+                        class="{{ ($action['style'] ?? 'primary') === 'secondary' ? 'border border-white/60 text-white hover:border-white' : 'bg-white text-[var(--foundation-inverse-bg)] hover:opacity-90' }} rounded-full px-5 py-3 text-sm font-semibold transition"
                     >
                         {{ $action['label'] }}
                     </a>

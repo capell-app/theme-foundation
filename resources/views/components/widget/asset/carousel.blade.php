@@ -223,7 +223,7 @@
 
                     @if ($carouselPagination)
                         <div
-                            class="swiper-pagination pointer-events-auto absolute bottom-2 left-1/2 flex -translate-x-1/2 justify-center pt-4 select-none"
+                            class="swiper-pagination pointer-events-auto absolute inset-x-0 bottom-2 mx-auto flex w-fit justify-center pt-4 select-none"
                             wire:ignore
                         ></div>
                     @endif

@@ -10,7 +10,7 @@ use Spatie\LaravelData\Optional;
 final class ResultsListingData extends Data
 {
     /**
-     * @param  list<array{title: string, summary: string|null, url: string, type: string|null, image: string|null, publishedDate: string|null}>  $items
+     * @param  list<array{title: string, summary: string|null, url: string|null, type: string|null, image: string|null, publishedDate: string|null}>  $items
      */
     public function __construct(
         public readonly array $items,

@@ -67,12 +67,13 @@ it('renders suggestions without search counts or unnecessary pagination', functi
         ->and($dom->query('//section[contains(@class, "theme-search")]//p[contains(., "2 results")]'))->toHaveCount(0)
         ->and($dom->query('//section[contains(@class, "theme-pagination")]'))->toHaveCount(0)
         ->and($dom->query('//section[contains(@class, "theme-search")]//p[contains(., "No matching results")]'))->toHaveCount(0)
-        ->and($dom->query('//section[contains(@class, "theme-content-listing")]//a/span[contains(concat(" ", @class, " "), " block ") and contains(concat(" ", @class, " "), " p-5 ")]'))->toHaveCount(3)
-        ->and($dom->query('//section[contains(@class, "theme-content-listing")]//a/span/span[contains(concat(" ", @class, " "), " mt-2 ") and contains(concat(" ", @class, " "), " block ")]'))->toHaveCount(6);
+        ->and($dom->query('//section[contains(@class, "theme-content-listing")]//*[self::a or self::div]/span[contains(concat(" ", @class, " "), " block ") and contains(concat(" ", @class, " "), " p-5 ")]'))->toHaveCount(3)
+        ->and($dom->query('//section[contains(@class, "theme-content-listing")]//*[self::a or self::div]/span/span[contains(concat(" ", @class, " "), " mt-2 ") and contains(concat(" ", @class, " "), " block ")]'))->toHaveCount(6)
+        ->and($dom->query('//section[contains(@class, "theme-content-listing")]//a[@href="#"]'))->toHaveCount(0);
 
     // The directory uses the Results layout, which lists live pages; only the homepage cards carry demo images.
     if ($surface === 'homepage') {
-        expect($dom->query('//section[contains(@class, "theme-content-listing")]//a/img/following-sibling::span[contains(concat(" ", @class, " "), " block ") and contains(concat(" ", @class, " "), " p-5 ")]'))->toHaveCount(3);
+        expect($dom->query('//section[contains(@class, "theme-content-listing")]//*[self::a or self::div]/img/following-sibling::span[contains(concat(" ", @class, " "), " block ") and contains(concat(" ", @class, " "), " p-5 ")]'))->toHaveCount(3);
     }
 })->with(['homepage', 'directory']);
 
@@ -114,7 +115,7 @@ it('renders inset spaced recovery suggestions on the not found demo', function (
     $dom = foundationDemoStateDom((string) $response->getContent());
 
     expect($dom->query('//main//section[@id="capell-smart-404"]//li'))->toHaveCount(5)
-        ->and($dom->query('//main/div/div[contains(concat(" ", @class, " "), " capell-error-recovery ") and contains(@class, "[&_ul]:ps-5!") and contains(@class, "[&_ul]:space-y-3!")]//section[@id="capell-smart-404"]'))->toHaveCount(1);
+        ->and($dom->query('//main//div[contains(concat(" ", @class, " "), " capell-error-recovery ")]//section[@id="capell-smart-404"]'))->toHaveCount(1);
 });
 
 it('resolves the real registered form builder public component', function (): void {
@@ -165,7 +166,7 @@ it('renders another page using the error blueprint inside the shared container',
     $dom = foundationDemoStateDom($html);
     expect($dom->query('//main/div[contains(concat(" ", @class, " "), " capell-error-page ")]'))->toHaveCount(1)
         ->and($dom->query('//main/div[contains(concat(" ", @class, " "), " capell-error-page ")]//h1'))->toHaveCount(1)
-        ->and($dom->query('//main/div[contains(concat(" ", @class, " "), " capell-error-page ")]/div[contains(concat(" ", @class, " "), " capell-error-recovery ")]'))->toHaveCount(1)
+        ->and($dom->query('//main/div[contains(concat(" ", @class, " "), " capell-error-page ")]//div[contains(concat(" ", @class, " "), " capell-error-recovery ")]'))->toHaveCount(1)
         ->and($dom->query('//main/div[contains(concat(" ", @class, " "), " capell-error-page ")][.//h1 and .//section[@id="capell-smart-404"]]'))->toHaveCount(1)
         ->and($html)->not->toContain('data-capell-editor', 'signed-editor');
 })->with([true, false]);

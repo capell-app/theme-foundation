@@ -5,6 +5,7 @@
     use Capell\Core\Support\Security\PublicUrlSanitizer;
     use Capell\FoundationTheme\Actions\BuildPageContentRenderDataAction;
     use Capell\FoundationTheme\Actions\ResolveSafeCssColorTokenAction;
+    use Capell\Frontend\Actions\GetLayoutContainerWidthAction;
     use Capell\Frontend\Data\MainContentRenderHookData;
     use Capell\Frontend\Enums\RenderHookLocation;
     use Capell\Frontend\Facades\Frontend;
@@ -23,6 +24,7 @@
     );
     $themeData = is_array($theme) ? $theme : [];
     $isError = Frontend::isError();
+    $contentContainerClass = GetLayoutContainerWidthAction::run()->getContainerClass();
 
     $mainContentHookData = new MainContentRenderHookData(
         layout: $layout,
@@ -76,13 +78,19 @@
         @if ($mainContentHookOutput !== '')
             {!! $mainContentHookOutput !!}
         @else
-            <x-capell::content
-                :class="$isError ? 'py-10' : 'px-6 py-10'"
-                :content="$pageContentRenderData->contentStructure === ContentStructure::Blocks ? $pageContentRenderData->blocks : ($pageContentRenderData->content ?? '')"
-                :content-type="$pageContentRenderData->contentStructure"
-                :title="$pageContentRenderData->title ?? ''"
-                heading-tag="h1"
-            />
+            {{-- Page content without layout containers shares the header and footer container so all three align. --}}
+            <div @class([
+                'capell-layout-main__content w-full',
+                $contentContainerClass => ! $isError,
+            ])>
+                <x-capell::content
+                    class="py-10"
+                    :content="$pageContentRenderData->contentStructure === ContentStructure::Blocks ? $pageContentRenderData->blocks : ($pageContentRenderData->content ?? '')"
+                    :content-type="$pageContentRenderData->contentStructure"
+                    :title="$pageContentRenderData->title ?? ''"
+                    heading-tag="h1"
+                />
+            </div>
         @endif
 
         @if ($pageSlot && ! $mainContentHookData->slotRendered)
@@ -146,19 +154,27 @@
         @endif
     </div>
 
-    {{-- Recovery hooks may ship unlayered list resets, so the inset and rhythm use important utilities. --}}
+    {{-- Layout-native pages render the recovery hooks straight after the page content, before the footer. --}}
     @if ($isError)
-        <div class="capell-error-recovery pb-12 text-[var(--foundation-body-fg)] [&_h2]:font-(family-name:--theme-heading-font) [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:text-[var(--foundation-heading-fg)] [&_ul]:mt-4 [&_ul]:list-disc! [&_ul]:ps-5! [&_ul]:space-y-3! [&_a]:text-[var(--theme-primary)] dark:[&_a]:text-[var(--foundation-body-fg)] [&_a]:underline [&_a]:underline-offset-4">
-    @endif
-    {!! app(RenderHookRegistry::class)->renderAll(
-        RenderHookLocation::AfterContent,
-        $mainContentHookData,
-        scenario: 'frontend-main-layout',
-        target: 'capell::layout.main',
-    ) !!}
-    @if ($isError)
+        {{-- A layout that rendered the recovery hooks after its page content records it in frontend data. --}}
+        @unless (Frontend::getFrontendData('layout-builder.error-recovery-rendered') === true)
+            <div class="capell-error-recovery">
+                {!! app(RenderHookRegistry::class)->renderAll(
+                    RenderHookLocation::AfterContent,
+                    $mainContentHookData,
+                    scenario: 'frontend-main-layout',
+                    target: 'capell::layout.main',
+                ) !!}
+            </div>
+        @endunless
         </div>
-        </div>
+    @else
+        {!! app(RenderHookRegistry::class)->renderAll(
+            RenderHookLocation::AfterContent,
+            $mainContentHookData,
+            scenario: 'frontend-main-layout',
+            target: 'capell::layout.main',
+        ) !!}
     @endif
     {{-- format-ignore-end --}}
 </main>

@@ -2,13 +2,13 @@
     use Capell\Core\Support\Security\PublicUrlSanitizer;
 @endphp
 <section
-    class="theme-proof border-b border-slate-200/80 bg-slate-950 text-white"
+    class="theme-proof border-b border-[var(--foundation-border)] bg-[var(--foundation-inverse-bg)] text-white"
 >
     <div
         class="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:py-16"
     >
         <div>
-            <p class="mb-3 text-xs font-semibold tracking-[0.16em] text-amber-200 uppercase">
+            <p class="mb-3 text-base font-semibold text-amber-200">
                 {{ __('capell-theme-foundation::generic.proof') }}
             </p>
             <h2
@@ -17,7 +17,7 @@
                 {{ $section->heading }}
             </h2>
             @if ($section->summary)
-                <p class="mt-3 text-sm leading-7 text-slate-300 sm:text-base">{{ $section->summary }}</p>
+                <p class="mt-3 text-sm leading-7 text-white/80 sm:text-base">{{ $section->summary }}</p>
             @endif
         </div>
 
@@ -48,7 +48,7 @@
                             </p>
                         @endif
 
-                        <blockquote class="text-sm leading-7 text-slate-200">
+                        <blockquote class="text-sm leading-7 text-white/80">
                             {{ $item['quote'] ?? $item['summary'] ?? '' }}
                         </blockquote>
                         <figcaption

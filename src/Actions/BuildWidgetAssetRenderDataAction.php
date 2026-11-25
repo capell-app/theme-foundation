@@ -179,7 +179,7 @@ final class BuildWidgetAssetRenderDataAction
         }
 
         if (array_key_exists('cta_url', $meta)) {
-            $meta['cta_url'] = PublicUrlSanitizer::sanitize($meta['cta_url']) ?? '#';
+            $meta['cta_url'] = PublicUrlSanitizer::sanitize($meta['cta_url']);
         }
 
         return $meta;

@@ -141,16 +141,10 @@
         );
     }
 
-    .theme-content-listing :where(h3, .text-slate-950),
-    .theme-search :where(h3, .text-slate-950),
-    .theme-changelog-stream :where(h3, .text-slate-950) {
+    .theme-content-listing :where(h3),
+    .theme-search :where(h3),
+    .theme-changelog-stream :where(h3) {
         color: var(--foundation-heading-fg);
-    }
-
-    .theme-content-listing :where(.text-slate-600, .text-slate-500),
-    .theme-search :where(.text-slate-600, .text-slate-500),
-    .theme-changelog-stream :where(.text-slate-600, .text-slate-500) {
-        color: var(--foundation-muted-fg);
     }
 
     .theme-content-listing img {
