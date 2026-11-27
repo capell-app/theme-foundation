@@ -6,6 +6,7 @@
     "kind": "theme",
     "capellApiVersion": "^1.0",
     "version": "1.0.0",
+    "launchStatus": "shipped",
     "description": "Pale green theme for documentation and general publishing sites that developers can build on, with a dark version and a command for retired themes.",
     "product": {
         "group": "Capell Themes",
